@@ -1,6 +1,7 @@
 // a class to handle two-way message based communication with the arduino board using same protocol
 // as wifi communications. This is the backbone of many other classes.
 // TODO: find serial libraries to use, develop message protocol 
+//
 
 #ifndef ARDUINO_H
 #define ARDUINO_H
