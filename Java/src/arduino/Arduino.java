@@ -1,3 +1,4 @@
+package arduino;
 
 public class Arduino {
 	TwoWaySerialComm port = new TwoWaySerialComm("/dev/ttyUSB0");

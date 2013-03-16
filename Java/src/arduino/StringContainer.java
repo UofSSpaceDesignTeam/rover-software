@@ -1,3 +1,4 @@
+package arduino;
 
 public class StringContainer {
 	private String str = "";
