@@ -9,13 +9,24 @@ import java.io.OutputStream;
 
 public class TwoWaySerialComm
 {
-    public TwoWaySerialComm()
-    {
-        super();
+	/**
+	 * 
+	 * @param usbURL the url to the USB port we want to connect to
+	 */
+    public TwoWaySerialComm(String usbURL){
+    	super();
+    	try {
+			connect(usbURL);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
-    
+   
     private StringContainer received = new StringContainer();
-    private StringContainer toBeSent = new StringContainer();
+    //private StringContainer toBeSent = new StringContainer();
+    
+    private SerialPort serialPort;
     
     void connect ( String portName ) throws Exception
     {
@@ -36,8 +47,9 @@ public class TwoWaySerialComm
                 InputStream in = serialPort.getInputStream();
                 OutputStream out = serialPort.getOutputStream();
                 
-                (new Thread(new SerialReader(in, received))).start();
-                (new Thread(new SerialWriter(out, toBeSent))).start();
+                this.serialPort = serialPort;
+                
+                (new Thread(new SerialReader(in, received))).start();                
 
             }
             else
@@ -64,14 +76,13 @@ public class TwoWaySerialComm
             byte[] buffer = new byte[1024];
             int len = -1;
             try
-            {
-            	System.out.println("Not end of file yet");
+            {            	
                 while ( ( len = this.in.read(buffer)) > -1 )
                 {
                 	//System.out.println("Not end of file yet");
            
-                    //out.setString(out.getString() + new String(buffer,0,len));
-                	System.out.print(new String(buffer,0,len));
+                    out.setString(out.getString() + new String(buffer,0,len));
+                	//System.out.print(new String(buffer,0,len));
                 }
             }
             catch ( IOException e )
@@ -79,56 +90,26 @@ public class TwoWaySerialComm
                 e.printStackTrace();
             }            
         }
-    }
-
-    /** */
-    public static class SerialWriter implements Runnable 
-    {
-        OutputStream out;
-        StringContainer in;
-        
-        public SerialWriter ( OutputStream out, StringContainer in)
-        {
-            this.out = out;
-            this.in = in;
-        }
-        
-        public void run ()
-        {
-            try
-            {                
-                int c = 0;
-                /*while ( ( c = System.in.read()) > -1 )
-                {
-                    this.out.write(c);
-                }     */
-                
-            	while (true){
-            		String str = in.getString();
-            		if (str.length() != 0){
-            			// write the first char
-            			this.out.write(str.charAt(0));
-            			System.out.println("Printed: " + str.charAt(0));
-            			// keep the remainder of the string
-            			in.setString(str.substring(1));
-            		}
-            	}
-            }
-            catch ( IOException e )
-            {
-                e.printStackTrace();
-            }            
-        }
-    }
+    }   
     
+    // only call after an appropriate delay after the last writeMessage() call
     public String readMessage(){
     	String str = received.getString();    	
-    	received.setString(null);
+    	received.setString("");
     	return str;    	
     }
     
-    public void writeMessage(String msg){
-    	toBeSent.setString(msg);
+    public void writeMessage(String msg){    	
+    	OutputStream out;
+		try {
+			out = serialPort.getOutputStream();
+			for (int i = 0 ; i < msg.length(); i++){				
+				out.write(msg.charAt(i));			
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     
@@ -136,25 +117,25 @@ public class TwoWaySerialComm
     
     public static void main ( String[] args )
     {
-    	TwoWaySerialComm port = new TwoWaySerialComm(); 	
-    	
-        try
-        {
-            port.connect("/dev/ttyUSB0");
-        }
-        catch ( Exception e ) {    
-            e.printStackTrace();
-        }
+    	TwoWaySerialComm port = new TwoWaySerialComm("/dev/ttyUSB0"); 	
+    
         
         port.writeMessage("Hi\n");
         
-        /*try {
-			//Thread.sleep(1000);
+        
+        try {
+			Thread.sleep(200);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
-        System.out.println(port.readMessage());
+		}
+        System.out.println("Reading Message: " + port.readMessage());
+        
+        
+        
+        
+       
+        
         
         
     }

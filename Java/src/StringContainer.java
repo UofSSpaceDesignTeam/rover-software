@@ -1,6 +1,6 @@
 
 public class StringContainer {
-	private String str;
+	private String str = "";
 	
 	public void setString(String s){
 		str = s;
@@ -9,5 +9,4 @@ public class StringContainer {
 	public String getString(){
 		return str;
 	}
-
 }
