@@ -7,6 +7,9 @@
 #define ERROR_REPLY "#E \o\o"
 
 char id[2];
+char len[2];
+int msglength;
+char msgdata[48];
 
 void setup()
 {
@@ -21,20 +24,26 @@ void loop()
   {
     if(Serial.read() == '#')
     {
-      if(Serial.readBytes(id,2))
-        parseMessage(id);
-      else
-      {
-        Serial.flush();
-        debug("malformed message / out of sync!");
-      }
     }
   }
 }
 
-void parseMessage(char* id)
+void parseMessage()
 {
-  Serial.flush();
+  if(Serial.readBytes(len,2))
+  {
+    msglength = len[0] + len[1]*256;
+    if(msglength > sizeof(msgdata))
+    {
+      error(id,"ML"); // msg too long
+      return;
+    }
+    if(Serial.readBytes(msgdata,msglength) < msglength)
+    {
+      error(id,"MI"); // incomplete message
+      return;
+    }
+    
 }
 
 void debug(char* message)
@@ -51,7 +60,7 @@ void debug(char* message)
      // bad/missing reply...
 }
 
-void error(char id, char code)
+void error(char* id, char* code)
 {
   Serial.print("#E ");
   Serial.write(0);
