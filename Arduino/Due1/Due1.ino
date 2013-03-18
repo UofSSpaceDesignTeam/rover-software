@@ -1,77 +1,74 @@
+
+// Required external libraries
+
 #include "Wire.h"
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 #include <Servo.h>
 
-#define DEBUG_REPLY "#D \o\o"
-#define ERROR_REPLY "#E \o\o"
+// Operating parameters
 
-char id[2];
+#define NUM_MOTORS 4;
+#define NUM_ENCODERS 4;
+#define NUM_IMU 1;
+#define NUM_FORCE 4;
+
+#define DATA_TIMEOUT 200;
+#define REPLY_TIMEOUT 500;
+
+
+// Global variables
+
+char msgid[2]; // messaging stuff
 char len[2];
 int msglength;
 char msgdata[48];
 
+bool replyPending = false;
+char replyid[2];
+unsigned long replyTimer;
+
+
+while (!Serial); // wait for port to open before starting
+
 void setup()
 {
-  Serial.begin(115200);
-  Serial.setTimeout(200);
+  Serial.begin(115200); // primary serial port
+  Serial1.begin(115200); // secondary serial port
+  Serial.setTimeout(DATA_TIMEOUT);
+  Serial1.setTimeout(DATA_TIMEOUT);
   debug("It's alive!");
 }
 
 void loop()
 {
-  while(Serial.available())
+  
+  while(Serial.available()) // check for new messages
   {
     if(Serial.read() == '#')
+      parseMessage();
+  }
+  
+  if(replyPending) // check for a reply
+  {
+    while(Serial1.available())
     {
+      if(Serial.read() == '#')
+        parseReply();
     }
   }
+  
+  // basic sensor monitoring stuff goes here.
+  // this part should never exceed 50ms or so!
+  
 }
 
 void parseMessage()
 {
-  if(Serial.readBytes(len,2))
-  {
-    msglength = len[0] + len[1]*256;
-    if(msglength > sizeof(msgdata))
-    {
-      error(id,"ML"); // msg too long
-      return;
-    }
-    if(Serial.readBytes(msgdata,msglength) < msglength)
-    {
-      error(id,"MI"); // incomplete message
-      return;
-    }
-    
-}
-
-void debug(char* message)
-{
-  Serial.print("#D ");
-  Serial.write(0);
-  Serial.write(sizeof(message)-1);
-  Serial.println(message);
+  if(!Serial.readBytes(msgid,2))
+    debug("msg timeout, no ID");
+  if(!Serial.readBytes(len,2))
+    reply(
   
-  char reply[4];
-  Serial.readBytes(reply,4);
-  
-  //if(!strcmp(reply,DEBUG_REPLY))
-     // bad/missing reply...
-}
-
-void error(char* id, char* code)
-{
-  Serial.print("#E ");
-  Serial.write(0);
-  Serial.write(4);
-  Serial.print(id);
-  Serial.println(code);
-  
-  char reply[4];
-  Serial.readBytes(reply,4);
-  
-  //if(!strcmp(reply,ERROR_REPLY))
-     // bad/missing reply...
-}
+     
   
