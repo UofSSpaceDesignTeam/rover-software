@@ -67,7 +67,7 @@ public class ServoMotor
 		enableMessage[4] = 1;
 		enableMessage[5] = (byte)angleInDegrees;
 		enableMessage[6] = '\n';
-		associatedArduino.sendMessage(setAngleMessage);
+		associatedArduino.sendMessage(enableMessage);
 	}
 	
 	

@@ -58,6 +58,8 @@ public abstract class MessageProtocol {
 		return message[3]*256 + message[4];
 	}
 	
+	// TODO method to convert from data length to bytes
+	
 	
 	
 	public boolean valid(byte[] message){

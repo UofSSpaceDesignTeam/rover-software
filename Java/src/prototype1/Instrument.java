@@ -4,10 +4,14 @@ import arduino.Arduino;
 
 public abstract class Instrument 
 {
-	//Store the ID of the sensor/actuator
+	/**
+	 * Store the ID of the sensor/actuator
+	 */
 	protected byte id;
 	
-	//Store the Arduino that this instrument is attached to
+	/**
+	 * Store the Arduino that this instrument is attached to
+	 */
 	protected Arduino associatedArduino;
 	
 	/**
@@ -37,6 +41,7 @@ public abstract class Instrument
 		enableMessage[0] = '#';
 		enableMessage[1] = this.id;
 		enableMessage[2] = id2;
+		// TODO fix so uses MessageProtocol method
 		enableMessage[3] = (byte) (length/256);
 		enableMessage[4] = (byte) (length%256);
 		
