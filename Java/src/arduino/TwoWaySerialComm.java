@@ -1,4 +1,5 @@
 package arduino;
+import java.util.Observable;
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
@@ -8,7 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class TwoWaySerialComm
+import prototype1.MessageProtocol;
+
+public class TwoWaySerialComm extends Observable
 {
 	/**
 	 * 
@@ -23,10 +26,7 @@ public class TwoWaySerialComm
 			e.printStackTrace();
 		}
     }
-   
-    private StringContainer received = new StringContainer();
-    //private StringContainer toBeSent = new StringContainer();
-    
+       
     private SerialPort serialPort;
     
     void connect ( String portName ) throws Exception
@@ -50,12 +50,12 @@ public class TwoWaySerialComm
                 
                 this.serialPort = serialPort;
                 
-                (new Thread(new SerialReader(in, received))).start();                
+                (new Thread(new SerialReader(this, in))).start();                
 
             }
             else
             {
-                System.out.println("Error: Only serial ports are handled by this example.");
+                System.err.println("Error: Only serial ports are handled by this example.");
             }
         }     
     }
@@ -63,28 +63,44 @@ public class TwoWaySerialComm
     /** */
     public static class SerialReader implements Runnable 
     {
+    	TwoWaySerialComm comm;
         InputStream in;
-        StringContainer out;
         
-        public SerialReader ( InputStream in , StringContainer out)
+        
+        public SerialReader (TwoWaySerialComm comm, InputStream in)
         {
-            this.in = in;
-            this.out = out;
+        	this.comm = comm;
+            this.in = in;            
         }
         
         public void run ()
         {
-            byte[] buffer = new byte[1024];
-            int len = -1;
+        	byte[] inBuffer = new byte[MessageProtocol.MAX_MSG_LENGTH];
+        	
+            int nextByte = -1;
+            int nextIndex = 0;
             try
-            {            	
-                while ( ( len = this.in.read(buffer)) > -1 )
+            {     	
+            	
+                while ((nextByte = this.in.read()) != -1)
                 {
-                	//System.out.println("Not end of file yet");
-           
-                    out.setString(out.getString() + new String(buffer,0,len));
-                	//System.out.print(new String(buffer,0,len));
+                	// add the byte to the buffer
+                	inBuffer[nextIndex] = (byte) nextByte;
+                	nextIndex++;
+                	
+                	// if end of message, send message to observers
+                	if (nextByte == MessageProtocol.END_BYTE){
+                		byte[] message = new byte[nextIndex];
+                		for (int i = 0; i < nextIndex; i++){
+                			message[i] = inBuffer[i];
+                		}                		
+                		comm.notifyObservers(message);
+                	}
+                	
+                	// clear buffer
+                	nextIndex = 0;                
                 }
+                
             }
             catch ( IOException e )
             {
@@ -93,51 +109,17 @@ public class TwoWaySerialComm
         }
     }   
     
-    // only call after an appropriate delay after the last writeMessage() call
-    public String readMessage(){
-    	String str = received.getString();    	
-    	received.setString("");
-    	return str;    	
-    }
-    
-    public void writeMessage(String msg){    	
+     
+    public void sendMessage(byte[] message){    	
     	OutputStream out;
 		try {
 			out = serialPort.getOutputStream();
-			for (int i = 0 ; i < msg.length(); i++){				
-				out.write(msg.charAt(i));			
+			for (int i = 0 ; i < message.length; i++){				
+				out.write(message[i]);			
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    }
-    
-    
-    
-    
-    public static void main ( String[] args )
-    {
-    	TwoWaySerialComm port = new TwoWaySerialComm("/dev/ttyUSB0"); 	
-    
-        
-        port.writeMessage("Hi\n");
-        
-        
-        try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        System.out.println("Reading Message: " + port.readMessage());
-        
-        
-        
-        
-       
-        
-        
-        
-    }
+    }        
 }

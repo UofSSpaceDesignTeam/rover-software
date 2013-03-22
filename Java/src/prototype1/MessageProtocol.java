@@ -26,6 +26,10 @@ public abstract class MessageProtocol {
 	// message format constants	
 	public static int FIRST_DATA_BYTE = 5;	
 	
+	public static int MAX_MSG_LENGTH = 1024;
+	public static byte START_BYTE = '#';
+	public static byte END_BYTE = '\n';
+	
 	// convenience methods for processing messages - prefer using these to manipulating the byte array yourself
 	/**
 	 * @param message the message to be processed
