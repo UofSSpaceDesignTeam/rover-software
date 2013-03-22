@@ -2,48 +2,73 @@
 // Required external libraries
 
 #include "Wire.h"
-#include "I2Cdev.h"
-#include "MPU6050_6Axis_MotionApps20.h"
-#include <Servo.h>
+// #include "I2Cdev.h"
+// #include "MPU6050_6Axis_MotionApps20.h"
+#include "Encoder.h"
+#include "Servo.h"
 
 // Operating parameters
 
 #define NUM_MOTORS 4
 #define NUM_ENCODERS 4
 #define NUM_IMU 1
-#define NUM_FORCE 4
+#define NUM_FORCE 2
 
-#define DATA_TIMEOUT 200
+#define MSG_TIMEOUT 100
 #define REPLY_TIMEOUT 500
 
+#define LED_BLINKRATE 300
 
 // Global variables
-
+ 
 char msgid[2]; // messaging stuff
 char len[2];
 int msglength;
 char msgdata[48];
-
 bool replyPending = false;
 char replyid[2];
 unsigned long replyTimer;
 
-bool ledBlink = false;
+boolean imu_enable = false;  // sensor reporting parameters
+unsigned int imu_sendRate = 500;
+unsigned long imu_sendTimer;
+
+boolean encoder_enable = false;
+unsigned int encoder_sendRate = 500;
+unsigned long encoder_sendTimer;
+
+boolean force_enable = false;
+unsigned int force_sendRate = 500;
+unsigned long force_sendTimer;
+
+
+boolean ledBlink = false;  // internal state data
+boolean ledState = false;
+unsigned long ledTimer;
 
 
 void setup()
 {
-  while (!Serial); // wait for port to open before starting
+  while (!Serial); // wait for main serial port to open before starting
   Serial.begin(115200); // primary serial port
   Serial1.begin(115200); // secondary serial port
-  Serial.setTimeout(DATA_TIMEOUT);
-  Serial1.setTimeout(DATA_TIMEOUT);
-  debug(F("It's alive!"));
+  Serial.setTimeout(MSG_TIMEOUT);
+  Serial1.setTimeout(MSG_TIMEOUT);
+  
+  pinMode(13,OUTPUT);
+  digitalWrite(13,LOW);
+  
+  imu_sendTimer = millis();
+  encoder_sendTimer = millis();
+  force_sendTimer = millis();
+  ledTimer = millis();
+  
+  debug("Init done");
 }
+
 
 void loop()
 {
-  
   while(Serial.available()) // check for new messages
   {
     if(Serial.read() == '#')
@@ -59,54 +84,99 @@ void loop()
     }
   }
   
-  // basic sensor monitoring stuff goes here.
-  // this part should never exceed 50ms or so!
+  if(ledBlink && millis() - ledTimer >= LED_BLINKRATE) // if it's time to blink the led
+  {
+    ledState = !ledState;  // switch the led on/off
+    if(ledState)
+      digitalWrite(13,HIGH);
+    else
+      digitalWrite(13,LOW);
+    ledTimer = millis();
+  }
+  
+  if(encoder_enable && millis() - encoder_sendTimer >= encoder_sendRate)
+  {
+    // todo: send the encoder data
+    encoder_sendTimer = millis();
+  }
+  
+  if(imu_enable && millis() - imu_sendTimer >= imu_sendRate)
+  {
+    // todo: send the imu data
+    imu_sendTimer = millis();
+  }
+  
+  if(force_enable && millis() - force_sendTimer >= force_sendRate)
+  {
+    // todo: send the force data
+    force_sendTimer = millis();
+  }
+  
+  // general monitoring stuff goes here
+  // try not to take too long
   
 }
 
-void debug(const String msg)
+
+void debug(const String msg) // up to 255 chars
 {
-  // todo: properly formatted message sending
+  int length = msg.length();
+  Serial.write('#');
+  Serial.write("DB");
+  Serial.write((byte)length/256);
+  Serial.write((byte)length%256);
+  Serial.println(msg);
 }
+
 
 void reply(const char* id)
 {
   Serial1.write('#');
   Serial1.write(id);
-  Serial1.write(0);
-  Serial1.write(0);
+  Serial1.write((byte)0);
+  Serial1.write((byte)0);
   Serial1.println();
 }
 
-void error(const char* id, const String code)
+
+void error(const char* id, const char* code)
 {
   Serial1.write('#');
   Serial1.write(id);
-  Serial1.write(0);
-  Serial1.write(2);
+  Serial1.write((byte)0);
+  Serial1.write((byte)2);
   Serial.write(code);
   Serial1.println();
 }
 
+
+boolean is_critical(char* id)
+{
+  if(id[0] == 'D' || id[0] == 'P' || id[0] == 'M' || id[0] == 'S')
+    return true;
+  return false;
+}
+
+
 void parseMessage()
 {
   if(!Serial.readBytes(msgid,2))
-    debug(F("msg timeout, no ID"));
+    debug("msg timeout, no ID");
   if(!Serial.readBytes(len,2))
     {
-      debug(F("msg timeout, no DL"));
+      debug("msg timeout, no DL");
       if(is_critical(msgid))
         error(msgid,"TO");
     }
     msglength = 256*len[0] + len[1];
     if(!Serial.readBytes(msgdata,msglength))
     {
-      debug(F("msg timeout, not enough data"));
+      debug("msg timeout, not enough data");
       if(is_critical(msgid))
         error(msgid,"TO");
     }
     if(Serial.peek() != '\n')
-      debug(F("warn: missing newline after command"));
+      debug("warn: missing newline after command");
     
     switch(msgid[0])
     {
@@ -123,11 +193,11 @@ void parseMessage()
         if(msgid[1] == 'O') // power off
         {
           // todo: clean up stuff before shutdown
-          reply("PO")
+          reply("PO");
           // go to sleep mode until reset
         }
         
-        debug(F("unknown message, ID1 = 'P'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'P'"); // if we get here something is wrong
         error(msgid,"UM"); // power messages are all critical  
         return;
       }
@@ -141,7 +211,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'D'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'D'"); // if we get here something is wrong
         error(msgid,"UM"); // data link messages are all critical
         return;
       }
@@ -167,7 +237,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'L'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'L'"); // if we get here something is wrong
         return;
       }
       
@@ -188,7 +258,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'M'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'M'"); // if we get here something is wrong
         error(msgid,"UM"); // motor messages are all critical
         return;
       }
@@ -210,7 +280,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'S'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'S'"); // if we get here something is wrong
         error(msgid,"UM"); // servo messages are all critical
         return;
       }
@@ -221,7 +291,6 @@ void parseMessage()
         if(msgid[1] == 'E') // IMU enable
         {
           // todo: begin / end grabbing data from a specific IMU
-          reply("IE");
           return;
         }
         
@@ -231,7 +300,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'I'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'I'"); // if we get here something is wrong
         return;
       }
       
@@ -250,7 +319,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'W'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'W'"); // if we get here something is wrong
         return;
       }
 
@@ -269,12 +338,18 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'F'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'F'"); // if we get here something is wrong
         return;
       }
     }
 }
-        
+
+
+void parseReply()
+{
+  return;
+}
+
 
       
         
