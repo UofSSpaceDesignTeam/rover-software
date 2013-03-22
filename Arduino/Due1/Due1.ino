@@ -63,7 +63,7 @@ void setup()
   force_sendTimer = millis();
   ledTimer = millis();
   
-  debug(F("Init done"));
+  debug("Init done");
 }
 
 
@@ -118,7 +118,7 @@ void loop()
 }
 
 
-void debug(__FlashStringHelper* msg) // up to 255 chars
+void debug(const String msg) // up to 255 chars
 {
   int length = msg.length();
   Serial.write('#');
@@ -161,22 +161,22 @@ boolean is_critical(char* id)
 void parseMessage()
 {
   if(!Serial.readBytes(msgid,2))
-    debug(F("msg timeout, no ID"));
+    debug("msg timeout, no ID");
   if(!Serial.readBytes(len,2))
     {
-      debug(F("msg timeout, no DL"));
+      debug("msg timeout, no DL");
       if(is_critical(msgid))
         error(msgid,"TO");
     }
     msglength = 256*len[0] + len[1];
     if(!Serial.readBytes(msgdata,msglength))
     {
-      debug(F("msg timeout, not enough data"));
+      debug("msg timeout, not enough data");
       if(is_critical(msgid))
         error(msgid,"TO");
     }
     if(Serial.peek() != '\n')
-      debug(F("warn: missing newline after command"));
+      debug("warn: missing newline after command");
     
     switch(msgid[0])
     {
@@ -197,7 +197,7 @@ void parseMessage()
           // go to sleep mode until reset
         }
         
-        debug(F("unknown message, ID1 = 'P'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'P'"); // if we get here something is wrong
         error(msgid,"UM"); // power messages are all critical  
         return;
       }
@@ -211,7 +211,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'D'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'D'"); // if we get here something is wrong
         error(msgid,"UM"); // data link messages are all critical
         return;
       }
@@ -237,7 +237,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'L'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'L'"); // if we get here something is wrong
         return;
       }
       
@@ -258,7 +258,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'M'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'M'"); // if we get here something is wrong
         error(msgid,"UM"); // motor messages are all critical
         return;
       }
@@ -280,7 +280,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'S'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'S'"); // if we get here something is wrong
         error(msgid,"UM"); // servo messages are all critical
         return;
       }
@@ -300,7 +300,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'I'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'I'"); // if we get here something is wrong
         return;
       }
       
@@ -319,7 +319,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'W'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'W'"); // if we get here something is wrong
         return;
       }
 
@@ -338,7 +338,7 @@ void parseMessage()
           return;
         }
         
-        debug(F("unknown message, ID1 = 'F'")); // if we get here something is wrong
+        debug("unknown message, ID1 = 'F'"); // if we get here something is wrong
         return;
       }
     }
