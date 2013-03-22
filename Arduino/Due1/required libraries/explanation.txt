@@ -1,0 +1,7 @@
+These need to go in the libraries folder of your arduino installation before you can compile the sketch.
+
+In Windows, this will probably be in program files.
+
+In Linux, try /usr/local/bin.
+
+Make sure you are using Arduino 1.5.2
