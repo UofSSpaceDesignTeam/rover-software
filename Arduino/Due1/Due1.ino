@@ -220,7 +220,7 @@ void parseMessage()
         error(msgid,"TO");
     }
     byte tail = Serial.peek();
-    if(tail != 10)
+    if((int)tail != 10)
     {
       String value = String(tail,HEX);
       debugmsg = "warn: got " + value + " instead of newline";
