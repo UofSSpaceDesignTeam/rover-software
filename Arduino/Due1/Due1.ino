@@ -223,7 +223,7 @@ void parseMessage()
     if((int)tail != 10)
     {
       String value = String(tail,HEX);
-      debugmsg = "warn: got " + value + " instead of newline";
+      debugmsg = "warn: got " + value + " instead of newline 0A";
       debug();
       value = "";
     }
