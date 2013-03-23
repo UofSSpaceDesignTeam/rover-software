@@ -19,7 +19,7 @@ public class IMU extends Sensor
 	 */
 	public void enableIMU()
 	{
-		this.setEnabled(true);
+		super.setEnabled(true);
 	}
 	
 	/**
@@ -27,7 +27,7 @@ public class IMU extends Sensor
 	 */
 	public void disableIMU()
 	{
-		this.setEnabled(false);
+		super.setEnabled(false);
 	}
 	
 	
