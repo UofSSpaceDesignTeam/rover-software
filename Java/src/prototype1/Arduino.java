@@ -1,12 +1,9 @@
-package arduino;
+package prototype1;
 
 import java.util.Observable;
 import java.util.Observer;
 import java.util.HashMap;
 
-import prototype1.Instrument;
-import prototype1.Message;
-import prototype1.Sensor;
 
 public class Arduino implements Observer {
 	
@@ -45,18 +42,37 @@ public class Arduino implements Observer {
 	}
 
 	@Override
-	public void update(Observable arg0, Object arg1) {
+	public void update(Observable arg0, Object arg1) {		
 		byte [] bytes = (byte[]) arg1;
 		
+				
 		Message msg = new Message(bytes);
 		
-		// give this message to the right sensor
-		System.out.println("Got a message with ID " + msg.getID1());
+		// debug output 
+		System.out.print("Message from Arduino: ");
+		byte [] data = msg.getData();
+		for (int i = 0; i < data.length; i++){
+			System.out.print((char) data[i]);
+		}
+		
+		System.out.println("");
+		/*
+		for (int i = 0; i < data.length; i++){
+			System.out.print(data[i] + " ");
+		}
+		System.out.println("");
+		*/
+		
+		// give this message to the right sensor		
+		
+		
+		System.out.println("Got a message with ID " + (char) msg.getID1());
 		
 		Sensor target = sensors.get(msg.getID1());
 		if (target != null){
 			target.addData(msg.getData());
 		}
+		
 	}	
 	
 }

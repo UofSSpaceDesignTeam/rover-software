@@ -1,4 +1,4 @@
-package arduino;
+package prototype1;
 import java.util.Observable;
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import prototype1.MessageProtocol;
 
 public class TwoWaySerialComm extends Observable
 {
@@ -43,7 +42,7 @@ public class TwoWaySerialComm extends Observable
             if ( commPort instanceof SerialPort )
             {
                 SerialPort serialPort = (SerialPort) commPort;
-                serialPort.setSerialPortParams(9600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
+                serialPort.setSerialPortParams(115200,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
                 
                 InputStream in = serialPort.getInputStream();
                 OutputStream out = serialPort.getOutputStream();
@@ -84,22 +83,28 @@ public class TwoWaySerialComm extends Observable
             	
                 while ((nextByte = this.in.read()) != -1)
                 {
+                	
                 	// add the byte to the buffer
-                	inBuffer[nextIndex] = (byte) nextByte;
-                	nextIndex++;
+                	inBuffer[nextIndex] = (byte) nextByte;                	
+                	
+                	nextIndex += 1;
+                	
                 	
                 	// if end of message, send message to observers
-                	if (nextByte == MessageProtocol.END_BYTE){
-                		byte[] message = new byte[nextIndex];
+                	if (nextByte == MessageProtocol.END_BYTE){                		           		                		
+                		byte[] message = new byte[nextIndex];                		
                 		for (int i = 0; i < nextIndex; i++){
                 			message[i] = inBuffer[i];
-                		}                		
+                		}      
+                		comm.setChanged();
                 		comm.notifyObservers(message);
+                		// clear buffer
+                    	nextIndex = 0; 
                 	}
                 	
-                	// clear buffer
-                	nextIndex = 0;                
+                	               
                 }
+                System.out.println("Stoppped Reading");  
                 
             }
             catch ( IOException e )
@@ -115,7 +120,8 @@ public class TwoWaySerialComm extends Observable
 		try {
 			out = serialPort.getOutputStream();
 			for (int i = 0 ; i < message.length; i++){				
-				out.write(message[i]);			
+				out.write(message[i]);	
+				//System.out.println("Writing: " + message[i]);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

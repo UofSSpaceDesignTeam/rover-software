@@ -1,6 +1,5 @@
 package prototype1;
 
-import arduino.Arduino;
 
 public abstract class Instrument 
 {
