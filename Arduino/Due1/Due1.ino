@@ -10,6 +10,7 @@
 // Operating parameters
 
 #define NUM_MOTORS 4
+#define NUM_SERVOS 2
 #define NUM_ENCODERS 4
 #define NUM_IMU 1
 #define NUM_FORCE 2
@@ -106,25 +107,25 @@ void loop()
     ledTimer = millis();
   }
   
-  if(encoder_enable && millis() - encoder_sendTimer >= encoder_sendRate)
+  if(encoder_enable && millis() - encoder_sendTimer >= encoder_sendRate) // if it's time to send encoder data
   {
     // todo: send the encoder data
     encoder_sendTimer = millis();
   }
   
-  if(imu_enable && millis() - imu_sendTimer >= imu_sendRate)
+  if(imu_enable && millis() - imu_sendTimer >= imu_sendRate) // if it's time to send imu data
   {
     // todo: send the imu data
     imu_sendTimer = millis();
   }
   
-  if(force_enable && millis() - force_sendTimer >= force_sendRate)
+  if(force_enable && millis() - force_sendTimer >= force_sendRate) // if it's time to send force data
   {
     // todo: send the force data
     force_sendTimer = millis();
   }
   
-  // general monitoring stuff goes here
+  // other general stuff goes here
   // try not to take too long
   
 }
@@ -307,7 +308,7 @@ void parseMessage()
       }
       
       
-      case 'S':  // motor messages
+      case 'S':  // servo messages
       {
         if(msgid[1] == 'E') // servo enable
         {
