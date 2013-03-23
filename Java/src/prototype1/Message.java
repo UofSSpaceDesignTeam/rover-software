@@ -5,6 +5,8 @@ package prototype1;
  * Wrapper around the byte array that represents a message, with
  * some convenience methods
  *
+ * This is where most of the protocol-specific behaviour is.
+ * If the message protocol changes, this is the file to update.
  */
 public class Message {
 	byte[] message; 
@@ -12,6 +14,7 @@ public class Message {
 	/**
 	 * Constructor with the message byte array
 	 * @param msg the byte array
+	 * TODO check that message is valid
 	 */
 	public Message(byte[] msg){
 		this.message = msg;		
@@ -25,20 +28,45 @@ public class Message {
 	 */
 	public Message(byte id1, byte id2, byte[] data){
 		message = new byte[data.length + 2 + 2 + 1 + 1];
-		
+		message[0] = MessageProtocol.START_BYTE;
+		message[1] = id1;
+		message[2] = id2;
+		message[3] = (byte) (data.length / 256);
+	    message[4] = (byte) (data.length % 256);
+	    for (int i = 0; i <= data.length; i++){
+	    	message[i+MessageProtocol.FIRST_DATA_BYTE] = data[i];
+	    }
+	    message[data.length - 1] = MessageProtocol.END_BYTE;		
 	} 
 	
-	
+	/**
+	 * @return the first id byte
+	 */
 	public byte getID1(){
-				
+		return message[1];				
 	}
 	
+	/**
+	 * @return the second id byte
+	 */
 	public byte getID2(){
-		
+		return message[2];		
 	}
 	
+	/**
+	 * @return the data array
+	 */
 	public byte[] getData(){
+		// figure out the data length
+		int dataLength = message[3] * 256 + message[4];
 		
+		// write data array
+		byte[] data = new byte[dataLength];
+		for (int i = 0; i < dataLength; i++){
+			data[i] = message[i + MessageProtocol.FIRST_DATA_BYTE];
+		}
+		
+		return data;		
 	}
 	
 	

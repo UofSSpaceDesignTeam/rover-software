@@ -49,14 +49,7 @@ public abstract class MessageProtocol {
 		return message[2];
 	}
 	
-	/**
-	 * @param message the message to be processed
-	 * @return the data length indicated in the message
-	 * @precond valid(message)
-	 */
-	public static int getDataLength(byte[] message){
-		return message[3]*256 + message[4];
-	}
+	
 	
 	// TODO method to convert from data length to bytes
 	
