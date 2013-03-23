@@ -9,27 +9,27 @@ package prototype1;
 public abstract class MessageProtocol {
 	// First Identifier Byte - Message Target
 	// TODO add javadoc
-	public static byte ID1_MOTORS = 'M';
-	public static byte ID1_SERVOS = 'S';
-	public static byte ID1_POWER = 'P';
-	public static byte ID1_IMU = 'I';
-	public static byte ID1_WHEEL = 'W';
-	public static byte ID1_FORCE = 'F';
-	public static byte ID1_LED = 'L';
-	public static byte ID1_DEBUG = 'D';
+	public static final byte ID1_MOTORS = 'M';
+	public static final byte ID1_SERVOS = 'S';
+	public static final byte ID1_POWER = 'P';
+	public static final byte ID1_IMU = 'I';
+	public static final byte ID1_WHEEL = 'W';
+	public static final byte ID1_FORCE = 'F';
+	public static final byte ID1_LED = 'L';
+	public static final byte ID1_DEBUG = 'D';
 	
 	// Second Identifier Byte - Message Type
-	public static byte ID2_ENABLE_DISABLE = 'E';
-	public static byte ID2_DATA = 'D';
-	public static byte ID2_SET = 'S';
+	public static final byte ID2_ENABLE_DISABLE = 'E';
+	public static final byte ID2_DATA = 'D';
+	public static final byte ID2_SET = 'S';
 	public static byte ID2_TRANSFER_RATE = 'R';
 	
 	// message format constants	
-	public static int FIRST_DATA_BYTE = 5;	
+	public static final int FIRST_DATA_BYTE = 5;	
 	
-	public static int MAX_MSG_LENGTH = 1024;
-	public static byte START_BYTE = '#';
-	public static byte END_BYTE = '\n';
+	public static final int MAX_MSG_LENGTH = 1024;
+	public static final byte START_BYTE = '#';
+	public static final byte END_BYTE = '\n';
 	
 	
 	

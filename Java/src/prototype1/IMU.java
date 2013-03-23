@@ -11,7 +11,7 @@ public class IMU extends Sensor
 	 */
 	public IMU(Arduino attachedArduino)
 	{
-		super(attachedArduino, ID1_IMU);
+		super(attachedArduino, MessageProtocol.ID1_IMU);
 	}
 	
 	/**

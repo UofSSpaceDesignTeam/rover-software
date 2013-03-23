@@ -37,10 +37,10 @@ public class Message {
 		message[2] = id2;
 		message[3] = (byte) (data.length / 256);
 	    message[4] = (byte) (data.length % 256);
-	    for (int i = 0; i <= data.length; i++){
+	    for (int i = 0; i < data.length; i++){
 	    	message[i+MessageProtocol.FIRST_DATA_BYTE] = data[i];
 	    }
-	    message[data.length - 1] = MessageProtocol.END_BYTE;		
+	    message[message.length - 1] = MessageProtocol.END_BYTE;		
 	} 
 	
 	/**
