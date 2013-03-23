@@ -137,7 +137,8 @@ void debug() // up to 255 chars
   Serial.write("DB");
   Serial.write((byte)length/256);
   Serial.write((byte)length%256);
-  Serial.println(debugmsg);
+  Serial.print(debugmsg);
+  Serial.write(0x0A);
   debugmsg = "";
 }
 
@@ -148,7 +149,7 @@ void reply(const char* id)
   Serial1.write(id);
   Serial1.write((byte)0);
   Serial1.write((byte)0);
-  Serial1.println();
+  Serial1.write(0x0A);
 }
 
 
@@ -159,7 +160,7 @@ void error(const char* id, const char* code)
   Serial1.write((byte)0);
   Serial1.write((byte)2);
   Serial1.write(code);
-  Serial1.println();
+  Serial1.write(0x0A);
 }
 
 
@@ -194,7 +195,7 @@ void sendMessage(char* id, char* data)
   Serial.write(length/256);
   Serial.write(length%256);
   Serial.write(data);
-  Serial.println();
+  Serial.write(0x0A);
 }
 
 
@@ -218,12 +219,12 @@ void parseMessage()
       if(isCritical(msgid))
         error(msgid,"TO");
     }
-    char tail = Serial.peek();
+    int tail = Serial.peek();
     if(tail != 0x0A)
     {
-      debugmsg = "warn: got ";
-      debugmsg += (int)tail;
-      debugmsg += " instead of newline";
+      String value = String(tail);
+      debugmsg = "warn: got " + value + " instead of newline";
+      value = "";
       debug();
     }
     
