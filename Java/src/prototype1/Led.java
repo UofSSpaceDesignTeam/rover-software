@@ -1,9 +1,11 @@
 package prototype1;
 
+import arduino.Arduino;
+
 public class Led extends Actuator
 {
 
-	private byte[] turnOnCall {'1'};
+	private byte[] turnOnCall = {'1'};
 	private byte[] turnOffCall = {'0'};
 	private byte[] blinkCall = {'b'};
 	
@@ -14,13 +16,13 @@ public class Led extends Actuator
 	 */
 	public Led(Arduino attachedArduino)
 	{	
-		super(attachedArduino, ID1_LED);
+		super(attachedArduino, MessageProtocol.ID1_LED);
 	}
 	
 	/**
 	 * Turns the Led on for the Arduino
 	 */
-	public turnOn()
+	public void turnOn()
 	{
 		super.set(turnOnCall);
 	}
@@ -28,7 +30,7 @@ public class Led extends Actuator
 	/**
 	 * Turns off the Led
 	 */
-	public turnOff()
+	public void turnOff()
 	{
 		super.set(turnOffCall);
 	}
@@ -36,7 +38,7 @@ public class Led extends Actuator
 	/**
 	 * Start the Led blinking
 	 */
-	public startBlinking()
+	public void startBlinking()
 	{
 		super.set(blinkCall);
 	}
