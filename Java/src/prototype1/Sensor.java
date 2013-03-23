@@ -39,7 +39,7 @@ public abstract class Sensor extends Instrument {
 	}
 	
 	/**
-	 * Add data to the sensor object, this will be done at the data transfer rate specified
+	 * Add data to the sensor object, this will be done at the data transfer rate specified, by the Arduino
 	 * @param data	
 	 */
 	public void addData(byte[] data) 
@@ -60,9 +60,9 @@ public abstract class Sensor extends Instrument {
 	public void setDataTransferRate(int ms)
 	{
 		byte[] timeData = new byte[2];
-		
-		timeData[1] = (byte) (ms/256);
+		timeData[0] = (byte) (ms/256);
+		timeData[1] = (byte) (ms%256);
+		this.sendToArduino(MessageProtocol.ID2_TRANSFER_RATE, timeData);
 	}
 	
-
 }

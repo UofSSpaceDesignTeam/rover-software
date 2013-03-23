@@ -2,6 +2,10 @@ package prototype1;
 
 import arduino.Arduino;
 
+/**
+ * An abstract class to store functionality common to all actuators
+ */
+
 public abstract class Actuator extends Instrument
 {
 	/**

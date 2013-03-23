@@ -22,6 +22,7 @@ public abstract class MessageProtocol {
 	public static byte ID2_ENABLE_DISABLE = 'E';
 	public static byte ID2_DATA = 'D';
 	public static byte ID2_SET = 'S';
+	public static byte ID2_TRANSFER_RATE = 'R';
 	
 	// message format constants	
 	public static int FIRST_DATA_BYTE = 5;	
