@@ -49,10 +49,15 @@ public class Arduino implements Observer {
 		Message msg = new Message(bytes);
 		
 		// debug output 
-		System.out.print("Message from Arduino: ");
-		byte [] data = msg.getData();
-		for (int i = 0; i < data.length; i++){
-			System.out.print((char) data[i]);
+		System.out.print("Message from Arduino: ");		
+		for (int i = 0; i < bytes.length; i++){			
+			byte next = bytes[i];
+			// check if byte is ascii readable
+			if (next >= 33 && next <= 126)
+				System.out.print((char) next);
+			else 
+				System.out.print("(" + next + ")");
+				
 		}
 		
 		System.out.println("");
