@@ -216,14 +216,6 @@ void parseMessage()
       if(isCritical(msgid))
         error(msgid,"TO");
     }
-    byte tail = Serial.peek();
-    if((int)tail != 10)
-    {
-      String value = String(tail,HEX);
-      debugmsg = "warn: got " + value + " instead of newline 0A";
-      debug();
-      value = "";
-    }
     
     switch(msgid[0])
     {
