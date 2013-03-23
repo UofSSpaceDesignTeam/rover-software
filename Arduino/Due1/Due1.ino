@@ -2,7 +2,7 @@
 // Required external libraries
 
 #include "Wire.h"
-// #include "I2Cdev.h"
+// #include "I2Cdev.h"  // these don't work on Due...
 // #include "MPU6050_6Axis_MotionApps20.h"
 #include "Encoder.h"
 #include "Servo.h"
@@ -163,11 +163,38 @@ void error(const char* id, const char* code)
 }
 
 
-boolean is_critical(char* id)
+boolean isCritical(char* id)
 {
   if(id[0] == 'D' || id[0] == 'P' || id[0] == 'M' || id[0] == 'S')
     return true;
   return false;
+}
+
+
+int getLength(char* id)
+{
+  if(id == "ID")
+    return 12;
+    
+  if(id == "WD")
+    return 2*NUM_ENCODERS;
+    
+  if(id == "FD")
+    return 2*NUM_FORCE;
+    
+  // if we get here something is wrong
+  return 0;
+}
+
+void sendMessage(char* id, char* data)
+{
+  int length = getLength(id);
+  Serial.write('#');
+  Serial.write(id);
+  Serial.write(length/256);
+  Serial.write(length%256);
+  Serial.write(data);
+  Serial.println();
 }
 
 
@@ -180,7 +207,7 @@ void parseMessage()
     {
       debugmsg = "msg timeout, no DL";
       debug();
-      if(is_critical(msgid))
+      if(isCritical(msgid))
         error(msgid,"TO");
     }
     msglength = 256*len[0] + len[1];
@@ -188,12 +215,17 @@ void parseMessage()
     {
       debugmsg = "msg timeout, not enough data";
       debug();
-      if(is_critical(msgid))
+      if(isCritical(msgid))
         error(msgid,"TO");
     }
-    if(Serial.peek() != '\n')
-      debugmsg = "warn: missing newline after command";
+    char tail = Serial.peek();
+    if(tail != 0x0A)
+    {
+      debugmsg = "warn: got ";
+      debugmsg += (int)tail;
+      debugmsg += " instead of newline";
       debug();
+    }
     
     switch(msgid[0])
     {
