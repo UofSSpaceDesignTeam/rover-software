@@ -202,8 +202,10 @@ void sendMessage(char* id, char* data)
 void parseMessage()
 {
   if(!Serial.readBytes(msgid,2))
+  {
     debugmsg = "msg timeout, no ID";
     debug();
+  }
   if(!Serial.readBytes(len,2))
     {
       debugmsg = "msg timeout, no DL";
