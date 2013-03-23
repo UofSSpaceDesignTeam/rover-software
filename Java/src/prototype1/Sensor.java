@@ -2,8 +2,6 @@ package prototype1;
 
 import java.util.LinkedList;
 
-import arduino.Arduino;
-
 /**
  * An abstract class to store functionality common to all the sensors
  *

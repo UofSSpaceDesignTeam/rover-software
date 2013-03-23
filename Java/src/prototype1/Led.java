@@ -1,7 +1,5 @@
 package prototype1;
 
-import arduino.Arduino;
-
 public class Led extends Actuator
 {
 
