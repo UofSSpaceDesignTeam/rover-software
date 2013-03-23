@@ -30,32 +30,11 @@ public abstract class MessageProtocol {
 	public static byte START_BYTE = '#';
 	public static byte END_BYTE = '\n';
 	
-	// convenience methods for processing messages - prefer using these to manipulating the byte array yourself
-	/**
-	 * @param message the message to be processed
-	 * @return the first ID byte of the message
-	 * @precond valid(message)
-	 */
-	public static int getID1(byte[] message){
-		return message[1];
-	}
-	
-	/**
-	 * @param message the message to be processed
-	 * @return the first ID byte of the message
-	 * @precond valid(message)
-	 */
-	public static int getID2(byte[] message){
-		return message[2];
-	}
 	
 	
 	
-	// TODO method to convert from data length to bytes
-	
-	
-	
-	public boolean valid(byte[] message){
+	public boolean valid(byte[] message)
+	{
 		return true; //TODO actually check for validity
 	}
 	

@@ -40,6 +40,12 @@ public class Message {
 	} 
 	
 	/**
+	 * @return the entire message as a byte array
+	 */
+	public byte[] getMessage(){
+		return this.message;
+	}
+	/**
 	 * @return the first id byte
 	 */
 	public byte getID1(){
