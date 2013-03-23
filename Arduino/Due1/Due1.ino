@@ -130,7 +130,7 @@ void loop()
 }
 
 
-void debug() // up to 255 chars
+void debug()
 {
   int length = debugmsg.length();
   Serial.write('#');
@@ -219,13 +219,13 @@ void parseMessage()
       if(isCritical(msgid))
         error(msgid,"TO");
     }
-    int tail = Serial.peek();
-    if(tail != 0x0A)
+    byte tail = Serial.peek();
+    if(tail != 10)
     {
-      String value = String(tail);
+      String value = String(tail,HEX);
       debugmsg = "warn: got " + value + " instead of newline";
-      value = "";
       debug();
+      value = "";
     }
     
     switch(msgid[0])
