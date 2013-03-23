@@ -14,21 +14,7 @@ public class IMU extends Sensor
 		super(attachedArduino, MessageProtocol.ID1_IMU);
 	}
 	
-	/**
-	 * Enable the IMU
-	 */
-	public void enableIMU()
-	{
-		super.setEnabled(true);
-	}
 	
-	/**
-	 * Disable the IMU
-	 */
-	public void disableIMU()
-	{
-		super.setEnabled(false);
-	}
 	
 	
 }
