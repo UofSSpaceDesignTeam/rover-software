@@ -23,7 +23,7 @@ public abstract class Actuator extends Instrument
 	 */
 	protected void set(byte[] data)
 	{
-		this.sendToArduino(MessageProtocol.ID2_SET, data);
+		super.sendToArduino(MessageProtocol.ID2_SET, data);
 	}
 	
 }

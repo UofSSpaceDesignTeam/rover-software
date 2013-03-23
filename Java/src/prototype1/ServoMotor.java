@@ -24,19 +24,24 @@ public class ServoMotor extends Actuator
 	
 	/**
 	 * Method to set the rotation angle of the servo motor
-	 * @precond - angleInDegrees is between 0 and 180
+	 * @precond - angleInDegrees is an array of integers between 0 and 180, one integer for each servo
 	 * @param angleInDegrees
 	 */
-	private void setRotationAngle(int angleInDegrees)
+	private void setRotationAngle(int angleInDegrees[])
 	{
+		//TODO error check to make sure angleInDegrees.length == this.numberOfServos
+		
 		//Fill in the data stream to set the position of this servo motor
-		byte setMessage[] = new byte[1];
+		byte setMessage[] = new byte[angleInDegrees.length];
 		
 		//TODO error check for invalid rotation angle
-		
-		setMessage[0] = (byte)angleInDegrees;
-		
 
+		for (int i = 0; i < this.numberOfServos; i++)
+		{
+			setMessage[i] = (byte) angleInDegrees[i];
+		}
+
+		super.set(setMessage);
 	}
 	
 	
