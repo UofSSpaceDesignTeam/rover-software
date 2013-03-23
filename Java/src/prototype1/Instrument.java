@@ -31,28 +31,9 @@ public abstract class Instrument
 	 * @param data	The data array to send, representing [B1]...[Bn], where n is the length of the data sent
 	 */
 	protected void sendToArduino(byte id2, byte[] data)
-	{
-		int length = data.length;
-		
-		//Fill in the general data stream using the data passed in
-		// #[ID1][ID2][DL1][DL2][B1]...[Bn][\n]
-		byte enableMessage[] = new byte[length+6];
-		
-		enableMessage[0] = '#';
-		enableMessage[1] = this.id;
-		enableMessage[2] = id2;
-		// TODO fix so uses MessageProtocol method
-		enableMessage[3] = (byte) (length/256);
-		enableMessage[4] = (byte) (length%256);
-		
-		int i = 0;
-		for(i = 0; i < length; i++)
-		{
-			enableMessage[i+5] = data[i];
-		}
-		enableMessage[i] = '\n';
-		
-		associatedArduino.sendMessage(enableMessage);
+	{		
+		Message messageToSend = new Message(this.id, id2, data);
+		associatedArduino.sendMessage(messageToSend);
 	}
 	
 	/**
