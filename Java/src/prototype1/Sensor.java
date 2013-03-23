@@ -38,7 +38,7 @@ public abstract class Sensor extends Instrument {
 	
 	/**
 	 * Add data to the sensor object, this will be done at the data transfer rate specified, by the Arduino
-	 * @param data	
+	 * @param data	The data bytes [B1]...[Bn]
 	 */
 	public void addData(byte[] data) 
 	{
