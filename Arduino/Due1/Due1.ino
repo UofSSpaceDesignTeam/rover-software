@@ -172,7 +172,7 @@ boolean isCritical(char* id)
 }
 
 
-void sendMessage(char* id, char* data)
+void sendMessage(char* id, const char* data)
 {
   int length = 0;
   
@@ -189,7 +189,7 @@ void sendMessage(char* id, char* data)
   Serial.write(id);
   Serial.write(length/256);
   Serial.write(length%256);
-  Serial.write(data,length);
+  Serial.write(data);
   Serial.write(0x0A);
 }
 
