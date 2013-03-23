@@ -172,29 +172,24 @@ boolean isCritical(char* id)
 }
 
 
-int getLength(char* id)
-{
-  if(id == "ID")
-    return 12;
-    
-  if(id == "WD")
-    return 2*NUM_ENCODERS;
-    
-  if(id == "FD")
-    return 2*NUM_FORCE;
-    
-  // if we get here something is wrong
-  return 0;
-}
-
 void sendMessage(char* id, char* data)
 {
-  int length = getLength(id);
+  int length = 0;
+  
+  if(id == "ID")
+    length = 12;
+    
+  else if(id == "WD")
+    length = 2*NUM_ENCODERS;
+    
+  else if(id == "FD")
+    length =  2*NUM_FORCE;
+    
   Serial.write('#');
   Serial.write(id);
   Serial.write(length/256);
   Serial.write(length%256);
-  Serial.write(data);
+  Serial.write(data,length);
   Serial.write(0x0A);
 }
 
