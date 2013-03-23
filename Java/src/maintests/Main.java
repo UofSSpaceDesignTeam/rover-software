@@ -1,4 +1,7 @@
-package prototype1;
+package maintests;
+
+import prototype1.Arduino;
+import prototype1.Led;
 
 
 public class Main {

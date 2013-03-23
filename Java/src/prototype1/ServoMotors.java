@@ -15,7 +15,7 @@ public class ServoMotors extends Actuator
 	 * @param newArduino	The arduino that this servo motor is installed on
 	 * @param servosToControl	The number of servos that the class will control
 	 */
-	ServoMotors(Arduino attachedArduino, int servosToControl)
+	public ServoMotors(Arduino attachedArduino, int servosToControl)
 	{	
 		super(attachedArduino, MessageProtocol.ID1_SERVOS);
 		this.numberOfServos = servosToControl;
@@ -39,7 +39,6 @@ public class ServoMotors extends Actuator
 		{
 			setMessage[i] = (byte) angleInDegrees[i];
 		}
-
 		super.set(setMessage);
 	}
 	
