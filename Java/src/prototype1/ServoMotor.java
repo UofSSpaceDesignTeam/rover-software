@@ -27,7 +27,7 @@ public class ServoMotor extends Actuator
 	 * @precond - angleInDegrees is an array of integers between 0 and 180, one integer for each servo
 	 * @param angleInDegrees
 	 */
-	private void setRotationAngle(int angleInDegrees[])
+	public void setRotationAngle(int angleInDegrees[])
 	{
 		//TODO error check to make sure angleInDegrees.length == this.numberOfServos
 		
