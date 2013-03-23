@@ -3,7 +3,6 @@ package prototype1;
 public class Led extends Actuator
 {
 
-	
 	private byte[] turnOnCall {'1'};
 	private byte[] turnOffCall = {'0'};
 	private byte[] blinkCall = {'b'};
