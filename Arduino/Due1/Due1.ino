@@ -1,16 +1,17 @@
 
 // Required external libraries
 
-#include "Wire.h"
-// #include "I2Cdev.h"  // these don't work on Due...
+// #include "Wire.h"  // these 3 are required for IMU
+// #include "I2Cdev.h"  // but this one doesn't work on the DUE, we'll need a workaround eventually
 // #include "MPU6050_6Axis_MotionApps20.h"
-#include "Encoder.h"
-#include "Servo.h"
+#include "Encoder.h"  //  will be used to read wheel encoders
+#include "Servo.h"  //  used to 
+
 
 // Operating parameters
 
 #define NUM_MOTORS 4
-#define NUM_SERVOS 2
+#define NUM_SERVOS 5
 #define NUM_ENCODERS 4
 #define NUM_IMU 1
 #define NUM_FORCE 2
@@ -19,6 +20,9 @@
 #define REPLY_TIMEOUT 500
 
 #define LED_BLINKRATE 300
+
+#define SERVO_DEFAULT 90
+  
 
 // Global variables
  
@@ -48,6 +52,10 @@ boolean ledBlink = false;  // internal state data
 boolean ledState = false;
 unsigned long ledTimer;
 
+//Servo Stuff
+Servo servoArray[NUMBER_SERVOS]; //For case 'S', create array of servo objects
+char servoPositions[NUM_SERVOS];
+char servoPins[NUM_SERVOS]; //For case 'S', creates array of pins that servos are attached to
 
 // todo: put stored sensor data variables here
 
@@ -67,6 +75,11 @@ void setup()
   debugmsg = "Init sensors...";
   debug();
   
+  for(int i=0; i<NUM_SERVOS; i++)
+  {
+    servoPositions[i] = SERVO_DEFAULT;
+    servoPins[i] = 22 + i;
+  }
   // todo: put sensor init stuff here
   // debug something on failure
   
@@ -234,7 +247,7 @@ void parseMessage()
         {
           // todo: clean up stuff before shutdown
           reply("PO");
-          // go to sleep mode until reset
+          // todo: go to sleep mode until reset
         }
         
         debugmsg = "unknown message, ID1 = 'P'"; // if we get here something is wrong
@@ -313,13 +326,31 @@ void parseMessage()
         if(msgid[1] == 'E') // servo enable
         {
           // todo: activate / deactivate servo controllers (?)
+          if(msgdata[0] == '1')
+          {
+            for(int i=0; i<NUMBER_SERVOS; i++)
+            {
+              servoArray[i].attach(servoPins[i]);  //attach each servo to pins 22 to 26
+              servoArray[i].write(servoPositions[i]);
+            }
+          }
+          if(msgdata[0] == '0')
+          {
+            for(int i=0; i<NUMBER_SERVOS; i++)
+            {
+              servoArray[i].detach(SERVO_PIN[i]);  //detach each servo from pins 22 to 26
+            }
+          }
+          
           reply("SE");
           return;
         }
         
+        
         if(msgid[1] == 'S') // servo set
-        {
-          // todo: set the positions of all the servos
+          {
+             // todo: set the positions of all the servos
+                                   
           reply("SS");
           return;
         }
