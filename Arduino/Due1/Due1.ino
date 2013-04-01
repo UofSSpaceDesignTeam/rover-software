@@ -53,9 +53,9 @@ boolean ledState = false;
 unsigned long ledTimer;
 
 //Servo Stuff
-Servo servoArray[NUMBER_SERVOS]; //For case 'S', create array of servo objects
+Servo servoArray[NUM_SERVOS]; // create array of servo objects
 char servoPositions[NUM_SERVOS];
-char servoPins[NUM_SERVOS]; //For case 'S', creates array of pins that servos are attached to
+char servoPins[NUM_SERVOS]; // creates array of pins that servos are attached to
 
 // todo: put stored sensor data variables here
 
@@ -80,6 +80,7 @@ void setup()
     servoPositions[i] = SERVO_DEFAULT;
     servoPins[i] = 22 + i;
   }
+  
   // todo: put sensor init stuff here
   // debug something on failure
   
@@ -328,17 +329,17 @@ void parseMessage()
           // todo: activate / deactivate servo controllers (?)
           if(msgdata[0] == '1')
           {
-            for(int i=0; i<NUMBER_SERVOS; i++)
+            for(int i=0; i<NUM_SERVOS; i++)
             {
-              servoArray[i].attach(servoPins[i]);  //attach each servo to pins 22 to 26
+              servoArray[i].attach(servoPins[i]);  //attach each servo
               servoArray[i].write(servoPositions[i]);
             }
           }
           if(msgdata[0] == '0')
           {
-            for(int i=0; i<NUMBER_SERVOS; i++)
+            for(int i=0; i<NUM_SERVOS; i++)
             {
-              servoArray[i].detach(SERVO_PIN[i]);  //detach each servo from pins 22 to 26
+              servoArray[i].detach();  //detach each servo
             }
           }
           
