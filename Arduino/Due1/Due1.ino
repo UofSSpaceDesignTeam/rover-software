@@ -75,7 +75,7 @@ void setup()
   debugmsg = "Init sensors...";
   debug();
   
-  for(int i=0; i<NUM_SERVOS; i++)
+  for(int i=0; i<NUM_SERVOS; i++) // init servos
   {
     servoPositions[i] = SERVO_DEFAULT;
     servoPins[i] = 22 + i;
@@ -239,16 +239,24 @@ void parseMessage()
       {
         if(msgid[1] == 'E') // emergency stop
         {
-          // todo: stop all motors and such ASAP
+          // todo: stop all motors
+          for(int i=0 i<NUM_SERVOS; i++)
+          {
+            servoArray[i].detach();
+          }
           reply("PE");
-          while(true); // make sure nothing else happens until reset
+          while(true); // halt until reset
         }
         
         if(msgid[1] == 'O') // power off
         {
           // todo: clean up stuff before shutdown
+          for(int i=0 i<NUM_SERVOS; i++)
+          {
+            servoArray[i].detach();
+          }
           reply("PO");
-          // todo: go to sleep mode until reset
+          while(true); // halt until reset
         }
         
         debugmsg = "unknown message, ID1 = 'P'"; // if we get here something is wrong
@@ -326,23 +334,26 @@ void parseMessage()
       {
         if(msgid[1] == 'E') // servo enable
         {
-          // todo: activate / deactivate servo controllers (?)
           if(msgdata[0] == '1')
           {
-            for(int i=0; i<NUM_SERVOS; i++)
+            for(int i=0; i<NUM_SERVOS; i++) // activate each servo
             {
-              servoArray[i].attach(servoPins[i]);  //attach each servo
+              servoArray[i].attach(servoPins[i]);
               servoArray[i].write(servoPositions[i]);
             }
           }
-          if(msgdata[0] == '0')
+          else if(msgdata[0] == '0')
           {
             for(int i=0; i<NUM_SERVOS; i++)
             {
               servoArray[i].detach();  //detach each servo
             }
           }
-          
+          else
+          {
+            debugmsg = "Unknown argument to SE";
+            debug();
+          }
           reply("SE");
           return;
         }
