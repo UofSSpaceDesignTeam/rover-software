@@ -7,14 +7,14 @@
 
 imuhack::imuhack()
 {
-  // do stuff
+  // do stuff?
 }
 
 int imuhack::init()
 {
   int error = 0;
   uint8_t c;
-
+  
   Wire.begin();
 
   // default at power-up:
@@ -22,21 +22,23 @@ int imuhack::init()
   //    Acceleration at 2g
   //    Clock source at internal 8MHz
   //    The device is in sleep mode.
-  //
-
   error = MPU6050_read (MPU6050_WHO_AM_I, &c, 1);
+  if(error)
+    return error;
 
   // According to the datasheet, the 'sleep' bit
   // should read a '1'. But I read a '0'.
   // That bit has to be cleared, since the sensor
   // is in sleep mode at power-up. Even if the
-  // bit reads '0'.
+  // bit reads '0'. 
   error = MPU6050_read (MPU6050_PWR_MGMT_2, &c, 1);
-
+  if(error)
+    return error;
 
 
   // Clear the 'sleep' bit to start the sensor.
   MPU6050_write_reg (MPU6050_PWR_MGMT_1, 0);
+  
   return error;
 }
 
@@ -116,21 +118,12 @@ void loop()
   delay(1000);
 }
 
-
-// --------------------------------------------------------
 // MPU6050_read
 //
 // This is a common function to read multiple bytes 
 // from an I2C device.
-//
-// It uses the boolean parameter for Wire.endTransMission()
-// to be able to hold or release the I2C-bus. 
-// This is implemented in Arduino 1.0.1.
-//
-// Only this function is used to read. 
-// There is no function for a single byte.
-//
-int MPU6050_read(int start, uint8_t *buffer, int size)
+
+int imuhack::MPU6050_read(int start, uint8_t *buffer, int size)
 {
   int i, n, error;
 
@@ -156,27 +149,14 @@ int MPU6050_read(int start, uint8_t *buffer, int size)
   return (0);  // return : no error
 }
 
-
-// --------------------------------------------------------
 // MPU6050_write
 //
 // This is a common function to write multiple bytes to an I2C device.
 //
 // If only a single register is written,
 // use the function MPU_6050_write_reg().
-//
-// Parameters:
-//   start : Start address, use a define for the register
-//   pData : A pointer to the data to write.
-//   size  : The number of bytes to write.
-//
-// If only a single register is written, a pointer
-// to the data has to be used, and the size is
-// a single byte:
-//   int data = 0;        // the data to write
-//   MPU6050_write (MPU6050_PWR_MGMT_1, &c, 1);
-//
-int MPU6050_write(int start, const uint8_t *pData, int size)
+
+int imuhack::MPU6050_write(int start, const uint8_t *pData, int size)
 {
   int n, error;
 
@@ -196,19 +176,18 @@ int MPU6050_write(int start, const uint8_t *pData, int size)
   return (0);         // return : no error
 }
 
-// --------------------------------------------------------
 // MPU6050_write_reg
 //
 // An extra function to write a single register.
 // It is just a wrapper around the MPU_6050_write()
 // function, and it is only a convenient function
 // to make it easier to write a single register.
-//
-int MPU6050_write_reg(int reg, uint8_t data)
+
+int imuhack::MPU6050_write_reg(int reg, uint8_t data)
 {
   int error;
 
   error = MPU6050_write(reg, &data, 1);
 
-  return (error);
+  return error;
 }
