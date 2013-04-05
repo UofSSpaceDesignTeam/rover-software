@@ -12,8 +12,10 @@ public class MainPrototype {
 		
 		//Create a ServoMotors class controlling 1 servo
 		ServoMotors servo = new ServoMotors(arduino, 1);
+		servo.setEnabled(true);
 		//Create a ForceSensors class controlling 1 (ultrasonic sensor)
 		ForceSensors ultrasonic = new ForceSensors(arduino, 1);
+		ultrasonic.setEnabled(true);
 		
 		for(int i = 0; i< 100; i++)
 		{
@@ -39,6 +41,9 @@ public class MainPrototype {
 			servo.setRotationAngle(distanceInCentimeters);
 		}
 		
+		//Disable the devices
+		servo.setEnabled(false);
+		ultrasonic.setEnabled(false);
 	}
 
 }
