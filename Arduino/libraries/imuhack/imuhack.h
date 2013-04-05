@@ -678,7 +678,13 @@ class imuhack
     int getXrot();
     int getYrot();
     int getZrot();
-    void close();
+	
+	int xacc;
+	int yacc;
+	int zacc;
+	int xrot;
+	int yrot;
+	int zrot;
     
   private:
     

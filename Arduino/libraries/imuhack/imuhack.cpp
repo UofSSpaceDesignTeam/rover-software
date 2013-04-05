@@ -43,7 +43,7 @@ int imuhack::init()
 }
 
 
-void update()
+int imuhack::update()
 {
   int error;
   double dT;
@@ -75,40 +75,44 @@ void update()
   SWAP (accel_t_gyro.reg.x_gyro_h, accel_t_gyro.reg.x_gyro_l);
   SWAP (accel_t_gyro.reg.y_gyro_h, accel_t_gyro.reg.y_gyro_l);
   SWAP (accel_t_gyro.reg.z_gyro_h, accel_t_gyro.reg.z_gyro_l);
+  
+  xrot = accel_t_gyro.value.x_gyro;
+  yrot = accel_t_gyro.value.y_gyro;
+  zrot = accel_t_gyro.value.z_gyro;
+  
+  xacc = accel_t_gyro.value.x_accel;
+  yacc = accel_t_gyro.value.y_accel;
+  zacc = accel_t_gyro.value.z_accel;
 }
 
 int imuhack::getXrot()
 {
-	return accel_t_gyro.value.x_gyro
+	return xrot;
 }
 
 int imuhack::getYrot()
 {
-	return accel_t_gyro.value.y_gyro
+	return yrot;
 }
 
 int imuhack::getZrot()
 {
-	return accel_t_gyro.value.z_gyro
-}
-
-{
-	return accel_t_gyro.value.x_accel;
+	return zrot;
 }
 
 int imuhack::getXaccel()
 {
-	return accel_t_gyro.value.x_accel;
+	return xacc;
 }
 
 int imuhack::getYaccel()
 {
-	return accel_t_gyro.value.y_accel;
+	return yacc;
 }
 
 int imuhack::getZaccel()
 {
-	return accel_t_gyro.value.z_accel;
+	return zacc;
 }
 
 // private functions
