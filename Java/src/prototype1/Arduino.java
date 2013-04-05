@@ -53,7 +53,7 @@ public class Arduino implements Observer {
 		for (int i = 0; i < bytes.length; i++){			
 			byte next = bytes[i];
 			// check if byte is ascii readable
-			if (next >= 33 && next <= 126)
+			if (next >= 32 && next <= 126)
 				System.out.print((char) next);
 			else 
 				System.out.print("(" + next + ")");
