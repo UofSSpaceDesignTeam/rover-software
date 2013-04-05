@@ -671,7 +671,7 @@ class imuhack
 
     imuhack();
     int init();
-    void update();
+    int update();
     int getXaccel();
     int getYaccel();
     int getZaccel();
