@@ -11,7 +11,7 @@
 // Operating parameters
 
 #define NUM_MOTORS 4
-#define NUM_SERVOS 5
+#define NUM_SERVOS 1
 #define NUM_ENCODERS 4
 #define NUM_IMU 1
 #define NUM_FORCE 2
@@ -240,7 +240,7 @@ void parseMessage()
         if(msgid[1] == 'E') // emergency stop
         {
           // todo: stop all motors
-          for(int i=0 i<NUM_SERVOS; i++)
+          for(int i=0; i<NUM_SERVOS; i++)
           {
             servoArray[i].detach();
           }
@@ -251,7 +251,7 @@ void parseMessage()
         if(msgid[1] == 'O') // power off
         {
           // todo: clean up stuff before shutdown
-          for(int i=0 i<NUM_SERVOS; i++)
+          for(int i=0; i<NUM_SERVOS; i++)
           {
             servoArray[i].detach();
           }
@@ -361,11 +361,15 @@ void parseMessage()
         
         if(msgid[1] == 'S') // servo set
           {
-             // todo: set the positions of all the servos
-                                   
-          reply("SS");
-          return;
-        }
+            for(int i=0; i<NUM_SERVOS; i++)
+            {
+              servoPositions[i] = msgdata[i];
+              if(servoArray[i].attached()) // if servos are enabled
+                servoArray[i].write(servoPositions[i]);
+            }
+            reply("SS");
+            return;
+          }
         
         debugmsg = "unknown message, ID1 = 'S'"; // if we get here something is wrong
         debug();
