@@ -27,62 +27,46 @@ using namespace openni;
 
 int main()
 {
-	Status rc = OpenNI::initialize();
-	if (rc != STATUS_OK)
-	{
-		printf("Initialize failed\n%s\n", OpenNI::getExtendedError());
-		return 1;
-	}
+	OpenNI::initialize();
 
 	Device device;
-	rc = device.open(ANY_DEVICE);
-	if (rc != STATUS_OK)
-	{
-		printf("Couldn't open device\n%s\n", OpenNI::getExtendedError());
-		return 2;
-	}
+	device.open(ANY_DEVICE);
+	device.setDepthColorSyncEnabled(true);
+	device.setImageRegistrationMode(IMAGE_REGISTRATION_DEPTH_TO_COLOR);
+
+
+
 
 	VideoStream depth;
+	depth.create(device, SENSOR_DEPTH);
 
-	if (device.getSensorInfo(SENSOR_DEPTH) != NULL)
+
+	VideoStream color;
+	color.create(device, SENSOR_COLOR);
+
+
+	depth.start();
+	color.start();
+
+	VideoFrameRef framed;
+	VideoFrameRef framec;
+
+	for (long long i = 0; i < 100000; i++)
 	{
-		rc = depth.create(device, SENSOR_DEPTH);
-		if (rc != STATUS_OK)
-		{
-			printf("Couldn't create depth stream\n%s\n", OpenNI::getExtendedError());
-			return 3;
-		}
-	}
+		depth.readFrame(&framed);
+		color.readFrame(&framec);
 
-	rc = depth.start();
-	if (rc != STATUS_OK)
-	{
-		printf("Couldn't start the depth stream\n%s\n", OpenNI::getExtendedError());
-		return 4;
-	}
 
-	VideoFrameRef frame;
+		DepthPixel* pDepth = (DepthPixel*)framed.getData();
+		RGB888Pixel * pColor = (RGB888Pixel*)framec.getData();
 
-	for (int i = 0; i < 10; i++)
-	{
-		rc = depth.readFrame(&frame);
-		if (rc != STATUS_OK)
-		{
-			printf("Wait failed\n");
-			continue;
-		}
+		int middleIndex = (framed.getHeight()+1)*framed.getWidth()/2;
 
-		if (frame.getVideoMode().getPixelFormat() != PIXEL_FORMAT_DEPTH_1_MM && frame.getVideoMode().getPixelFormat() != PIXEL_FORMAT_DEPTH_100_UM)
-		{
-			printf("Unexpected frame format\n");
-			continue;
-		}
-
-		DepthPixel* pDepth = (DepthPixel*)frame.getData();
-
-		int middleIndex = (frame.getHeight()+1)*frame.getWidth()/2;
-
-		printf("[%08llu] %8d\n", (long long)frame.getTimestamp(), pDepth[middleIndex]);
+		printf("[%08llu] %8d\n", (long long)framec.getTimestamp(), pDepth[middleIndex]);
+		printf("[%08llu] %8d %8d %8d\n", (long long)framed.getTimestamp(),
+											pColor[middleIndex].r,
+											pColor[middleIndex].g,
+											pColor[middleIndex].b);
 
 	}
 
