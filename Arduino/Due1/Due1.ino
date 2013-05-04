@@ -356,30 +356,38 @@ void parseMessage()
         {
           if(motor_enable)
           {
-            if(msgdata[0] == 127) // stop
-              digitalWrite(L_MOTOR_PWM,LOW);
-            if(msgdata[0] > 127) // forward
+            byte m0_pwm = (byte)msgdata[0];
+            byte m1_pwm = (byte)msgdata[1];
+            Serial.println(m0_pwm);
+            if(m0_pwm == 127) // stop
+            {
+              analogWrite(L_MOTOR_PWM,0);
+            }
+            if(m0_pwm > 127) // forward
             {
               digitalWrite(L_MOTOR_DIR,LOW);
-              analogWrite(L_MOTOR_PWM,2*(msgdata[0]-127));
+              analogWrite(L_MOTOR_PWM,2*(m0_pwm-127));
             }
-            if(msgdata[0] < 127) // reverse
+            if(m0_pwm < 127) // reverse
             {
               digitalWrite(L_MOTOR_DIR,HIGH);
-              analogWrite(L_MOTOR_PWM,2*(127-msgdata[0]));
+              analogWrite(L_MOTOR_PWM,2*(127-m0_pwm));
+              Serial.println(2*(127-m0_pwm));
             }
             
-            if(msgdata[0] == 127) // stop
-              digitalWrite(R_MOTOR_PWM,LOW);
-            if(msgdata[0] > 127) // forward
+            if(m1_pwm == 127) // stop
+            {
+              analogWrite(R_MOTOR_PWM,0);
+            }
+            if(m1_pwm > 127) // forward
             {
               digitalWrite(R_MOTOR_DIR,LOW);
-              analogWrite(R_MOTOR_PWM,2*(msgdata[0]-127));
+              analogWrite(R_MOTOR_PWM,2*(m1_pwm-127));
             }
-            if(msgdata[0] < 127) // reverse
+            if(m1_pwm < 127) // reverse
             {
               digitalWrite(R_MOTOR_DIR,HIGH);
-              analogWrite(R_MOTOR_PWM,2*(127-msgdata[0]));
+              analogWrite(R_MOTOR_PWM,2*(127-m1_pwm));
             }
           }
           else
