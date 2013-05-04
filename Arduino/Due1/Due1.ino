@@ -359,20 +359,28 @@ void parseMessage()
             if(msgdata[0] == 127) // stop
               digitalWrite(L_MOTOR_PWM,LOW);
             if(msgdata[0] > 127) // forward
-              digitalWrite(L_MOTOR_DIR,HIGH);
-            else // reverse
+            {
               digitalWrite(L_MOTOR_DIR,LOW);
+              analogWrite(L_MOTOR_PWM,2*(msgdata[0]-127));
+            }
+            if(msgdata[0] < 127) // reverse
+            {
+              digitalWrite(L_MOTOR_DIR,HIGH);
+              analogWrite(L_MOTOR_PWM,2*(127-msgdata[0]));
+            }
             
-            analogWrite(L_MOTOR_PWM,msgdata[0]);
-            
-            if(msgdata[1] == 127) // stop
+            if(msgdata[0] == 127) // stop
               digitalWrite(R_MOTOR_PWM,LOW);
-            if(msgdata[1] > 127) // forward
-              digitalWrite(R_MOTOR_DIR,HIGH);
-            else // reverse
+            if(msgdata[0] > 127) // forward
+            {
               digitalWrite(R_MOTOR_DIR,LOW);
-            
-            analogWrite(R_MOTOR_PWM,msgdata[1]);
+              analogWrite(R_MOTOR_PWM,2*(msgdata[0]-127));
+            }
+            if(msgdata[0] < 127) // reverse
+            {
+              digitalWrite(R_MOTOR_DIR,HIGH);
+              analogWrite(R_MOTOR_PWM,2*(127-msgdata[0]));
+            }
           }
           else
           {
