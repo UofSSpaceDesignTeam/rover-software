@@ -4,17 +4,17 @@
 // #include "Wire.h"  // these 3 are required for IMU
 // #include "I2Cdev.h"  // but this one doesn't work on the DUE, we'll need a workaround eventually
 // #include "MPU6050_6Axis_MotionApps20.h"
-#include "Encoder.h"  //  will be used to read wheel encoders
-#include "Servo.h"  //  used to 
+// #include "Encoder.h"  //  will be used to read wheel encoders
+#include "Servo.h"  //  used to control e.g. camera pan
 
 
 // Operating parameters
 
-#define NUM_MOTORS 4
-#define NUM_SERVOS 1
-#define NUM_ENCODERS 4
+#define NUM_MOTORS 2
+#define NUM_SERVOS 0
+#define NUM_ENCODERS 0
 #define NUM_IMU 1
-#define NUM_FORCE 2
+#define NUM_FORCE 0
 
 #define MSG_TIMEOUT 100
 #define REPLY_TIMEOUT 500
@@ -22,7 +22,15 @@
 #define LED_BLINKRATE 300
 
 #define SERVO_DEFAULT 90
-  
+
+// Pin connection definitions
+
+#define L_MOTOR_DIR 4
+#define L_MOTOR_PWM 5
+#define R_MOTOR_DIR 6
+#define R_MOTOR_PWM 7
+
+#define FIRST_SERVO_PIN 22
 
 // Global variables
  
@@ -38,6 +46,8 @@ String debugmsg = "";
 boolean imu_enable = false;  // sensor reporting parameters
 unsigned int imu_sendRate = 500;
 unsigned long imu_sendTimer;
+
+boolean motor_enable = false;
 
 boolean encoder_enable = false;
 unsigned int encoder_sendRate = 500;
@@ -72,14 +82,30 @@ void setup()
   digitalWrite(13,LOW);
   
   delay(100);
-  debugmsg = "Init sensors...";
+  debugmsg = "Init motors";
+  debug();
+  pinMode(L_MOTOR_PWM,OUTPUT);
+  digitalWrite(L_MOTOR_PWM,LOW);
+  pinMode(R_MOTOR_PWM,OUTPUT);
+  digitalWrite(R_MOTOR_PWM,LOW);
+  pinMode(L_MOTOR_DIR,OUTPUT);
+  digitalWrite(L_MOTOR_DIR,LOW);
+  pinMode(R_MOTOR_DIR,OUTPUT);
+  digitalWrite(R_MOTOR_DIR,LOW);
+  
+  delay(100);
+  debugmsg = "Init servos";
   debug();
   
   for(int i=0; i<NUM_SERVOS; i++) // init servos
   {
     servoPositions[i] = SERVO_DEFAULT;
-    servoPins[i] = 22 + i;
+    servoPins[i] = FIRST_SERVO_PIN + i;
   }
+  
+  delay(100);
+  debugmsg = "Init sensors";
+  debug();
   
   // todo: put sensor init stuff here
   // debug something on failure
@@ -239,7 +265,8 @@ void parseMessage()
       {
         if(msgid[1] == 'E') // emergency stop
         {
-          // todo: stop all motors
+          digitalWrite(L_MOTOR_PWM,LOW);
+          digitalWrite(R_MOTOR_PWM,LOW);
           for(int i=0; i<NUM_SERVOS; i++)
           {
             servoArray[i].detach();
@@ -251,6 +278,8 @@ void parseMessage()
         if(msgid[1] == 'O') // power off
         {
           // todo: clean up stuff before shutdown
+          digitalWrite(L_MOTOR_PWM,LOW);
+          digitalWrite(R_MOTOR_PWM,LOW);
           for(int i=0; i<NUM_SERVOS; i++)
           {
             servoArray[i].detach();
@@ -311,14 +340,38 @@ void parseMessage()
       {
         if(msgid[1] == 'E') // motor enable
         {
-          // todo: activate / deactivate motor controllers
+          if(msgdata[0] = '0')
+          {
+            motor_enable = false;
+          }
+          if(msgdata[0] = '1')
+          {
+            motor_enable = true;
+          }
           reply("ME");
           return;
         }
         
         if(msgid[1] == 'S') // motor set
         {
-          // todo: set the speeds of all the motors
+          if(msgdata[0] == 127) // stop
+            digitalWrite(L_MOTOR_PWM,LOW);
+          if(msgdata[0] > 127) // forward
+            digitalWrite(L_MOTOR_DIR,HIGH);
+          else // reverse
+            digitalWrite(L_MOTOR_DIR,LOW);
+          
+          analogWrite(L_MOTOR_PWM,msgdata[0]);
+          
+          if(msgdata[1] == 127) // stop
+            digitalWrite(R_MOTOR_PWM,LOW);
+          if(msgdata[1] > 127) // forward
+            digitalWrite(R_MOTOR_DIR,HIGH);
+          else // reverse
+            digitalWrite(R_MOTOR_DIR,LOW);
+          
+          analogWrite(R_MOTOR_PWM,msgdata[1]);
+          
           reply("MS");
           return;
         }
