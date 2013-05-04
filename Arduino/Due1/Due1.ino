@@ -25,10 +25,10 @@
 
 // Pin connection definitions
 
-#define L_MOTOR_DIR 4
-#define L_MOTOR_PWM 5
-#define R_MOTOR_DIR 6
-#define R_MOTOR_PWM 7
+#define L_MOTOR_DIR 46
+#define L_MOTOR_PWM 3
+#define R_MOTOR_DIR 47
+#define R_MOTOR_PWM 4
 
 #define FIRST_SERVO_PIN 22
 
