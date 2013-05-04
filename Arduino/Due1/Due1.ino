@@ -64,7 +64,7 @@ unsigned long ledTimer;
 
 //Servo Stuff
 Servo servoArray[NUM_SERVOS]; // create array of servo objects
-char servoPositions[NUM_SERVOS];
+char servoPositions[NUM_SERVOS]; // create array of stored servo positions
 char servoPins[NUM_SERVOS]; // creates array of pins that servos are attached to
 
 // todo: put stored sensor data variables here
@@ -354,24 +354,31 @@ void parseMessage()
         
         if(msgid[1] == 'S') // motor set
         {
-          if(msgdata[0] == 127) // stop
-            digitalWrite(L_MOTOR_PWM,LOW);
-          if(msgdata[0] > 127) // forward
-            digitalWrite(L_MOTOR_DIR,HIGH);
-          else // reverse
-            digitalWrite(L_MOTOR_DIR,LOW);
-          
-          analogWrite(L_MOTOR_PWM,msgdata[0]);
-          
-          if(msgdata[1] == 127) // stop
-            digitalWrite(R_MOTOR_PWM,LOW);
-          if(msgdata[1] > 127) // forward
-            digitalWrite(R_MOTOR_DIR,HIGH);
-          else // reverse
-            digitalWrite(R_MOTOR_DIR,LOW);
-          
-          analogWrite(R_MOTOR_PWM,msgdata[1]);
-          
+          if(motor_enable)
+          {
+            if(msgdata[0] == 127) // stop
+              digitalWrite(L_MOTOR_PWM,LOW);
+            if(msgdata[0] > 127) // forward
+              digitalWrite(L_MOTOR_DIR,HIGH);
+            else // reverse
+              digitalWrite(L_MOTOR_DIR,LOW);
+            
+            analogWrite(L_MOTOR_PWM,msgdata[0]);
+            
+            if(msgdata[1] == 127) // stop
+              digitalWrite(R_MOTOR_PWM,LOW);
+            if(msgdata[1] > 127) // forward
+              digitalWrite(R_MOTOR_DIR,HIGH);
+            else // reverse
+              digitalWrite(R_MOTOR_DIR,LOW);
+            
+            analogWrite(R_MOTOR_PWM,msgdata[1]);
+          }
+          else
+          {
+            debugmsg = "err: MS: motors disabled";
+            debug();
+          }
           reply("MS");
           return;
         }
