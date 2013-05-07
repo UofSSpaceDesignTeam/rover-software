@@ -1,6 +1,6 @@
 class Button
 {  
-  Button(String label, int x, int y, int w, int h, boolean toggle) // constructor
+  Button(String label, int x, int y, int w, int h, boolean toggle, color initial_color) // constructor
   {
     myLabel = label;
     myX = x;
@@ -10,6 +10,7 @@ class Button
     toggleSwitch = toggle;
     complement = null;
     active = false;
+    myColor = initial_color; 
   }
   
   public String getLabel() {return myLabel;} // accessors
@@ -31,6 +32,7 @@ class Button
   final int myWidth;
   final int myHeight;
   final boolean toggleSwitch;
-  Button complement;
+  public color myColor;
+  public Button complement;
   boolean active;
 };

@@ -1,38 +1,60 @@
 void drawButtons(){
 
 //creates the boxes that represent each button
-  fill(0,150,25);
+  
   //digger
+  fill(d_upButton.myColor);
   rect(d_upButton.myX,d_upButton.myY,d_upButton.myWidth,d_upButton.myHeight);
+  fill(d_downButton.myColor);
   rect(d_downButton.myX,d_downButton.myY,d_downButton.myWidth,d_downButton.myHeight);
+  fill(d_stopButton.myColor);
   rect(d_stopButton.myX,d_stopButton.myY,d_stopButton.myWidth,d_stopButton.myHeight);
+  fill(d_digButton.myColor);
   rect(d_digButton.myX,d_digButton.myY,d_digButton.myWidth,d_digButton.myHeight);
   //bucket
+  fill(b_upButton.myColor);
   rect(b_upButton.myX,b_upButton.myY,b_upButton.myWidth,b_upButton.myHeight);
+  fill(b_downButton.myColor);
   rect(b_downButton.myX,b_downButton.myY,b_downButton.myWidth,b_downButton.myHeight);
+  fill(b_dumpButton.myColor);
   rect(b_dumpButton.myX,b_dumpButton.myY,b_dumpButton.myWidth,b_dumpButton.myHeight);
+  fill(b_levelButton.myColor);
   rect(b_levelButton.myX,b_levelButton.myY,b_levelButton.myWidth,b_levelButton.myHeight);
   //video
+  fill(video_onButton.myColor);
   rect(video_onButton.myX,video_onButton.myY,video_onButton.myWidth,video_onButton.myHeight);
+  fill(video_offButton.myColor);
   rect(video_offButton.myX,video_offButton.myY,video_offButton.myWidth,video_offButton.myHeight);
+  fill(video_depthButton.myColor);
   rect(video_depthButton.myX,video_depthButton.myY,video_depthButton.myWidth,video_depthButton.myHeight);
+  fill(video_colorButton.myColor);
   rect(video_colorButton.myX,video_colorButton.myY,video_colorButton.myWidth,video_colorButton.myHeight);
   //camera
+  fill(cam_upButton.myColor);
   rect(cam_upButton.myX,cam_upButton.myY,cam_upButton.myWidth,cam_upButton.myHeight);
+  fill(cam_downButton.myColor);
   rect(cam_downButton.myX,cam_downButton.myY,cam_downButton.myWidth,cam_downButton.myHeight);
+  fill(cam_leftButton.myColor);
   rect(cam_leftButton.myX,cam_leftButton.myY,cam_leftButton.myWidth,cam_leftButton.myHeight);
+  fill(cam_rightButton.myColor);
   rect(cam_rightButton.myX,cam_rightButton.myY,cam_rightButton.myWidth,cam_rightButton.myHeight);
   //movement
+  fill(move_upButton.myColor);
   rect(move_upButton.myX,move_upButton.myY,move_upButton.myWidth,move_upButton.myHeight);
+  fill(move_downButton.myColor);
   rect(move_downButton.myX,move_downButton.myY,move_downButton.myWidth,move_downButton.myHeight);
+  fill(move_leftButton.myColor);
   rect(move_leftButton.myX,move_leftButton.myY,move_leftButton.myWidth,move_leftButton.myHeight);
+  fill(move_rightButton.myColor);
   rect(move_rightButton.myX,move_rightButton.myY,move_rightButton.myWidth,move_rightButton.myHeight);
   //AI on/off
+  fill(ai_onButton.myColor);
   rect(ai_onButton.myX,ai_onButton.myY,ai_onButton.myWidth,ai_onButton.myHeight);
+  fill(ai_offButton.myColor);
   rect(ai_offButton.myX,ai_offButton.myY,ai_offButton.myWidth,ai_offButton.myHeight);
  
   //emergency stop button
-  fill(255,30,10);
+  fill(stopButton.myColor);
   rect(stopButton.myX,stopButton.myY,stopButton.myWidth,stopButton.myHeight);
   
 //text labels for the buttons
