@@ -16,10 +16,25 @@ public class MotorTest {
 	 */
 	public static void main(String[] args) 
 	{
-		ArduinoMessageHandler arduino = new ArduinoMessageHandler("/dev/ttyUSB0");
+		ArduinoMessageHandler arduino = new ArduinoMessageHandler("/dev/ttyACM1");
 		
-		Motors motors = new Motors(arduino, 2);		
+		Motors motors = new Motors(arduino, 2);	
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		motors.setEnabled(true);
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		for (int i = 0; i < 10; i++)
 		{
