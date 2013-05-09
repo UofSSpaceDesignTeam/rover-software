@@ -1,6 +1,7 @@
 package prototype1;
 
 import gnu.io.CommPort;
+
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;

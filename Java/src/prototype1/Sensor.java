@@ -15,11 +15,6 @@ public abstract class Sensor extends Instrument {
 	public static final int MAX_CACHE_SIZE = 30;
 	
 	/**
-	 * Field to store the data for this sensor
-	 */
-	protected byte[] thisData;
-	
-	/**
 	 * Stores the most recent data from the sensor in reverse chronological order (oldest at the end)
 	 * will only store MAX_CACHE_SIZE items
 	 */
