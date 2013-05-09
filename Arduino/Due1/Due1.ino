@@ -1,4 +1,7 @@
 
+// Main sketch for the Arduino DUE on the USST Lunabotics Rover. Written in Arduino 1.5.2
+
+
 // Required external libraries
 
 #include "Wire.h"  // these 3 are required for IMU
@@ -6,8 +9,7 @@
 #include "Encoder.h"  //  will be used to read wheel encoders
 #include "Servo.h"  //  used to control e.g. camera pan
 
-
-// Operating parameters
+// Hardware parameters, change as hardware evolves
 
 #define NUM_MOTORS 2
 #define NUM_SERVOS 0
@@ -15,74 +17,77 @@
 #define NUM_IMU 1
 #define NUM_FORCE 0
 
-#define MSG_TIMEOUT 100
-#define REPLY_TIMEOUT 500
-
-#define LED_BLINKRATE 300
-
-#define SERVO_DEFAULT 90
-
-// Pin connection definitions
+// Pin connections, change as new parts are added
 
 #define L_MOTOR_DIR 46
 #define L_MOTOR_PWM 3
 #define R_MOTOR_DIR 47
 #define R_MOTOR_PWM 4
+#define FIRST_SERVO_PIN 22 // servo signal outputs are from 22 to 22 + NUM_SERVOS - 1
 
-#define FIRST_SERVO_PIN 22
+// Default parameters for operation
+
+#define COMM_TIMEOUT 3000 // wait 3 seconds with no communication before going to error mode
+#define MSG_TIMEOUT 100 // 100ms since last byte until we declare an error
+#define REPLY_TIMEOUT 500 // wait 500ms for reply before going to error mode
+#define LED_BLINKRATE 300 // toggle LED every 300ms
+#define SERVO_DEFAULT 90 // set all servos to center at start
 
 // Global variables
- 
-char msgid[2]; // messaging stuff
-char len[2];
-int msglength;
-char msgdata[48];
-bool replyPending = false;
-char replyid[2];
-unsigned long replyTimer;
-String debugmsg = "";
 
-boolean imu_enable = false;  // sensor reporting parameters
-unsigned int imu_sendRate = 500;
-unsigned long imu_sendTimer;
+boolean errorMode = false; // whether we are in error mode
+char msgid[2]; // ID bytes of incoming messages
+char len[2];  // length bytes of incoming messages
+int msglength;  // length of incoming message
+char msgdata[48];  // data bytes of incoming messages
+bool replyPending = false; // whether we are waiting for a reply
+char replyid[2];  // ID bytes of reply message
+unsigned long replyTimer; // How long we have waited for reply
+String debugmsg = ""; // holds messages we want to send
 
-boolean motor_enable = false;
-boolean servo_enable = false;
+boolean imuEnable = false;  // IMU state information
+unsigned int imuSendRate = 500; // how often we send IMU data
+unsigned long imuSendTimer; // keeps track of when we send data
 
-boolean encoder_enable = false;
-unsigned int encoder_sendRate = 500;
-unsigned long encoder_sendTimer;
+boolean motorEnable = false; // motor controller state information
 
-boolean force_enable = false;
-unsigned int force_sendRate = 500;
-unsigned long force_sendTimer;
+boolean servoEnable = false; // servo controller state information
+
+boolean encoderEnable = false; // wheel encoder state information
+unsigned int encoderSendRate = 500;
+unsigned long encoderSendTimer;
+
+boolean forceEnable = false; // force sensor state information
+unsigned int forceSendRate = 500;
+unsigned long forceSendTimer;
 
 
-boolean ledBlink = false;  // internal state data
+boolean ledBlink = false;  // led state information
 boolean ledState = false;
 unsigned long ledTimer;
 
-//Servo Stuff
+// Creation of global objects
+
 Servo servoArray[NUM_SERVOS]; // create array of servo objects
 char servoPositions[NUM_SERVOS]; // create array of stored servo positions
 char servoPins[NUM_SERVOS]; // creates array of pins that servos are attached to
 
-// todo: put stored sensor data variables here
+// todo: encoders, IMU
 
 
-void setup()
+void setup()  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 {
   while (!Serial); // wait for main serial port to open before starting
-  Serial.begin(115200); // primary serial port
-  Serial1.begin(115200); // secondary serial port
+  Serial.begin(115200); // start the primary serial port
+  Serial1.begin(115200); // start the secondary serial port (for replies)
   Serial.setTimeout(MSG_TIMEOUT);
   Serial1.setTimeout(MSG_TIMEOUT);
   
-  pinMode(13,OUTPUT);
+  pinMode(13,OUTPUT); // LED output
   digitalWrite(13,LOW);
   
   delay(100);
-  debugmsg = "Init motors";
+  debugmsg = "Init motors"; // set up the motor controller initial state (everything stopped)
   debug();
   pinMode(L_MOTOR_PWM,OUTPUT);
   digitalWrite(L_MOTOR_PWM,LOW);
@@ -94,46 +99,46 @@ void setup()
   digitalWrite(R_MOTOR_DIR,LOW);
   
   delay(100);
-  debugmsg = "Init servos";
+  debugmsg = "Init servos"; // set up all the servomotors' initial state
   debug();
   
-  for(int i=0; i<NUM_SERVOS; i++) // init servos
+  for(int i=0; i<NUM_SERVOS; i++)
   {
     servoPositions[i] = SERVO_DEFAULT;
     servoPins[i] = FIRST_SERVO_PIN + i;
   }
   
   delay(100);
-  debugmsg = "Init sensors";
+  debugmsg = "Init sensors"; // set up all the sensors' initial state and timers
   debug();
   
-  // todo: put sensor init stuff here
-  // debug something on failure
+  imuSendTimer = millis();  // for IMU
   
-  imu_sendTimer = millis();
-  encoder_sendTimer = millis();
-  force_sendTimer = millis();
-  ledTimer = millis();
+  encoderSendTimer = millis(); // for wheel encoder
+  
+  forceSendTimer = millis(); // for force sensor
+  
+  ledTimer = millis(); // for LED blinker
   
   debugmsg = "Init done";
   debug();
 }
 
 
-void loop()
+void loop()  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 {
-  while(Serial.available()) // check for new messages
+  while(Serial.available()) // check for new messages until the buffer is empty
   {
-    if(Serial.read() == '#')
-      parseMessage();
+    if(Serial.read() == '#') // if we find the message start character
+      parseMessage(); // read the message
   }
   
-  if(replyPending) // check for a reply
+  if(replyPending) // if we are expecting a reply, check until the buffer is empty
   {
-    while(Serial1.available())
+    while(Serial1.available()) // note Serial1 is the secondary serial port
     {
-      if(Serial.read() == '#')
-        parseReply();
+      if(Serial.read() == '#') // if we find the message start character
+        parseReply(); // read the message
     }
   }
   
@@ -144,403 +149,36 @@ void loop()
       digitalWrite(13,HIGH);
     else
       digitalWrite(13,LOW);
-    ledTimer = millis();
+    ledTimer = millis(); // reset the timer
   }
   
-  if(encoder_enable && millis() - encoder_sendTimer >= encoder_sendRate) // if it's time to send encoder data
+  if(encoderEnable && millis() - encoderSendTimer >= encoderSendRate) // if it's time to send encoder data
   {
     // todo: send the encoder data
-    encoder_sendTimer = millis();
+    encoderSendTimer = millis();
   }
   
-  if(imu_enable && millis() - imu_sendTimer >= imu_sendRate) // if it's time to send imu data
+  if(imuEnable && millis() - imuSendTimer >= imuSendRate) // if it's time to send imu data
   {
     // todo: send the imu data
-    imu_sendTimer = millis();
+    imuSendTimer = millis();
   }
   
-  if(force_enable && millis() - force_sendTimer >= force_sendRate) // if it's time to send force data
+  if(forceEnable && millis() - forceSendTimer >= forceSendRate) // if it's time to send force data
   {
     // todo: send the force data
-    force_sendTimer = millis();
+    forceSendTimer = millis();
   }
   
-  // other general stuff goes here
-  // try not to take too long
+  
+  // other code that needs to be run periodically/constantly goes here, but make sure it's always fast!
+  // consider using a timer as above
   
 }
 
 
-void debug()
-{
-  int length = debugmsg.length();
-  Serial.write('#');
-  Serial.write("DB");
-  Serial.write((byte)length/256);
-  Serial.write((byte)length%256);
-  Serial.print(debugmsg);
-  Serial.write(0x0A);
-  debugmsg = "";
-}
-
-
-void reply(const char* id)
-{
-  Serial1.write('#');
-  Serial1.write(id);
-  Serial1.write((byte)0);
-  Serial1.write((byte)0);
-  Serial1.write(0x0A);
-}
-
-
-void error(const char* id, const char* code)
-{
-  Serial1.write('#');
-  Serial1.write(id);
-  Serial1.write((byte)0);
-  Serial1.write((byte)2);
-  Serial1.write(code);
-  Serial1.write(0x0A);
-}
-
-
-boolean isCritical(char* id)
-{
-  if(id[0] == 'D' || id[0] == 'P' || id[0] == 'M' || id[0] == 'S')
-    return true;
-  return false;
-}
-
-
-void sendMessage(char* id, const char* data)
-{
-  int length = 0;
-  
-  if(id == "ID")
-    length = 12;
-    
-  else if(id == "WD")
-    length = 2*NUM_ENCODERS;
-    
-  else if(id == "FD")
-    length =  2*NUM_FORCE;
-    
-  Serial.write('#');
-  Serial.write(id);
-  Serial.write(length/256);
-  Serial.write(length%256);
-  Serial.write(data);
-  Serial.write(0x0A);
-}
-
-
-void parseMessage()
-{
-  if(!Serial.readBytes(msgid,2))
-  {
-    debugmsg = "err: no ID";
-    debug();
-  }
-  if(!Serial.readBytes(len,2))
-    {
-      debugmsg = "err: no DL";
-      debug();
-      if(isCritical(msgid))
-        error(msgid,"TO");
-    }
-    msglength = 256*len[0] + len[1];
-    if(!Serial.readBytes(msgdata,msglength))
-    {
-      debugmsg = "err: not enough data";
-      debug();
-      if(isCritical(msgid))
-        error(msgid,"TO");
-    }
-    
-    switch(msgid[0])
-    {
-      
-      case 'P':  // power messages
-      {
-        if(msgid[1] == 'E') // emergency stop
-        {
-          digitalWrite(L_MOTOR_PWM,LOW);
-          digitalWrite(R_MOTOR_PWM,LOW);
-          for(int i=0; i<NUM_SERVOS; i++)
-          {
-            servoArray[i].detach();
-          }
-          reply("PE");
-          while(true); // halt until reset
-        }
-        
-        if(msgid[1] == 'O') // power off
-        {
-          // todo: clean up stuff before shutdown
-          digitalWrite(L_MOTOR_PWM,LOW);
-          digitalWrite(R_MOTOR_PWM,LOW);
-          for(int i=0; i<NUM_SERVOS; i++)
-          {
-            servoArray[i].detach();
-          }
-          reply("PO");
-          while(true); // halt until reset
-        }
-        
-        debugmsg = "err: ID, ID1 = P"; // if we get here something is wrong
-        debug();
-        error(msgid,"UM"); // power messages are all critical  
-        return;
-      }
-      
-      
-      case 'D':  // data link messages
-      {
-        if(msgid[1] == 'C') // link check
-        {
-          reply("DC");
-          return;
-        }
-        
-        debugmsg = "err: ID, ID1 = D"; // if we get here something is wrong
-        debug();
-        error(msgid,"UM"); // data link messages are all critical
-        return;
-      }
-      
-      
-      case 'L':  // LED messages
-      {
-        if(msgid[1] == 'S') // LED set
-        {
-          ledBlink = false;
-          if(msgdata[0] == '1')
-          {
-            digitalWrite(13,HIGH);
-          }
-          else if(msgdata[0] == '0')
-          {
-            digitalWrite(13,LOW);
-          }
-          else if(msgdata[0] == 'b')
-          {
-            ledBlink = true;
-          }
-          else
-          {
-            debugmsg = "err: LS: bad arg";
-            debug();
-          }
-          return;
-        }
-        
-        debugmsg = "err: ID, ID1 = L"; // if we get here something is wrong
-        debug();
-        return;
-      }
-      
-      
-      case 'M':  // motor messages
-      {
-        if(msgid[1] == 'E') // motor enable
-        {
-          if(msgdata[0] = '0')
-          {
-            motor_enable = false;
-          }
-          else if(msgdata[0] = '1')
-          {
-            motor_enable = true;
-          }
-          else
-          {
-            debugmsg = "err: ME: bad arg";
-            debug();
-          }
-          reply("ME");
-          return;
-        }
-        
-        if(msgid[1] == 'S') // motor set
-        {
-          if(motor_enable)
-          {
-            byte m0_pwm = (byte)msgdata[0];
-            byte m1_pwm = (byte)msgdata[1];
-            Serial.println(m0_pwm);
-            if(m0_pwm == 127) // stop
-            {
-              analogWrite(L_MOTOR_PWM,0);
-            }
-            else if(m0_pwm > 127) // forward
-            {
-              digitalWrite(L_MOTOR_DIR,LOW);
-              analogWrite(L_MOTOR_PWM,2*(m0_pwm-127));
-            }
-            else // reverse
-            {
-              digitalWrite(L_MOTOR_DIR,HIGH);
-              analogWrite(L_MOTOR_PWM,2*(127-m0_pwm));
-              Serial.println(2*(127-m0_pwm));
-            }
-            
-            if(m1_pwm == 127) // stop
-            {
-              analogWrite(R_MOTOR_PWM,0);
-            }
-            else if(m1_pwm > 127) // forward
-            {
-              digitalWrite(R_MOTOR_DIR,LOW);
-              analogWrite(R_MOTOR_PWM,2*(m1_pwm-127));
-            }
-            else // reverse
-            {
-              digitalWrite(R_MOTOR_DIR,HIGH);
-              analogWrite(R_MOTOR_PWM,2*(127-m1_pwm));
-            }
-          }
-          else
-          {
-            debugmsg = "err: MS: motors off";
-            debug();
-          }
-          reply("MS");
-          return;
-        }
-        
-        debugmsg = "err: ID, ID1 = M"; // if we get here something is wrong
-        debug();
-        error(msgid,"UM"); // motor messages are all critical
-        return;
-      }
-      
-      
-      case 'S':  // servo messages
-      {
-        if(msgid[1] == 'E') // servo enable
-        {
-          if(msgdata[0] == '1')
-          {
-            servo_enable = true;
-            for(int i=0; i<NUM_SERVOS; i++) // activate each servo
-            {
-              servoArray[i].attach(servoPins[i]);
-              servoArray[i].write(servoPositions[i]);
-            }
-          }
-          else if(msgdata[0] == '0')
-          {
-            servo_enable = false;
-            for(int i=0; i<NUM_SERVOS; i++)
-            {
-              servoArray[i].detach();  //detach each servo
-            }
-          }
-          else
-          {
-            debugmsg = "err: SE: bad arg";
-            debug();
-          }
-          reply("SE");
-          return;
-        }
-        
-        
-        if(msgid[1] == 'S') // servo set
-        {
-          if(servo_enable)
-          {
-            for(int i=0; i<NUM_SERVOS; i++)
-            {
-              servoPositions[i] = msgdata[i];
-              if(servoArray[i].attached()) // if servos are enabled
-                servoArray[i].write(servoPositions[i]);
-            }
-          }
-          else
-          {
-            debugmsg = "err: SS: servos off";
-            debug();
-          }
-          reply("SS");
-          return;
-        }
-        
-        debugmsg = "err: ID, ID1 = S"; // if we get here something is wrong
-        debug();
-        error(msgid,"UM"); // servo messages are all critical
-        return;
-      }
-      
-      
-      case 'I':  // IMU messages
-      {
-        if(msgid[1] == 'E') // IMU enable
-        {
-          // todo: begin / end grabbing data from a specific IMU
-          return;
-        }
-        
-        if(msgid[1] == 'R') // IMU send rate
-        {
-          // todo: set timer for sending IMU data messages
-          return;
-        }
-        
-        debugmsg = "err: ID, ID1 = I"; // if we get here something is wrong
-        debug();
-        return;
-      }
-      
-      
-      case 'W':  // encoder messages
-      {
-        if(msgid[1] == 'E') // encoder enable
-        {
-          // todo: begin / end grabbing data from all encoders
-          return;
-        }
-        
-        if(msgid[1] == 'R') // encoder send rate
-        {
-          // todo: set timer for sending encoder data messages
-          return;
-        }
-        
-        debugmsg = "err: ID, ID1 = W"; // if we get here something is wrong
-        debug();
-        return;
-      }
-
-
-      case 'F':  // force sensor messages
-      {
-        if(msgid[1] == 'E') // force sensor enable
-        {
-          // todo: begin / end grabbing data from all force sensors
-          return;
-        }
-        
-        if(msgid[1] == 'R') // force sensor send rate
-        {
-          // todo: set timer for sending force sensor data messages
-          return;
-        }
-        
-        debugmsg = "err: ID, ID1 = F"; // if we get here something is wrong
-        debug();
-        return;
-      }
-    }
-}
-
-
-void parseReply()
-{
-  return;
-}
-
+// don't leave things lying around down here
+// make a new tab instead
 
       
         
