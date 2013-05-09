@@ -1,16 +1,25 @@
 package prototype1;
 
+import gnu.io.CommPort;
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.PortInUseException;
+import gnu.io.SerialPort;
+import gnu.io.UnsupportedCommOperationException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.HashMap;
 
-
 public class ArduinoMessageHandler implements Observer {
 	
 	/**
-	 * the serial port
+	 * the communicator 
 	 */
-	TwoWaySerialComm port;
+	TwoWayCommunicator comm;
 	
 	/**
 	 * the sensors, indexed by the first ID byte
@@ -20,9 +29,68 @@ public class ArduinoMessageHandler implements Observer {
 	
 	
 	public ArduinoMessageHandler(String serialPortURL){
-		port = new TwoWaySerialComm(serialPortURL);
-		port.addObserver(this);
+		// connect to the serial port 
+		CommPortIdentifier portIdentifier;
+		try {
+			portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortURL);
+		} catch (NoSuchPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+        if ( portIdentifier.isCurrentlyOwned() )
+        {
+            System.out.println("Error: Port is currently in use");
+        }
+        else
+        {
+            CommPort commPort;
+			try {
+				commPort = portIdentifier.open(this.getClass().getName(),2000);
+			} catch (PortInUseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+            
+            if ( commPort instanceof SerialPort )
+            {
+            	
+                SerialPort serialPort = (SerialPort) commPort;
+                try {
+					serialPort.setSerialPortParams(115200,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
+				} catch (UnsupportedCommOperationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
+                
+				try {
+					InputStream in = serialPort.getInputStream();
+					OutputStream out = serialPort.getOutputStream();
+					
+					// connect and start listening
+	                comm = new TwoWayCommunicator(in, out);
+	                comm.addObserver(this); 
+	                
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
+                
+                
+                             
+
+            }
+            else
+            {
+                System.err.println("Error: Only serial ports are handled by this example.");
+            }
+        }   		
 	}
+	
+	
 	
 	/**
 	 * Link a sensor to the arduino
@@ -38,7 +106,7 @@ public class ArduinoMessageHandler implements Observer {
 	 * @param msg the byte array to send
 	 */
 	public void sendMessage(Message msg){
-		port.sendMessage(msg.getMessage());		
+		comm.sendMessage(msg.getMessage());		
 	}
 
 	@Override
