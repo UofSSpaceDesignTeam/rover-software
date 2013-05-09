@@ -3,58 +3,64 @@ void drawButtons(){
 //creates the boxes that represent each button
   
   //digger
-  fill(d_upButton.myColor);
+  if(d_upButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_upButton.myX,d_upButton.myY,d_upButton.myWidth,d_upButton.myHeight);
-  fill(d_downButton.myColor);
+  if(d_downButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_downButton.myX,d_downButton.myY,d_downButton.myWidth,d_downButton.myHeight);
-  fill(d_stopButton.myColor);
+  if(d_stopButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_stopButton.myX,d_stopButton.myY,d_stopButton.myWidth,d_stopButton.myHeight);
-  fill(d_digButton.myColor);
+  if(d_digButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_digButton.myX,d_digButton.myY,d_digButton.myWidth,d_digButton.myHeight);
+  
+  if(d_outButton.isActive()){fill(active_color);}else{fill(default_color);}
+  rect(d_outButton.myX,d_outButton.myY,d_outButton.myWidth,d_outButton.myHeight);
+  if(d_inButton.isActive()){fill(active_color);}else{fill(default_color);}
+  rect(d_inButton.myX,d_inButton.myY,d_inButton.myWidth,d_inButton.myHeight);
+
   //bucket
-  fill(b_upButton.myColor);
+  if(b_upButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(b_upButton.myX,b_upButton.myY,b_upButton.myWidth,b_upButton.myHeight);
-  fill(b_downButton.myColor);
+  if(b_downButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(b_downButton.myX,b_downButton.myY,b_downButton.myWidth,b_downButton.myHeight);
-  fill(b_dumpButton.myColor);
+  if(b_dumpButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(b_dumpButton.myX,b_dumpButton.myY,b_dumpButton.myWidth,b_dumpButton.myHeight);
-  fill(b_levelButton.myColor);
+  if(b_levelButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(b_levelButton.myX,b_levelButton.myY,b_levelButton.myWidth,b_levelButton.myHeight);
   //video
-  fill(video_onButton.myColor);
+  if(video_onButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(video_onButton.myX,video_onButton.myY,video_onButton.myWidth,video_onButton.myHeight);
-  fill(video_offButton.myColor);
+  if(video_offButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(video_offButton.myX,video_offButton.myY,video_offButton.myWidth,video_offButton.myHeight);
-  fill(video_depthButton.myColor);
+  if(video_depthButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(video_depthButton.myX,video_depthButton.myY,video_depthButton.myWidth,video_depthButton.myHeight);
-  fill(video_colorButton.myColor);
+  if(video_colorButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(video_colorButton.myX,video_colorButton.myY,video_colorButton.myWidth,video_colorButton.myHeight);
   //camera
-  fill(cam_upButton.myColor);
+  if(cam_upButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(cam_upButton.myX,cam_upButton.myY,cam_upButton.myWidth,cam_upButton.myHeight);
-  fill(cam_downButton.myColor);
+  if(cam_downButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(cam_downButton.myX,cam_downButton.myY,cam_downButton.myWidth,cam_downButton.myHeight);
-  fill(cam_leftButton.myColor);
+  if(cam_leftButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(cam_leftButton.myX,cam_leftButton.myY,cam_leftButton.myWidth,cam_leftButton.myHeight);
-  fill(cam_rightButton.myColor);
+  if(cam_rightButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(cam_rightButton.myX,cam_rightButton.myY,cam_rightButton.myWidth,cam_rightButton.myHeight);
   //movement
-  fill(move_upButton.myColor);
+  if(move_upButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(move_upButton.myX,move_upButton.myY,move_upButton.myWidth,move_upButton.myHeight);
-  fill(move_downButton.myColor);
+  if(move_downButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(move_downButton.myX,move_downButton.myY,move_downButton.myWidth,move_downButton.myHeight);
-  fill(move_leftButton.myColor);
+  if(move_leftButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(move_leftButton.myX,move_leftButton.myY,move_leftButton.myWidth,move_leftButton.myHeight);
-  fill(move_rightButton.myColor);
+  if(move_rightButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(move_rightButton.myX,move_rightButton.myY,move_rightButton.myWidth,move_rightButton.myHeight);
   //AI on/off
-  fill(ai_onButton.myColor);
+  if(ai_onButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(ai_onButton.myX,ai_onButton.myY,ai_onButton.myWidth,ai_onButton.myHeight);
-  fill(ai_offButton.myColor);
+  if(ai_offButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(ai_offButton.myX,ai_offButton.myY,ai_offButton.myWidth,ai_offButton.myHeight);
  
   //emergency stop button
-  fill(stopButton.myColor);
+  if(stopButton.isActive()){fill(0,0,255);}else{fill(stopButton.myColor);}
   rect(stopButton.myX,stopButton.myY,stopButton.myWidth,stopButton.myHeight);
   
 //text labels for the buttons
@@ -65,6 +71,9 @@ void drawButtons(){
   text(d_downButton.myLabel,d_downButton.myX+d_downButton.myWidth/2,d_downButton.myY+d_downButton.myHeight/2-3);
   text(d_stopButton.myLabel,d_stopButton.myX+d_stopButton.myWidth/2,d_stopButton.myY+d_stopButton.myHeight/2-3);
   text(d_digButton.myLabel,d_digButton.myX+d_digButton.myWidth/2,d_digButton.myY+d_digButton.myHeight/2-3);
+  
+  text(d_inButton.myLabel,d_inButton.myX+d_inButton.myWidth/2,d_inButton.myY+d_inButton.myHeight/2-3);
+  text(d_outButton.myLabel,d_outButton.myX+d_outButton.myWidth/2,d_outButton.myY+d_outButton.myHeight/2-3);
   //bucket
   text(b_upButton.myLabel,b_upButton.myX+b_upButton.myWidth/2,b_upButton.myY+b_upButton.myHeight/2-3);
   text(b_downButton.myLabel,b_downButton.myX+b_downButton.myWidth/2,b_downButton.myY+b_downButton.myHeight/2-3);

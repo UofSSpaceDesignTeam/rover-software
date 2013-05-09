@@ -22,7 +22,7 @@ class Button
   public Button getOther() {return complement;}
   public boolean isActive() {return active;}
   
-  public void activate() {active = true;} // mutators
+  public void activate() {active = true; if(complement!=null){complement.deactivate();}} // mutators
   public void deactivate() {active = false;}
   public void setOther(Button other) {complement = other;}
   
