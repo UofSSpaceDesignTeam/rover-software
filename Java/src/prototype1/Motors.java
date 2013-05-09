@@ -17,7 +17,7 @@ public class Motors extends Actuator {
 	 * @param newArduino  The arduino that this motor is installed on
 	 * @param  motorsToControl	The number of motor that the class will control
 	 */
-	public Motors(Arduino attachedArduino, int motorsToControl)
+	public Motors(ArduinoMessageHandler attachedArduino, int motorsToControl)
 	{	
 		super(attachedArduino, MessageProtocol.ID1_MOTORS);
 		this.numMotors =  motorsToControl;

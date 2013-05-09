@@ -30,7 +30,7 @@ public abstract class Sensor extends Instrument {
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 * @param thisId	the [ID1] byte that represents this instrument (M for motor; I for IMU, etc)
 	 */
-	Sensor(Arduino attachedArduino, byte thisId)
+	Sensor(ArduinoMessageHandler attachedArduino, byte thisId)
 	{
 		
 		super(attachedArduino, thisId);

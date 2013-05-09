@@ -12,7 +12,7 @@ public abstract class Actuator extends Instrument
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 * @param thisId	the [ID1] byte that represents this instrument (M for motor; I for IMU, etc)
 	 */
-	Actuator(Arduino attachedArduino, byte thisId)
+	Actuator(ArduinoMessageHandler attachedArduino, byte thisId)
 	{
 		super(attachedArduino, thisId);
 	}

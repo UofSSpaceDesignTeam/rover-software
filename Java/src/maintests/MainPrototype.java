@@ -7,7 +7,7 @@ public class MainPrototype {
 
 	public static void main(String[] args) throws InterruptedException
 	{
-		Arduino arduino = new Arduino("/dev/ttyUSB0");
+		ArduinoMessageHandler arduino = new ArduinoMessageHandler("/dev/ttyUSB0");
 		Led led = new Led(arduino);
 		
 		//Create a ServoMotors class controlling 1 servo

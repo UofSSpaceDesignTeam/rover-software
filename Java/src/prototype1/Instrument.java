@@ -11,14 +11,14 @@ public abstract class Instrument
 	/**
 	 * Store the Arduino that this instrument is attached to
 	 */
-	protected Arduino associatedArduino;
+	protected ArduinoMessageHandler associatedArduino;
 	
 	/**
 	 * Constructor for this class
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 * @param thisId	the [ID1] byte that represents this instrument (M for motor; I for IMU, etc)
 	 */
-	Instrument(Arduino attachedArduino, byte thisId)
+	Instrument(ArduinoMessageHandler attachedArduino, byte thisId)
 	{
 		id = thisId;
 		associatedArduino = attachedArduino;

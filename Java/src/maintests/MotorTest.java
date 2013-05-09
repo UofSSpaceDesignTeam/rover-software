@@ -2,7 +2,7 @@ package maintests;
 
 import java.util.Scanner;
 
-import prototype1.Arduino;
+import prototype1.ArduinoMessageHandler;
 import prototype1.ForceSensors;
 import prototype1.Led;
 import prototype1.MessageProtocol;
@@ -16,7 +16,7 @@ public class MotorTest {
 	 */
 	public static void main(String[] args) 
 	{
-		Arduino arduino = new Arduino("/dev/ttyUSB0");
+		ArduinoMessageHandler arduino = new ArduinoMessageHandler("/dev/ttyUSB0");
 		
 		Motors motors = new Motors(arduino, 2);		
 		motors.setEnabled(true);

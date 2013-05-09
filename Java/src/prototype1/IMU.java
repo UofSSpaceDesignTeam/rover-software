@@ -9,7 +9,7 @@ public class IMU extends Sensor
 	 * Constructor that calls the super constructor (Sensor)
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 */
-	public IMU(Arduino attachedArduino)
+	public IMU(ArduinoMessageHandler attachedArduino)
 	{
 		super(attachedArduino, MessageProtocol.ID1_IMU);
 	}

@@ -19,7 +19,7 @@ public class ForceSensors extends Sensor
 	 * @param attachedArduino	The Arduino that the force sensors are attached to
 	 * @param forceSensorsToControl		The number of force sensors this class controls
 	 */
-	public ForceSensors(Arduino attachedArduino, int forceSensorsToControl)
+	public ForceSensors(ArduinoMessageHandler attachedArduino, int forceSensorsToControl)
 	{
 		super(attachedArduino, MessageProtocol.ID1_FORCE);
 		this.numberOfForceSensors = forceSensorsToControl;

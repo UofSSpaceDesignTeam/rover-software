@@ -5,7 +5,7 @@ import java.util.Observer;
 import java.util.HashMap;
 
 
-public class Arduino implements Observer {
+public class ArduinoMessageHandler implements Observer {
 	
 	/**
 	 * the serial port
@@ -19,7 +19,7 @@ public class Arduino implements Observer {
 	
 	
 	
-	public Arduino(String serialPortURL){
+	public ArduinoMessageHandler(String serialPortURL){
 		port = new TwoWaySerialComm(serialPortURL);
 		port.addObserver(this);
 	}

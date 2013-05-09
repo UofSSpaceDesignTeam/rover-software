@@ -1,6 +1,6 @@
 package maintests;
 
-import prototype1.Arduino;
+import prototype1.ArduinoMessageHandler;
 import prototype1.Led;
 import prototype1.ServoMotors;
 
@@ -8,7 +8,7 @@ import prototype1.ServoMotors;
 public class Main {
 	public static void main(String[] args) throws InterruptedException
 	{
-		Arduino arduino = new Arduino("/dev/ttyUSB0");
+		ArduinoMessageHandler arduino = new ArduinoMessageHandler("/dev/ttyUSB0");
 		
 		Led led = new Led(arduino);
 		

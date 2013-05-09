@@ -1,71 +1,50 @@
 package prototype1;
+
 import java.util.Observable;
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.SerialPort;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-
-public class TwoWaySerialComm extends Observable
+/**
+ * A general class to send and receive messages to a given pair of
+ * input and output streams
+ * @author usst
+ *
+ */
+public class TwoWayCommunicator extends Observable
 {
 	/**
-	 * 
-	 * @param usbURL the url to the USB port we want to connect to
+	 * The communicator's input stream
 	 */
-    public TwoWaySerialComm(String usbURL){
+	private InputStream input;
+	
+	/**
+	 * The communicator's output stream
+	 */
+	private OutputStream output;
+	/**
+	 * 
+	 * @param in the input stream
+	 * @param out the output stream
+	 */
+    public TwoWayCommunicator(InputStream in, OutputStream out)
+    {
     	super();
-    	try {
-			connect(usbURL);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	input = in;
+    	output = out;    
+    	new Thread(new SerialReader(this, input)).start();  
     }
        
-    private SerialPort serialPort;
-    
-    void connect ( String portName ) throws Exception
-    {
-        CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
-        if ( portIdentifier.isCurrentlyOwned() )
-        {
-            System.out.println("Error: Port is currently in use");
-        }
-        else
-        {
-            CommPort commPort = portIdentifier.open(this.getClass().getName(),2000);
-            
-            if ( commPort instanceof SerialPort )
-            {
-                SerialPort serialPort = (SerialPort) commPort;
-                serialPort.setSerialPortParams(115200,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
-                
-                InputStream in = serialPort.getInputStream();
-                OutputStream out = serialPort.getOutputStream();
-                
-                this.serialPort = serialPort;
-                
-                (new Thread(new SerialReader(this, in))).start();                
-
-            }
-            else
-            {
-                System.err.println("Error: Only serial ports are handled by this example.");
-            }
-        }     
-    }
     
     /** */
     public static class SerialReader implements Runnable 
     {
-    	TwoWaySerialComm comm;
+    	TwoWayCommunicator comm;
         InputStream in;
         
         
-        public SerialReader (TwoWaySerialComm comm, InputStream in)
+        public SerialReader (TwoWayCommunicator comm, InputStream in)
         {
         	this.comm = comm;
             this.in = in;            
@@ -114,14 +93,12 @@ public class TwoWaySerialComm extends Observable
     }   
     
      
-    public void sendMessage(byte[] message){    	
-    	OutputStream out;
-		try {
-			out = serialPort.getOutputStream();
+    public void sendMessage(byte[] message){    	    	
+		try {			
 			for (int i = 0 ; i < message.length; i++){				
-				out.write(message[i]);	
-				//System.out.println("Writing: " + message[i]);
+				output.write(message[i]);					
 			}
+			output.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -14,7 +14,7 @@ public class Led extends Actuator
 	 * Constructor that calls the super constructor (Actuator)
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 */
-	public Led(Arduino attachedArduino)
+	public Led(ArduinoMessageHandler attachedArduino)
 	{	
 		super(attachedArduino, MessageProtocol.ID1_LED);
 	}
