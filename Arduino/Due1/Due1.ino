@@ -1,10 +1,9 @@
 
 // Required external libraries
 
-// #include "Wire.h"  // these 3 are required for IMU
+#include "Wire.h"  // these 3 are required for IMU
 // #include "I2Cdev.h"  // but this one doesn't work on the DUE, we'll need a workaround eventually
-// #include "MPU6050_6Axis_MotionApps20.h"
-// #include "Encoder.h"  //  will be used to read wheel encoders
+#include "Encoder.h"  //  will be used to read wheel encoders
 #include "Servo.h"  //  used to control e.g. camera pan
 
 
@@ -48,6 +47,7 @@ unsigned int imu_sendRate = 500;
 unsigned long imu_sendTimer;
 
 boolean motor_enable = false;
+boolean servo_enable = false;
 
 boolean encoder_enable = false;
 unsigned int encoder_sendRate = 500;
@@ -239,12 +239,12 @@ void parseMessage()
 {
   if(!Serial.readBytes(msgid,2))
   {
-    debugmsg = "msg timeout, no ID";
+    debugmsg = "err: no ID";
     debug();
   }
   if(!Serial.readBytes(len,2))
     {
-      debugmsg = "msg timeout, no DL";
+      debugmsg = "err: no DL";
       debug();
       if(isCritical(msgid))
         error(msgid,"TO");
@@ -252,7 +252,7 @@ void parseMessage()
     msglength = 256*len[0] + len[1];
     if(!Serial.readBytes(msgdata,msglength))
     {
-      debugmsg = "msg timeout, not enough data";
+      debugmsg = "err: not enough data";
       debug();
       if(isCritical(msgid))
         error(msgid,"TO");
@@ -288,7 +288,7 @@ void parseMessage()
           while(true); // halt until reset
         }
         
-        debugmsg = "unknown message, ID1 = 'P'"; // if we get here something is wrong
+        debugmsg = "err: ID, ID1 = P"; // if we get here something is wrong
         debug();
         error(msgid,"UM"); // power messages are all critical  
         return;
@@ -303,7 +303,7 @@ void parseMessage()
           return;
         }
         
-        debugmsg = "unknown message, ID1 = 'D'"; // if we get here something is wrong
+        debugmsg = "err: ID, ID1 = D"; // if we get here something is wrong
         debug();
         error(msgid,"UM"); // data link messages are all critical
         return;
@@ -319,18 +319,23 @@ void parseMessage()
           {
             digitalWrite(13,HIGH);
           }
-          if(msgdata[0] == '0')
+          else if(msgdata[0] == '0')
           {
             digitalWrite(13,LOW);
           }
-          if(msgdata[0] == 'b')
+          else if(msgdata[0] == 'b')
           {
             ledBlink = true;
-          } 
+          }
+          else
+          {
+            debugmsg = "err: LS: bad arg";
+            debug();
+          }
           return;
         }
         
-        debugmsg = "unknown message, ID1 = 'L'"; // if we get here something is wrong
+        debugmsg = "err: ID, ID1 = L"; // if we get here something is wrong
         debug();
         return;
       }
@@ -344,9 +349,14 @@ void parseMessage()
           {
             motor_enable = false;
           }
-          if(msgdata[0] = '1')
+          else if(msgdata[0] = '1')
           {
             motor_enable = true;
+          }
+          else
+          {
+            debugmsg = "err: ME: bad arg";
+            debug();
           }
           reply("ME");
           return;
@@ -363,12 +373,12 @@ void parseMessage()
             {
               analogWrite(L_MOTOR_PWM,0);
             }
-            if(m0_pwm > 127) // forward
+            else if(m0_pwm > 127) // forward
             {
               digitalWrite(L_MOTOR_DIR,LOW);
               analogWrite(L_MOTOR_PWM,2*(m0_pwm-127));
             }
-            if(m0_pwm < 127) // reverse
+            else // reverse
             {
               digitalWrite(L_MOTOR_DIR,HIGH);
               analogWrite(L_MOTOR_PWM,2*(127-m0_pwm));
@@ -379,12 +389,12 @@ void parseMessage()
             {
               analogWrite(R_MOTOR_PWM,0);
             }
-            if(m1_pwm > 127) // forward
+            else if(m1_pwm > 127) // forward
             {
               digitalWrite(R_MOTOR_DIR,LOW);
               analogWrite(R_MOTOR_PWM,2*(m1_pwm-127));
             }
-            if(m1_pwm < 127) // reverse
+            else // reverse
             {
               digitalWrite(R_MOTOR_DIR,HIGH);
               analogWrite(R_MOTOR_PWM,2*(127-m1_pwm));
@@ -392,14 +402,14 @@ void parseMessage()
           }
           else
           {
-            debugmsg = "err: MS: motors disabled";
+            debugmsg = "err: MS: motors off";
             debug();
           }
           reply("MS");
           return;
         }
         
-        debugmsg = "unknown message, ID1 = 'M'"; // if we get here something is wrong
+        debugmsg = "err: ID, ID1 = M"; // if we get here something is wrong
         debug();
         error(msgid,"UM"); // motor messages are all critical
         return;
@@ -412,6 +422,7 @@ void parseMessage()
         {
           if(msgdata[0] == '1')
           {
+            servo_enable = true;
             for(int i=0; i<NUM_SERVOS; i++) // activate each servo
             {
               servoArray[i].attach(servoPins[i]);
@@ -420,6 +431,7 @@ void parseMessage()
           }
           else if(msgdata[0] == '0')
           {
+            servo_enable = false;
             for(int i=0; i<NUM_SERVOS; i++)
             {
               servoArray[i].detach();  //detach each servo
@@ -427,7 +439,7 @@ void parseMessage()
           }
           else
           {
-            debugmsg = "Unknown argument to SE";
+            debugmsg = "err: SE: bad arg";
             debug();
           }
           reply("SE");
@@ -436,6 +448,8 @@ void parseMessage()
         
         
         if(msgid[1] == 'S') // servo set
+        {
+          if(servo_enable)
           {
             for(int i=0; i<NUM_SERVOS; i++)
             {
@@ -443,11 +457,17 @@ void parseMessage()
               if(servoArray[i].attached()) // if servos are enabled
                 servoArray[i].write(servoPositions[i]);
             }
-            reply("SS");
-            return;
           }
+          else
+          {
+            debugmsg = "err: SS: servos off";
+            debug();
+          }
+          reply("SS");
+          return;
+        }
         
-        debugmsg = "unknown message, ID1 = 'S'"; // if we get here something is wrong
+        debugmsg = "err: ID, ID1 = S"; // if we get here something is wrong
         debug();
         error(msgid,"UM"); // servo messages are all critical
         return;
@@ -468,7 +488,7 @@ void parseMessage()
           return;
         }
         
-        debugmsg = "unknown message, ID1 = 'I'"; // if we get here something is wrong
+        debugmsg = "err: ID, ID1 = I"; // if we get here something is wrong
         debug();
         return;
       }
@@ -488,7 +508,7 @@ void parseMessage()
           return;
         }
         
-        debugmsg = "unknown message, ID1 = 'W'"; // if we get here something is wrong
+        debugmsg = "err: ID, ID1 = W"; // if we get here something is wrong
         debug();
         return;
       }
@@ -508,7 +528,7 @@ void parseMessage()
           return;
         }
         
-        debugmsg = "unknown message, ID1 = 'F'"; // if we get here something is wrong
+        debugmsg = "err: ID, ID1 = F"; // if we get here something is wrong
         debug();
         return;
       }
