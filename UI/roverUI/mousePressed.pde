@@ -1,5 +1,17 @@
 void mousePressed() {
 
+  if (overButton(resetButton.myX,resetButton.myY,resetButton.myWidth,resetButton.myHeight)) {
+    //ai_offButton.myColor = default_color;
+    resetButton.activate();
+    client = new Client(this, roverIp, comm_port);
+    ai_offButton.activate();
+    video_offButton.activate();
+    video_depthButton.activate();
+    enable_moveButton.deactivate();
+    move_disable_confirmed = true;
+    move_enable_confirmed = false;
+  }
+  
     if (overButton(d_upButton.myX,d_upButton.myY,d_upButton.myWidth,d_upButton.myHeight)) {
     //d_upButton.myColor = default_color;
     d_upButton.activate();
@@ -84,18 +96,39 @@ void mousePressed() {
   if (overButton(move_upButton.myX,move_upButton.myY,move_upButton.myWidth,move_upButton.myHeight)) {
     //move_upButton.myColor = default_color;
     move_upButton.activate();
+    motor1Speed = 200;
+    motor2Speed = 200;
+    
   }
   if (overButton(move_downButton.myX,move_downButton.myY,move_downButton.myWidth,move_downButton.myHeight)) {
     //move_downButton.myColor = default_color;
     move_downButton.activate();
+    motor1Speed = motor1Speed =50;
+    motor2Speed = motor2Speed =50;
   }
   if (overButton(move_leftButton.myX,move_leftButton.myY,move_leftButton.myWidth,move_leftButton.myHeight)) {
     //move_leftButton.myColor = default_color;
     move_leftButton.activate();
+    motor1Speed = motor1Speed =200;
+    motor2Speed = motor2Speed =50;
   }
   if (overButton(move_rightButton.myX,move_rightButton.myY,move_rightButton.myWidth,move_rightButton.myHeight)) {
     //move_rightButton.myColor = default_color;
     move_rightButton.activate();
+    motor1Speed = motor1Speed =50;
+    motor2Speed = motor2Speed =20;
+  }
+  if (overButton(stop_moveButton.myX,stop_moveButton.myY,stop_moveButton.myWidth,stop_moveButton.myHeight)) {
+    //move_rightButton.myColor = default_color;
+    stop_moveButton.activate();
+  }
+  if (overButton(enable_moveButton.myX,enable_moveButton.myY,enable_moveButton.myWidth,enable_moveButton.myHeight)) {
+    //move_rightButton.myColor = default_color;
+    if (enable_moveButton.isActive()){
+      enable_moveButton.deactivate();
+    }else{
+      enable_moveButton.activate();
+    }
   }
  
  
@@ -109,8 +142,7 @@ void mousePressed() {
     ai_offButton.activate();
     //ai_offButton.complement.deactivate();
   }
-  
-  
+ 
   
   
   if (overButton(stopButton.myX,stopButton.myY,stopButton.myWidth,stopButton.myHeight)) {
@@ -210,11 +242,11 @@ void mouseReleased() {
   
   if (overButton(d_upButton.myX,d_upButton.myY,d_upButton.myWidth,d_upButton.myHeight)) {
     //d_upButton.myColor = default_color;
-    d_upButton.deactivate();
+    //d_upButton.deactivate();
   }
   if (overButton(d_downButton.myX,d_downButton.myY,d_downButton.myWidth,d_downButton.myHeight)) {
     //d_downButton.myColor = default_color   ;
-    d_downButton.deactivate();
+    //d_downButton.deactivate();
   }
   if (overButton(d_stopButton.myX,d_stopButton.myY,d_stopButton.myWidth,d_stopButton.myHeight)) {
     //d_stopButton.myColor = default_color;
@@ -290,6 +322,7 @@ void mouseReleased() {
   if (overButton(move_upButton.myX,move_upButton.myY,move_upButton.myWidth,move_upButton.myHeight)) {
     //move_upButton.myColor = default_color;
     move_upButton.deactivate();
+
   }
   if (overButton(move_downButton.myX,move_downButton.myY,move_downButton.myWidth,move_downButton.myHeight)) {
     //move_downButton.myColor = default_color;
@@ -304,6 +337,10 @@ void mouseReleased() {
     move_rightButton.deactivate();
   }
  
+ if (overButton(stop_moveButton.myX,stop_moveButton.myY,stop_moveButton.myWidth,stop_moveButton.myHeight)) {
+    //move_rightButton.myColor = default_color;
+    stop_moveButton.deactivate();
+  }
  
   if (overButton(ai_onButton.myX,ai_onButton.myY,ai_onButton.myWidth,ai_onButton.myHeight)) {
     //ai_onButton.myColor = default_color;
@@ -317,7 +354,11 @@ void mouseReleased() {
     //stopButton.myColor = color(255,30,20);
     stopButton.deactivate();
   }
- 
+  if (overButton(resetButton.myX,resetButton.myY,resetButton.myWidth,resetButton.myHeight)) {
+    //ai_offButton.myColor = default_color;
+    resetButton.deactivate();
+    //ai_offButton.complement.deactivate();
+  }
  
 }
 

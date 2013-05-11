@@ -1,8 +1,9 @@
 import processing.net.*;
 
 Client client;
-String roverIp = "192.168.1.10";
-
+//String roverIp = "192.168.1.10";
+String roverIp = "10.227.5.214";
+int comm_port = 7050;
 int eStopX = 300; // information for emergency stop button
 int eStopy = 600;
 int eStopWidth = 200;
@@ -12,42 +13,11 @@ int videoX = 352; // location of video monitor (320x240)
 int videoY = 200;
 color default_color = color(0,100,15);
 color active_color = color(30,220,40);
-
+int motor1Speed = 0;
+int motor2Speed = 0;
 //Button[] allButtons = new Button[20]; //just an idea i had, please ignore for now
 
-//b = bucket, d = digger
-Button d_upButton = new Button("Up",45,130,65,40,false,default_color); 
-Button d_downButton = new Button("Down",45,190,65,40,false,default_color); 
-Button d_stopButton = new Button("Stop",45,250,65,40,false,default_color); 
-Button d_digButton = new Button("Dig",45,310,65,40,false,default_color); 
 
-Button d_outButton = new Button("Out",130,130,65,40,false,default_color); 
-Button d_inButton = new Button("In",130,190,65,40,false,default_color); 
-
-Button b_upButton = new Button("Up",230,130,65,40,false,default_color); 
-Button b_downButton = new Button("Down",230,190,65,40,false,default_color); 
-Button b_dumpButton = new Button("Dump",230,250,65,40,false,default_color); 
-Button b_levelButton = new Button("Level",230,310,65,40,false,default_color); 
-
-Button video_onButton = new Button("On",340,310,65,40,false,default_color); 
-Button video_offButton = new Button("Off",425,310,65,40,false,default_color); 
-Button video_depthButton = new Button("Depth",510,310,65,40,false,default_color); 
-Button video_colorButton = new Button("Color",595,310,65,40,false,default_color); 
-
-Button cam_upButton = new Button("Up",810,90,65,40,false,default_color); 
-Button cam_downButton = new Button("Down",810,150,65,40,false,default_color); 
-Button cam_leftButton = new Button("Left",730,120,65,40,false,default_color); 
-Button cam_rightButton = new Button("Right",890,120,65,40,false,default_color); 
-
-Button move_upButton = new Button("Move Up",810,245,65,40,false,default_color); 
-Button move_downButton = new Button("Move Down",810,305,65,40,false,default_color); 
-Button move_leftButton = new Button("Move Left",730,275,65,40,false,default_color); 
-Button move_rightButton = new Button("Move Right",890,275,65,40,false,default_color); 
-
-Button stopButton = new Button("Emergency Stop",335,360,330,50,false,color(255,30,10)); 
-
-Button ai_onButton = new Button("ON",725,460,65,40,false,default_color);
-Button ai_offButton = new Button("OFF",810,460,65,40,false,default_color); 
 //ai_onButton.activate();
 //ai_offButton.setOther(ai_onButton);
 
@@ -55,7 +25,9 @@ Button ai_offButton = new Button("OFF",810,460,65,40,false,default_color);
 void setup()
 {
   size(1024,600);
-  
+  //try{
+    client = new Client(this, roverIp, comm_port);
+  //}catch(IOException e){e.printStackTrace();}
   ai_offButton.activate();
   video_offButton.activate();
   video_depthButton.activate();
@@ -78,13 +50,12 @@ void setup()
   video_offButton.setOther(video_onButton);
   video_depthButton.setOther(video_colorButton);
   video_colorButton.setOther(video_depthButton); 
-  //client = new Client(this,roverIp,81);
 }
 
 void draw()
 {
   textAlign(CENTER,CENTER);
-
+  
   background(230);
   fill(210);
   stroke(0);
@@ -96,7 +67,7 @@ void draw()
   //rect(715,80,255,120); //box around camera controls
   //rect(715,235,255,120); //box around movement controls
   //rect(715,450,300,140);//box around AI Status
-  rect(335,55,330,250);//Video box
+  rect(330,75,videoX,videoY);//Video box
   rect(10,420,405,170);//message box
   
   fill(0);
@@ -114,6 +85,8 @@ void draw()
   textSize(15);
   text("Arrow Keys",925,330);
   drawButtons();
+  getMessages();
+  sendMessages();
 }
 
 

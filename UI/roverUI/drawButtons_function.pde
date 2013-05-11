@@ -3,6 +3,14 @@ void drawButtons(){
 //creates the boxes that represent each button
   
   //digger
+  if(resetButton.isActive()){fill(active_color);}else{fill(default_color);}
+  rect(resetButton.myX,resetButton.myY,resetButton.myWidth,resetButton.myHeight);
+  
+  if(stop_moveButton.isActive()){fill(active_color);}else{fill(default_color);}
+  rect(stop_moveButton.myX,stop_moveButton.myY,stop_moveButton.myWidth,stop_moveButton.myHeight);
+  if(enable_moveButton.isActive()){fill(active_color);}else{fill(default_color);}
+  rect(enable_moveButton.myX,enable_moveButton.myY,enable_moveButton.myWidth,enable_moveButton.myHeight);
+  
   if(d_upButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_upButton.myX,d_upButton.myY,d_upButton.myWidth,d_upButton.myHeight);
   if(d_downButton.isActive()){fill(active_color);}else{fill(default_color);}
@@ -66,6 +74,11 @@ void drawButtons(){
 //text labels for the buttons
   textSize(18);
   fill(255);
+  text(resetButton.myLabel,resetButton.myX+resetButton.myWidth/2,resetButton.myY+resetButton.myHeight/2-3);
+
+  text(stop_moveButton.myLabel,stop_moveButton.myX+stop_moveButton.myWidth/2,stop_moveButton.myY+stop_moveButton.myHeight/2-3);
+  text(enable_moveButton.myLabel,enable_moveButton.myX+enable_moveButton.myWidth/2,enable_moveButton.myY+enable_moveButton.myHeight/2-3);
+
   //digger
   text(d_upButton.myLabel,d_upButton.myX+d_upButton.myWidth/2,d_upButton.myY+d_upButton.myHeight/2-3);
   text(d_downButton.myLabel,d_downButton.myX+d_downButton.myWidth/2,d_downButton.myY+d_downButton.myHeight/2-3);
