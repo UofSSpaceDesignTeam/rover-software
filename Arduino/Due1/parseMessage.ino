@@ -113,15 +113,16 @@ void parseMessage()
     {
       if(msgid[1] == 'E') // motor enable
       {
-        if(msgdata[0] = '0')
+        if(msgdata[0] == '0')
         {
           motorEnable = false;
           analogWrite(L_MOTOR_PWM,0);
           analogWrite(R_MOTOR_PWM,0);
         }
-        else if(msgdata[0] = '1')
+        else if(msgdata[0] == '1')
         {
           motorEnable = true;
+          debug();
         }
         else
         {
@@ -134,7 +135,7 @@ void parseMessage()
       
       if(msgid[1] == 'S') // motor set
       {
-        if(motorEnable)
+        if(motorEnable == true)
         {
           byte m0_pwm = (byte)msgdata[0];
           byte m1_pwm = (byte)msgdata[1];
