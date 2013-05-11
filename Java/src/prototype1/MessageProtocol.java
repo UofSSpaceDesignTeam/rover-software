@@ -31,6 +31,9 @@ public abstract class MessageProtocol {
 	public static final byte START_BYTE = '#';
 	public static final byte END_BYTE = '\n';
 	
+	public static final int DATA_BYTE_ENABLE = '1';
+	public static final int DATA_BYTE_DISABLE = '0';
+	
 	
 	
 	

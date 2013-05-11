@@ -20,10 +20,13 @@ public class Main {
 		Motors m = new Motors(arduino, 2);		
 		control.addInstrument(MessageProtocol.ID1_MOTORS, m);
 		
-		Thread.sleep(100);
 		
 		
-		m.setEnabled(true);
+		
+		
+		
+		
+		
 		
 		
 		

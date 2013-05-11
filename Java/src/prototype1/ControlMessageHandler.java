@@ -49,25 +49,31 @@ public class ControlMessageHandler implements Observer, Runnable
 	public void update(Observable o, Object arg) 
 	{
 		byte [] bytes = (byte[]) arg;		
-		Message msg = new Message(bytes);		
+		Message msg = new Message(bytes);	
+		
+		
+		for (int i = 0; i < bytes.length ; i++){
+			System.out.print("(" + bytes[i]+ ")");
+		}
+		System.out.println("|");
 		
 		// handle the message		
 		Instrument target = instruments.get(msg.getID1());		
 		if(target != null)
 		{
-			System.out.println("a1");
+			
 			if(msg.getID1() == MessageProtocol.ID1_MOTORS)
 			{
 				Motors motor = (Motors)target;
-				System.out.println("a2");
+				
 				if(msg.getID2() == MessageProtocol.ID2_ENABLE_DISABLE)
 				{
-					boolean enable = msg.getData()[0] == 1;
+					boolean enable = msg.getData()[0] == MessageProtocol.DATA_BYTE_ENABLE;
+					System.out.println("Setting motors to : " + enable);
 					motor.setEnabled(enable);
 				}
 				else if (msg.getID2() == MessageProtocol.ID2_SET)
-				{
-					System.out.println("a3");
+				{					
 					motor.setRotationSpeed( msg.getData());
 				}
 			}

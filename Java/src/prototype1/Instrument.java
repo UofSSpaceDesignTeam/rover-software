@@ -45,11 +45,11 @@ public abstract class Instrument
 		byte toSend[] = new byte[1];
 		if(enable)
 		{
-			toSend[0] = '1';
+			toSend[0] = MessageProtocol.DATA_BYTE_ENABLE;
 		}
 		else
 		{
-			toSend[0] = '0';
+			toSend[0] = MessageProtocol.DATA_BYTE_DISABLE;
 		}
 		this.sendToArduino(MessageProtocol.ID2_ENABLE_DISABLE, toSend);
 	}
