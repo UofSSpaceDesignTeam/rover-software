@@ -1,7 +1,10 @@
 package maintests;
 
 import prototype1.ArduinoMessageHandler;
+import prototype1.ControlMessageHandler;
 import prototype1.Led;
+import prototype1.MessageProtocol;
+import prototype1.Motors;
 import prototype1.ServoMotors;
 
 
@@ -10,7 +13,21 @@ public class Main {
 	{
 		ArduinoMessageHandler arduino = new ArduinoMessageHandler("/dev/ttyUSB0");
 		
-		Led led = new Led(arduino);
+		ControlMessageHandler control = new ControlMessageHandler();
+		
+		Motors m = new Motors(arduino, 2);
+		control.addInstrument(MessageProtocol.ID1_MOTORS, m);
+		
+		Thread.sleep(1000);
+		
+		
+		m.setEnabled(true);
+		
+		
+		
+		
+		
+		/*Led led = new Led(arduino);
 		
 		ServoMotors servo = new ServoMotors(arduino, 1);
 		servo.setEnabled(true);
@@ -28,6 +45,6 @@ public class Main {
 			angleInDegrees[0] += 10;
 		}
 		
-		
+		*/
 	}
 }

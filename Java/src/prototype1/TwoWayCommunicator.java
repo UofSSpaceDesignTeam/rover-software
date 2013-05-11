@@ -51,16 +51,16 @@ public class TwoWayCommunicator extends Observable
         }
         
         public void run ()
-        {
+        {        	
         	byte[] inBuffer = new byte[MessageProtocol.MAX_MSG_LENGTH];
         	
             int nextByte = -1;
             int nextIndex = 0;
             try
-            {     	
-            	
+            {     	            	
                 while ((nextByte = this.in.read()) != -1)
                 {
+                	
                 	
                 	// add the byte to the buffer
                 	inBuffer[nextIndex] = (byte) nextByte;                	
@@ -68,12 +68,13 @@ public class TwoWayCommunicator extends Observable
                 	nextIndex += 1;
                 	
                 	
-                	// if end of message, send message to observers
-                	if (nextByte == MessageProtocol.END_BYTE){                		           		                		
+                	// if end of message, send message to observer
+                	if (nextByte == MessageProtocol.END_BYTE){                		
                 		byte[] message = new byte[nextIndex];                		
                 		for (int i = 0; i < nextIndex; i++){
                 			message[i] = inBuffer[i];
                 		}      
+                		
                 		comm.setChanged();
                 		comm.notifyObservers(message);
                 		// clear buffer
