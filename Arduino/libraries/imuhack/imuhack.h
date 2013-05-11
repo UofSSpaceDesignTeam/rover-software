@@ -38,7 +38,7 @@
 
 // The name of the sensor is "MPU-6050".
 // For program code, I omit the '-', 
-// therefor I use the name "MPU6050....".
+// therefore I use the name "MPU6050....".
 
 
 // Register names according to the datasheet.
