@@ -5,6 +5,7 @@
 #include <string.h>
 #include <inttypes.h>
 
+
 imuhack::imuhack()
 {
   // do stuff?
@@ -12,6 +13,12 @@ imuhack::imuhack()
 
 int imuhack::init()
 {
+  xacc = 0;
+  yacc = 0;
+  zacc = 0;
+  xrot = 0;
+  yrot = 0;
+  zrot = 0;
   int error = 0;
   uint8_t c;
   

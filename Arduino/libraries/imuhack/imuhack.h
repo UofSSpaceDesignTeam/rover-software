@@ -679,12 +679,12 @@ class imuhack
     int getYrot();
     int getZrot();
 	
-	int xacc = 0;
-	int yacc = 0;
-	int zacc = 0;
-	int xrot = 0;
-	int yrot = 0;
-	int zrot = 0;
+	int xacc;
+	int yacc;
+	int zacc;
+	int xrot;
+	int yrot;
+	int zrot;
     
   private:
     
