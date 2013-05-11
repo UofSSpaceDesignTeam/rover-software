@@ -96,27 +96,27 @@ void mousePressed() {
   if (overButton(move_upButton.myX,move_upButton.myY,move_upButton.myWidth,move_upButton.myHeight)) {
     //move_upButton.myColor = default_color;
     move_upButton.activate();
-    motor1Speed = 200;
-    motor2Speed = 200;
+    motor1Speed = 255;
+    motor2Speed = 255;
     
   }
   if (overButton(move_downButton.myX,move_downButton.myY,move_downButton.myWidth,move_downButton.myHeight)) {
     //move_downButton.myColor = default_color;
     move_downButton.activate();
-    motor1Speed = motor1Speed =50;
-    motor2Speed = motor2Speed =50;
+    motor1Speed = motor1Speed =0;
+    motor2Speed = motor2Speed =0;
   }
   if (overButton(move_leftButton.myX,move_leftButton.myY,move_leftButton.myWidth,move_leftButton.myHeight)) {
     //move_leftButton.myColor = default_color;
     move_leftButton.activate();
-    motor1Speed = motor1Speed =200;
-    motor2Speed = motor2Speed =50;
+    motor1Speed = motor1Speed =255;
+    motor2Speed = motor2Speed =0;
   }
   if (overButton(move_rightButton.myX,move_rightButton.myY,move_rightButton.myWidth,move_rightButton.myHeight)) {
     //move_rightButton.myColor = default_color;
     move_rightButton.activate();
-    motor1Speed = motor1Speed =50;
-    motor2Speed = motor2Speed =20;
+    motor1Speed = motor1Speed =0;
+    motor2Speed = motor2Speed =255;
   }
   if (overButton(stop_moveButton.myX,stop_moveButton.myY,stop_moveButton.myWidth,stop_moveButton.myHeight)) {
     //move_rightButton.myColor = default_color;
