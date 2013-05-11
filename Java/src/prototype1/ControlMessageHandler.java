@@ -63,7 +63,7 @@ public class ControlMessageHandler implements Observer, Runnable
 				if(msg.getID2() == MessageProtocol.ID2_ENABLE_DISABLE)
 				{
 					boolean enable = msg.getData()[0] == 1;
-					motor.setEnabled(enabled);
+					motor.setEnabled(enable);
 				}
 				else if (msg.getID2() == MessageProtocol.ID2_SET)
 				{
