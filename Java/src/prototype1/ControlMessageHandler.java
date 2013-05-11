@@ -52,11 +52,26 @@ public class ControlMessageHandler implements Observer
 		byte [] bytes = (byte[]) arg;		
 		Message msg = new Message(bytes);
 		
-		System.out.println("got a message");
-		
-		
-		
+		System.out.println("got a message");	
 		// handle the message
+		Instrument target = instruments.get(msg.getID1());
+		if(target != null)
+		{
+			if(msg.getID1() == MessageProtocol.ID1_MOTORS)
+			{
+				Motors motor = (Motors)target;
+				
+				if(msg.getID2() == MessageProtocol.ID2_ENABLE_DISABLE)
+				{
+					motor.stop();
+				}
+				else if (msg.getID2() == MessageProtocol.ID2_SET)
+				{
+					motor.setRotationSpeed( msg.getData());
+				}
+			}
+		}
+
 		
 		// comm.sendMessage(msg);
 		

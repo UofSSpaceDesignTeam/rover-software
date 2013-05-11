@@ -29,32 +29,29 @@ public class Motors extends Actuator {
 	 *            one integer for each servo
 	 * ( 0 is full reverse, 127 is full stop, 255 is full forward)
 	 */
-	public void setRotationSpeed(int speed[])
+	public void setRotationSpeed(byte speed[])
 	{
 		//TODO error check to make sure speed.length == this.numMotors
 		
 		//Fill in the data stream to set the position of this servo motor
-		byte setMessage[] = new byte[speed.length];
+		
 		
 		//TODO error check for invalid speed
 
-		for (int i = 0; i < this.numMotors; i++)
-		{
-			setMessage[i] = (byte) speed[i];
-		}
-		super.set(setMessage);
+		super.set(speed);
 	}
 	
 	// convenience methods TODO add javadoc
 	public void goForward()
 	{
-		int[] speed = new int[numMotors];
+		byte[] speed = new byte[numMotors];
 		for (int i = 0; i < numMotors; i++)
 		{
-			speed[i] = SPEED_FULL_FORWARD;
+			speed[i] = (byte) SPEED_FULL_FORWARD;
 		}
 		setRotationSpeed(speed);
 	}
+	
 	public void goReverse()
 	{
 		int[] speed = new int[numMotors];
@@ -62,7 +59,7 @@ public class Motors extends Actuator {
 		{
 			speed[i] = SPEED_FULL_REVERSE;
 		}
-		setRotationSpeed(speed);
+		//setRotationSpeed(speed);
 	}
 	public void stop()
 	{
@@ -71,6 +68,6 @@ public class Motors extends Actuator {
 		{
 			speed[i] = SPEED_STOP;
 		}
-		setRotationSpeed(speed);
+		//
 	}
 }
