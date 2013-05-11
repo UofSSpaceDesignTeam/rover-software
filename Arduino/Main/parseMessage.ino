@@ -116,6 +116,8 @@ void parseMessage()
         if(msgdata[0] = '0')
         {
           motorEnable = false;
+          analogWrite(L_MOTOR_PWM,0);
+          analogWrite(R_MOTOR_PWM,0);
         }
         else if(msgdata[0] = '1')
         {
