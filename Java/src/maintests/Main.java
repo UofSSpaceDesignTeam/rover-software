@@ -11,14 +11,16 @@ import prototype1.ServoMotors;
 public class Main {
 	public static void main(String[] args) throws InterruptedException
 	{
-		ArduinoMessageHandler arduino = new ArduinoMessageHandler("/dev/ttyUSB0");
+		ArduinoMessageHandler arduino = new ArduinoMessageHandler("/dev/ttyACM0");
 		
 		ControlMessageHandler control = new ControlMessageHandler();
 		
-		Motors m = new Motors(arduino, 2);
+		new Thread(control).start();
+		
+		Motors m = new Motors(arduino, 2);		
 		control.addInstrument(MessageProtocol.ID1_MOTORS, m);
 		
-		Thread.sleep(1000);
+		Thread.sleep(100);
 		
 		
 		m.setEnabled(true);

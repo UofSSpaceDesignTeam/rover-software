@@ -1,8 +1,5 @@
 package prototype1;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -10,7 +7,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 
-public class ControlMessageHandler implements Observer
+public class ControlMessageHandler implements Observer, Runnable
 {
 	/**
 	 * the instruments, indexed by the first ID byte
@@ -19,8 +16,8 @@ public class ControlMessageHandler implements Observer
 	
 	TwoWayCommunicator comm; 
 	
-	public ControlMessageHandler()
-	{
+	@Override
+	public void run() {
 		try
 		{
 			ServerSocket server = new ServerSocket(7050);
@@ -34,8 +31,9 @@ public class ControlMessageHandler implements Observer
 				comm = new TwoWayCommunicator(socket.getInputStream(), socket.getOutputStream());	
 				comm.addObserver(this);
 			}
-		}catch(Exception E) {}
+		}catch(Exception E) {}		
 	}
+	
 	
 	/**
 	 * Link an instrument to the control
@@ -44,29 +42,32 @@ public class ControlMessageHandler implements Observer
 	 */
 	public void addInstrument(byte id1, Instrument instrument){
 		instruments.put(id1, instrument);
+		System.out.println(instruments.size());
 	}
 
 	@Override
 	public void update(Observable o, Object arg) 
 	{
 		byte [] bytes = (byte[]) arg;		
-		Message msg = new Message(bytes);
+		Message msg = new Message(bytes);		
 		
-		System.out.println("got a message");	
-		// handle the message
-		Instrument target = instruments.get(msg.getID1());
+		// handle the message		
+		Instrument target = instruments.get(msg.getID1());		
 		if(target != null)
 		{
+			System.out.println("a1");
 			if(msg.getID1() == MessageProtocol.ID1_MOTORS)
 			{
 				Motors motor = (Motors)target;
-				
+				System.out.println("a2");
 				if(msg.getID2() == MessageProtocol.ID2_ENABLE_DISABLE)
 				{
-					motor.stop();
+					boolean enable = msg.getData()[0] == 1;
+					motor.setEnabled(enabled);
 				}
 				else if (msg.getID2() == MessageProtocol.ID2_SET)
 				{
+					System.out.println("a3");
 					motor.setRotationSpeed( msg.getData());
 				}
 			}
@@ -76,6 +77,10 @@ public class ControlMessageHandler implements Observer
 		// comm.sendMessage(msg);
 		
 	}
+
+
+
+	
 	
 }
 
