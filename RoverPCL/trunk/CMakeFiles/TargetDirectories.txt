@@ -1,0 +1,1 @@
+/home/fit-pc/workspace/openni_grabber-Debug@RoverPCL/CMakeFiles/openni_grabber.dir
