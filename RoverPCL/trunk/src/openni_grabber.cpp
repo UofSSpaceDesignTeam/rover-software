@@ -1,42 +1,64 @@
- #include <pcl/io/openni_grabber.h>
- #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/io/openni_grabber.h>
+#include <pcl/visualization/cloud_viewer.h>
 
- class SimpleOpenNIViewer
- {
-   public:
-     SimpleOpenNIViewer () : viewer ("PCL OpenNI Viewer") {}
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_representation.h>
 
-     void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
-     {
-       if (!viewer.wasStopped())
-         viewer.showCloud (cloud);
-     }
+#include <pcl/io/pcd_io.h>
 
-     void run ()
-     {
-       pcl::Grabber* interface = new pcl::OpenNIGrabber();
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/filter.h>
 
-       boost::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f =
-         boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+#include <pcl/features/normal_3d.h>
 
-       interface->registerCallback (f);
+#include <pcl/registration/icp.h>
+#include <pcl/registration/icp_nl.h>
+#include <pcl/registration/transforms.h>
 
-       interface->start ();
+#include <pcl/visualization/pcl_visualizer.h>
 
-       while (!viewer.wasStopped())
-       {
-         boost::this_thread::sleep (boost::posix_time::seconds (1));
-       }
+class SimpleOpenNIViewer {
+public:
+	SimpleOpenNIViewer() :
+			viewer("PCL OpenNI Viewer") {
+			counter = 1;
+	}
+    int counter;
+	void cloud_cb_(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud) {
+		counter ++;
 
-       interface->stop ();
-     }
+		if (counter % 10 == 0) {
+			std::stringstream ss;
+			ss << counter / 10 << ".pcd";
+			pcl::io::savePCDFile (ss.str (), *cloud, true);
+		}
+		if (!viewer.wasStopped())
+			viewer.showCloud(cloud);
+	}
 
-     pcl::visualization::CloudViewer viewer;
- };
+	void run() {
+		pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
- int main ()
- {
-   SimpleOpenNIViewer v;
-   v.run ();
-   return 0;
- }
+		boost::function<void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f =
+				boost::bind(&SimpleOpenNIViewer::cloud_cb_, this, _1);
+
+		interface->registerCallback(f);
+
+		interface->start();
+
+		while (!viewer.wasStopped()) {
+			boost::this_thread::sleep(boost::posix_time::seconds(1));
+		}
+
+		interface->stop();
+	}
+
+	pcl::visualization::CloudViewer viewer;
+};
+
+int main() {
+	SimpleOpenNIViewer v;
+	v.run();
+	return 0;
+}
