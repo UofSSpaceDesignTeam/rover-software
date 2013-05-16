@@ -1,6 +1,10 @@
 
 //b = bucket, d = digger
 Button resetButton = new Button("Reset",10,10,65,40,false,default_color); 
+Button connectButton = new Button("Connect",85,10,85,40,false,default_color); 
+
+Button test_serverButton = new Button("Test Server",200,18,15,15,false,default_color); 
+Button rover_serverButton = new Button("Rover Server",200,43,15,15,false,default_color); 
 
 Button d_upButton = new Button("Up",45,130,65,40,false,default_color); 
 Button d_downButton = new Button("Down",45,190,65,40,false,default_color); 

@@ -7,16 +7,13 @@ boolean move_disable_confirmed = true;
 void sendMessages(){
   if (move_upButton.isActive() || move_downButton.isActive() || move_leftButton.isActive() || move_rightButton.isActive()){
     println("GO!");
-    //println(int(byte(200)));
-    move_upButton.deactivate();
-   
-    //speed[0] = byte(motor1Speed);
-    //speed[1] = byte(motor2Speed);
-    
+
+    //move_upButton.deactivate();
+  
     speed[0] = byte(motor1Speed);
     speed[1] = byte(motor2Speed);
-    println(speed[0]);
-    println(speed[1]);
+    println(int(speed[0]));
+    println(int(speed[1]));
 
     outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
     outMessage.sendMessage(); 
@@ -57,26 +54,29 @@ void sendMessages(){
     }    
   } else{
     if(move_disable_confirmed == false){
-    println("Disable move");
-    //println(int(byte(200)));
-    byte[] data = new byte[1];
-    data[0] = byte(0);
-    
-    //outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-    //outMessage.sendMessage();    
-    outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ENABLE_DISABLE,data);
-    outMessage.sendMessage(); 
-    move_disable_confirmed = true;
-    move_enable_confirmed = false;
+      println("Disable move");
+      //println(int(byte(200)));
+      byte[] data = new byte[1];
+      data[0] = byte(0);
+      
+      //outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
+      //outMessage.sendMessage();    
+      outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ENABLE_DISABLE,data);
+      outMessage.sendMessage(); 
+      move_disable_confirmed = true;
+      move_enable_confirmed = false;
     }
+  }
+  
 
-
-  }    
+      
 }
 
 void getMessages(){
-  if(client.available()>0){
-    inMessage.recieveMessage();
-  } 
+  if (client != null){
+    if(client.available()>0){
+      inMessage.recieveMessage();
+    } 
+  }
 }
 

@@ -6,6 +6,15 @@ void drawButtons(){
   if(resetButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(resetButton.myX,resetButton.myY,resetButton.myWidth,resetButton.myHeight);
   
+  if(connectButton.isActive()){fill(active_color);}else{fill(default_color);}
+  rect(connectButton.myX,connectButton.myY,connectButton.myWidth,connectButton.myHeight);
+  
+  if(test_serverButton.isActive()){fill(active_color);}else{fill(default_color);}
+  ellipse(test_serverButton.myX,test_serverButton.myY,test_serverButton.myWidth,test_serverButton.myHeight);//Note:button is ellipse, not rectangle
+
+  if(rover_serverButton.isActive()){fill(active_color);}else{fill(default_color);}
+  ellipse(rover_serverButton.myX,rover_serverButton.myY,rover_serverButton.myWidth,rover_serverButton.myHeight);//Note:button is ellipse, not rectangle
+  
   if(stop_moveButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(stop_moveButton.myX,stop_moveButton.myY,stop_moveButton.myWidth,stop_moveButton.myHeight);
   if(enable_moveButton.isActive()){fill(active_color);}else{fill(default_color);}
@@ -75,7 +84,13 @@ void drawButtons(){
   textSize(18);
   fill(255);
   text(resetButton.myLabel,resetButton.myX+resetButton.myWidth/2,resetButton.myY+resetButton.myHeight/2-3);
+  text(connectButton.myLabel,connectButton.myX+connectButton.myWidth/2,connectButton.myY+connectButton.myHeight/2-3);
 
+  fill(0);
+  text(test_serverButton.myLabel,test_serverButton.myX+test_serverButton.myWidth+test_serverButton.myLabel.length()*4,test_serverButton.myY-3);
+  text(rover_serverButton.myLabel,rover_serverButton.myX+rover_serverButton.myWidth+rover_serverButton.myLabel.length()*4,rover_serverButton.myY-3);
+
+  fill(255);
   text(stop_moveButton.myLabel,stop_moveButton.myX+stop_moveButton.myWidth/2,stop_moveButton.myY+stop_moveButton.myHeight/2-3);
   text(enable_moveButton.myLabel,enable_moveButton.myX+enable_moveButton.myWidth/2,enable_moveButton.myY+enable_moveButton.myHeight/2-3);
 

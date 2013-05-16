@@ -1,8 +1,9 @@
 import processing.net.*;
 
 Client client;
-//String roverIp = "192.168.1.10";
-String roverIp = "10.227.5.214";
+String testIp = "127.0.0.1"; //for testing that does not need connection to rover
+//String roverIp = "192.168.1.10"; //I don't remember what this one is for, so i'll just leave it for now
+String roverIp = "10.227.5.214"; // Current IP of rover, may change as network changes
 int comm_port = 7050;
 int eStopX = 300; // information for emergency stop button
 int eStopy = 600;
@@ -26,11 +27,15 @@ void setup()
 {
   size(1024,600);
   //try{
-    client = new Client(this, roverIp, comm_port);
-  //}catch(IOException e){e.printStackTrace();}
+   // client = new Client(this, roverIp, comm_port);
+  //}catch(Exception e){}
   ai_offButton.activate();
   video_offButton.activate();
   video_depthButton.activate();
+  rover_serverButton.activate();
+  rover_serverButton.setOther(test_serverButton);
+  test_serverButton.setOther(rover_serverButton);
+  
   d_upButton.setOther(d_downButton);
   d_downButton.setOther(d_upButton);
   d_outButton.setOther(d_inButton);
@@ -77,16 +82,25 @@ void draw()
   text("Movement",845,220);
   text("Video", 500,30);
   text("Messages",200,400);
-  
   textSize(16);
   text("Digger",120,100);
   text("Bucket",265,100);
   text("AI Status",870,440);
   textSize(15);
   text("Arrow Keys",925,330);
+  text("MIN",713,420);
+  text("MAX",977,420);
   drawButtons();
+  speedbar.update();
+  speedbar.display();
+  text(speedbar.getPos(),940,380);
+
   getMessages();
   sendMessages();
+  try{client.ip(); 
+  } catch (NullPointerException e){
+     connectButton.deactivate();
+  }
 }
 
 
