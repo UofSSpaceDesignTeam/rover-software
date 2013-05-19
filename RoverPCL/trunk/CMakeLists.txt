@@ -12,3 +12,6 @@ target_link_libraries (openni_grabber ${PCL_LIBRARIES})
 
 add_executable (pairwise_incremental_registration src/pairwise_incremental_registration.cpp)
 target_link_libraries (pairwise_incremental_registration ${PCL_LIBRARIES})
+
+add_executable (downsample src/downsample.cpp)
+target_link_libraries (downsample ${PCL_LIBRARIES})

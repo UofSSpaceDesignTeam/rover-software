@@ -133,7 +133,7 @@ void showCloudsLeft(const PointCloud::Ptr cloud_target, const PointCloud::Ptr cl
   p->addPointCloud (cloud_source, src_h, "vp1_source", vp_1);
 
   PCL_INFO ("Press q to begin the registration.\n");
-  p-> spin();
+ // p-> spin();(IVAN)
 }
 
 
@@ -159,7 +159,7 @@ void showCloudsRight(const PointCloudWithNormals::Ptr cloud_target, const PointC
   p->addPointCloud (cloud_target, tgt_color_handler, "target", vp_2);
   p->addPointCloud (cloud_source, src_color_handler, "source", vp_2);
 
-  p->spinOnce();
+  // p->spinOnce(); (IVAN)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +273,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
   Eigen::Matrix4f Ti = Eigen::Matrix4f::Identity (), prev, targetToSource;
   PointCloudWithNormals::Ptr reg_result = points_with_normals_src;
   reg.setMaximumIterations (2);
-  for (int i = 0; i < 5; ++i)
+  for (int i = 0; i < 30; ++i)
   {
     PCL_INFO ("Iteration Nr. %d.\n", i);
 
@@ -316,7 +316,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
   p->addPointCloud (cloud_src, cloud_src_h, "source", vp_2);
 
 	PCL_INFO ("Press q to continue the registration.\n");
-  p->spin ();
+ // p->spin ();(IVAN)
 
   p->removePointCloud ("source");
   p->removePointCloud ("target");
