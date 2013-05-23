@@ -15,3 +15,9 @@ target_link_libraries (pairwise_incremental_registration ${PCL_LIBRARIES})
 
 add_executable (downsample src/downsample.cpp)
 target_link_libraries (downsample ${PCL_LIBRARIES})
+
+add_executable (merge src/merge.cpp)
+target_link_libraries (merge ${PCL_LIBRARIES})
+
+add_executable (stream src/stream.cpp)
+target_link_libraries (stream ${PCL_LIBRARIES})
