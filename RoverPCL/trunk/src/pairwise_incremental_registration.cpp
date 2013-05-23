@@ -273,7 +273,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
   // Run the same optimization in a loop and visualize the results
   Eigen::Matrix4f Ti = Eigen::Matrix4f::Identity (), prev, targetToSource;
   PointCloudWithNormals::Ptr reg_result = points_with_normals_src;
-  reg.setMaximumIterations (100);
+  reg.setMaximumIterations (20);
   //for (int i = 0; i < 20; ++i)
   //{
     //PCL_INFO ("Iteration Nr. %d.\n", i);
