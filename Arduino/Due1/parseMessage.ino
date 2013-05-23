@@ -1,28 +1,28 @@
 
-// The gigantic function for reading and processing incoming messages. See "Message format information" on Google Drive
+// The gigantic function for reading and processing incoming messages. See "Message format information" on Google Drive.
+// returns -2 for invalid message format or type, -1 for general failure, 0 for success
 
 
-void parseMessage()
+int parseMessage()
 {
   if(!Serial.readBytes(msgid,2)) // try to read the two ID bytes
   {
-    debugmsg = "err: no ID"; // if we timeout
+    debugmsg = "err 1"; // if we timeout
     debug();
+    return -2;
   }
   if(!Serial.readBytes(len,2)) // try to read the two length bytes
   {
-    debugmsg = "err: no DL"; // if we timeout
+    debugmsg = "err 2"; // if we timeout
     debug();
-    if(isCritical(msgid))
-      error(msgid,"TO");
+    return -2;
   }
   msglength = 256*len[0] + len[1];
   if(!Serial.readBytes(msgdata,msglength)) // try to read the correct number of data bytes
   {
-    debugmsg = "err: not enough data"; // if we timeout
+    debugmsg = "err 3"; // if we timeout
     debug();
-    if(isCritical(msgid))
-      error(msgid,"TO");
+    return -2;
   }
   
   switch(msgid[0]) // message category depends on the first ID byte
@@ -38,28 +38,25 @@ void parseMessage()
         {
           servoArray[i].detach();
         }
-        reply("PE");
         while(true); // halt until reset
       }
       
       if(msgid[1] == 'O') // power off, not time critical
       {
         // todo: properly stop connected devices
-        //todo: return all actuators to initial state
+        //todo: return all actuators to initial positions
         analogWrite(L_MOTOR_PWM,0);
         analogWrite(R_MOTOR_PWM,0);
         for(int i=0; i<NUM_SERVOS; i++)
         {
           servoArray[i].detach();
         }
-        reply("PO");
         while(true); // halt until reset
       }
       
-      debugmsg = "err: ID, ID1 = P"; // if we get here something is wrong
+      debugmsg = "err 4"; // if we get here ID2 is bad
       debug();
-      error(msgid,"UM"); // power messages are all critical  
-      return;
+      return -2;
     }
     
     
@@ -67,14 +64,12 @@ void parseMessage()
     {
       if(msgid[1] == 'C') // just a meaningless message to prevent timeout
       {
-        reply("DC");
-        return;
+        return 0;
       }
       
-      debugmsg = "err: ID, ID1 = D"; // if we get here ID2 is bad
+      debugmsg = "err 5"; // if we get here ID2 is bad
       debug();
-      error(msgid,"UM"); // data link messages are all critical
-      return;
+      return -2;
     }
     
     
@@ -97,15 +92,16 @@ void parseMessage()
         }
         else
         {
-          debugmsg = "err: LS: bad arg";
+          debugmsg = "err 6"; // data byte is invalid
           debug();
+          return -1;
         }
-        return;
+        return 0;
       }
       
-      debugmsg = "err: ID, ID1 = L"; // if we get here ID2 is bad
+      debugmsg = "err 7"; // if we get here ID2 is bad
       debug();
-      return;
+      return -2;
     }
     
     
@@ -118,19 +114,20 @@ void parseMessage()
           motorEnable = false;
           analogWrite(L_MOTOR_PWM,0);
           analogWrite(R_MOTOR_PWM,0);
+          motorSpeeds[0] = 0;
+          motorSpeeds[1] = 0;
         }
         else if(msgdata[0] == '1')
         {
           motorEnable = true;
-          debug();
         }
         else
         {
-          debugmsg = "err: ME: bad arg";
+          debugmsg = "err 8"; // data byte is invalid
           debug();
+          return -1;
         }
-        reply("ME");
-        return;
+        return 0;
       }
       
       if(msgid[1] == 'S') // motor set
@@ -139,51 +136,54 @@ void parseMessage()
         {
           byte m0_pwm = (byte)msgdata[0];
           byte m1_pwm = (byte)msgdata[1];
-          Serial.println(m0_pwm);
           if(m0_pwm == 127) // stop
           {
             analogWrite(L_MOTOR_PWM,0);
+            motorSpeeds[0] = 0;
           }
           else if(m0_pwm > 127) // forward
           {
             digitalWrite(L_MOTOR_DIR,LOW);
-            analogWrite(L_MOTOR_PWM,2*(m0_pwm-127));
+            motorSpeeds[0] = 2*(m0_pwm-127);
+            analogWrite(L_MOTOR_PWM,motorSpeeds[0]);
           }
           else // reverse
           {
             digitalWrite(L_MOTOR_DIR,HIGH);
-            analogWrite(L_MOTOR_PWM,2*(127-m0_pwm));
-            Serial.println(2*(127-m0_pwm));
+            motorSpeeds[0] = 2*(127-m0_pwm);
+            analogWrite(L_MOTOR_PWM,motorSpeeds[0]);
           }
           
           if(m1_pwm == 127) // stop
           {
             analogWrite(R_MOTOR_PWM,0);
+            motorSpeeds[1] = 0;
           }
           else if(m1_pwm > 127) // forward
           {
             digitalWrite(R_MOTOR_DIR,LOW);
-            analogWrite(R_MOTOR_PWM,2*(m1_pwm-127));
+            motorSpeeds[1] = 2*(m1_pwm-127);
+            analogWrite(R_MOTOR_PWM,motorSpeeds[1]);
           }
           else // reverse
           {
             digitalWrite(R_MOTOR_DIR,HIGH);
-            analogWrite(R_MOTOR_PWM,2*(127-m1_pwm));
+            motorSpeeds[1] = 2*(127-m1_pwm);
+            analogWrite(R_MOTOR_PWM,motorSpeeds[1]);
           }
         }
         else
         {
-          debugmsg = "err: MS: motors off";
+          debugmsg = "err 9"; // trying to set motors while disabled
           debug();
+          return -1;
         }
-        reply("MS");
-        return;
+        return 0;
       }
       
-      debugmsg = "err: ID, ID1 = M"; // if we get here something is wrong
+      debugmsg = "err 10"; // if we get here ID2 is bad
       debug();
-      error(msgid,"UM"); // motor messages are all critical
-      return;
+      return -2;
     }
     
     
@@ -210,11 +210,11 @@ void parseMessage()
         }
         else
         {
-          debugmsg = "err: SE: bad arg";
+          debugmsg = "err 11"; // data byte is invalid
           debug();
+          return -1;
         }
-        reply("SE");
-        return;
+        return 0;
       }
       
       
@@ -222,26 +222,35 @@ void parseMessage()
       {
         if(servoEnable)
         {
+          byte servopos;
           for(int i=0; i<NUM_SERVOS; i++)
           {
-            servoPositions[i] = msgdata[i];
-            if(servoArray[i].attached()) // if servos are enabled
+            servopos = (byte)msgdata[i];
+            if(servopos > 90)
+            {
+              debugmsg = "err 12"; // invalid servo position
+              debug();
+              return -1;
+            }
+            else
+            {
+              servoPositions[i] = servopos;
               servoArray[i].write(servoPositions[i]);
+            }
           }
         }
         else
         {
-          debugmsg = "err: SS: servos off";
+          debugmsg = "err 13"; // trying to set servos while disabled
           debug();
+          return -1;
         }
-        reply("SS");
-        return;
+        return 0;
       }
       
-      debugmsg = "err: ID, ID1 = S"; // if we get here something is wrong
+      debugmsg = "err 14"; // if we get here ID2 is bad
       debug();
-      error(msgid,"UM"); // servo messages are all critical
-      return;
+      return -2;
     }
     
     
@@ -249,19 +258,34 @@ void parseMessage()
     {
       if(msgid[1] == 'E') // IMU enable
       {
-        // todo: begin / end grabbing data from a specific IMU
-        return;
+        if(msgdata[0] == '1')
+        {
+          imuEnable = true;
+          // todo: begin grabbing data from the IMU
+        }
+        else if(msgdata[0] == '0')
+        {
+          imuEnable = false;
+          // todo: stop grabbing data from the IMU
+        }
+        else
+        {
+          debugmsg = "err 15"; // data byte is invalid
+          debug();
+          return -1;
+        }
+        return 0;
       }
       
       if(msgid[1] == 'R') // IMU send rate
       {
-        // todo: set timer for sending IMU data messages
-        return;
+        imuSendTimer = parseBytes((byte)msgdata[0],(byte)msgdata[1]);
+        return 0;
       }
       
-      debugmsg = "err: ID, ID1 = I"; // if we get here something is wrong
+      debugmsg = "err 16"; // if we get here ID2 is bad
       debug();
-      return;
+      return -2;
     }
     
     
@@ -269,19 +293,34 @@ void parseMessage()
     {
       if(msgid[1] == 'E') // encoder enable
       {
-        // todo: begin / end grabbing data from all encoders
-        return;
+        if(msgdata[0] == '1')
+        {
+          encoderEnable = true;
+          // todo: begin grabbing data from all encoders
+        }
+        else if(msgdata[0] == '0')
+        {
+          encoderEnable = false;
+          // todo: stop grabbing data from all encoders
+        }
+        else
+        {
+          debugmsg = "err 17"; // data byte is invalid
+          debug();
+          return -1;
+        }
+        return 0;
       }
       
       if(msgid[1] == 'R') // encoder send rate
       {
-        // todo: set timer for sending encoder data messages
-        return;
+        encoderSendTimer = parseBytes((byte)msgdata[0],(byte)msgdata[1]);
+        return 0;
       }
       
-      debugmsg = "err: ID, ID1 = W"; // if we get here something is wrong
+      debugmsg = "err 18"; // if we get here ID2 is bad
       debug();
-      return;
+      return -2;
     }
 
 
@@ -289,19 +328,34 @@ void parseMessage()
     {
       if(msgid[1] == 'E') // force sensor enable
       {
-        // todo: begin / end grabbing data from all force sensors
-        return;
+        if(msgdata[0] == '1')
+        {
+          forceEnable = true;
+          // todo: begin grabbing data from all force sensors
+        }
+        else if(msgdata[0] == '0')
+        {
+          forceEnable = false;
+          // todo: stop grabbing data from all force sensors
+        }
+        else
+        {
+          debugmsg = "err 19"; // data byte is invalid
+          debug();
+          return -1;
+        }
+        return 0;
       }
       
       if(msgid[1] == 'R') // force sensor send rate
       {
-        // todo: set timer for sending force sensor data messages
-        return;
+        forceSendTimer = parseBytes((byte)msgdata[0],(byte)msgdata[1]);
+        return 0;
       }
       
-      debugmsg = "err: ID, ID1 = F"; // if we get here something is wrong
+      debugmsg = "err 20"; // if we get here ID2 is bad
       debug();
-      return;
+      return -2;
     }
   }
 }
