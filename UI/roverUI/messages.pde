@@ -17,8 +17,7 @@ void sendMessages(){
 
     outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
     outMessage.sendMessage(); 
- 
- 
+
    
   }
   if (stop_moveButton.isActive()){

@@ -33,9 +33,9 @@ void setup()
   video_offButton.activate();
   video_depthButton.activate();
   rover_serverButton.activate();
+  
   rover_serverButton.setOther(test_serverButton);
   test_serverButton.setOther(rover_serverButton);
-  
   d_upButton.setOther(d_downButton);
   d_downButton.setOther(d_upButton);
   d_outButton.setOther(d_inButton);
@@ -87,7 +87,7 @@ void draw()
   text("Bucket",265,100);
   text("AI Status",870,440);
   textSize(15);
-  text("Arrow Keys",925,330);
+  text("Arrow Keys",925,355);
   text("MIN",713,420);
   text("MAX",977,420);
   drawButtons();
