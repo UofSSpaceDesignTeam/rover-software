@@ -133,7 +133,7 @@ void showCloudsLeft(const PointCloud::Ptr cloud_target, const PointCloud::Ptr cl
   p->addPointCloud (cloud_source, src_h, "vp1_source", vp_1);
 
   PCL_INFO ("Press q to begin the registration.\n");
- // p-> spin();(IVAN)
+  //p-> spin();//(IVAN)
 }
 
 
@@ -159,7 +159,7 @@ void showCloudsRight(const PointCloudWithNormals::Ptr cloud_target, const PointC
   p->addPointCloud (cloud_target, tgt_color_handler, "target", vp_2);
   p->addPointCloud (cloud_source, src_color_handler, "source", vp_2);
 
-  // p->spinOnce(); (IVAN)
+   //p->spinOnce();// (IVAN)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -197,7 +197,8 @@ void loadData (int argc, char **argv, std::vector<PCD, Eigen::aligned_allocator<
   }
 }
 
-
+double maxFitness = 0.0, averageFitness=0.0;
+int numFitness = 0;
 ////////////////////////////////////////////////////////////////////////////////
 /** \brief Align a pair of PointCloud datasets and return the result
   * \param cloud_src the source PointCloud
@@ -259,7 +260,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
   reg.setTransformationEpsilon (1e-6);
   // Set the maximum distance between two correspondences (src<->tgt) to 10cm
   // Note: adjust this based on the size of your datasets
-  reg.setMaxCorrespondenceDistance (0.1);
+  reg.setMaxCorrespondenceDistance (1);
   // Set the point representation
   reg.setPointRepresentation (boost::make_shared<const MyPointRepresentation> (point_representation));
 
@@ -272,10 +273,10 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
   // Run the same optimization in a loop and visualize the results
   Eigen::Matrix4f Ti = Eigen::Matrix4f::Identity (), prev, targetToSource;
   PointCloudWithNormals::Ptr reg_result = points_with_normals_src;
-  reg.setMaximumIterations (2);
-  for (int i = 0; i < 30; ++i)
-  {
-    PCL_INFO ("Iteration Nr. %d.\n", i);
+  reg.setMaximumIterations (100);
+  //for (int i = 0; i < 20; ++i)
+  //{
+    //PCL_INFO ("Iteration Nr. %d.\n", i);
 
     // save cloud for visualization purpose
     points_with_normals_src = reg_result;
@@ -284,20 +285,26 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
     reg.setInputCloud (points_with_normals_src);
     reg.align (*reg_result);
 
+    double newFitness = reg.getFitnessScore(0.1);
+    maxFitness = std::max(newFitness, maxFitness);
+    averageFitness = (averageFitness*numFitness + newFitness) / (numFitness + 1);
+    numFitness++;
+    std::cout<<"Fitness: " << reg.getFitnessScore(0.1) << std::endl;
+
 		//accumulate transformation between each Iteration
     Ti = reg.getFinalTransformation () * Ti;
 
 		//if the difference between this transformation and the previous one
 		//is smaller than the threshold, refine the process by reducing
 		//the maximal correspondence distance
-    if (fabs ((reg.getLastIncrementalTransformation () - prev).sum ()) < reg.getTransformationEpsilon ())
-      reg.setMaxCorrespondenceDistance (reg.getMaxCorrespondenceDistance () - 0.001);
+    //if (fabs ((reg.getLastIncrementalTransformation () - prev).sum ()) < reg.getTransformationEpsilon ())
+      //reg.setMaxCorrespondenceDistance (reg.getMaxCorrespondenceDistance () - 0.001);
 
-    prev = reg.getLastIncrementalTransformation ();
+    //prev = reg.getLastIncrementalTransformation ();
 
     // visualize current state
-    showCloudsRight(points_with_normals_tgt, points_with_normals_src);
-  }
+    //showCloudsRight(points_with_normals_tgt, points_with_normals_src);
+  //}
 
 	//
   // Get the transformation from target to source
@@ -316,7 +323,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
   p->addPointCloud (cloud_src, cloud_src_h, "source", vp_2);
 
 	PCL_INFO ("Press q to continue the registration.\n");
- // p->spin ();(IVAN)
+  //p->spin ();//(IVAN)
 
   p->removePointCloud ("source");
   p->removePointCloud ("target");
@@ -375,7 +382,11 @@ int main (int argc, char** argv)
     ss << i << ".pcd";
     pcl::io::savePCDFile (ss.str (), *result, true);
 
+
   }
+
+  std::cout << "Max Fitness : " << maxFitness << std::endl;
+  std::cout << "Average Fitness : " << averageFitness << std::endl;
 }
 /* ]--- */
 

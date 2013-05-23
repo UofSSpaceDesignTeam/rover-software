@@ -18,6 +18,9 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
+int frameFrequency;
+
+
 class SimpleOpenNIViewer {
 public:
 	SimpleOpenNIViewer() :
@@ -26,15 +29,15 @@ public:
 	}
     int counter;
 	void cloud_cb_(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud) {
-		counter ++;
-
-		if (counter % 10 == 0) {
+		if (counter % frameFrequency == 0 ) {
 			std::stringstream ss;
-			ss << counter / 10 << ".pcd";
+			ss << counter / frameFrequency << ".pcd";
 			pcl::io::savePCDFile (ss.str (), *cloud, true);
 		}
+		counter ++;
 		if (!viewer.wasStopped())
 			viewer.showCloud(cloud);
+
 	}
 
 	void run() {
@@ -57,7 +60,12 @@ public:
 	pcl::visualization::CloudViewer viewer;
 };
 
-int main() {
+int main(int argc, char ** argv) {
+	if (argc != 2) std::cout << "Usage: openni_grabber <frame frequency>";
+	std::stringstream ss(argv[1]);
+	ss >> frameFrequency;
+
+
 	SimpleOpenNIViewer v;
 	v.run();
 	return 0;
