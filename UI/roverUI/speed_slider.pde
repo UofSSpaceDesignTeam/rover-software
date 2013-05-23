@@ -1,4 +1,4 @@
-HScrollbar speedbar = new HScrollbar(730,420,230,15,1);
+HScrollbar speedbar = new HScrollbar(730,420,230,15,5);
 
 
 class HScrollbar {
@@ -11,7 +11,7 @@ class HScrollbar {
   boolean locked;
   float ratio;
 
-  HScrollbar (float xp, float yp, int sw, int sh, int 5) {
+  HScrollbar (float xp, float yp, int sw, int sh, int l) {
     swidth = sw;
     sheight = sh;
     int widthtoheight = sw - sh;
