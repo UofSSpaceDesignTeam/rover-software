@@ -119,7 +119,7 @@ void downSample(PointCloud::ConstPtr input,
 
 
 double pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt,
-		PointCloud::Ptr output, bool downsample = false)
+		PointCloud::Ptr output)
 {
   //
   // Downsample for consistency and speed
@@ -127,7 +127,7 @@ double pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_t
   PointCloud::Ptr src (new PointCloud);
   PointCloud::Ptr tgt (new PointCloud);
 
-  if (downsample)
+  if (DOWNSAMPLE_REG < DOWNSAMPLE_FRAMES)
   {
 	  downSample(cloud_src, src, DOWNSAMPLE_REG);
 	  downSample(cloud_tgt, tgt, DOWNSAMPLE_REG);
@@ -164,10 +164,10 @@ double pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_t
   //
   // Align
   pcl::IterativeClosestPointNonLinear<PointNormalT, PointNormalT> reg;
-  reg.setTransformationEpsilon (1e-6);
+  reg.setTransformationEpsilon (TRANSFORMATION_EPSILON);
   // Set the maximum distance between two correspondences (src<->tgt) to 10cm
   // Note: adjust this based on the size of your datasets
-  reg.setMaxCorrespondenceDistance (1);
+  reg.setMaxCorrespondenceDistance (MAX_CORRESPONDENCE_DISTANCE);
   // Set the point representation
   reg.setPointRepresentation (boost::make_shared<const MyPointRepresentation> (point_representation));
 
@@ -180,7 +180,7 @@ double pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_t
   // Run the same optimization in a loop and visualize the results
   Eigen::Matrix4f Ti = Eigen::Matrix4f::Identity (), prev, targetToSource;
   PointCloudWithNormals::Ptr reg_result = points_with_normals_src;
-  reg.setMaximumIterations (20);
+  reg.setMaximumIterations (NUM_ITERATIONS);
   //for (int i = 0; i < 20; ++i)
   //{
     //PCL_INFO ("Iteration Nr. %d.\n", i);
@@ -237,8 +237,10 @@ public:
 
 	void cloud_cb_(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
 	{
+		cout << "Got frame " << counter << endl;
 		if (counter % FRAMERATE == 0 )
 		{
+			cout << "It's a valid frame; processing " << endl;
 			//Create the downsampled pointcloud for each frame we want to capture
 			pcl::PointCloud<pcl::PointXYZ>::Ptr downsampled(new pcl::PointCloud<pcl::PointXYZ>);
 			downSample(cloud, downsampled, DOWNSAMPLE_FRAMES);
@@ -248,7 +250,7 @@ public:
 				currentModel = downsampled;
 			} else {
 				// merge the frame into the current model
-				double fitness = pairAlign(downsampled, currentModel, downsampled, true);
+				double fitness = pairAlign(downsampled, currentModel, downsampled);
 
 
 
@@ -260,13 +262,14 @@ public:
 				*currentModel += *downsampled;
 
 				//Downsample the new model
-				//downSample(currentModel, currentModel, DOWNSAMPLE_FRAMES);
+				downSample(currentModel, currentModel, DOWNSAMPLE_FRAMES);
 
 				cout << "Merged with fitness : " << fitness << endl;
 				cout << currentModel -> width * currentModel -> height << endl;
 
 				if (!viewer.wasStopped())
 					viewer.showCloud(currentModel);
+				cout << "done processing " << endl;
 
 			}
 
@@ -279,6 +282,7 @@ public:
 
 	void run() {
 		pcl::Grabber* interface = new pcl::OpenNIGrabber();
+
 
 		boost::function<void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f =
 				boost::bind(&SimpleOpenNIViewer::cloud_cb_, this, _1);

@@ -21,3 +21,6 @@ target_link_libraries (merge ${PCL_LIBRARIES})
 
 add_executable (stream src/stream.cpp)
 target_link_libraries (stream ${PCL_LIBRARIES})
+
+add_executable (extract_indices src/extract_indices.cpp)
+target_link_libraries (extract_indices ${PCL_LIBRARIES})
