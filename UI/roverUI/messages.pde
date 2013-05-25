@@ -6,29 +6,19 @@ boolean move_disable_confirmed = true;
 
 void sendMessages(){
   if (move_upButton.isActive() || move_downButton.isActive() || move_leftButton.isActive() || move_rightButton.isActive()){
-    println("GO!");
-
-    //move_upButton.deactivate();
-  
-    speed[0] = byte(motor1Speed);
-    speed[1] = byte(motor2Speed);
-    println(int(speed[0]));
-    println(int(speed[1]));
-
-    outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-    outMessage.sendMessage(); 
-
+    
+    // this used to be where movement commands were sent,but they have been moved
+    // to the mousePressed function for better control
    
   }
   if (stop_moveButton.isActive()){
-    println("STOP");
+    
     //println(int(byte(200)));
     stop_moveButton.deactivate();//temporary loacation, should be deactivated upon confirmation from rover
     
     speed[0] = byte(127);
     speed[1] = byte(127);
-    println(motor1Speed);
-    println(motor2Speed);
+    
 
     
     outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);

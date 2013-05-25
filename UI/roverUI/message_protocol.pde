@@ -1,3 +1,7 @@
+
+// protocol for sending messages to rover
+// literally copied from the rover to arduino message protocol then modified message names and values
+
 public abstract class MessageProtocol {
   
   public static final byte ID1_POWER ='P';

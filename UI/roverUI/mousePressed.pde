@@ -14,34 +14,37 @@ void mousePressed() {
     move_disable_confirmed = true;
     move_enable_confirmed = false; 
   }
+  
   if (overButton(connectButton.myX,connectButton.myY,connectButton.myWidth,connectButton.myHeight)) {
-    if (!connectButton.isActive()){
-      connectButton.activate();
-      println("Conncecting to Server...");
-      if(rover_serverButton.isActive()){
-        client = new Client(this, roverIp, comm_port);
+    if (wireless_serverButton.isActive()||tethered_serverButton.isActive()||test_serverButton.isActive()){
+      if (!connectButton.isActive()){
+        connectButton.activate();
       } else {
-        client = new Client(this, testIp, comm_port);      
-      }
-      try{client.ip(); 
-        println("Conncected to "+client.ip());
-      } catch (NullPointerException e){
-        println("Unable to Connect");
+        connectButton.deactivate();
       }
     } else {
-      connectButton.deactivate();
-      client.stop();
-      println("Connection Terminated");
-
+      println("Please select a server");
     }
 
   }
   
   if (overButton(test_serverButton.myX-7,test_serverButton.myY-8,test_serverButton.myWidth,test_serverButton.myHeight+10)) {
     test_serverButton.activate();
+    wireless_serverButton.deactivate();
+    tethered_serverButton.deactivate();    
+
   }
-  if (overButton(rover_serverButton.myX-7,rover_serverButton.myY-8,rover_serverButton.myWidth,rover_serverButton.myHeight)) {
-    rover_serverButton.activate();
+  if (overButton(wireless_serverButton.myX-7,wireless_serverButton.myY-8,wireless_serverButton.myWidth,wireless_serverButton.myHeight)) {
+    wireless_serverButton.activate();
+    test_serverButton.deactivate();
+    tethered_serverButton.deactivate();    
+    
+  }
+  if (overButton(tethered_serverButton.myX-7,tethered_serverButton.myY-8,tethered_serverButton.myWidth,tethered_serverButton.myHeight)) {
+    tethered_serverButton.activate();
+    wireless_serverButton.deactivate();
+    test_serverButton.deactivate();   
+    
   }
   
   if (overButton(d_upButton.myX,d_upButton.myY,d_upButton.myWidth,d_upButton.myHeight)) {
@@ -129,24 +132,72 @@ void mousePressed() {
     motor1Speed = speedbar.getPos()+127;
     motor2Speed = speedbar.getPos()+127;
     
+    println("FWD!");
+
+    //move_upButton.deactivate();
+  
+    speed[0] = byte(motor1Speed);
+    speed[1] = byte(motor2Speed);
+    println(int(speed[0]));
+    println(int(speed[1]));
+
+    outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
+    outMessage.sendMessage(); 
+    
   }
   if (overButton(move_downButton.myX,move_downButton.myY,move_downButton.myWidth,move_downButton.myHeight)) {
     //move_downButton.myColor = default_color;
     move_downButton.activate();
     motor1Speed = motor1Speed =127 - speedbar.getPos();
     motor2Speed = motor2Speed =127 - speedbar.getPos();
+    
+    println("BACK!");
+
+    //move_upButton.deactivate();
+  
+    speed[0] = byte(motor1Speed);
+    speed[1] = byte(motor2Speed);
+    println(int(speed[0]));
+    println(int(speed[1]));
+
+    outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
+    outMessage.sendMessage(); 
   }
   if (overButton(move_leftButton.myX,move_leftButton.myY,move_leftButton.myWidth,move_leftButton.myHeight)) {
     //move_leftButton.myColor = default_color;
     move_leftButton.activate();
     motor1Speed = motor1Speed =speedbar.getPos()+127;
     motor2Speed = motor2Speed =127 - speedbar.getPos();
+    
+    println("LEFT!");
+
+    //move_upButton.deactivate();
+  
+    speed[0] = byte(motor1Speed);
+    speed[1] = byte(motor2Speed);
+    println(int(speed[0]));
+    println(int(speed[1]));
+
+    outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
+    outMessage.sendMessage(); 
   }
   if (overButton(move_rightButton.myX,move_rightButton.myY,move_rightButton.myWidth,move_rightButton.myHeight)) {
     //move_rightButton.myColor = default_color;
     move_rightButton.activate();
     motor1Speed = motor1Speed =127 - speedbar.getPos();
     motor2Speed = motor2Speed =speedbar.getPos()+127;
+    
+    println("RIGHT!");
+
+    //move_upButton.deactivate();
+  
+    speed[0] = byte(motor1Speed);
+    speed[1] = byte(motor2Speed);
+    println(int(speed[0]));
+    println(int(speed[1]));
+
+    outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
+    outMessage.sendMessage(); 
   }
   if (overButton(stop_moveButton.myX,stop_moveButton.myY,stop_moveButton.myWidth,stop_moveButton.myHeight)) {
     //move_rightButton.myColor = default_color;
@@ -182,9 +233,24 @@ void mousePressed() {
   }
 
 }
-
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+// Activates when the mouse button is released
 void mouseReleased() {
-  
+  if (move_upButton.isActive() || move_downButton.isActive() || move_leftButton.isActive() || move_rightButton.isActive()){
+    
+    println("STOP");
+    move_upButton.deactivate();
+    move_downButton.deactivate();
+    move_leftButton.deactivate();
+    move_rightButton.deactivate();
+    speed[0] = byte(127);
+    speed[1] = byte(127);
+    outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
+    outMessage.sendMessage();
+  }
   if (overButton(d_upButton.myX,d_upButton.myY,d_upButton.myWidth,d_upButton.myHeight)) {
     //d_upButton.myColor = default_color;
     //d_upButton.deactivate();

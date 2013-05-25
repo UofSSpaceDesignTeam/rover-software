@@ -1,41 +1,45 @@
 import processing.net.*;
 
-Client client;
-String testIp = "127.0.0.1"; //for testing that does not need connection to rover
-//String roverIp = "192.168.1.10"; //I don't remember what this one is for, so i'll just leave it for now
-String roverIp = "10.227.5.214"; // Current IP of rover, may change as network changes
-int comm_port = 7050;
-int eStopX = 300; // information for emergency stop button
-int eStopy = 600;
-int eStopWidth = 200;
+Client client; // client used to connect to rover server 
+String testIp = "127.0.0.1"; //for testing that does not need connection to rover, requires running test server program
+String roverIp_wireless = "192.168.1.10"; // Current IP of rover for wireless connection
+String roverIp_tethered = "192.168.1.11"; // Current IP of rover for tethered ethernet connection
+
+//String roverIp = "10.227.5.214"; // Current IP of rover, may change as network changes
+
+int comm_port = 7050; // port used for connection to the rover server
+
+int eStopX = 300;     // information for emergency stop button
+int eStopy = 600;     // separate from the other buttons because it's
+int eStopWidth = 200; // a different size
 int eStopHeight = 50;
 
-int videoX = 352; // location of video monitor (320x240)
-int videoY = 200;
-color default_color = color(0,100,15);
-color active_color = color(30,220,40);
-int motor1Speed = 0;
-int motor2Speed = 0;
-//Button[] allButtons = new Button[20]; //just an idea i had, please ignore for now
+int videoX = 352; // x-coordinate of video monitor location (320x240)
+int videoY = 200; // y-coordinate of video monitor location
+
+color default_color = color(0,100,15); // default button colour when not activated
+color active_color = color(30,220,40); // color of buttons when active/pressed (excludes emergency stop button)
+
+int motor1Speed = 0; // variable holding speed of right motor (??)
+int motor2Speed = 0; // variable holding speed of left motor (??)
+
+int timer = millis();
 
 
-//ai_onButton.activate();
-//ai_offButton.setOther(ai_onButton);
-
-
-void setup()
+void setup() //setup which is run once at startup before starting the main "draw" loop
 {
-  size(1024,600);
-  //try{
-   // client = new Client(this, roverIp, comm_port);
-  //}catch(Exception e){}
+  size(1024,600); // size of UI window
+  
+  //sets buttons which are on/active by default
   ai_offButton.activate();
   video_offButton.activate();
   video_depthButton.activate();
-  rover_serverButton.activate();
+  //wireless_serverButton.activate();
   
-  rover_serverButton.setOther(test_serverButton);
-  test_serverButton.setOther(rover_serverButton);
+  //sets buttons which compliment each other turning
+  //one on will turn its complement off and vice-versa
+  //wireless_serverButton.setOther(test_serverButton);
+  //test_serverButton.setOther(rover_serverButton);
   d_upButton.setOther(d_downButton);
   d_downButton.setOther(d_upButton);
   d_outButton.setOther(d_inButton);
@@ -55,29 +59,51 @@ void setup()
   video_offButton.setOther(video_onButton);
   video_depthButton.setOther(video_colorButton);
   video_colorButton.setOther(video_depthButton); 
+  
+//  try{ client = new Client(this, roverIp_wireless, comm_port); //
+//    println("wireless server " + roverIp_wireless + " is available");
+//    client.stop();
+//  } catch (NullPointerException a){ 
+//     try{ client = new Client(this, roverIp_tethered, comm_port); //
+//     println("tethered server " + roverIp_tethered + " is available");
+//     client.stop();
+//     } catch (NullPointerException b){ 
+//       try{ client = new Client(this, testIp, comm_port); //
+//       println("test server " + testIp + " is available");
+//       client.stop();
+//       } catch (NullPointerException c){ 
+//         println("No server available");
+//       }
+//     }   
+//  }
+  
 }
 
-void draw()
+void draw() // main loop of program
 {
-  textAlign(CENTER,CENTER);
+  //the first part of the loop just redraws all objects seen on the UI window
   
-  background(230);
-  fill(210);
-  stroke(0);
-  strokeWeight(2);
+  textAlign(CENTER,CENTER); // all text drawn using the text function will appear 
+                            // with the x- and y-coordinates at the centre of the text
+  
+  background(230); // changes the colour of the window's background
+  fill(210); //sets colour of drawn objects 
+  stroke(0); // sets colour of lines and borders to 0 (black)
+  strokeWeight(2); // sets thickness of lines and borders
   //rect(35,120,85,240);  //}box around digger controls
- // rect(35,120,170,120); //}
+  // rect(35,120,170,120); //}
   
-  //rect(220,120,85,240);  //box arount bucket controls
-  //rect(715,80,255,120); //box around camera controls
-  //rect(715,235,255,120); //box around movement controls
-  //rect(715,450,300,140);//box around AI Status
+  //rect(220,120,85,240);    //box arount bucket controls
+  //rect(715,80,255,120);   //box around camera controls
+  //rect(715,235,255,120);   //box around movement controls
+  //rect(715,450,300,140);   //box around AI Status
   rect(330,75,videoX,videoY);//Video box
-  rect(10,420,405,170);//message box
+  rect(10,420,405,170);      // draws the message box
   
+  //  additional text labels for understanding the UI
   fill(0);
   textSize(24);
-  text("Excavation",160,70);
+  //text("Excavation",160,70);
   text("Camera",845,65);
   text("Movement",845,220);
   text("Video", 500,30);
@@ -90,18 +116,65 @@ void draw()
   text("Arrow Keys",925,355);
   text("MIN",713,420);
   text("MAX",977,420);
-  drawButtons();
-  speedbar.update();
-  speedbar.display();
-  text(speedbar.getPos(),940,380);
-
-  getMessages();
-  sendMessages();
-  try{client.ip(); 
-  } catch (NullPointerException e){
-     connectButton.deactivate();
-  }
+  
+  // This second part of the loop calls upon the functions 
+  // that do all of the thinking
+  
+  drawButtons();  // draws all of the UI buttons (moved to a separate function to keep the main loop clean(er)  -- see drawButtons_function tab for more detail
+  speedbar.update(); //updates the position of the speed slider if it has been moved -- see speed_slider tab for more detail
+  speedbar.display();  //draws the speed slider in its new location                  -- ditto
+  text(speedbar.getPos(),940,380); // text to show what the speed slider's current speed value is
+  connection(); // manages server connection -- see below
+  getMessages();  // checks for messages from server -- see messages tab for more detail
+  sendMessages();  // sends messages to server       -- ditto
 }
 
 
+
+boolean connected = false; // variable is set to true when client connects to a server
+// connection() - checks client connection status, then attempts to connect,disconnect, or reconnect
+//                 depending on what commands were given
+void connection() {
+ 
+  if (connectButton.isActive()){// if the connect button was clicked, attempt to connect to a server
+      try{client.ip(); // checks to see if client is already connected to the server
+        if (millis() - timer > 1000) { // if connection is going to time out
+          //message to maintain connection (to do later);  // send message to maintain connection
+          timer = millis();  //reset timeout timer
+        }
+      } catch (NullPointerException e){  // if not connected/dis-connected
+        if (connected == false){ // sends a connecting message to user on first connection
+          println("Conncecting to Server...");
+        } else { // if there previously was a connection, notify user of disconnection
+          println("Lost Connection");
+          connectButton.deactivate();
+          connected = false;
+        }
+        if(wireless_serverButton.isActive()){ // attempts to connect to an IP based on server button selected
+          client = new Client(this, roverIp_wireless, comm_port);
+        } else if (tethered_serverButton.isActive()) {
+          client = new Client(this, roverIp_tethered, comm_port);
+        } else {
+          client = new Client(this, testIp, comm_port);      
+        }
+        try{client.ip(); // verifies that a connection was made
+          println("Conncected to "+client.ip());
+          connected = true;
+          connectButton.activate();
+
+        } catch (NullPointerException f){// if a connection was not made, notify user
+          println("Unable to Connect");  
+          connectButton.deactivate();  // deactivates connection button so that program does not get stuck
+                                       // in an infinite loop of connection attempts
+        }
+    }  
+  } else { // if the connection button is disabled, notify the user of the disconnection
+    if (connected == true){ // but only if previously connected
+      client.stop();
+      println("Connection Terminated");
+      connected = false;
+    }
+    
+  }
+}
 

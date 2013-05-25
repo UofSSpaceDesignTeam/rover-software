@@ -18,7 +18,7 @@ class HScrollbar {
     ratio = (float)129 / (float)sw;
     xpos = xp;
     ypos = yp-sheight/2;
-    spos = xpos + swidth/2 - sheight/2;
+    spos = xpos  - sheight/2 +8;//+ swidth/2;
     newspos = spos;
     sposMin = xpos;
     sposMax = xpos + swidth;
