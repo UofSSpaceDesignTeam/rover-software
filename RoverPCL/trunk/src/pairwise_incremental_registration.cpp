@@ -206,7 +206,8 @@ int numFitness = 0;
   * \param output the resultant aligned source PointCloud
   * \param final_transform the resultant transform between source and target
   */
-void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt, PointCloud::Ptr output, Eigen::Matrix4f &final_transform, bool downsample = false)
+void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt,
+		PointCloud::Ptr output, Eigen::Matrix4f &final_transform, bool downsample = false)
 {
   //
   // Downsample for consistency and speed
