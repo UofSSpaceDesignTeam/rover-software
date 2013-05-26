@@ -32,12 +32,15 @@ int parseMessage()
     {
       if(msgid[1] == 'E') // emergency stop, stop all actuators quickly
       {
-        analogWrite(L_MOTOR_PWM,0);
-        analogWrite(R_MOTOR_PWM,0);
+        for(int i=0; i<NUM_MOTORS; i++)
+        {
+          motorArray[i]->set(127); // stop all motors
+        }
         for(int i=0; i<NUM_SERVOS; i++)
         {
-          servoArray[i].detach();
+          servoArray[i]->detach(); // cut power to servos
         }
+        digitalWrite(13,LOW); // led off
         while(true); // halt until reset
       }
       
@@ -45,12 +48,15 @@ int parseMessage()
       {
         // todo: properly stop connected devices
         //todo: return all actuators to initial positions
-        analogWrite(L_MOTOR_PWM,0);
-        analogWrite(R_MOTOR_PWM,0);
+        for(int i=0; i<NUM_MOTORS; i++)
+        {
+          motorArray[i]->set(127); // stop all motors
+        }
         for(int i=0; i<NUM_SERVOS; i++)
         {
-          servoArray[i].detach();
+          servoArray[i]->detach(); // cut power to servos
         }
+        digitalWrite(13,LOW); // led off
         while(true); // halt until reset
       }
       
@@ -73,51 +79,19 @@ int parseMessage()
     }
     
     
-    case 'L':  // LED messages
-    {
-      if(msgid[1] == 'S') // LED set
-      {
-        ledBlink = false;
-        if(msgdata[0] == '1')
-        {
-          digitalWrite(13,HIGH);
-        }
-        else if(msgdata[0] == '0')
-        {
-          digitalWrite(13,LOW);
-        }
-        else if(msgdata[0] == 'b')
-        {
-          ledBlink = true;
-        }
-        else
-        {
-          debugmsg = "err 6"; // data byte is invalid
-          debug();
-          return -1;
-        }
-        return 0;
-      }
-      
-      debugmsg = "err 7"; // if we get here ID2 is bad
-      debug();
-      return -2;
-    }
-    
-    
     case 'M':  // motor messages
     {
-      if(msgid[1] == 'E') // motor enable
+      if(msgid[1] == 'E') // motor enable commands
       {
-        if(msgdata[0] == '0')
+        if(msgdata[0] == '0') // disable motors
         {
+          for(int i=0; i<NUM_MOTORS; i++)
+          {
+            motorArray[i]->set(127); // stop command
+          }
           motorEnable = false;
-          analogWrite(L_MOTOR_PWM,0);
-          analogWrite(R_MOTOR_PWM,0);
-          motorSpeeds[0] = 0;
-          motorSpeeds[1] = 0;
         }
-        else if(msgdata[0] == '1')
+        else if(msgdata[0] == '1') // enable motors
         {
           motorEnable = true;
         }
@@ -132,45 +106,16 @@ int parseMessage()
       
       if(msgid[1] == 'S') // motor set
       {
-        if(motorEnable == true)
+        Serial.println("setting motors, woo!");
+        if(motorEnable)
         {
-          byte m0_pwm = (byte)msgdata[0];
-          byte m1_pwm = (byte)msgdata[1];
-          if(m0_pwm == 127) // stop
+          byte motorSet;
+          for(int i=0; i<NUM_MOTORS; i++)
           {
-            analogWrite(L_MOTOR_PWM,0);
-            motorSpeeds[0] = 0;
+            motorSet = (byte)msgdata[i];
+            motorArray[i]->set(motorSet);
           }
-          else if(m0_pwm > 127) // forward
-          {
-            digitalWrite(L_MOTOR_DIR,LOW);
-            motorSpeeds[0] = 2*(m0_pwm-127);
-            analogWrite(L_MOTOR_PWM,motorSpeeds[0]);
-          }
-          else // reverse
-          {
-            digitalWrite(L_MOTOR_DIR,HIGH);
-            motorSpeeds[0] = 2*(127-m0_pwm);
-            analogWrite(L_MOTOR_PWM,motorSpeeds[0]);
-          }
-          
-          if(m1_pwm == 127) // stop
-          {
-            analogWrite(R_MOTOR_PWM,0);
-            motorSpeeds[1] = 0;
-          }
-          else if(m1_pwm > 127) // forward
-          {
-            digitalWrite(R_MOTOR_DIR,LOW);
-            motorSpeeds[1] = 2*(m1_pwm-127);
-            analogWrite(R_MOTOR_PWM,motorSpeeds[1]);
-          }
-          else // reverse
-          {
-            digitalWrite(R_MOTOR_DIR,HIGH);
-            motorSpeeds[1] = 2*(127-m1_pwm);
-            analogWrite(R_MOTOR_PWM,motorSpeeds[1]);
-          }
+          Serial.println("motors were set");
         }
         else
         {
@@ -189,61 +134,20 @@ int parseMessage()
     
     case 'S':  // servo messages
     {
-      if(msgid[1] == 'E') // servo enable
-      {
-        if(msgdata[0] == '1')
-        {
-          servoEnable = true;
-          for(int i=0; i<NUM_SERVOS; i++) // activate each servo
-          {
-            servoArray[i].attach(servoPins[i]);
-            servoArray[i].write(servoPositions[i]);
-          }
-        }
-        else if(msgdata[0] == '0')
-        {
-          servoEnable = false;
-          for(int i=0; i<NUM_SERVOS; i++)
-          {
-            servoArray[i].detach();  //detach each servo
-          }
-        }
-        else
-        {
-          debugmsg = "err 11"; // data byte is invalid
-          debug();
-          return -1;
-        }
-        return 0;
-      }
-      
-      
       if(msgid[1] == 'S') // servo set
       {
-        if(servoEnable)
+        byte servopos;
+        for(int i=0; i<NUM_SERVOS; i++)
         {
-          byte servopos;
-          for(int i=0; i<NUM_SERVOS; i++)
+          servopos = (byte)msgdata[i];
+          if(servopos > 180)
           {
-            servopos = (byte)msgdata[i];
-            if(servopos > 90)
-            {
-              debugmsg = "err 12"; // invalid servo position
-              debug();
-              return -1;
-            }
-            else
-            {
-              servoPositions[i] = servopos;
-              servoArray[i].write(servoPositions[i]);
-            }
+            debugmsg = "err 12"; // invalid servo position
+            debug();
+            return -1;
           }
-        }
-        else
-        {
-          debugmsg = "err 13"; // trying to set servos while disabled
-          debug();
-          return -1;
+          else
+            servoArray[i]->write(servopos);
         }
         return 0;
       }
