@@ -4,8 +4,9 @@
 
 // Required libraries
 
-#include "Wire.h"  // i2c library for imu
-#include "imuhack.h"  // imu functions (in development)
+#include "Wire.h"  // i2c library
+#include "I2Cdev.h"  // advanced i2c functions
+#include "MPU6050.h" // i2c interfacing to imu
 #include "Encoder.h"  //  used to read wheel encoders
 #include "Servo.h"  //  used to control servomotors
 #include "Motor.h" // used to control all motors
