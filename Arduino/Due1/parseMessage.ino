@@ -164,13 +164,19 @@ int parseMessage()
       {
         if(msgdata[0] == '1')
         {
-          imuEnable = true;
-          // todo: begin grabbing data from the IMU
+          if(imuExists)
+          {
+            imuEnable = true;
+          }
+          else
+          {
+            debugmsg = "err 6";
+            debug();
+          }
         }
         else if(msgdata[0] == '0')
         {
           imuEnable = false;
-          // todo: stop grabbing data from the IMU
         }
         else
         {

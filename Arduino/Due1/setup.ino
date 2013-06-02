@@ -24,10 +24,6 @@ void setup()
   delay(10);
   debugmsg = "Servos"; // set up the servos
   debug();
-  panServo.attach(PAN_SERVO_PIN);
-  panServo.write(PAN_SERVO_DEFAULT);
-  tiltServo.attach(TILT_SERVO_PIN);
-  tiltServo.write(TILT_SERVO_DEFAULT);
   
   delay(10);
   debugmsg = "Encoders"; // set up the wheel encoders
@@ -42,7 +38,17 @@ void setup()
   delay(10);
   debugmsg = "IMU"; // set up the imu
   debug();
-  //stuff
+  Wire.begin();
+  imu.initialize();
+  if(imu.testConnection())
+  {
+    imuExists = true;
+  }
+  else
+  {
+    debugmsg = ("IMU unavailable");
+    debug();
+  }
   
   delay(10);
   debugmsg = "Timers";

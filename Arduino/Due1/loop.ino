@@ -54,7 +54,7 @@ void loop()
   
   if(imuEnable && millis() - imuSendTimer >= imuSendRate) // if it's time to send imu data
   {
-    // todo: send the imu data
+    sendIMUs();
     imuSendTimer = millis();
   }
   
