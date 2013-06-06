@@ -54,20 +54,20 @@ public class Motors extends Actuator {
 	
 	public void goReverse()
 	{
-		int[] speed = new int[numMotors];
+		byte[] speed = new byte[numMotors];
 		for (int i = 0; i < numMotors; i++)
 		{
-			speed[i] = SPEED_FULL_REVERSE;
+			speed[i] = (byte) SPEED_FULL_REVERSE;
 		}
-		//setRotationSpeed(speed);
+		setRotationSpeed(speed);
 	}
 	public void stop()
 	{
-		int[] speed = new int[numMotors];
+		byte[] speed = new byte[numMotors];
 		for (int i = 0; i < numMotors; i++)
 		{
-			speed[i] = SPEED_STOP;
+			speed[i] = (byte) SPEED_STOP;
 		}
-		//
+		setRotationSpeed(speed);
 	}
 }

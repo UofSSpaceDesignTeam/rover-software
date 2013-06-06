@@ -2,6 +2,7 @@ package prototype1;
 
 import java.util.LinkedList;
 
+//TODO MAKE INSTANCE OF OBSERVABLE
 /**
  * An abstract class to store functionality common to all the sensors
  *
@@ -31,6 +32,19 @@ public abstract class Sensor extends Instrument {
 		super(attachedArduino, thisId);
 	}
 	
+	
+	
+	
+	
+	/** 
+	 * @return true if the cache has any data, false otherwise
+	 */
+	public boolean hasData()
+	{
+		return cache.size() != 0;
+	}
+	
+	
 	/**
 	 * Add data to the sensor object, this will be done at the data transfer rate specified, by the Arduino
 	 * @param data	The data bytes [B1]...[Bn]
@@ -44,6 +58,8 @@ public abstract class Sensor extends Instrument {
 			cache.removeLast();
 		}
 		cache.addFirst(data);
+		setChanged();
+		notifyObservers();
 	}
 	
 	/**

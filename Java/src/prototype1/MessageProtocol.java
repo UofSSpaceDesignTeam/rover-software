@@ -22,7 +22,8 @@ public abstract class MessageProtocol {
 	public static final byte ID2_ENABLE_DISABLE = 'E';
 	public static final byte ID2_DATA = 'D';
 	public static final byte ID2_SET = 'S';
-	public static byte ID2_TRANSFER_RATE = 'R';
+	public static byte ID2_TRANSFER_RATE = 'R';	
+	
 	
 	// message format constants	
 	public static final int FIRST_DATA_BYTE = 5;	
@@ -33,6 +34,18 @@ public abstract class MessageProtocol {
 	
 	public static final int DATA_BYTE_ENABLE = '1';
 	public static final int DATA_BYTE_DISABLE = '0';
+	
+	public static final int DATA_LENGTH_1 = 3;
+	public static final int DATA_LENGTH_2 = 4;
+	
+	public static int dataLength(byte[] message){
+		return message[DATA_LENGTH_1] * 256 + message[DATA_LENGTH_2];
+	}
+	
+	// where the ending newline should be based on data length
+	public static int endByteIndex(byte[] message){
+		return dataLength(message) + 5;
+	}
 	
 	
 	

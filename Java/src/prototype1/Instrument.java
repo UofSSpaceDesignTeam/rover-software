@@ -1,7 +1,9 @@
 package prototype1;
 
+import java.util.Observable;
 
-public abstract class Instrument 
+
+public abstract class Instrument extends Observable
 {
 	/**
 	 * Store the ID of the sensor/actuator

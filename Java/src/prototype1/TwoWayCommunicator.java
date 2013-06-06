@@ -57,29 +57,46 @@ public class TwoWayCommunicator extends Observable
             int nextByte = -1;
             int nextIndex = 0;
             try
-            {     	            	
+            {     	   
+            	int dataLength = 0;
+            	int lastByteIndex = 0;
+            	boolean dataLengthSet = false;
                 while ((nextByte = this.in.read()) != -1)
                 {
                 	
                 	
                 	// add the byte to the buffer
-                	inBuffer[nextIndex] = (byte) nextByte;                	
+                	inBuffer[nextIndex] = (byte) nextByte;    
+                	
+                	// if this is the last byte of the data length, set the data length
+                	if (nextIndex == MessageProtocol.DATA_LENGTH_2){
+                		dataLength = MessageProtocol.dataLength(inBuffer);
+                		lastByteIndex = MessageProtocol.endByteIndex(inBuffer);
+                		dataLengthSet = true;
+                	}
+                	
                 	
                 	nextIndex += 1;
                 	
                 	
+                	
+                	
                 	// if end of message, send message to observer
-                	if (nextByte == MessageProtocol.END_BYTE){                		
-                		byte[] message = new byte[nextIndex];                		
-                		for (int i = 0; i < nextIndex; i++){
-                			message[i] = inBuffer[i];
-                		}      
-                		
-                		comm.setChanged();
-                		comm.notifyObservers(message);
-                		// clear buffer
-                    	nextIndex = 0; 
-                	}
+                	if (dataLengthSet && nextIndex-1 == lastByteIndex){
+	                	if (nextByte == MessageProtocol.END_BYTE){                		
+	                		byte[] message = new byte[nextIndex];                		
+	                		for (int i = 0; i < nextIndex; i++){
+	                			message[i] = inBuffer[i];
+	                		}      
+	                		
+	                		comm.setChanged();
+	                		comm.notifyObservers(message);
+	                		// clear buffer
+	                    	nextIndex = 0; 
+	                	} else {
+	                		throw new RuntimeException("HORRIFIC ERROR");
+	                	}
+                	}   
                 	
                 	               
                 }

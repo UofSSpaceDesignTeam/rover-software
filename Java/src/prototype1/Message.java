@@ -72,7 +72,7 @@ public class Message {
 	public byte[] getData()
 	{
 		// figure out the data length
-		int dataLength = message[3] * 256 + message[4];
+		int dataLength = MessageProtocol.dataLength(message);
 		
 		// write data array
 		byte[] data = new byte[dataLength];

@@ -1,23 +1,58 @@
 package maintests;
 
-import java.util.Scanner;
+import java.util.Observable;
+import java.util.Observer;
 
 import prototype1.ArduinoMessageHandler;
-import prototype1.ForceSensors;
-import prototype1.Led;
+import prototype1.IMU;
 import prototype1.MessageProtocol;
-import prototype1.Motors;
-import prototype1.ServoMotors;
 
-public class MotorTest {
+public class MotorTest implements Observer {
 
 	/**
 	 * @param args
 	 */
+	
+	public static IMU imu; 
 	public static void main(String[] args) 
 	{
-		ArduinoMessageHandler arduino = new ArduinoMessageHandler("/dev/ttyACM1");
+		ArduinoMessageHandler arduino = new ArduinoMessageHandler("/dev/ttyACM0");
 		
+		imu = new IMU(1, arduino);
+		
+		MotorTest m = new MotorTest();
+		imu.addObserver(m);
+		
+		arduino.addSensor(MessageProtocol.ID1_IMU, imu);
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		imu.setEnabled(true);
+		
+		imu.setDataTransferRate(1);
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		/*
 		Motors motors = new Motors(arduino, 2);	
 		
 		try {
@@ -51,7 +86,13 @@ public class MotorTest {
 			{
 				motors.stop();
 			}
-		}
+		} */
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		System.out.println("pitch " + imu.getLastPitchValues()[0] + " roll " + imu.getLastRollValues()[0]);	
+		
 	}
 
 }
