@@ -5,7 +5,7 @@
 
 MPU6050 imu(0x68);
 
-int16_t ax, ay, az, pitch, roll;
+int16_t ax, ay, az, pitch, roll, initialPitch, initialRoll;
 
 void setup()
 {
@@ -24,23 +24,19 @@ void setup()
   {
     Serial.println("IMU connection failed");
   }
+  delay(50);
+  imu.getAcceleration(&ax, &ay, &az);
+
 }
 
 void loop()
 {
   imu.getAcceleration(&ax, &ay, &az);
-
-  Serial.print(ax);
-  Serial.print("\t");
-  Serial.print(ay);
-  Serial.print("\t");
-  Serial.println(az);
-  Serial.print("\t");
-  
-  pitch = (int)(100*atan2(ay,az));
-  roll = (int)(100*atan2(ax,az));
+  pitch = (int)(degrees(atan2(ax,az)) - initialPitch);
+  roll = (int)(degrees(atan2(ay,az)) - initialRoll);
+  Serial.print("P/R:\t");
   Serial.print(pitch);
   Serial.print("\t");
   Serial.println(roll);
-  delay(100);
+  delay(200);
 }

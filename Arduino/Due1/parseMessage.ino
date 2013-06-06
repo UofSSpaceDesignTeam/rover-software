@@ -189,7 +189,7 @@ int parseMessage()
       
       if(msgid[1] == 'R') // IMU send rate
       {
-        imuSendTimer = parseBytes((byte)msgdata[0],(byte)msgdata[1]);
+        imuSendRate = parseBytes((byte)msgdata[0],(byte)msgdata[1]);
         return 0;
       }
       

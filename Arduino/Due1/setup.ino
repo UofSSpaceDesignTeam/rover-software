@@ -39,7 +39,9 @@ void setup()
   debugmsg = "IMU"; // set up the imu
   debug();
   Wire.begin();
+  delay(5);
   imu.initialize();
+  delay(5);
   if(imu.testConnection())
   {
     imuExists = true;

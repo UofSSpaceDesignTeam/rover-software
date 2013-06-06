@@ -15,6 +15,6 @@ void debug() // sends the human readable info in debugmsg to the fitPC
 
 int parseBytes(byte high, byte low) // turns 2 bytes into an int
 {
-  return (int)high/256 + (int)low%256;
+  return (int)high*256 + (int)low;
 }
 
