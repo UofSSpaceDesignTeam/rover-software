@@ -1,6 +1,7 @@
+// this is the slider actually shown in the UI
 HScrollbar speedbar = new HScrollbar(730,420,230,15,5);
 
-
+// this is the new class used to define/create a scroll bar
 class HScrollbar {
   int swidth, sheight;    // width and height of bar
   float xpos, ypos;       // x and y position of bar

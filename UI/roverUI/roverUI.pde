@@ -24,6 +24,7 @@ int motor1Speed = 0; // variable holding speed of right motor (??)
 int motor2Speed = 0; // variable holding speed of left motor (??)
 
 int timer = millis();
+int last_message = 0;
 
 
 void setup() //setup which is run once at startup before starting the main "draw" loop
@@ -60,6 +61,10 @@ void setup() //setup which is run once at startup before starting the main "draw
   video_depthButton.setOther(video_colorButton);
   video_colorButton.setOther(video_depthButton); 
   
+  for (int i = 0; i < window_messages.length; i = i+1) {
+   window_messages[i] = " ";
+  }
+ 
 //  try{ client = new Client(this, roverIp_wireless, comm_port); //
 //    println("wireless server " + roverIp_wireless + " is available");
 //    client.stop();
@@ -98,8 +103,7 @@ void draw() // main loop of program
   //rect(715,235,255,120);   //box around movement controls
   //rect(715,450,300,140);   //box around AI Status
   rect(330,75,videoX,videoY);//Video box
-  rect(10,420,405,170);      // draws the message box
-  
+
   //  additional text labels for understanding the UI
   fill(0);
   textSize(24);
@@ -121,12 +125,15 @@ void draw() // main loop of program
   // that do all of the thinking
   
   drawButtons();  // draws all of the UI buttons (moved to a separate function to keep the main loop clean(er)  -- see drawButtons_function tab for more detail
+  debug_messages();
   speedbar.update(); //updates the position of the speed slider if it has been moved -- see speed_slider tab for more detail
   speedbar.display();  //draws the speed slider in its new location                  -- ditto
   text(speedbar.getPos(),940,380); // text to show what the speed slider's current speed value is
   connection(); // manages server connection -- see below
-  getMessages();  // checks for messages from server -- see messages tab for more detail
-  sendMessages();  // sends messages to server       -- ditto
+  //if(connected){
+    getMessages();  // checks for messages from server -- see messages tab for more detail
+    sendMessages();  // sends messages to server       -- ditto
+  //}
 }
 
 
@@ -137,19 +144,21 @@ boolean connected = false; // variable is set to true when client connects to a 
 void connection() {
  
   if (connectButton.isActive()){// if the connect button was clicked, attempt to connect to a server
+     
       try{client.ip(); // checks to see if client is already connected to the server
         if (millis() - timer > 1000) { // if connection is going to time out
           //message to maintain connection (to do later);  // send message to maintain connection
           timer = millis();  //reset timeout timer
         }
-      } catch (NullPointerException e){  // if not connected/dis-connected
+      } catch (NullPointerException e){  // if not connected, does the following
         if (connected == false){ // sends a connecting message to user on first connection
-          println("Conncecting to Server...");
+          ///new_debug_message("Conncecting to Server..."); //moved for faster feedback
         } else { // if there previously was a connection, notify user of disconnection
-          println("Lost Connection");
+          new_debug_message("Lost Connection");
           connectButton.deactivate();
           connected = false;
         }
+        
         if(wireless_serverButton.isActive()){ // attempts to connect to an IP based on server button selected
           client = new Client(this, roverIp_wireless, comm_port);
         } else if (tethered_serverButton.isActive()) {
@@ -158,12 +167,12 @@ void connection() {
           client = new Client(this, testIp, comm_port);      
         }
         try{client.ip(); // verifies that a connection was made
-          println("Conncected to "+client.ip());
+          new_debug_message("Conncected to "+client.ip());
           connected = true;
           connectButton.activate();
 
         } catch (NullPointerException f){// if a connection was not made, notify user
-          println("Unable to Connect");  
+          new_debug_message("Unable to Connect");  
           connectButton.deactivate();  // deactivates connection button so that program does not get stuck
                                        // in an infinite loop of connection attempts
         }
@@ -171,7 +180,7 @@ void connection() {
   } else { // if the connection button is disabled, notify the user of the disconnection
     if (connected == true){ // but only if previously connected
       client.stop();
-      println("Connection Terminated");
+      new_debug_message("Connection Terminated");
       connected = false;
     }
     

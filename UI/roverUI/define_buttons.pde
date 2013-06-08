@@ -8,9 +8,9 @@ Button resetButton = new Button("Reset",10,10,65,40,false,default_color);
 Button connectButton = new Button("Connect",85,10,85,40,false,default_color); 
 
 // server selection buttons
-Button test_serverButton = new Button("Test Server",200,18,15,15,false,default_color); 
-Button wireless_serverButton = new Button("Wireless Server",200,43,15,15,false,default_color); 
-Button tethered_serverButton = new Button("Tethered Server",200,68,15,15,false,default_color); 
+Button test_serverButton = new Button("Test Server",200,16,15,15,false,default_color); 
+Button wireless_serverButton = new Button("Wireless Server",200,41,15,15,false,default_color); 
+Button tethered_serverButton = new Button("Tethered Server",200,66,15,15,false,default_color); 
 
 // digger control buttons
 Button d_upButton = new Button("Up",45,130,65,40,false,default_color); 
@@ -44,7 +44,7 @@ Button move_downButton = new Button("Move Down",810,300,65,40,false,default_colo
 Button move_leftButton = new Button("Move Left",730,300,65,40,false,default_color); 
 Button move_rightButton = new Button("Move Right",890,300,65,40,false,default_color); 
 Button stop_moveButton = new Button("STOP",810,355,65,40,false,default_color); 
-Button enable_moveButton = new Button("Enable",730,355,65,40,false,default_color); 
+Button enable_moveButton = new Button("Enabled",730,355,65,40,false,default_color); 
 
 // emergency stop button
 Button stopButton = new Button("Emergency Stop",335,360,330,50,false,color(255,30,10)); 
@@ -53,7 +53,7 @@ Button stopButton = new Button("Emergency Stop",335,360,330,50,false,color(255,3
 Button ai_onButton = new Button("ON",725,460,65,40,false,default_color);
 Button ai_offButton = new Button("OFF",810,460,65,40,false,default_color); 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Definition of button class
 // moved to bottom for faster access to defined buttons
 class Button

@@ -50,9 +50,9 @@ public class Message {
   }
   public void recieveMessage()
   {
-    message = client.readBytes();
+    message = client.readBytesUntil('\n');
   }
-  public byte[] getMessge()
+  public byte[] getMessage()
   {
     return this.message;
   }

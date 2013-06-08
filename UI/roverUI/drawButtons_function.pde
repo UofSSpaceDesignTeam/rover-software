@@ -16,27 +16,33 @@ void drawButtons(){
   rect(connectButton.myX,connectButton.myY,connectButton.myWidth,connectButton.myHeight);
   
   //server selection buttons
+    //test server
   if(test_serverButton.isActive()){fill(active_color);}else{fill(default_color);}
   ellipse(test_serverButton.myX,test_serverButton.myY,test_serverButton.myWidth,test_serverButton.myHeight);//Note:button is ellipse, not rectangle
-  
+    //rover server connected wirelessly
   if(wireless_serverButton.isActive()){fill(active_color);}else{fill(default_color);}
   ellipse(wireless_serverButton.myX,wireless_serverButton.myY,wireless_serverButton.myWidth,wireless_serverButton.myHeight);//Note:button is ellipse, not rectangle
-  
+    //rover server connected with physical cable
   if(tethered_serverButton.isActive()){fill(active_color);}else{fill(default_color);}
   ellipse(tethered_serverButton.myX,tethered_serverButton.myY,tethered_serverButton.myWidth,tethered_serverButton.myHeight);//Note:button is ellipse, not rectangle
   
   // digging controls
+    //move digging mechanism up
   if(d_upButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_upButton.myX,d_upButton.myY,d_upButton.myWidth,d_upButton.myHeight);
+    //move digging mechanism down
   if(d_downButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_downButton.myX,d_downButton.myY,d_downButton.myWidth,d_downButton.myHeight);
+    //stop digging
   if(d_stopButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_stopButton.myX,d_stopButton.myY,d_stopButton.myWidth,d_stopButton.myHeight);
+    //start digging
   if(d_digButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_digButton.myX,d_digButton.myY,d_digButton.myWidth,d_digButton.myHeight);
-  
+    //move digging mechanism out (to facilitate dumping)
   if(d_outButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_outButton.myX,d_outButton.myY,d_outButton.myWidth,d_outButton.myHeight);
+    //move digging mechanism in
   if(d_inButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(d_inButton.myX,d_inButton.myY,d_inButton.myWidth,d_inButton.myHeight);
 
@@ -103,7 +109,7 @@ void drawButtons(){
   //server selection buttons
   text(test_serverButton.myLabel,test_serverButton.myX+test_serverButton.myWidth+test_serverButton.myLabel.length()*4,test_serverButton.myY-3);
   text(wireless_serverButton.myLabel,wireless_serverButton.myX+wireless_serverButton.myWidth+wireless_serverButton.myLabel.length()*4,wireless_serverButton.myY-3);
-  text(tethered_serverButton.myLabel,tethered_serverButton.myX+tethered_serverButton.myWidth+tethered_serverButton.myLabel.length()*4,tethered_serverButton.myY-3);
+  text(tethered_serverButton.myLabel,tethered_serverButton.myX+tethered_serverButton.myWidth+tethered_serverButton.myLabel.length()*4.2,tethered_serverButton.myY-3);
 
   fill(255);
   //reset button
@@ -145,8 +151,15 @@ void drawButtons(){
   
   //rover movement controls
   text(stop_moveButton.myLabel,stop_moveButton.myX+stop_moveButton.myWidth/2,stop_moveButton.myY+stop_moveButton.myHeight/2-3);
-  text(enable_moveButton.myLabel,enable_moveButton.myX+enable_moveButton.myWidth/2,enable_moveButton.myY+enable_moveButton.myHeight/2-3);
   
+  textSize(14);
+  if(enable_moveButton.isActive()){
+    text("Motors",enable_moveButton.myX+enable_moveButton.myWidth/2,enable_moveButton.myY+enable_moveButton.myHeight/2-3-7);
+    text(enable_moveButton.myLabel,enable_moveButton.myX+enable_moveButton.myWidth/2,enable_moveButton.myY+enable_moveButton.myHeight/2-3+8);
+  } else{
+    text("Motors",enable_moveButton.myX+enable_moveButton.myWidth/2,enable_moveButton.myY+enable_moveButton.myHeight/2-3-7);
+    text("Disabled",enable_moveButton.myX+enable_moveButton.myWidth/2,enable_moveButton.myY+enable_moveButton.myHeight/2-3+8);
+  }
   //emergency stop
   textSize(24);
   text(stopButton.myLabel,stopButton.myX+stopButton.myWidth/2,stopButton.myY+stopButton.myHeight/2-3);
