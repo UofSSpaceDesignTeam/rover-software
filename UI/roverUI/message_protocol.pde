@@ -74,4 +74,9 @@ public class Message {
     }
     return data;
   }
+  public int getLength()
+  {
+    int messageLength = message[3] * 256 + message[4]+6;
+    return messageLength;
+  }
 }

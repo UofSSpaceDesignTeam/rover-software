@@ -13,7 +13,7 @@ class HScrollbar {
   float ratio;
 
   HScrollbar (float xp, float yp, int sw, int sh, int l) {
-    swidth = sw;
+    swidth = sw+10;
     sheight = sh;
     int widthtoheight = sw - sh;
     ratio = (float)129 / (float)sw;
@@ -22,7 +22,7 @@ class HScrollbar {
     spos = xpos  - sheight/2 +8;//+ swidth/2;
     newspos = spos;
     sposMin = xpos;
-    sposMax = xpos + swidth;
+    sposMax = xpos + swidth-10;
     loose = l;
   }
 

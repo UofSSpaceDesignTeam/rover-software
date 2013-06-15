@@ -229,6 +229,12 @@ void mousePressed() {
     stopButton.activate();
     
   }
+  if(overButton(713-15,417-10,30,23)){
+    speedbar.newspos = speedbar.sposMin;
+  }
+  if(overButton(980-10,417-10,40,23)){
+    speedbar.newspos = speedbar.sposMax;
+  }
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -366,7 +372,7 @@ void mouseReleased() {
   }
   if (overButton(stopButton.myX,stopButton.myY,stopButton.myWidth,stopButton.myHeight)) {
     
-    stopButton.deactivate();
+    //stopButton.deactivate();
   }
   if (overButton(resetButton.myX,resetButton.myY,resetButton.myWidth,resetButton.myHeight)) {
     
@@ -376,8 +382,8 @@ void mouseReleased() {
   if (overButton(connectButton.myX,connectButton.myY,connectButton.myWidth,connectButton.myHeight)) {
     
     //connectButton.deactivate();
-   
   }
+  
 }
 
 boolean overButton(int x, int y, int width, int height)  {

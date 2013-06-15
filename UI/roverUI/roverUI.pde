@@ -1,7 +1,8 @@
 import processing.net.*;
-
+boolean keydown;
 Client client; // client used to connect to rover server 
-String testIp = "127.0.0.1"; //for testing that does not need connection to rover, requires running test server program
+//String testIp = "127.0.0.1";//for testing that does not need connection to rover, requires running test server program
+String testIp = "10.227.0.179";
 String roverIp_wireless = "192.168.1.10"; // Current IP of rover for wireless connection
 String roverIp_tethered = "192.168.1.11"; // Current IP of rover for tethered ethernet connection
 
@@ -25,10 +26,12 @@ int motor2Speed = 0; // variable holding speed of left motor (??)
 
 int timer = millis();
 int last_message = 0;
+int bytes_sent = 0;
 
-
+PImage img;
 void setup() //setup which is run once at startup before starting the main "draw" loop
 {
+  keydown = false;
   size(1024,600); // size of UI window
   
   //sets buttons which are on/active by default
@@ -118,9 +121,9 @@ void draw() // main loop of program
   text("AI Status",870,440);
   textSize(15);
   text("Arrow Keys",925,355);
-  text("MIN",713,420);
-  text("MAX",977,420);
-  
+  text("MIN",713,418);
+  text("MAX",990,418);
+  text(bytes_sent,30,60); 
   // This second part of the loop calls upon the functions 
   // that do all of the thinking
   
@@ -128,7 +131,7 @@ void draw() // main loop of program
   debug_messages();
   speedbar.update(); //updates the position of the speed slider if it has been moved -- see speed_slider tab for more detail
   speedbar.display();  //draws the speed slider in its new location                  -- ditto
-  text(speedbar.getPos(),940,380); // text to show what the speed slider's current speed value is
+  text(speedbar.getPos(),940,400); // text to show what the speed slider's current speed value is
   connection(); // manages server connection -- see below
   //if(connected){
     getMessages();  // checks for messages from server -- see messages tab for more detail
@@ -137,6 +140,7 @@ void draw() // main loop of program
 }
 
 
+byte[] debug = new byte[0];
 
 boolean connected = false; // variable is set to true when client connects to a server
 // connection() - checks client connection status, then attempts to connect,disconnect, or reconnect
@@ -147,8 +151,15 @@ void connection() {
      
       try{client.ip(); // checks to see if client is already connected to the server
         if (millis() - timer > 1000) { // if connection is going to time out
+          //debug[0] = 0;
+          if(millis()-last_message>message_delay){
+            outMessage.Message(MessageProtocol.ID1_DEBUG,MessageProtocol.ID2_CHECK,debug);
+            outMessage.sendMessage();
+            bytes_sent += outMessage.getLength();
           //message to maintain connection (to do later);  // send message to maintain connection
-          timer = millis();  //reset timeout timer
+            last_message = millis();
+            timer = millis();  //reset timeout timer
+          }
         }
       } catch (NullPointerException e){  // if not connected, does the following
         if (connected == false){ // sends a connecting message to user on first connection
