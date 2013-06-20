@@ -1,4 +1,4 @@
-Motor	KEYWORD1
+TestPlatformMotor	KEYWORD1
 set	KEYWORD2
 
 setting	KEYWORD2

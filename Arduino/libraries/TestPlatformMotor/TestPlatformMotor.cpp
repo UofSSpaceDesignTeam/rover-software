@@ -1,21 +1,21 @@
-#include "Motor.h"
+#include "TestPlatformMotor.h"
 
 #include <stdio.h>
 #include "Arduino.h"
 #include <inttypes.h>
 
-Motor::Motor()
+TestPlatformMotor::TestPlatformMotor()
 {
 	attached = false;
 	currentSetting = 127;
 }
 
-byte Motor::setting() const
+byte TestPlatformMotor::setting() const
 {
 	return currentSetting;
 }
 
-int Motor::attach(byte dirPin, byte pwmPin)
+int TestPlatformMotor::attach(byte dirPin, byte pwmPin)
 {
 	directionPin = dirPin;
 	speedPin = pwmPin;
@@ -32,7 +32,7 @@ int Motor::attach(byte dirPin, byte pwmPin)
 		return -1;
 }
 
-void Motor::set(byte newSetting)
+void TestPlatformMotor::set(byte newSetting)
 {
 	if(!attached)
 		return;

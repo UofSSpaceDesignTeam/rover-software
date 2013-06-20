@@ -7,8 +7,8 @@
 #include "I2Cdev.h"  // advanced i2c functions
 #include "MPU6050.h" // i2c interfacing to imu
 #include "Encoder.h"  //  used to read wheel encoders
-#include "Servo.h"  //  used to control servomotors
-#include "Motor.h" // used to control all motors
+#include "Servo.h"  //  used to control servoMotors
+#include "TestPlatformMotor.h" // used to control all Motors
 
 // Hardware parameters for things stored in arrays
 
@@ -49,9 +49,9 @@ unsigned int imuSendRate = 500; // how often we send IMU data
 unsigned long imuSendTimer; // data reporting timer
 
 boolean motorEnable = false; // Motor state
-Motor leftMotor; // motor 0
-Motor rightMotor; // motor 1
-Motor *motorArray[NUM_MOTORS] = {&leftMotor, &rightMotor}; // array of motor pointers
+TestPlatformMotor leftMotor; // Motor 0
+TestPlatformMotor rightMotor; // Motor 1
+TestPlatformMotor *motorArray[NUM_MOTORS] = {&leftMotor, &rightMotor}; // array of Motor pointers
 
 Servo *servoArray[NUM_SERVOS] = {}; // array of servo pointers
 

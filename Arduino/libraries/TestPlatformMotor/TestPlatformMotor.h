@@ -1,16 +1,16 @@
-// custom class for motor control emulating the servo library.
+// custom class for motor control on the test platform.
 
-#ifndef motor_h
-#define motor_h
+#ifndef TESTPLATFORMMOTOR_H
+#define TESTPLATFORMMOTOR_H
 
 #include <inttypes.h>
 #include "Arduino.h"
 
-class Motor
+class TestPlatformMotor
 {
 	public:
 	
-	Motor();	// constructor
+	TestPlatformMotor();	// constructor
 	
 	byte setting() const; // accessors
 	
