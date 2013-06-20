@@ -1,4 +1,4 @@
-// currently set up for test platform motor controller.
+// Currently set up for test platform motor controller.
 // Wiring connections: blk -> A, red -> B, white -> 5v, yellow -> gnd
 // DIR -> pin 4, PWM -> pin 5, GND -> gnd, blue -> analog in 0
 
