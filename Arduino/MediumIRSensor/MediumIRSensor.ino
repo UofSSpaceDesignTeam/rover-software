@@ -14,7 +14,7 @@ void loop()
   result = 0;
   for(int i = 0; i < 20; i++)
   {
-    result += analogRead(0);
+    result += analogRead(1);
   }
   result /= 20.0;
   result = 9600.0/(abs(result - 20.0)) + 2.5;

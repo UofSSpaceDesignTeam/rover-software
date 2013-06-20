@@ -1,0 +1,6 @@
+Motor	KEYWORD1
+Actuator	KEYWORD1
+set	KEYWORD2
+
+setting	KEYWORD2
+attach	KEYWORD2

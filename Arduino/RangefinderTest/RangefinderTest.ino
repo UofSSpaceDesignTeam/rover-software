@@ -16,7 +16,7 @@ void loop()
   sum = 0;
   for(int i=0; i<40; i++)
   {
-    sum += analogRead(0);
+    sum += analogRead(1);
     delay(50);
   }
   Serial.println(sum/40);

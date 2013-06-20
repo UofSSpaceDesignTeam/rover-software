@@ -12,8 +12,9 @@ int lastpos;
 void setup()
 {
   Serial.begin(115200);
-  pinMode(4,OUTPUT);
-  pinMode(5,OUTPUT);
+  pinMode(6,OUTPUT); // pwm
+  pinMode(7,OUTPUT); // a
+  pinMode(8,OUTPUT); // a
   Serial.println("Enter a position (0-140mmm). Current position:");
   pos = getPosition();
   lastpos = pos;
@@ -79,20 +80,22 @@ void movePosition(int p) // move near a specified position
 
 void moveOut()
 {
-   digitalWrite(4,LOW);
-   digitalWrite(5,HIGH);
+   digitalWrite(7,LOW);
+   digitalWrite(8,HIGH);
+   analogWrite(6,255);
 }
 
 
 void moveIn()
 {
-   digitalWrite(4,HIGH);
-   digitalWrite(5,HIGH);
+   digitalWrite(7,HIGH);
+   digitalWrite(8,LOW);
+   analogWrite(6,255);
 }
 
 
 void halt()
 {
-   digitalWrite(5,LOW);
+   analogWrite(6,0);
 }
   
