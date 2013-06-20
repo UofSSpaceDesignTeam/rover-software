@@ -13,16 +13,9 @@
 // Hardware parameters for things stored in arrays
 
 #define NUM_MOTORS 2
-#define NUM_SERVOS 0
+#define NUM_SERVOS 6
 #define NUM_ENCODERS 0
 #define NUM_FORCE 0
-
-// Pin connection specifics
-
-#define LEFT_MOTOR_DIR 46
-#define LEFT_MOTOR_PWM 3
-#define RIGHT_MOTOR_DIR 47
-#define RIGHT_MOTOR_PWM 4
 
 // Operational constants
 
@@ -52,8 +45,17 @@ boolean motorEnable = false; // Motor state
 TestPlatformMotor leftMotor; // Motor 0
 TestPlatformMotor rightMotor; // Motor 1
 TestPlatformMotor *motorArray[NUM_MOTORS] = {&leftMotor, &rightMotor}; // array of Motor pointers
+const byte motorPins[2][NUM_MOTORS] = {{46, 3}, {47, 4}};
 
-Servo *servoArray[NUM_SERVOS] = {}; // array of servo pointers
+boolean servoEnable = false; // Servo state
+Servo frontLeft;  // Servo 0
+Servo frontRight;  // Servo 1
+Servo rightSide;  // Servo 2
+Servo rearRight;  // Servo 3
+Servo rearLeft;  // Servo 4
+Servo leftSide;  // Servo 5
+Servo *servoArray[NUM_SERVOS] = {&frontLeft, &frontRight, &rightSide, &rearRight, &rearLeft, &leftSide}; // array of servo pointers
+const byte servoPins[NUM_SERVOS] = {20, 21, 22, 23, 24, 25}; // servo signal pins
 
 boolean encoderEnable = false; // wheel encoder state information
 unsigned int encoderSendRate = 500;

@@ -106,7 +106,6 @@ int parseMessage()
       
       if(msgid[1] == 'S') // motor set
       {
-        Serial.println("setting motors, woo!");
         if(motorEnable)
         {
           byte motorSet;
@@ -115,7 +114,6 @@ int parseMessage()
             motorSet = (byte)msgdata[i];
             motorArray[i]->set(motorSet);
           }
-          Serial.println("motors were set");
         }
         else
         {
@@ -134,7 +132,7 @@ int parseMessage()
     
     case 'S':  // servo messages
     {
-      if(msgid[1] == 'S') // servo set
+      if(msgid[1] == 'E') // servo enable
       {
         byte servopos;
         for(int i=0; i<NUM_SERVOS; i++)

@@ -18,12 +18,18 @@ void setup()
   delay(10);
   debugmsg = "Motors"; // set up the motors
   debug();
-  leftMotor.attach(LEFT_MOTOR_DIR,LEFT_MOTOR_PWM);
-  rightMotor.attach(RIGHT_MOTOR_DIR,RIGHT_MOTOR_PWM);
+  for(int i=0; i<NUM_MOTORS; i++)
+  {
+    motorArray[i]->attach(motorPins[i][1],motorPins[i][2]);
+  }
   
   delay(10);
   debugmsg = "Servos"; // set up the servos
   debug();
+  for(int i=0; i<NUM_SERVOS; i++)
+  {
+    servoArray[i]->attach(servoPins[i]);
+  }
   
   delay(10);
   debugmsg = "Encoders"; // set up the wheel encoders

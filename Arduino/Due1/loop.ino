@@ -28,8 +28,10 @@ void loop()
   
   if(timeOutEnable && millis() - commTimer > COMM_TIMEOUT) // No sign of life from fitpc
   {
-    analogWrite(LEFT_MOTOR_PWM,0); // stop and wait for a valid message without interrupting motor object state.
-    analogWrite(RIGHT_MOTOR_PWM,0);
+    for(int i=0; i<NUM_MOTORS; i++)  // stop and wait for a valid message without interrupting motor object state.
+    {
+      analogWrite(motorPins[i][2],0);
+    }
     debugmsg = "timeout";
     debug();
     commTimeOut = true;
