@@ -14,17 +14,21 @@ class Motor
 	
 	byte setting() const; // access the last setting given to the motor
 	
-	int attach(byte aPin, byte bPin, byte pwmPin);	// set the hardware connections for the motor
+	int attach(byte aPin, byte bPin, byte pwmPin);	// for official motor controller
+	int attach(byte dirPin, byte pwmPin);	// for test platform
 	void set(byte newSetting);	// set the output of the motor
 	
 	private:
 	
 	byte pinA;
 	byte pinB;
-	byte pinPWM;
+	byte pinDir;
+	byte pinPwm;
 	boolean attached;
+	boolean testPlatform;
 	byte currentSetting;
 };
+
 
 class Actuator
 {
@@ -44,13 +48,8 @@ class Actuator
 	byte pinB;
 	byte pinPWM;
 	boolean attached;
-	int currentPosition;
 	byte currentTarget;
-	
-	
-	
-	
-	
-	
+};
+
 
 #endif

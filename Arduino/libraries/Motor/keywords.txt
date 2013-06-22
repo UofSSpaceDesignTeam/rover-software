@@ -1,4 +1,5 @@
 Motor	KEYWORD1
+TestPlatformMotor	KEYWORD1
 Actuator	KEYWORD1
 set	KEYWORD2
 
