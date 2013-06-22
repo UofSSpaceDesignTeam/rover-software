@@ -19,7 +19,7 @@ public abstract class Sensor extends Instrument {
 	 * Stores the most recent data from the sensor in reverse chronological order (oldest at the end)
 	 * will only store MAX_CACHE_SIZE items
 	 */
-	protected LinkedList<byte[]> cache = new LinkedList<byte[]>();
+	protected LinkedList<TimestampedValue<byte[]>> cache = new LinkedList<TimestampedValue<byte[]>>();
 	
 	/**
 	 * Constructor that calls the super constructor (Instrument)
@@ -57,7 +57,7 @@ public abstract class Sensor extends Instrument {
 		{
 			cache.removeLast();
 		}
-		cache.addFirst(data);
+		cache.addFirst(new TimestampedValue<byte[]>(data));
 		setChanged();
 		notifyObservers();
 	}
