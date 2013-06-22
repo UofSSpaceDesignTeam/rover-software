@@ -34,7 +34,7 @@ public class ForceSensors extends Sensor
 		//We should have 2 bytes of data per force sensor
 		int[] toReturn = new int[this.numberOfForceSensors];
 		byte[] arrayAsBytes = new byte[this.numberOfForceSensors*2];
-		arrayAsBytes = super.cache.peek();
+		arrayAsBytes = super.cache.peek().getValue();
 		//TODO check to make sure returned byte array from cache is as expected
 		for (int i = 0; i < this.numberOfForceSensors; i++)
 		{
