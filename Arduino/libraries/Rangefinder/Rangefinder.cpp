@@ -37,12 +37,18 @@ uint16_t Rangefinder::readRaw()	const
 
 void groupOn(const Rangefinder* sensor)
 {
-	digitalWrite(sensor->pinPower,HIGH);
+	if(sensor->attached)
+	{
+		digitalWrite(sensor->pinPower,HIGH);
+	}
 }
 
 void groupOff(const Rangefinder* sensor)
 {
-	digitalWrite(sensor->pinPower,LOW);
+	if(sensor->attached)
+	{
+		digitalWrite(sensor->pinPower,LOW);
+	}
 }
 
 uint16_t convertToDistance(uint16_t data, byte sensorType)
