@@ -17,12 +17,15 @@ public abstract class MessageProtocol {
 	public static final byte ID1_FORCE = 'F';
 	public static final byte ID1_LED = 'L';
 	public static final byte ID1_DEBUG = 'D';
+	public static final byte ID1_RANGEFINDER = 'R';
 	
 	// Second Identifier Byte - Message Type
 	public static final byte ID2_ENABLE_DISABLE = 'E';
 	public static final byte ID2_DATA = 'D';
 	public static final byte ID2_SET = 'S';
-	public static byte ID2_TRANSFER_RATE = 'R';	
+	public static final byte ID2_QUERY = 'Q';
+	public static final byte ID2_TRANSFER_RATE = 'R';	
+	
 	
 	
 	// message format constants	

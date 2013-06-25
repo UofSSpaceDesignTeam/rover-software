@@ -30,6 +30,7 @@ public class ServoMotors extends Actuator
 	{
 		//TODO error check to make sure angleInDegrees.length == this.numberOfServos
 		
+		//TODO 
 		//Fill in the data stream to set the position of this servo motor
 		byte setMessage[] = new byte[angleInDegrees.length];
 		
@@ -40,7 +41,7 @@ public class ServoMotors extends Actuator
 			setMessage[i] = (byte) angleInDegrees[i];
 		}
 		super.set(setMessage);
-	}
-	
+		super.sendToArduino(ID1_RANGEFINDER, )
+	}	
 	
 }
