@@ -14,12 +14,10 @@ void loop()
         if(commTimeOut) // if we have timed out, we can now continue
         {
           commTimeOut = false;
-          if(motorEnable)
+          if(motorEnable)  // set motors to pre-timeout state
           {
-            for(int i=0; i<NUM_MOTORS; i++) // set motors to pre-timeout setting
-            {
-              motorArray[i]->set(motorArray[i]->setting());
-            }
+            leftMotor.set(leftMotor.setting());
+            rightMotor.set(rightMotor.setting());
           }
         }
       }
@@ -28,10 +26,8 @@ void loop()
   
   if(timeOutEnable && millis() - commTimer > COMM_TIMEOUT) // No sign of life from fitpc
   {
-    for(int i=0; i<NUM_MOTORS; i++)  // stop and wait for a valid message without interrupting motor object state.
-    {
-      analogWrite(motorPins[i][2],0);
-    }
+    analogWrite(LEFTMOTORPWM,0);  // stop and wait for a valid message without interrupting motor object state.
+    analogWrite(RIGHTMOTORPWM,0);
     debugmsg = "timeout";
     debug();
     commTimeOut = true;

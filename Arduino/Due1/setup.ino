@@ -18,18 +18,13 @@ void setup()
   delay(10);
   debugmsg = "Motors"; // set up the motors
   debug();
-  for(int i=0; i<NUM_MOTORS; i++)
-  {
-    motorArray[i]->attach(motorPins[i][1],motorPins[i][2]);
-  }
+  leftMotor.attach(LEFTMOTORDIR,LEFTMOTORPWM);
+  rightMotor.attach(RIGHTMOTORDIR,RIGHTMOTORPWM);
   
   delay(10);
-  debugmsg = "Servos"; // set up the servos
+  debugmsg = "Servos"; // set up the pan servo.
   debug();
-  for(int i=0; i<NUM_SERVOS; i++)
-  {
-    servoArray[i]->attach(servoPins[i]);
-  }
+  cameraPan.attach(CAMERASERVOPIN); // leveler servos are attached on demand
   
   delay(10);
   debugmsg = "Encoders"; // set up the wheel encoders

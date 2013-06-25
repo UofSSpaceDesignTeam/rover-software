@@ -32,30 +32,18 @@ int parseMessage()
     {
       if(msgid[1] == 'E') // emergency stop, stop all actuators quickly
       {
-        for(int i=0; i<NUM_MOTORS; i++)
-        {
-          motorArray[i]->set(127); // stop all motors
-        }
-        for(int i=0; i<NUM_SERVOS; i++)
-        {
-          servoArray[i]->detach(); // cut power to servos
-        }
+        leftMotor.set(127);  // stop moving
+        rightMotor.set(127);
         digitalWrite(13,LOW); // led off
         while(true); // halt until reset
       }
       
       if(msgid[1] == 'O') // power off, not time critical
       {
+        leftMotor.set(127);  // stop moving
+        rightMotor.set(127);
         // todo: properly stop connected devices
         //todo: return all actuators to initial positions
-        for(int i=0; i<NUM_MOTORS; i++)
-        {
-          motorArray[i]->set(127); // stop all motors
-        }
-        for(int i=0; i<NUM_SERVOS; i++)
-        {
-          servoArray[i]->detach(); // cut power to servos
-        }
         digitalWrite(13,LOW); // led off
         while(true); // halt until reset
       }
@@ -85,10 +73,8 @@ int parseMessage()
       {
         if(msgdata[0] == '0') // disable motors
         {
-          for(int i=0; i<NUM_MOTORS; i++)
-          {
-            motorArray[i]->set(127); // stop command
-          }
+          leftMotor.set(127);
+          rightMotor.set(127);
           motorEnable = false;
         }
         else if(msgdata[0] == '1') // enable motors
@@ -108,12 +94,8 @@ int parseMessage()
       {
         if(motorEnable)
         {
-          byte motorSet;
-          for(int i=0; i<NUM_MOTORS; i++)
-          {
-            motorSet = (byte)msgdata[i];
-            motorArray[i]->set(motorSet);
-          }
+          leftMotor.set((byte)msgdata[0]);
+          rightMotor.set((byte)msgdata[1]);
         }
         else
         {
@@ -130,25 +112,42 @@ int parseMessage()
     }
     
     
-    case 'S':  // servo messages
+    case 'R':  // rangefinder messages
     {
-      if(msgid[1] == 'E') // servo enable
+      if(msgid[1] == 'E')  // rangefinder system enable
       {
-        byte servopos;
-        for(int i=0; i<NUM_SERVOS; i++)
+        if(msgdata[0] == '1')
         {
-          servopos = (byte)msgdata[i];
-          if(servopos > 180)
-          {
-            debugmsg = "err 12"; // invalid servo position
-            debug();
-            return -1;
-          }
-          else
-            servoArray[i]->write(servopos);
+          rangefinderEnable = true;
+          frontLeftServo.attach(FRONTLEFTSERVOPIN);
+          frontRightServo.attach(FRONTRIGHTSERVOPIN);
+          rightSideServo.attach(RIGHTSIDESERVOPIN);
+          rearRightServo.attach(REARRIGHTSERVOPIN);
+          rearLeftServo.attach(REARLEFTSERVOPIN);
+          leftSideServo.attach(LEFTSIDESERVOPIN);
+        }
+        else if(msgdata[0] == '0')
+        {
+          rangefinderEnable = false;
+          frontLeftServo.detach();
+          frontRightServo.detach();
+          rightSideServo.detach();
+          rearRightServo.detach();
+          rearLeftServo.detach();
+          leftSideServo.detach();
+        }
+        else
+        {
+          debugmsg = "err 11";  // nope
+          debug();
+          return -1;
         }
         return 0;
       }
+      
+      //if(msgid[1] == 'Q') // rangefinder data request!
+      //{
+        //for(int i=0; i<20; i++)
       
       debugmsg = "err 14"; // if we get here ID2 is bad
       debug();
