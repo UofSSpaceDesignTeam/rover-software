@@ -41,7 +41,6 @@ public class ServoMotors extends Actuator
 			setMessage[i] = (byte) angleInDegrees[i];
 		}
 		super.set(setMessage);
-		super.sendToArduino(ID1_RANGEFINDER, )
 	}	
 	
 }
