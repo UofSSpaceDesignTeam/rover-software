@@ -8,7 +8,7 @@ package prototype1;
 public class Rangefinder extends Sensor 
 {
 	/**
-	 * 	the number of rangefinders attached to the arduino
+	 * 	the number of rangefinder bundles attached to the arduino
 	 */
 	private int numRangefinders;
 	
@@ -18,25 +18,41 @@ public class Rangefinder extends Sensor
 	 */
 	Rangefinder(int numRFinders, ArduinoMessageHandler attachedArduino)
 	{
-		super(attachedArduino,ID1_RANGEFINDER);
+		super(attachedArduino,MessageProtocol.ID1_RANGEFINDER);
 		this.numRangefinders = numRFinders;
 	}
 	
 	/**
 	 * Sends enable/disable to the rangefinder autoleveler and starts the rangefinders
+	 * @return 
 	 */
-	public enableRangefinders()
+	public void enableRangefinders()
 	{
-		super.sendToArduino(super.id, MessageProtocol.ID2_ENABLE_DISABLE);
+		byte[] byteToSend = new byte[1];
+		byteToSend[0] = MessageProtocol.ID2_ENABLE_DISABLE;
+		super.sendToArduino(id, byteToSend);
 	}
 	
 	/**
 	 * sends query to the arduino for data
 	 * the arduino returns data in the form RD [data]12 bytes 2 bytes for each sensor
+	 * @return 
 	 */
-	public queryRangefinders()
+	public void queryRangefinders()
 	{
-		super.sendToArduino(super.id, MessageProtocol.ID2_QUERY);
+		byte[] byteToSend = new byte[1];
+		byteToSend[0] = MessageProtocol.ID2_QUERY;
+		super.sendToArduino(id, byteToSend);
 		//TODO deal with return message
+		try {
+			//waits to be notified of a message might want to change this to a time
+			// in case of not being notified
+			this.wait();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 }
