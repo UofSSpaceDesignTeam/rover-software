@@ -22,37 +22,16 @@ public class Rangefinder extends Sensor
 		this.numRangefinders = numRFinders;
 	}
 	
-	/**
-	 * Sends enable/disable to the rangefinder autoleveler and starts the rangefinders
-	 * @return 
-	 */
-	public void enableRangefinders()
-	{
-		byte[] byteToSend = new byte[1];
-		byteToSend[0] = MessageProtocol.ID2_ENABLE_DISABLE;
-		super.sendToArduino(id, byteToSend);
-	}
 	
 	/**
 	 * sends query to the arduino for data
 	 * the arduino returns data in the form RD [data]12 bytes 2 bytes for each sensor
 	 * @return 
 	 */
-	public void queryRangefinders()
+	public void query()
 	{
 		byte[] byteToSend = new byte[1];
 		byteToSend[0] = MessageProtocol.ID2_QUERY;
 		super.sendToArduino(id, byteToSend);
-		//TODO deal with return message
-		try {
-			//waits to be notified of a message might want to change this to a time
-			// in case of not being notified
-			this.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
 	}
 }

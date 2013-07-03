@@ -28,7 +28,7 @@ public class IMU extends Sensor
 		int[] toReturn = new int[numIMUs];
 		//We should have 1 byte of data per IMU				
 		
-		byte[] arrayAsBytes = super.cache.peek();
+		byte[] arrayAsBytes = super.cache.peek().getValue();
 		//TODO check to make sure returned byte array from cache is as expected
 		for (int i = 0; i < this.numIMUs; i++)
 		{
