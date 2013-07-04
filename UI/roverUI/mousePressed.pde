@@ -1,6 +1,6 @@
 void mousePressed() {
 //Movement Buttons//  
-//Move Up Button (up arrow) 
+//Move Up Button (up arrow on UI) 
   if (overButton(move_upButton.myX,move_upButton.myY,move_upButton.myWidth,move_upButton.myHeight)) {
     //move_upButton.myColor = default_color;
     move_upButton.activate();

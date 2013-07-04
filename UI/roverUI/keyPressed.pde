@@ -1,33 +1,23 @@
 
 // activates every time a keyboard button is pressed down
 // does action corresponding to which button was pressed
-
 int scrollAdjust = 5; //increment at which scrollbar moves with each button press of PAGE UP or PAGE DOWN 
 
 void keyPressed() {
-  if (keydown == false){
-    keydown = true;
-    if (key == CODED) {// special case for specail keys**: UP, DOWN, LEFT, RIGHT, arrow keys, ALT, CONTROL, SHIFT
+ 
+ if (key == CODED) {// special case for specail keys**: UP, DOWN, LEFT, RIGHT, arrow keys, ALT, CONTROL, SHIFT
                        // need to use keyCode == __ instead of key = __ (ie: keyCode = DOWN for down arrow key)
                        // some keys are coded using numbers, ie: keyCode = 35 for the "End" button
                         // **does not include BACKSPACE, TAB, ENTER, RETURN, ESC, and DELETE [ie: can use if(key == TAB)]
                         // key == ' ' for spacebar
+    if (keydown == false){
+      keydown = true;
       if (keyCode == UP) {
         // pressing the up arrow key tells the rover to move forward
         motor1Speed = speedbar.getPos()+127; //sets both motors to a positive speed
         motor2Speed = speedbar.getPos()+127; // based on position of speed slider
         move_pending = true;
-        //the following code was moved from the "messages" tab to allow press-and-hold movement
-  //      speed[0] = byte(motor1Speed);//converts the motor speeds to bytes for transmission
-  //      speed[1] = byte(motor2Speed);
-  //      
-  //      if(connected){// only attempts to send the message if the user is connected to the rover
-  //                    // (prevents null pointer errors which crash the program)
-  //        outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-  //        outMessage.sendMessage(); 
-  //      } else {
-  //        println("Not connected");
-  //      }
+       
         move_upButton.activate();
         move_downButton.deactivate();
         move_leftButton.deactivate();
@@ -38,16 +28,7 @@ void keyPressed() {
          motor1Speed = motor1Speed =127 - speedbar.getPos();
          motor2Speed = motor2Speed =127 - speedbar.getPos();
          move_pending = true;
-  //      speed[0] = byte(motor1Speed);
-  //      speed[1] = byte(motor2Speed);
-  //    
-  //      if(connected){
-  //        outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-  //        outMessage.sendMessage(); 
-  //      }else {
-  //        println("Not connected");
-  //      }
-        
+         
          move_upButton.deactivate();
          move_downButton.activate();
          move_leftButton.deactivate();
@@ -55,20 +36,9 @@ void keyPressed() {
   
       } else if (keyCode == LEFT) { 
         // pressing the left arrow key tells the rover to turn left
-         motor1Speed = motor1Speed =speedbar.getPos()+127;
-         motor2Speed = motor2Speed =127 - speedbar.getPos();
-         move_pending = true;
-  //      speed[0] = byte(motor1Speed);
-  //      speed[1] = byte(motor2Speed);
-  //      println(int(speed[0]));
-  //      println(int(speed[1]));
-  //
-  //      if(connected){
-  //        outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-  //        outMessage.sendMessage(); 
-  //      } else {
-  //        println("Not connected");
-  //      }
+        motor1Speed = motor1Speed =speedbar.getPos()+127;
+        motor2Speed = motor2Speed =127 - speedbar.getPos();
+        move_pending = true;
    
         move_upButton.deactivate();
         move_downButton.deactivate();
@@ -77,25 +47,17 @@ void keyPressed() {
          
       }else if (keyCode == RIGHT) { 
         // pressing the right arrow key tells the rover to turn right   
-         motor1Speed = motor1Speed =127 - speedbar.getPos();
-         motor2Speed = motor2Speed =speedbar.getPos()+127;
-         move_pending = true;
-  //      speed[0] = byte(motor1Speed);
-  //      speed[1] = byte(motor2Speed);
-  //      println(int(speed[0]));
-  //      println(int(speed[1]));
-  //      if(connected){
-  //        outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-  //        outMessage.sendMessage(); 
-  //      } else {
-  //        println("Not connected");
-  //      }
+        motor1Speed = motor1Speed =127 - speedbar.getPos();
+        motor2Speed = motor2Speed =speedbar.getPos()+127;
+        move_pending = true;
+ 
         move_upButton.deactivate();
         move_downButton.deactivate();
         move_leftButton.deactivate();
         move_rightButton.activate();
-         
-      }else if (keyCode == 33) { //keyCode 33 corresponds to the Page Up button
+      }
+    }
+      if (keyCode == 33) { //keyCode 33 corresponds to the Page Up button
       // pressing the Page Up button moves the speed slider to the right (increase speed)
         if (speedbar.newspos + scrollAdjust/speedbar.ratio < speedbar.sposMax){ // checks to see if speed slider is at maximum
           speedbar.newspos = speedbar.newspos + scrollAdjust/speedbar.ratio;    // only increases speed up to maximum value (currently 127)
@@ -154,7 +116,7 @@ void keyPressed() {
         
       }
     }
-  }
+  
 }
 
 
@@ -163,16 +125,7 @@ void keyPressed() {
 void keyReleased(){
   keydown = false;
   if (key == CODED) {
-    if (keyCode == UP && move_upButton.isActive()) {
-//       speed[0] = byte(127);
-//       speed[1] = byte(127);
-//       
-//       outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-//       if(connected){
-//         outMessage.sendMessage();    
-//       } else {
-//        println("Not connected");
-//      }    
+    if (keyCode == UP && move_upButton.isActive()) { 
        
        if(connected){
           stop_moveButton.activate();
@@ -186,40 +139,19 @@ void keyReleased(){
            stop_moveButton.activate();
           }
           move_downButton.deactivate();
-//       if(connected){
-//         move_downButton.deactivate();
-//         speed[0] = byte(127);
-//         speed[1] = byte(127);
-//       
-//         outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-//         outMessage.sendMessage();    
-//       }  
+
     } else if (keyCode == LEFT && move_leftButton.isActive()) { 
          if(connected){
           stop_moveButton.activate();
          }     
          move_leftButton.deactivate();
-//       if(connected){
-//         move_leftButton.deactivate();
-//         speed[0] = byte(127);
-//         speed[1] = byte(127);
-//       
-//         outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-//         outMessage.sendMessage();    
-//       }  
+ 
     } else if (keyCode == RIGHT && move_rightButton.isActive()) { 
         if(connected){
           stop_moveButton.activate();
         }
         move_rightButton.deactivate();
-//       if(connected){
-//         move_rightButton.deactivate();
-//         speed[0] = byte(127);
-//         speed[1] = byte(127);
-//       
-//         outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-//         outMessage.sendMessage();    
-//       }  
+
     } else if (keyCode == 35) { //keyCode 35 corresponds to the End button
       stop_moveButton.deactivate();
     } else if (keyCode == TAB) { 
@@ -233,7 +165,6 @@ void keyReleased(){
 
     }
   }  
-  
-  
+ 
   
 }

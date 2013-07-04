@@ -47,6 +47,8 @@ public class Message {
   public void sendMessage()
   {
     client.write(message);
+    last_message = millis();
+    bytes_sent += message[3] * 256 + message[4]+6;
   }
   public void recieveMessage()
   {

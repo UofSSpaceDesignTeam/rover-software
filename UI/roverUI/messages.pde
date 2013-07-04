@@ -6,6 +6,9 @@ boolean move_disable_confirmed = true;
 boolean move_pending = false; //becomes true when a movement command needs to be sent.
 boolean emergency_sent = false;
 int message_delay = 20;//a time delay (in milliseconds) between messages being sent to the rover
+
+
+
 void sendMessages(){
   
   if ((move_upButton.isActive() || move_downButton.isActive() || move_leftButton.isActive() || move_rightButton.isActive()) && move_pending == true&&(millis()-last_message)>message_delay){
@@ -14,13 +17,16 @@ void sendMessages(){
                   // (prevents null pointer errors which crash the program)
       speed[0] = byte(motor1Speed);//converts the motor speeds to bytes for transmission
       speed[1] = byte(motor2Speed);
-   
-      outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-      outMessage.sendMessage(); 
-      last_message=millis();
-      bytes_sent += outMessage.getLength();
+      if(enable_moveButton.isActive() && move_enable_confirmed == true){
+        outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
+        outMessage.sendMessage(); 
+        last_message=millis();
+      } else {
+        new_debug_message("Movement Not Enabled");
+      }
       
     } else {
+      //notifies the user if there is no connection
       new_debug_message("Not connected");
     }
     move_pending = false;
@@ -37,33 +43,36 @@ void sendMessages(){
     
 
     if(connected){
-      outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
-      //println(char(outMessage.getMessage()));//for debugging purposes
-      outMessage.sendMessage();  
-      last_message = millis(); 
-      bytes_sent += outMessage.getLength();
-
+      if(enable_moveButton.isActive() && move_enable_confirmed == true){
+        outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
+        //println(char(outMessage.getMessage()));//for debugging purposes
+        outMessage.sendMessage();  
+        last_message = millis();  
+      } else {
+        new_debug_message("Movement Not Enabled");
+      }
     }else{
       new_debug_message("Not connected");
     } 
-    stop_moveButton.deactivate();//temporary loacation, should be deactivated upon confirmation from rover
-    //outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ENABLE_DISABLE,null);  
+    
+    /*temporary loacation, should be deactivated upon confirmation from rover*/
+    stop_moveButton.deactivate();
   }
   if (enable_moveButton.isActive()&&(millis()-last_message)>message_delay){
     if(move_enable_confirmed == false){
-    new_debug_message("Enable move");
-    //println(int(byte(200)));
-    byte[] data = new byte[1];
-    data[0] = '1';
+    
    
     //speed[0] = byte(127);
     //speed[1] = byte(127);
     //outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
     //outMessage.sendMessage();    
     if(connected){
+      new_debug_message("Enable move");
+      //println(int(byte(200)));
+      byte[] data = new byte[0];
+      //data[0] = '1';
       outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ENABLE_DISABLE,data);
       outMessage.sendMessage(); 
-      bytes_sent += outMessage.getLength();
       move_disable_confirmed = false;
       move_enable_confirmed = true;
       last_message = millis();
@@ -74,17 +83,17 @@ void sendMessages(){
     }    
   } else if(!enable_moveButton.isActive()&&(millis()-last_message)>message_delay){
     if(move_disable_confirmed == false){
-      new_debug_message("Disable move");
-      //println(int(byte(200)));
-      byte[] data = new byte[0];
-      //data[0] = byte(0);
+      
       
       //outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ROTATION,speed);
       //outMessage.sendMessage();  
       if(connected){  
+        new_debug_message("Disable move");
+        //println(int(byte(200)));
+        byte[] data = new byte[0];
+        //data[0] = byte(0);
         outMessage.Message(MessageProtocol.ID1_MOTORS,MessageProtocol.ID2_ENABLE_DISABLE,data);
         outMessage.sendMessage(); 
-        bytes_sent += outMessage.getLength();
         move_disable_confirmed = true;
         move_enable_confirmed = false;
         last_message = millis();
@@ -94,22 +103,55 @@ void sendMessages(){
       } 
     }
   }
+//Emergency Stop Message
+  //only sends a message once and only if the emergency stop button has been activated  
   if(stopButton.isActive()&&(millis()-last_message)>message_delay&&emergency_sent==false){
-    if(connected){  
+    //only attempts to send the message while connected to the rover
+    if(connected){
+        //message class needs a byte variable input for data, but the emergency stop message needs no data other than the ID1 and ID2
+        // so it sends a byte array of zero length  
         byte[] data = new byte[0];
-        //data[0] = byte(0);
+        //sets up the message to be sent
         outMessage.Message(MessageProtocol.ID1_POWER,MessageProtocol.ID2_EMERGENCY_OFF,data);
-        outMessage.sendMessage(); 
-        bytes_sent += outMessage.getLength();
-        //stopButton.deactivate();
+        //sends message
+        outMessage.sendMessage();
+        
+       
+        //adds message length to total bytes sent (used for measuring bandwidth use) 
+        
+        
         last_message = millis();
+        //message sent successfully, so don't need to attempt to sent again
         emergency_sent = true;
       }else{
         new_debug_message("Not connected");
-      } 
-    
+        stopButton.deactivate();
+      }  
   }
   
+  if(stopButton.isActive()&&(millis()-last_message)>message_delay&&emergency_sent==false){
+    //only attempts to send the message while connected to the rover
+    if(connected){
+        //message class needs a byte variable input for data, but the emergency stop message needs no data other than the ID1 and ID2
+        // so it sends a byte array of zero length  
+        byte[] data = new byte[0];
+        //sets up the message to be sent
+        outMessage.Message(MessageProtocol.ID1_POWER,MessageProtocol.ID2_EMERGENCY_OFF,data);
+        //sends message
+        outMessage.sendMessage();
+        
+       
+        //adds message length to total bytes sent (used for measuring bandwidth use) 
+        
+        
+        last_message = millis();
+        //message sent successfully, so don't need to attempt to sent again
+        emergency_sent = true;
+      }else{
+        new_debug_message("Not connected");
+        stopButton.deactivate();
+      } 
+  }
 
       
 }

@@ -1,47 +1,58 @@
 import processing.net.*;
-boolean keydown;
-Client client; // client used to connect to rover server 
-//String testIp = "127.0.0.1";//for testing that does not need connection to rover, requires running test server program
-String testIp = "10.227.0.179";
-String roverIp_wireless = "192.168.1.10"; // Current IP of rover for wireless connection
-String roverIp_tethered = "192.168.1.11"; // Current IP of rover for tethered ethernet connection
+boolean keydown; /* keeps track of when a button is pressed released, (becomes true when a key is pressed and false when it is released
+                 to counteract the "hold key to repeat" function that all computer keyboards use
+                  eg: holding down the "k" key will type "kkkkkkkkkkkk" which we don't want for press-and-hold keyboard controls*/
+Client client; /* client used to connect to rover server*/ 
+String testIp = "127.0.0.1";/*for testing that does not need connection to rover, requires running test server program*/
+//String testIp = "10.227.0.179"; /*local IP of computer running test server; (this one varies between computers and networks so don't be afraid to change it as needed)*/
+String roverIp_wireless = "192.168.1.10"; /* Current IP of rover for wireless connection */
+String roverIp_tethered = "192.168.1.11"; /* Current IP of rover for tethered ethernet connection */
 
-//String roverIp = "10.227.5.214"; // Current IP of rover, may change as network changes
+//String roverIp = "10.227.5.214"; /* Current IP of rover, may change as network changes */
 
-int comm_port = 7050; // port used for connection to the rover server
-
-int eStopX = 300;     // information for emergency stop button
-int eStopy = 600;     // separate from the other buttons because it's
-int eStopWidth = 200; // a different size
+/* port used for connection to the rover server*/
+int comm_port = 7050; 
+/*emergency stop button dimensions are defined separately due to the button having a unique size */
+int eStopX = 300;      
+int eStopy = 600;      
+int eStopWidth = 200; 
 int eStopHeight = 50;
+/* x-coordinate of video monitor location (camera video feed)*/
+int videoX = 352; 
+/* y-coordinate of video monitor location*/
+int videoY = 200; 
+/* default colour of buttons when not activated(excludes emergency stop button)*/
+color default_color = color(0,100,15); 
+/*color of buttons when active/pressed (excludes emergency stop button)*/
+color active_color = color(30,220,40); 
 
-int videoX = 352; // x-coordinate of video monitor location (320x240)
-int videoY = 200; // y-coordinate of video monitor location
+/* variable holding speed of right motor (will need to be changed when number of motors is finalized)*/
+int motor1Speed = 0; 
+/* variable holding speed of left motor (see above comment)*/
+int motor2Speed = 0; 
 
-color default_color = color(0,100,15); // default button colour when not activated
-color active_color = color(30,220,40); // color of buttons when active/pressed (excludes emergency stop button)
-
-int motor1Speed = 0; // variable holding speed of right motor (??)
-int motor2Speed = 0; // variable holding speed of left motor (??)
-
+ /*variable used for timing messages sent to rover to prevent timeout disconnects (may not be necessary)*/ 
 int timer = millis();
-int last_message = 0;
-int bytes_sent = 0;
+/*keeps track of time that last message was sent at (relative to starting UI program) */
+int last_message = 0; 
+/* tracks amount of data sent over network (in bytes) */
+int bytes_sent = 0;  
 
-PImage img;
-void setup() //setup which is run once at startup before starting the main "draw" loop
+/*setup is run once at startup before starting the main "draw" loop 
+ it is mainly used for giving variables their starting values and defining the size of the window the program will run in*/
+void setup() 
 {
-  keydown = false;
+  keydown = false; 
   size(1024,600); // size of UI window
   
-  //sets buttons which are on/active by default
+  /*sets buttons which are on/active by default */
   ai_offButton.activate();
   video_offButton.activate();
   video_depthButton.activate();
   //wireless_serverButton.activate();
   
-  //sets buttons which compliment each other turning
-  //one on will turn its complement off and vice-versa
+  /*sets buttons which compliment each other turning
+  one on will turn its complement off and vice-versa*/
   //wireless_serverButton.setOther(test_serverButton);
   //test_serverButton.setOther(rover_serverButton);
   d_upButton.setOther(d_downButton);
@@ -87,9 +98,10 @@ void setup() //setup which is run once at startup before starting the main "draw
   
 }
 
-void draw() // main loop of program
+ /* main loop of program*/
+void draw()
 {
-  //the first part of the loop just redraws all objects seen on the UI window
+  /*the first part of the loop just redraws all objects seen on the UI window*/
   
   textAlign(CENTER,CENTER); // all text drawn using the text function will appear 
                             // with the x- and y-coordinates at the centre of the text
@@ -155,7 +167,6 @@ void connection() {
           if(millis()-last_message>message_delay){
             outMessage.Message(MessageProtocol.ID1_DEBUG,MessageProtocol.ID2_CHECK,debug);
             outMessage.sendMessage();
-            bytes_sent += outMessage.getLength();
           //message to maintain connection (to do later);  // send message to maintain connection
             last_message = millis();
             timer = millis();  //reset timeout timer
