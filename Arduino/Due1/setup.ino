@@ -6,7 +6,7 @@ void setup()
 {
   while (!Serial); // wait for main serial port to open before starting
   Serial.begin(115200); // start the USB Serial port
-  Serial.setTimeout(MSG_TIMEOUT);
+  Serial.setTimeout(MSG_TIMEOUT); // stop listening if any read takes too long
   
   pinMode(13,OUTPUT); // set LED off to start
   digitalWrite(13,LOW);

@@ -37,10 +37,12 @@ class Actuator
 	Actuator();	// constructor
 	
 	int position() const; // access the current length in mm
-	byte target() const; // access the last order given to the actuator
+	int target() const; // access the last order given to the actuator
 	
 	int attach(byte aPin, byte bPin, byte pwmPin);	// set the hardware connections for the actuator
 	void set(byte newSetting);	// set the target for the actuator
+	
+	void refresh(); // check on the actuator if it is moving
 	
 	private:
 	
@@ -48,6 +50,7 @@ class Actuator
 	byte pinB;
 	byte pinPWM;
 	boolean attached;
+	boolean moving;
 	byte currentTarget;
 };
 

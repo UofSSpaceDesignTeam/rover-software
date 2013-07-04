@@ -93,3 +93,12 @@ void Motor::set(byte newSetting)
 		analogWrite(pinPwm,2*(127-newSetting));
 	}
 }
+
+
+Actuator::Actuator()
+{
+	attached = false;
+	moving = false;
+	
+	
+	
