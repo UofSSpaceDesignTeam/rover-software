@@ -23,15 +23,20 @@ void setup()
   pos = getPosition();
   lastpos = pos;
   Serial.println(pos);
+  Serial.println("Current distance:");
+  distance=getDistance();
+  Serial.println(distance);
 }
 
 
 void loop()
 {
+  distance = getDistance();
+  Serial.println(distance);
   pos = getPosition();
   if(abs(pos - lastpos) > 1) // watch for external movement
   {
-    Serial.println(pos);
+    Serial.print(pos);
     lastpos = pos;
     delay(25);
   }
@@ -44,11 +49,11 @@ void loop()
     msg[3] = '\0';
     if(msg[0]=='R')
     {
-      range()
+      movePosition(map(getRange(),0,1023,0,140)););
     }
-    if(msg[0]!='R')
+    if(msg[0]!=='R')
     {
-    movePosition(constrain(atoi(msg),0,140)); // move to given position
+      movePosition(constrain(atoi(msg),0,140)); // move to given position
     }
     Serial.flush();
   }
@@ -67,8 +72,10 @@ void movePosition(int p) // move near a specified position
     moveOut();
     while(p > pos + 1)
     {
+      distance = getDistance();
       pos = getPosition();
-      Serial.println(pos); // report position while moving
+      Serial.print(pos); // report position while moving
+      Serial.println(distance);
       delay(50);
     }
     halt();
@@ -79,8 +86,10 @@ void movePosition(int p) // move near a specified position
     moveIn();
     while(p < pos - 1)
     {
+      distance = getDistance();
       pos = getPosition();
-      Serial.println(pos);
+      Serial.print(pos);
+      Serial.println(distance);
       delay(50);
     }
     halt();
@@ -109,16 +118,16 @@ void halt()
 {
    analogWrite(6,0);
 }
- 
-void range()
+
+
+int getDistance()
 {
-  sum=0;
+    sum=0;
   for(int i=0; i<40; i++)
   {
     sum+= analogRead(1);
     sum=sum/40;
-    distance=map(sum,0,1023,0,140));
-    movePosition(distance);
+    return sum;
   }
-  Serial.println(distance);
 }
+
