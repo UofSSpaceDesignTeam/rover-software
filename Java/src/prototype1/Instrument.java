@@ -2,6 +2,8 @@ package prototype1;
 
 import java.util.Observable;
 
+import ai.Situation;
+
 
 public abstract class Instrument extends Observable
 {
@@ -16,14 +18,28 @@ public abstract class Instrument extends Observable
 	protected ArduinoMessageHandler associatedArduino;
 	
 	/**
+	 * the instrument's situation (position and orientation)
+	 */
+	protected Situation situation;
+	
+	/**
+	 * @return the situation
+	 */
+	public Situation getSituation() {
+		return situation;
+	}
+
+	/**
 	 * Constructor for this class
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 * @param thisId	the [ID1] byte that represents this instrument (M for motor; I for IMU, etc)
+	 * @param s	the situation of the instrument
 	 */
-	Instrument(ArduinoMessageHandler attachedArduino, byte thisId)
+	Instrument(ArduinoMessageHandler attachedArduino, byte thisId, Situation s)
 	{
 		id = thisId;
 		associatedArduino = attachedArduino;
+		this.situation = s;
 	}
 	
 	/**

@@ -9,22 +9,17 @@ import prototype1.Sensor;
 
 /*
  * IMPORTANT: How do we prevent the AI from changing the Robot's (and other RealWorldObjects') situations,
- * while allowing the data-driven backend to freely modify them?
+ * while allowing the data-driven back end to freely modify them?
  * 
  * We need to somehow give the AI a clean interface - for now, we handle by 
  */
 
 /**
- * represents the robot
+ * groups together the navigation-related functionality of the robot
  * @author fit-pc
  *
  */
-public interface RobotInterface {
-	
-	
-	/*
-	 * NAVIGATION INTERFACE
-	 */
+public interface NavigationInterface {
 	
 	/**
 	 * commands robot to move in a straight line at the given speed
@@ -44,13 +39,5 @@ public interface RobotInterface {
 	 * @param speed linear speed of robot in meters per second
 	 */
 	public void curve(double radius, double speed);
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

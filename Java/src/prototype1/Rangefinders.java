@@ -5,7 +5,7 @@ package prototype1;
  *	The rangefinders for the Robot.  We get 6 numbers back because the arduino
  *	handles the data and returns the valid one between the short and long rangefinder
  */
-public class Rangefinder extends Sensor 
+public class Rangefinders extends Sensor 
 {
 	/**
 	 * 	the number of rangefinder bundles attached to the arduino
@@ -16,7 +16,7 @@ public class Rangefinder extends Sensor
 	 * @param numRFinders the number of rangefinders attached to the Arduino
 	 * @param attachedArduino is the arduino that the rangefinder is physically on
 	 */
-	Rangefinder(int numRFinders, ArduinoMessageHandler attachedArduino)
+	Rangefinders(int numRFinders, ArduinoMessageHandler attachedArduino)
 	{
 		super(attachedArduino,MessageProtocol.ID1_RANGEFINDER);
 		this.numRangefinders = numRFinders;
