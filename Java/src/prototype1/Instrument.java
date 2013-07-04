@@ -20,14 +20,24 @@ public abstract class Instrument extends Observable
 	/**
 	 * the instrument's situation (position and orientation)
 	 */
-	protected Situation situation;
+	protected Situation situation[];
 	
 	/**
-	 * @return the situation
+	 * @return the first (possibly only) situation
 	 */
 	public Situation getSituation() {
-		return situation;
+		return situation[0];
 	}
+	
+	/**
+	 * @param idx the index of the subinstrument
+	 * @return the subinstrument indicated by the index
+	 */
+	public Situation getSituation(int idx){
+		return situation[idx];
+	}
+	
+	
 
 	/**
 	 * Constructor for this class
@@ -35,7 +45,7 @@ public abstract class Instrument extends Observable
 	 * @param thisId	the [ID1] byte that represents this instrument (M for motor; I for IMU, etc)
 	 * @param s	the situation of the instrument
 	 */
-	Instrument(ArduinoMessageHandler attachedArduino, byte thisId, Situation s)
+	Instrument(ArduinoMessageHandler attachedArduino, byte thisId, Situation[] s)
 	{
 		id = thisId;
 		associatedArduino = attachedArduino;
