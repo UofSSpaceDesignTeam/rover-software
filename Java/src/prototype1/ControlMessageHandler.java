@@ -12,7 +12,7 @@ public class ControlMessageHandler implements Observer, Runnable
 	/**
 	 * the instruments, indexed by the first ID byte
 	 */
-	HashMap<Byte,Instrument> instruments = new HashMap<Byte,Instrument>();
+	HashMap<Byte,ArduinoInstrumentArray> instruments = new HashMap<Byte,ArduinoInstrumentArray>();
 	
 	TwoWayCommunicator comm; 
 	
@@ -40,7 +40,7 @@ public class ControlMessageHandler implements Observer, Runnable
 	 * @param id1 the first id byte of the instrument (see MessageProtocol)
 	 * @param instrument the instrument object
 	 */
-	public void addInstrument(byte id1, Instrument instrument){
+	public void addInstrument(byte id1, ArduinoInstrumentArray instrument){
 		instruments.put(id1, instrument);
 		System.out.println(instruments.size());
 	}
@@ -58,7 +58,7 @@ public class ControlMessageHandler implements Observer, Runnable
 		System.out.println("|");
 		
 		// handle the message		
-		Instrument target = instruments.get(msg.getID1());		
+		ArduinoInstrumentArray target = instruments.get(msg.getID1());		
 		if(target != null)
 		{
 			

@@ -3,7 +3,7 @@ package ai;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 
-import prototype1.Instrument;
+import prototype1.ArduinoInstrumentArray;
 import prototype1.Sensor;
 
 

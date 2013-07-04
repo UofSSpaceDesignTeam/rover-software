@@ -7,7 +7,7 @@ import ai.Situation;
  * An abstract class to store functionality common to all actuators
  */
 
-public abstract class Actuator extends Instrument
+public abstract class Actuator extends ArduinoInstrumentArray
 {
 	/**
 	 * Constructor that calls the super constructor (Instrument)

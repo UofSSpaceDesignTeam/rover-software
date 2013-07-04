@@ -1,6 +1,6 @@
 package ai;
 
-import prototype1.Instrument;
+import prototype1.ArduinoInstrumentArray;
 
 /**
  * a wrapper around an instrument that also contains its location
@@ -13,16 +13,16 @@ public class RealWorldInstrument extends RealWorldObject {
 	/**
 	 * @param instrument
 	 */
-	public RealWorldInstrument(Instrument instrument) {
+	public RealWorldInstrument(ArduinoInstrumentArray instrument) {
 		this.instrument = instrument;
 	}
 
-	private Instrument instrument;
+	private ArduinoInstrumentArray instrument;
 
 	/**
 	 * @return the instrument
 	 */
-	public Instrument getInstrument() {
+	public ArduinoInstrumentArray getInstrument() {
 		return instrument;
 	}
 

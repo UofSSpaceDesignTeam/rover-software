@@ -9,7 +9,7 @@ import ai.Situation;
  * An abstract class to store functionality common to all the sensors
  *
  */
-public abstract class Sensor extends Instrument {
+public abstract class Sensor extends ArduinoInstrumentArray {
 	
 	/**
 	 * The maximum number of data packets that can be stored
