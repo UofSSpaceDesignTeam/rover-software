@@ -1,5 +1,7 @@
 package prototype1;
 
+import ai.Situation;
+
 
 /**
  * An abstract class to store functionality common to all actuators
@@ -12,9 +14,9 @@ public abstract class Actuator extends Instrument
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 * @param thisId	the [ID1] byte that represents this instrument (M for motor; I for IMU, etc)
 	 */
-	Actuator(ArduinoMessageHandler attachedArduino, byte thisId)
+	Actuator(ArduinoMessageHandler attachedArduino, byte thisId, Situation[] s, int numOfActuators)
 	{
-		super(attachedArduino, thisId);
+		super(attachedArduino, thisId, s, numOfActuators);
 	}
 	
 	/**

@@ -15,6 +15,11 @@ public abstract class Instrument extends Observable {
 	 */
 	protected int numOfInstruments;
 
+	public int getNumOfInstruments() 
+	{
+		return numOfInstruments;
+	}
+
 	/**
 	 * Store the Arduino that this instrument is attached to
 	 */
@@ -56,9 +61,10 @@ public abstract class Instrument extends Observable {
 			Situation[] s, int instrumentNumbers) {
 
 		this.numOfInstruments = instrumentNumbers;
-		situation = new Situation[instrumentNumbers];
-		id = thisId;
-		associatedArduino = attachedArduino;
+		this.situation = new Situation[instrumentNumbers];
+		this.situation = s;
+		this.id = thisId;
+		this.associatedArduino = attachedArduino;
 		this.situation = s;
 	}
 

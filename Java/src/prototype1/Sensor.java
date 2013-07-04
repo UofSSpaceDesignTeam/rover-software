@@ -2,6 +2,8 @@ package prototype1;
 
 import java.util.LinkedList;
 
+import ai.Situation;
+
 //TODO MAKE INSTANCE OF OBSERVABLE
 /**
  * An abstract class to store functionality common to all the sensors
@@ -26,10 +28,9 @@ public abstract class Sensor extends Instrument {
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 * @param thisId	the [ID1] byte that represents this instrument (M for motor; I for IMU, etc)
 	 */
-	Sensor(ArduinoMessageHandler attachedArduino, byte thisId)
+	Sensor(ArduinoMessageHandler attachedArduino, byte thisId, Situation[] s, int numOfSensors)
 	{
-		
-		super(attachedArduino, thisId);
+		super(attachedArduino, thisId,s,numOfSensors);
 	}
 	
 	
