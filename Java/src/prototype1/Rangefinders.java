@@ -1,5 +1,7 @@
 package prototype1;
 
+import ai.Situation;
+
 /**
  * @author dylan
  *	The rangefinders for the Robot.  We get 6 numbers back because the arduino
@@ -7,19 +9,14 @@ package prototype1;
  */
 public class Rangefinders extends Sensor 
 {
-	/**
-	 * 	the number of rangefinder bundles attached to the arduino
-	 */
-	private int numRangefinders;
 	
 	/**
 	 * @param numRFinders the number of rangefinders attached to the Arduino
 	 * @param attachedArduino is the arduino that the rangefinder is physically on
 	 */
-	Rangefinders(int numRFinders, ArduinoMessageHandler attachedArduino)
+	Rangefinders(ArduinoMessageHandler attachedArduino, Situation[] s, int numOfRangeFinders)
 	{
-		super(attachedArduino,MessageProtocol.ID1_RANGEFINDER);
-		this.numRangefinders = numRFinders;
+		super(attachedArduino,MessageProtocol.ID1_RANGEFINDER, s, numOfRangeFinders);
 	}
 	
 	

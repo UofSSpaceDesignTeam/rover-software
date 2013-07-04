@@ -1,26 +1,22 @@
 package prototype1;
 
+import ai.Situation;
+
 
 public class Motors extends Actuator {
 	// speed constants TODO add javadoc
 	public static final int SPEED_FULL_REVERSE = 0;
 	public static final int SPEED_STOP = 127;
 	public static final int SPEED_FULL_FORWARD = 255;	
-	
-	/**
-	 * The number of motors being controlled by this class
-	 */
-	private int numMotors;
-	
+		
 	/**
 	 * The constructor for the Motors class
 	 * @param newArduino  The arduino that this motor is installed on
 	 * @param  motorsToControl	The number of motor that the class will control
 	 */
-	public Motors(ArduinoMessageHandler attachedArduino, int motorsToControl)
+	public Motors(ArduinoMessageHandler attachedArduino, Situation[] s,int motorsToControl)
 	{	
-		super(attachedArduino, MessageProtocol.ID1_MOTORS);
-		this.numMotors =  motorsToControl;
+		super(attachedArduino, MessageProtocol.ID1_MOTORS, s, motorsToControl);
 	}
 	
 	/**
@@ -44,8 +40,8 @@ public class Motors extends Actuator {
 	// convenience methods TODO add javadoc
 	public void goForward()
 	{
-		byte[] speed = new byte[numMotors];
-		for (int i = 0; i < numMotors; i++)
+		byte[] speed = new byte[this.size()];
+		for (int i = 0; i < this.size(); i++)
 		{
 			speed[i] = (byte) SPEED_FULL_FORWARD;
 		}
@@ -54,8 +50,8 @@ public class Motors extends Actuator {
 	
 	public void goReverse()
 	{
-		byte[] speed = new byte[numMotors];
-		for (int i = 0; i < numMotors; i++)
+		byte[] speed = new byte[this.size()];
+		for (int i = 0; i < this.size(); i++)
 		{
 			speed[i] = (byte) SPEED_FULL_REVERSE;
 		}
@@ -63,8 +59,8 @@ public class Motors extends Actuator {
 	}
 	public void stop()
 	{
-		byte[] speed = new byte[numMotors];
-		for (int i = 0; i < numMotors; i++)
+		byte[] speed = new byte[this.size()];
+		for (int i = 0; i < this.size(); i++)
 		{
 			speed[i] = (byte) SPEED_STOP;
 		}

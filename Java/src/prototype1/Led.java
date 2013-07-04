@@ -1,5 +1,7 @@
  package prototype1;
 
+import ai.Situation;
+
 
 
 public class Led extends Actuator
@@ -14,9 +16,9 @@ public class Led extends Actuator
 	 * Constructor that calls the super constructor (Actuator)
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 */
-	public Led(ArduinoMessageHandler attachedArduino)
+	public Led(ArduinoMessageHandler attachedArduino, Situation[] s)
 	{	
-		super(attachedArduino, MessageProtocol.ID1_LED);
+		super(attachedArduino, MessageProtocol.ID1_LED, s, 1);
 	}
 	
 	/**

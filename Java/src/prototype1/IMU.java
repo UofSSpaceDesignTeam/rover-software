@@ -1,22 +1,18 @@
 package prototype1;
 
+import ai.Situation;
+
 public class IMU extends Sensor
 {
-	
-	/**
-	 * The field to store the number of IMUs  controlled by this class
-	 */
-	private int numIMUs;
 	
 	/**
 	 * Constructor that calls the super constructor (Sensor)
 	 * @param numIMUs the number of IMU's this class controls
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 */
-	public IMU(int numIMUs, ArduinoMessageHandler attachedArduino)
+	public IMU(ArduinoMessageHandler attachedArduino, Situation[] s)
 	{
-		super(attachedArduino, MessageProtocol.ID1_IMU);
-		this.numIMUs = numIMUs;
+		super(attachedArduino, MessageProtocol.ID1_IMU, s, 1);
 	}
 	
 	/**
@@ -25,12 +21,12 @@ public class IMU extends Sensor
 	 */
 	public int[] getLastPitchValues()
 	{
-		int[] toReturn = new int[numIMUs];
+		int[] toReturn = new int[this.size()];
 		//We should have 1 byte of data per IMU				
 		
 		byte[] arrayAsBytes = super.cache.peek().getValue();
 		//TODO check to make sure returned byte array from cache is as expected
-		for (int i = 0; i < this.numIMUs; i++)
+		for (int i = 0; i < this.size(); i++)
 		{
 			toReturn[i] = (int) arrayAsBytes[2*i];
 		}
@@ -43,12 +39,12 @@ public class IMU extends Sensor
 	 */
 	public int[] getLastRollValues()
 	{
-		int[] toReturn = new int[numIMUs];
+		int[] toReturn = new int[this.size()];
 		//We should have 1 byte of data per IMU				
 		
-		byte [] arrayAsBytes = super.cache.peek();
+		byte [] arrayAsBytes = super.cache.peek().getValue();
 		//TODO check to make sure returned byte array from cache is as expected
-		for (int i = 0; i < this.numIMUs; i++)
+		for (int i = 0; i < this.size(); i++)
 		{
 			toReturn[i] = (int) arrayAsBytes[2*i+1];
 		}

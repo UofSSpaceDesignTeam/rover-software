@@ -1,24 +1,21 @@
 package prototype1;
 
+import ai.Situation;
+
 /**
  * The class to control all servo motors on a specified arduino; they can be set independently by the method setRotationAngle
  */
 public class ServoMotors extends Actuator
 {
-	/**
-	 * The number of servo motors being controlled by this class (All the servo motors attached to the Arduino)
-	 */
-	private int numberOfServos;
 	
 	/**
 	 * The constructor for the ServoMotors class
 	 * @param newArduino	The arduino that this servo motor is installed on
 	 * @param servosToControl	The number of servos that the class will control
 	 */
-	public ServoMotors(ArduinoMessageHandler attachedArduino, int servosToControl)
+	public ServoMotors(ArduinoMessageHandler attachedArduino, Situation[] s, int servosToControl)
 	{	
-		super(attachedArduino, MessageProtocol.ID1_SERVOS);
-		this.numberOfServos = servosToControl;
+		super(attachedArduino, MessageProtocol.ID1_SERVOS, s, servosToControl);
 	}
 	
 	/**
@@ -36,7 +33,7 @@ public class ServoMotors extends Actuator
 		
 		//TODO error check for invalid rotation angle
 
-		for (int i = 0; i < this.numberOfServos; i++)
+		for (int i = 0; i < this.size(); i++)
 		{
 			setMessage[i] = (byte) angleInDegrees[i];
 		}

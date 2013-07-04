@@ -16,10 +16,9 @@ public class ForceSensors extends Sensor
 	 * @param attachedArduino	The Arduino that the force sensors are attached to
 	 * @param forceSensorsToControl		The number of force sensors this class controls
 	 */
-	public ForceSensors(ArduinoMessageHandler attachedArduino, int forceSensorsToControl, Situation[] s, )
-	{
-		
-		super(attachedArduino, MessageProtocol.ID1_FORCE, );
+	public ForceSensors(ArduinoMessageHandler attachedArduino, Situation[] s, int forceSensorsToControl)
+	{	
+		super(attachedArduino, MessageProtocol.ID1_FORCE, s, forceSensorsToControl);
 	}
 	
 	/**
@@ -29,11 +28,11 @@ public class ForceSensors extends Sensor
 	public int[] getLastForceValues()
 	{
 		//We should have 2 bytes of data per force sensor
-		int[] toReturn = new int[this.numberOfForceSensors];
-		byte[] arrayAsBytes = new byte[this.numberOfForceSensors*2];
+		int[] toReturn = new int[this.size()];
+		byte[] arrayAsBytes = new byte[this.size()*2];
 		arrayAsBytes = super.cache.peek().getValue();
 		//TODO check to make sure returned byte array from cache is as expected
-		for (int i = 0; i < this.numberOfForceSensors; i++)
+		for (int i = 0; i < this.size(); i++)
 		{
 			toReturn[i] = ( (int) (arrayAsBytes[i*2]) * 256 ) + ( (int) arrayAsBytes[(i*2)+1] );
 		}
