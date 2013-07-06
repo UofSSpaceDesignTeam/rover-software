@@ -24,3 +24,8 @@ target_link_libraries (stream ${PCL_LIBRARIES})
 
 add_executable (extract_indices src/extract_indices.cpp)
 target_link_libraries (extract_indices ${PCL_LIBRARIES})
+
+
+include_directories(/usr/include/)
+add_executable(jsonTest src/jsonTest.cpp)
+target_link_libraries(jsonTest /usr/lib/libjson_linux-gcc-4.6_libmt.so)
