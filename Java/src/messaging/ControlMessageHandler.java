@@ -1,4 +1,7 @@
-package prototype1;
+package messaging;
+
+import instruments.ArduinoInstrumentArray;
+import instruments.Motors;
 
 import java.net.ServerSocket;
 import java.net.Socket;

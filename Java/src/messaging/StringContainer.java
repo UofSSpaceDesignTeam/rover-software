@@ -1,4 +1,4 @@
-package prototype1;
+package messaging;
 
 public class StringContainer {
 	private String str = "";

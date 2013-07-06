@@ -1,8 +1,14 @@
-package prototype1;
+package instruments;
 
 import java.util.Observable;
 
-import ai.Situation;
+import environment.Situation;
+
+import messaging.ArduinoMessageHandler;
+import messaging.Message;
+import messaging.MessageProtocol;
+
+
 
 public abstract class ArduinoInstrumentArray extends Observable
 {

@@ -1,10 +1,11 @@
-package ai;
+package environment;
+
+import instruments.ArduinoInstrumentArray;
+import instruments.Sensor;
 
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 
-import prototype1.ArduinoInstrumentArray;
-import prototype1.Sensor;
 
 
 /*

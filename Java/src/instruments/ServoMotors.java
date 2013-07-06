@@ -1,6 +1,8 @@
-package prototype1;
+package instruments;
 
-import ai.Situation;
+import environment.Situation;
+import messaging.ArduinoMessageHandler;
+import messaging.MessageProtocol;
 
 /**
  * The class to control all servo motors on a specified arduino; they can be set independently by the method setRotationAngle

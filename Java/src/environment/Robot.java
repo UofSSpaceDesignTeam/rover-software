@@ -1,14 +1,16 @@
-package ai;
+package environment;
+
+import instruments.IMU;
+import instruments.Motors;
+import instruments.Rangefinders;
 
 import java.util.Observable;
 import java.util.Observer;
 
-import prototype1.ArduinoMessageHandler;
-import prototype1.ControlMessageHandler;
-import prototype1.IMU;
-import prototype1.MessageProtocol;
-import prototype1.Motors;
-import prototype1.Rangefinders;
+import messaging.ArduinoMessageHandler;
+import messaging.ControlMessageHandler;
+import messaging.MessageProtocol;
+
 
 /**
  * serves as the interface between the AI and the robot's components

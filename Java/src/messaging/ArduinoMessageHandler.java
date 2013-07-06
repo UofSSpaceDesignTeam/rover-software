@@ -1,4 +1,4 @@
-package prototype1;
+package messaging;
 
 import gnu.io.CommPort;
 
@@ -7,6 +7,8 @@ import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
+
+import instruments.Sensor;
 
 import java.io.IOException;
 import java.io.InputStream;

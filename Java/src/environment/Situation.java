@@ -1,4 +1,4 @@
-package ai;
+package environment;
 
 import java.awt.geom.Point2D;
 

@@ -1,4 +1,4 @@
-package prototype1;
+package messaging;
 
 import java.util.Date;
 

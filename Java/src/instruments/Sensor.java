@@ -1,8 +1,14 @@
-package prototype1;
+package instruments;
 
 import java.util.LinkedList;
 
-import ai.Situation;
+import environment.Situation;
+
+import messaging.ArduinoMessageHandler;
+import messaging.MessageProtocol;
+import messaging.TimestampedValue;
+
+
 
 //TODO MAKE INSTANCE OF OBSERVABLE
 /**

@@ -1,4 +1,4 @@
-package prototype1;
+package messaging;
 
 /**
  * Stores constants and convenience methods related to the Messaging Protocol

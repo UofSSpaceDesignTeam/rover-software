@@ -1,6 +1,8 @@
-package prototype1;
+package instruments;
 
-import ai.Situation;
+import environment.Situation;
+import messaging.ArduinoMessageHandler;
+import messaging.MessageProtocol;
 
 /**
  * A class to represent force sensors, //TODO
