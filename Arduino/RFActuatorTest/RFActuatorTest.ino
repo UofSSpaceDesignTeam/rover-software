@@ -17,7 +17,7 @@ void setup()
   Serial.begin(115200);
   pinMode(6,OUTPUT); // pwm
   pinMode(7,OUTPUT); // a
-  pinMode(8,OUTPUT); // a
+  pinMode(8,OUTPUT); // b
   Serial.println("Enter a position (0-140mm). Or enter 'R' to use RF.");
   Serial.println("Current position:");
   pos = getPosition();
