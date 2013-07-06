@@ -4,15 +4,19 @@ import ai.Situation;
 
 public class IMU extends Sensor
 {
-	
+	private static Situation[] toSingletonArray(Situation s){
+		Situation[] ss = new Situation[1];
+		ss[0] = s;
+		return ss;
+	}
 	/**
 	 * Constructor that calls the super constructor (Sensor)
 	 * @param numIMUs the number of IMU's this class controls
 	 * @param attachedArduino	The arduino that this instrument is physically attached to
 	 */
-	public IMU(ArduinoMessageHandler attachedArduino, Situation[] s)
+	public IMU(ArduinoMessageHandler attachedArduino, Situation s)
 	{
-		super(attachedArduino, MessageProtocol.ID1_IMU, s, 1);
+		super(attachedArduino, MessageProtocol.ID1_IMU, toSingletonArray(s), 1);
 	}
 	
 	/**

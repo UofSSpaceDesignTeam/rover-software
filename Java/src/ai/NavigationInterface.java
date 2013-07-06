@@ -20,6 +20,11 @@ import prototype1.Sensor;
  *
  */
 public interface NavigationInterface {
+	public static enum Direction{
+		FORWARD, BACKWARD
+	}
+	
+	public void moveFullSpeed(Direction dir);
 	
 	/**
 	 * commands robot to move in a straight line at the given speed

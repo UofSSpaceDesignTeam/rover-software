@@ -10,6 +10,7 @@ import java.awt.geom.Point2D;
  */
 public class Situation {
 	
+	
 	/**
 	 * location in 2D space (measured in meters)
 	 */
@@ -19,6 +20,14 @@ public class Situation {
 	 * Angle from positive x-axis, in radians
 	 */
 	private double angle; 
+	
+	/**
+	 * default constructor (position at origin)
+	 */
+	public Situation(){
+		location = new Point2D.Double(0,0);
+		angle = 0;
+	}
 	
 	/**
 	 * @return the location

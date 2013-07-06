@@ -61,12 +61,15 @@ public class TwoWayCommunicator extends Observable
             	int dataLength = 0;
             	int lastByteIndex = 0;
             	boolean dataLengthSet = false;
+            	
                 while ((nextByte = this.in.read()) != -1)
                 {
                 	
                 	
                 	// add the byte to the buffer
-                	inBuffer[nextIndex] = (byte) nextByte;    
+                	inBuffer[nextIndex] = (byte) nextByte;
+                	
+                	
                 	
                 	// if this is the last byte of the data length, set the data length
                 	if (nextIndex == MessageProtocol.DATA_LENGTH_2){
@@ -111,7 +114,8 @@ public class TwoWayCommunicator extends Observable
     }   
     
      
-    public void sendMessage(byte[] message){    	    	
+    public void sendMessage(byte[] message){    	
+    	System.out.println("Sending message to arduino");
 		try {			
 			for (int i = 0 ; i < message.length; i++){				
 				output.write(message[i]);					

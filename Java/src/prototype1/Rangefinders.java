@@ -14,7 +14,7 @@ public class Rangefinders extends Sensor
 	 * @param numRFinders the number of rangefinders attached to the Arduino
 	 * @param attachedArduino is the arduino that the rangefinder is physically on
 	 */
-	Rangefinders(ArduinoMessageHandler attachedArduino, Situation[] s, int numOfRangeFinders)
+	public Rangefinders(ArduinoMessageHandler attachedArduino, Situation[] s, int numOfRangeFinders)
 	{
 		super(attachedArduino,MessageProtocol.ID1_RANGEFINDER, s, numOfRangeFinders);
 	}
