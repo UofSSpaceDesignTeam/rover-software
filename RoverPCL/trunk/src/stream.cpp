@@ -22,27 +22,23 @@
 #include <pcl/registration/icp_nl.h>
 #include <pcl/registration/transforms.h>
 
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
 
-#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/ModelCoefficients.h>
+
+
 #include <cstdlib>
 #include <iostream>
-#include <boost/make_shared.hpp>
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_representation.h>
+#include <vector>
 
-#include <pcl/io/pcd_io.h>
+//convenient typedefs
+typedef pcl::PointXYZ PointT;
+typedef pcl::PointCloud<PointT> PointCloud;
+typedef pcl::ModelCoefficients Plane;
 
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/filter.h>
-
-#include <pcl/features/normal_3d.h>
-
-#include <pcl/registration/icp.h>
-#include <pcl/registration/icp_nl.h>
-#include <pcl/registration/transforms.h>
-
-#include <pcl/visualization/pcl_visualizer.h>
 
 using pcl::visualization::PointCloudColorHandlerGenericField;
 using pcl::visualization::PointCloudColorHandlerCustom;
@@ -57,14 +53,10 @@ using namespace std;
 
 
 // PARAMETERS - TODO DON'T USE GLOBAL VARIABLES
-int FRAMERATE = 1;
+int FRAMERATE = 30;
 double DOWNSAMPLE_FRAMES = 0.02; // final resolution of frames
-double DOWNSAMPLE_REG = 0.05; //resolution at which frames is compared
-double MAX_CORRESPONDENCE_DISTANCE = 0.3;
 
 
-int NUM_ITERATIONS = 40;
-double TRANSFORMATION_EPSILON = 1e-6;
 
 //convenient structure to handle our pointclouds
 struct PCD
@@ -83,27 +75,6 @@ struct PCDComparator
   }
 };
 
-// Define a new point representation for < x, y, z, curvature >
-class MyPointRepresentation : public pcl::PointRepresentation <PointNormalT>
-{
-  using pcl::PointRepresentation<PointNormalT>::nr_dimensions_;
-public:
-  MyPointRepresentation ()
-  {
-    // Define the number of dimensions
-    nr_dimensions_ = 4;
-  }
-
-  // Override the copyToFloatArray method to define our feature vector
-  virtual void copyToFloatArray (const PointNormalT &p, float * out) const
-  {
-    // < x, y, z, curvature >
-    out[0] = p.x;
-    out[1] = p.y;
-    out[2] = p.z;
-    out[3] = p.curvature;
-  }
-};
 
 
 void downSample(PointCloud::ConstPtr input,
@@ -117,114 +88,138 @@ void downSample(PointCloud::ConstPtr input,
 	  sor.filter (*output);
 }
 
+// SEGMENTS IMAGE INTO PLANAR COMPONENTS
 
-double pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt,
-		PointCloud::Ptr output)
+// UTILITY METHODS
+
+// from the given input, removes all points more than 'threshold'
+// meters above (in negative Y direction) the given planeW
+void removePointsAbovePlane(Plane plane,
+						    PointCloud::Ptr input,
+						    PointCloud::Ptr output,
+						    double threshold){
+
+}
+
+// true if plane1 is orthogonal to plane2 to within 'tolerance' radians
+bool isOrthogonal(Plane plane1,
+				  Plane plane2,
+				  double tolerance){
+	return true;
+}
+
+// true if the plane is parallel to the plane formed by the X and Z axes
+// to within 'tolerance' radians
+bool isGround(Plane plane,
+				double tolerance){
+	return true;
+}
+
+// return the given point from the point of view of an observer standing
+// on the plane immediately below the camera (0,0,0)
+PointT relativeToGround(PointT point, Plane plane){
+	// find the shortest vector from the camera to the plane, then substract
+	// it from the point. TADA
+	return *(new PointT);
+}
+
+// extracts planes from the input point cloud
+// points must be within 'precision' meters of a plane to be considered
+// part of it; extraction stops when 'fraction' or less of the original points
+// remain; the remaining points are returned in the 'remainder' pointcloud
+
+// if ground isn't NULL, only keep planes that are orthogonal to within
+// groundCheckPrecision radians of the ground. If plane is not orthogonal,
+// put all its points into the remainder
+void extractPlanes(PointCloud::Ptr input,
+				     float precision,
+				     float fraction,
+				     int maxPlanes,
+				     PointCloud::Ptr remainder,
+				     vector<Plane> planes,
+				     PointCloud::Ptr ground,
+				     float groundCheckPrecision = 0)
 {
-  //
-  // Downsample for consistency and speed
-  // \note enable this for large datasets
-  PointCloud::Ptr src (new PointCloud);
-  PointCloud::Ptr tgt (new PointCloud);
+ /*
+  *  Plane coefficients (new pcl::ModelCoefficients ());
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
+  // Create the segmentation object
+  pcl::SACSegmentation<PointT> seg;
+  // Optional
+  seg.setOptimizeCoefficients (true);
+  // Mandatory
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setMaxIterations (1000);
+  seg.setDistanceThreshold (precision);
+  */
 
-  if (DOWNSAMPLE_REG < DOWNSAMPLE_FRAMES)
-  {
-	  downSample(cloud_src, src, DOWNSAMPLE_REG);
-	  downSample(cloud_tgt, tgt, DOWNSAMPLE_REG);
-  } else {
-    src = cloud_src;
-    tgt = cloud_tgt;
+}
+
+void segment (PointCloud::ConstPtr input)
+{
+  PointCloud::Ptr cloud_temp (new PointCloud),
+		  	  	  obstacles (new PointCloud),
+		  	  	  cloud_remainder (new PointCloud);
+
+  *cloud_temp = *input;
+
+  // read the precision
+  float precision = 0.03;
+  float fraction = 0.1;
+  double tolerance = 5 * 3.14159 / 180; // 5 degrees
+  double threshold = 0.5;
+  double obstacleResolution = 0.05;
+
+  vector<Plane> planes;
+
+  // blindly extract some planes, man
+  extractPlanes(cloud_temp, precision, fraction,
+		  	  	6, cloud_remainder, planes, NULL);
+
+
+  // find the ground plane
+  Plane ground;
+  bool foundGround = false;
+  for (int i = 0; i < planes.size() && !foundGround; i++){
+	  if (isGround(planes[i], tolerance)){
+		  ground = planes[i];
+		  foundGround = true;
+	  }
   }
 
+  if (foundGround){
 
-  // Compute surface normals and curvature
-  PointCloudWithNormals::Ptr points_with_normals_src (new PointCloudWithNormals);
-  PointCloudWithNormals::Ptr points_with_normals_tgt (new PointCloudWithNormals);
+	  // filter points too far above ground
+	  removePointsAbovePlane(ground, input, cloud_temp, threshold);
 
-  pcl::NormalEstimation<PointT, PointNormalT> norm_est;
-  pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT> ());
-  norm_est.setSearchMethod (tree);
-  norm_est.setKSearch (30);
+	  // extract all planes that are orthogonal or parallel to ground
+	  planes.clear();
+	  extractPlanes(cloud_temp, precision, fraction,
+			  	  	4, cloud_remainder, planes, ground, tolerance);
 
-  norm_est.setInputCloud (src);
-  norm_est.compute (*points_with_normals_src);
-  pcl::copyPointCloud (*src, *points_with_normals_src);
+	  // get the obstacles
+	  downSample(cloud_remainder, obstacles, obstacleResolution);
 
-  norm_est.setInputCloud (tgt);
-  norm_est.compute (*points_with_normals_tgt);
-  pcl::copyPointCloud (*tgt, *points_with_normals_tgt);
+	  for (PointCloud::iterator it = obstacles -> begin();
+		   it != obstacles -> end();
+		   it++){
+		  PointT pt = *it;
+		  PointT obstacle = relativeToGround(pt, ground);
 
-  //
-  // Instantiate our custom point representation (defined above) ...
-  MyPointRepresentation point_representation;
-  // ... and weight the 'curvature' dimension so that it is balanced against x, y, and z
-  float alpha[4] = {1.0, 1.0, 1.0, 1.0};
-  point_representation.setRescaleValues (alpha);
+		  // OUTPUT OBSTACLE TO JAVA
+	  }
+  }
 
-  //
-  // Align
-  pcl::IterativeClosestPointNonLinear<PointNormalT, PointNormalT> reg;
-  reg.setTransformationEpsilon (TRANSFORMATION_EPSILON);
-  // Set the maximum distance between two correspondences (src<->tgt) to 10cm
-  // Note: adjust this based on the size of your datasets
-  reg.setMaxCorrespondenceDistance (MAX_CORRESPONDENCE_DISTANCE);
-  // Set the point representation
-  reg.setPointRepresentation (boost::make_shared<const MyPointRepresentation> (point_representation));
+  // OUTPUT PLANES TO JAVA
+}
 
-  reg.setInputCloud (points_with_normals_src);
-  reg.setInputTarget (points_with_normals_tgt);
-
-
-
-  //
-  // Run the same optimization in a loop and visualize the results
-  Eigen::Matrix4f Ti = Eigen::Matrix4f::Identity (), prev, targetToSource;
-  PointCloudWithNormals::Ptr reg_result = points_with_normals_src;
-  reg.setMaximumIterations (NUM_ITERATIONS);
-  //for (int i = 0; i < 20; ++i)
-  //{
-    //PCL_INFO ("Iteration Nr. %d.\n", i);
-
-    // save cloud for visualization purpose
-    points_with_normals_src = reg_result;
-
-    // Estimate
-    reg.setInputCloud (points_with_normals_src);
-    reg.align (*reg_result);
-
-    double fitness = reg.getFitnessScore(0.1);
-
-		//accumulate transformation between each Iteration
-    Ti = reg.getFinalTransformation () * Ti;
-
-		//if the difference between this transformation and the previous one
-		//is smaller than the threshold, refine the process by reducing
-		//the maximal correspondence distance
-    //if (fabs ((reg.getLastIncrementalTransformation () - prev).sum ()) < reg.getTransformationEpsilon ())
-      //reg.setMaxCorrespondenceDistance (reg.getMaxCorrespondenceDistance () - 0.001);
-
-    //prev = reg.getLastIncrementalTransformation ();
-
-    // visualize current state
-    //showCloudsRight(points_with_normals_tgt, points_with_normals_src);
-  //}
-
-	//
-  // Get the transformation from target to source
-  //targetToSource = Ti.inverse();
-
-  //
-  // Transform target back in source frame
-  pcl::transformPointCloud (*cloud_src, *output, Ti);
-  return fitness;
- }
 
 
 
 class SimpleOpenNIViewer {
 public:
-	SimpleOpenNIViewer() :
-			viewer("PCL OpenNI Viewer") {
+	SimpleOpenNIViewer(){
 			counter = 1;
 			firstFrame = true;
 	}
@@ -235,45 +230,18 @@ public:
 
 
 
-	void cloud_cb_(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
+	void cloud_cb_(const PointCloud::ConstPtr &cloud)
 	{
-		cout << "Got frame " << counter << endl;
+		//cerr << "Got frame " << counter << endl;
 		if (counter % FRAMERATE == 0 )
 		{
-			cout << "It's a valid frame; processing " << endl;
+			cerr << "It's a valid frame; processing " << endl;
 			//Create the downsampled pointcloud for each frame we want to capture
-			pcl::PointCloud<pcl::PointXYZ>::Ptr downsampled(new pcl::PointCloud<pcl::PointXYZ>);
+			PointCloud::Ptr downsampled(
+					new PointCloud);
 			downSample(cloud, downsampled, DOWNSAMPLE_FRAMES);
 
-			if (firstFrame == true){
-				firstFrame = false;
-				currentModel = downsampled;
-			} else {
-				// merge the frame into the current model
-				double fitness = pairAlign(downsampled, currentModel, downsampled);
-
-
-
-				//downsampled contains the aligned frame
-
-				//Merge downsampled with currentModel
-				//pcl::PointCloud<pcl::PointXYZ>::Ptr newModel(new pcl::PointCloud<pcl::PointXYZ>);
-
-				*currentModel += *downsampled;
-
-				//Downsample the new model
-				downSample(currentModel, currentModel, DOWNSAMPLE_FRAMES);
-
-				cout << "Merged with fitness : " << fitness << endl;
-				cout << currentModel -> width * currentModel -> height << endl;
-
-				if (!viewer.wasStopped())
-					viewer.showCloud(currentModel);
-				cout << "done processing " << endl;
-
-			}
-
-
+			segment(downsampled);
 		}
 		counter ++;
 	}
@@ -284,29 +252,19 @@ public:
 		pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
 
-		boost::function<void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f =
+		boost::function<void(const PointCloud::ConstPtr&)> f =
 				boost::bind(&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
 		interface->registerCallback(f);
 
-		//interface->start();
+		interface->start();
 
-		bool started = false;
-
-		while (!viewer.wasStopped()) {
-			char c;
-			cin >> c;
-			if (started) interface -> stop();
-			else interface -> start();
-			started = !started;
-			cout << " Started: " << started << endl;
-			//boost::this_thread::sleep(boost::posix_time::seconds(1));
-		}
+		//Blocking call to keep going until string is read in
+	    string s;
+	    cin >> s;
 
 		interface->stop();
 	}
-
-	pcl::visualization::CloudViewer viewer;
 };
 
 int main(int argc, char ** argv) {
@@ -315,7 +273,7 @@ int main(int argc, char ** argv) {
 	else if (argc == 5)
 	{
 		// read in arguments
-		stringstream ss1(argv[1]);
+		/*stringstream ss1(argv[1]);
 		ss1 >> FRAMERATE;
 		stringstream ss2(argv[2]);
 		ss2 >> DOWNSAMPLE_FRAMES;
@@ -324,10 +282,10 @@ int main(int argc, char ** argv) {
 		ss3 >> DOWNSAMPLE_REG;
 
 		stringstream ss4(argv[4]);
-		ss4 >> MAX_CORRESPONDENCE_DISTANCE;
+		ss4 >> MAX_CORRESPONDENCE_DISTANCE;*/
 
 	} else {
-		cout << "Usage : stream <framerate> <downsample frames> <downsample reg> <max corr distance> "
+		cerr << "Usage : stream <framerate> <downsample frames> <downsample reg> <max corr distance> "
 				<< endl;
 	}
 
