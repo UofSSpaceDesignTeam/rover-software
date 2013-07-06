@@ -22,6 +22,11 @@ void setup()
   rightMotor.attach(RIGHTMOTORDIR,RIGHTMOTORPWM);
   
   delay(10);
+  debugmsg = "Actuators"; // set up the actuators
+  debug();
+  testActuator.attach(TESTACTUATORA,TESTACTUATORB,TESTACTUATORMOVE);
+  
+  delay(10);
   debugmsg = "Servos"; // set up the pan servo.
   debug();
   cameraPan.attach(CAMERASERVOPIN); // leveler servos are attached on demand

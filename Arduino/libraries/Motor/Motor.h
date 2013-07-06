@@ -6,6 +6,7 @@
 #include <inttypes.h>
 #include "Arduino.h"
 
+
 class Motor
 {
 	public:
@@ -14,8 +15,8 @@ class Motor
 	
 	byte setting() const; // access the last setting given to the motor
 	
-	int attach(byte aPin, byte bPin, byte pwmPin);	// for official motor controller
-	int attach(byte dirPin, byte pwmPin);	// for test platform
+	void attach(byte aPin, byte bPin, byte pwmPin);	// for official motor controller
+	void attach(byte dirPin, byte pwmPin);	// for test platform
 	void set(byte newSetting);	// set the output of the motor
 	
 	private:
@@ -34,24 +35,28 @@ class Actuator
 {
 	public:
 	
-	Actuator();	// constructor
+	Actuator(int throwLength);	// constructor
 	
 	int position() const; // access the current length in mm
-	int target() const; // access the last order given to the actuator
 	
-	int attach(byte aPin, byte bPin, byte pwmPin);	// set the hardware connections for the actuator
-	void set(byte newSetting);	// set the target for the actuator
-	
+	void attach(byte aPin, byte bPin, byte movePin);	// set the hardware connections for the actuator
+	void set(int newSetting);	// set the target for the actuator
+	void halt(); // stops the actuator
+	void calibrate(int fullIn, int fullOut); // calibration for potentiometers
 	void refresh(); // check on the actuator if it is moving
+	
 	
 	private:
 	
 	byte pinA;
 	byte pinB;
-	byte pinPWM;
+	byte pinMove;
 	boolean attached;
 	boolean moving;
-	byte currentTarget;
+	int currentTarget;
+	int inValue;
+	int outValue;
+	int length;
 };
 
 

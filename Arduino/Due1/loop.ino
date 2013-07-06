@@ -24,6 +24,11 @@ void loop()
     } 
   }
   
+  if(actuatorEnable) // check on moving actuators
+  {
+    testActuator.refresh();
+  }
+  
   if(timeOutEnable && millis() - commTimer > COMM_TIMEOUT) // No sign of life from fitpc
   {
     analogWrite(LEFTMOTORPWM,0);  // stop and wait for a valid message without interrupting motor object state.

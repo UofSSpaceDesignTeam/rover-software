@@ -25,6 +25,10 @@
 #define RIGHTMOTORDIR 23
 #define RIGHTMOTORPWM 3
 
+#define TESTACTUATORA 30
+#define TESTACTUATORB 31
+#define TESTACTUATORMOVE 32
+
 #define FRONTLEFTSERVOPIN 47
 #define FRONTRIGHTSERVOPIN 48
 #define RIGHTSIDESERVOPIN 49
@@ -55,6 +59,9 @@ unsigned long imuSendTimer; // data reporting timer
 boolean motorEnable = false; // Motor state
 Motor leftMotor;
 Motor rightMotor;
+
+boolean actuatorEnable = false; // Actuator state
+Actuator testActuator(140);
 
 boolean rangefinderEnable = false; // Leveling & sensor state
 Servo frontLeftServo;

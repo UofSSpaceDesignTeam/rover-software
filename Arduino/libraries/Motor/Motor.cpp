@@ -15,7 +15,7 @@ byte Motor::setting() const
 	return currentSetting;
 }
 
-int Motor::attach(byte aPin, byte bPin, byte pwmPin)
+void Motor::attach(byte aPin, byte bPin, byte pwmPin)
 {
 	testPlatform = false;
 	pinA = aPin;
@@ -24,32 +24,23 @@ int Motor::attach(byte aPin, byte bPin, byte pwmPin)
 	pinB = bPin;
 	pinMode(bPin,OUTPUT);
 	digitalWrite(bPin,LOW);
-	if(pinPwm <= 13 && pinPwm >= 2) // valid range for pwm capable pins
-	{
-		pinMode(pinPwm,OUTPUT);
-		analogWrite(pinPwm,0);
-		attached = true;
-		return 0;
-	}
-	else
-		return -1;
+	pinPwm = pwmPin;
+	pinMode(pinPwm,OUTPUT);
+	analogWrite(pinPwm,0);
+	attached = true;
+
 }
 
-int Motor::attach(byte dirPin, byte pwmPin)
+void Motor::attach(byte dirPin, byte pwmPin)
 {                                                     
 	testPlatform = true;
 	pinDir = dirPin;
 	pinMode(pinDir,OUTPUT);
 	digitalWrite(pinDir,LOW);
-	if(pinPwm <= 13 && pinPwm >= 2) // valid range for pwm capable pins
-	{
-		pinMode(pinPwm,OUTPUT);
-		analogWrite(pinPwm,0);
-		attached = true;
-		return 0;
-	}
-	else 
-		return -1;
+	pinPwm = pwmPin;
+	pinMode(pinPwm,OUTPUT);
+	analogWrite(pinPwm,0);
+	attached = true;
 }
 
 void Motor::set(byte newSetting)
@@ -95,10 +86,79 @@ void Motor::set(byte newSetting)
 }
 
 
-Actuator::Actuator()
+Actuator::Actuator(int throwLength)
 {
+	length = throwLength;
 	attached = false;
 	moving = false;
+	inValue = 963; // default calibration
+	outValue = 57;
+}
+
+int Actuator::position() const
+{
+	return constrain(map(analogRead(0),inValue,outValue,0,length),0,length);
+}
+
+void Actuator::attach(byte aPin, byte bPin, byte movePin)
+{
+	pinA = aPin;
+	pinMode(pinA,OUTPUT);
+	digitalWrite(pinA,LOW);
+	pinB = bPin;
+	pinMode(pinB,OUTPUT);
+	digitalWrite(pinB,LOW);
+	pinMove = movePin;
+	pinMode(pinMove,OUTPUT);
+	digitalWrite(pinMove,LOW);
+	attached = true;
+}
+
+void Actuator::set(int newSetting)
+{
+	if(!attached)
+		return;
+	int currentPosition = position();
+	if(abs(currentPosition - newSetting) > 3) // not "close enough" already
+	{
+		currentTarget = newSetting;
+		moving = true;
+		if(newSetting > currentPosition) // start moving out
+		{
+			digitalWrite(pinA,LOW);
+			digitalWrite(pinB,HIGH);
+		}
+		else	// start moving in
+		{
+			digitalWrite(pinA,HIGH);
+			digitalWrite(pinB,LOW);
+		}
+		digitalWrite(pinMove,HIGH);
+	}
+	else
+		halt();
+}
+
+void Actuator::halt()
+{
+	if(!attached)
+		return;
+	digitalWrite(pinMove,LOW);
+	digitalWrite(pinA,LOW);
+	digitalWrite(pinB,LOW);
+	moving = false;
+}
+		
+void Actuator::calibrate(int fullIn, int fullOut)
+{
+	inValue = fullIn;
+	outValue = fullOut;
+}
 	
-	
-	
+void Actuator::refresh()
+{
+	if(!moving)
+		return;
+	else
+		set(currentTarget);
+}

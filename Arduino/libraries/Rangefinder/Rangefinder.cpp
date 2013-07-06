@@ -35,19 +35,19 @@ uint16_t Rangefinder::readRaw()	const
 }
 
 
-void groupOn(const Rangefinder* sensor)
+void Rangefinder::groupOn()
 {
-	if(sensor->attached)
+	if(attached)
 	{
-		digitalWrite(sensor->pinPower,HIGH);
+		digitalWrite(pinPower,HIGH);
 	}
 }
 
-void groupOff(const Rangefinder* sensor)
+void Rangefinder::groupOff()
 {
-	if(sensor->attached)
+	if(attached)
 	{
-		digitalWrite(sensor->pinPower,LOW);
+		digitalWrite(pinPower,LOW);
 	}
 }
 

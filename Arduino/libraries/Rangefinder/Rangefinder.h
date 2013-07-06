@@ -19,8 +19,8 @@ class Rangefinder
 	uint16_t readRaw() const; // read the output directly
 	
 	int attach(byte analogPin, byte powerPin);	// define connections
-	friend void groupOn(const Rangefinder* sensor);
-	friend void groupOff(const Rangefinder* sensor);
+	void groupOn();
+	void groupOff();
 
 	private:
 	
@@ -32,8 +32,6 @@ class Rangefinder
 };
 
 uint16_t convertToDistance(uint16_t data, byte sensorType);  // outputs mm
-void groupOn(const Rangefinder* sensor);
-void groupOff(const Rangefinder* sensor);
 
 
 #endif
