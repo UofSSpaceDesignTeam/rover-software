@@ -48,12 +48,12 @@ void loop()
     msg[1] = Serial.read();
     msg[2] = Serial.read();
     msg[3] = '\0';
-    if(msg[0]=='R')
+    if(msg[0]=='r')
     {
       distance=getRange();
       movePosition(map(distance,0,1023,0,140));
     }
-    if(msg[0]!=='R')
+    if(msg[0]!=='r')
     {
       movePosition(constrain(atoi(msg),0,140)); // move to given position
     }
