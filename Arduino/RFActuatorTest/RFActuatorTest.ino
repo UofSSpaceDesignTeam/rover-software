@@ -128,8 +128,8 @@ int getDistance()
   for(int i=0; i<40; i++)
   {
     sum+= analogRead(1);
-    sum=sum/40;  //takes 40 readings and averages them
-    return sum;
   }
+  sum=sum/40;  //takes 40 readings and averages them
+  return sum;
 }
 
