@@ -8,7 +8,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
 public class CameraMessageHandler
@@ -44,7 +46,25 @@ public class CameraMessageHandler
 		while(true)
 		{
 				JsonParser inputReader = new JsonParser();
-				System.out.println(inputReader.parse(cameraOut).toString());
+				try
+				{
+					if(cameraOut.ready())
+					{
+						System.out.println(inputReader.parse(cameraOut).toString());
+					}
+				} catch (JsonIOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JsonSyntaxException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 	}
 	
