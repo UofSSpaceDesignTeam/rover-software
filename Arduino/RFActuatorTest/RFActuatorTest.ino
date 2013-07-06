@@ -8,8 +8,8 @@
 char msg[4]; // command buffer
 int pos; // actuator position
 int lastpos;
-int sum;
-int distance;
+int sum; 
+int distance; //distance as detected by RF
 char RF;
 
 void setup()
@@ -26,17 +26,18 @@ void setup()
   Serial.println("Current distance:");
   distance=getDistance();
   Serial.println(distance);
+  Serial.println("Postion:  Distance Read:");
 }
 
 
 void loop()
 {
-  distance = getDistance();
-  Serial.println(distance);
   pos = getPosition();
   if(abs(pos - lastpos) > 1) // watch for external movement
   {
     Serial.print(pos);
+    Serial.print("   ");
+    Serial.println(distance);
     lastpos = pos;
     delay(25);
   }
@@ -49,7 +50,8 @@ void loop()
     msg[3] = '\0';
     if(msg[0]=='R')
     {
-      movePosition(map(getRange(),0,1023,0,140)););
+      distance=getRange();
+      movePosition(map(distance,0,1023,0,140));
     }
     if(msg[0]!=='R')
     {
@@ -72,9 +74,9 @@ void movePosition(int p) // move near a specified position
     moveOut();
     while(p > pos + 1)
     {
-      distance = getDistance();
       pos = getPosition();
-      Serial.print(pos); // report position while moving
+      Serial.print(pos); // report position while moving 
+      Serial.print("   ");
       Serial.println(distance);
       delay(50);
     }
@@ -86,9 +88,9 @@ void movePosition(int p) // move near a specified position
     moveIn();
     while(p < pos - 1)
     {
-      distance = getDistance();
       pos = getPosition();
       Serial.print(pos);
+      Serial.print("   ");
       Serial.println(distance);
       delay(50);
     }
@@ -126,7 +128,7 @@ int getDistance()
   for(int i=0; i<40; i++)
   {
     sum+= analogRead(1);
-    sum=sum/40;
+    sum=sum/40;  //takes 40 readings and averages them
     return sum;
   }
 }
