@@ -1,20 +1,21 @@
 package messaging;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 
+import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
 public class CameraMessageHandler
 {
 	
 	private Process cameraProcess;
-	private BufferedReader cameraOut;
+	private Reader cameraOut;
 	private BufferedWriter cameraIn;
 	
 	public CameraMessageHandler(){
@@ -32,12 +33,21 @@ public class CameraMessageHandler
 		InputStream instream = cameraProcess.getInputStream();		
 		OutputStream outstream = cameraProcess.getOutputStream();
 		
-		cameraOut = new BufferedReader(new InputStreamReader(instream));
+		cameraOut = new InputStreamReader(instream);
 		cameraIn = new BufferedWriter(new OutputStreamWriter(outstream));
-		
+		parse();
 		
 	}
-
+	
+	public void parse()
+	{
+		while(true)
+		{
+				JsonParser inputReader = new JsonParser();
+				System.out.println(inputReader.parse(cameraOut).toString());
+		}
+	}
+	
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -47,7 +57,7 @@ public class CameraMessageHandler
 		CameraMessageHandler cmh = new CameraMessageHandler();
 		cmh.cameraIn.write("bla\n");
 		cmh.cameraIn.flush();
-		System.out.println(cmh.cameraOut.readLine());
+		
 		
 		
 
