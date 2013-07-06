@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import com.google.gson.stream.JsonReader;
+
 public class CameraMessageHandler
 {
 	
@@ -46,6 +48,8 @@ public class CameraMessageHandler
 		cmh.cameraIn.write("bla\n");
 		cmh.cameraIn.flush();
 		System.out.println(cmh.cameraOut.readLine());
+		
+		
 
 	}
 
