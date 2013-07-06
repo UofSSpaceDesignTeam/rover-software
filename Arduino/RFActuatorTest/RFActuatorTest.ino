@@ -50,10 +50,10 @@ void loop()
     msg[3] = '\0';
     if(msg[0]=='r')
     {
-      distance=getRange();
+      distance=getDistance();
       movePosition(map(distance,0,1023,0,140));
     }
-    if(msg[0]!=='r')
+    if(msg[0]!='r')
     {
       movePosition(constrain(atoi(msg),0,140)); // move to given position
     }
