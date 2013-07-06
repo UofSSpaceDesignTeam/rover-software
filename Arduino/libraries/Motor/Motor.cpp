@@ -70,7 +70,7 @@ void Motor::set(byte newSetting)
 		}
 		analogWrite(pinPwm,2*(newSetting-127));
 	}
-	else // reverse
+	else if(newSetting < 127) // reverse
 	{
 		if(testPlatform)
 		{

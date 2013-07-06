@@ -53,7 +53,7 @@ unsigned long commTimer; // timeout timer
 MPU6050 imu(0x68); // IMU object with i2c address
 boolean imuExists = false; // whether it is working
 boolean imuEnable = false;  // IMU state
-unsigned int imuSendRate = 500; // how often we send IMU data
+unsigned int imuSendRate = 750; // how often we send IMU data
 unsigned long imuSendTimer; // data reporting timer
 
 boolean motorEnable = false; // Motor state
@@ -61,7 +61,7 @@ Motor leftMotor;
 Motor rightMotor;
 
 boolean actuatorEnable = false; // Actuator state
-Actuator testActuator(140);
+Actuator testActuator(140); // 140mm actuator
 
 boolean rangefinderEnable = false; // Leveling & sensor state
 Servo frontLeftServo;

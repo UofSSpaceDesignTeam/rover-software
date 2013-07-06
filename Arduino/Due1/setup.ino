@@ -25,6 +25,7 @@ void setup()
   debugmsg = "Actuators"; // set up the actuators
   debug();
   testActuator.attach(TESTACTUATORA,TESTACTUATORB,TESTACTUATORMOVE);
+  testActuator.calibrate(963,57);
   
   delay(10);
   debugmsg = "Servos"; // set up the pan servo.

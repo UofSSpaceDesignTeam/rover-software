@@ -1,7 +1,10 @@
 Motor	KEYWORD1
-TestPlatformMotor	KEYWORD1
 Actuator	KEYWORD1
 set	KEYWORD2
 
 setting	KEYWORD2
+position	KEYWORD2
 attach	KEYWORD2
+halt	KEYWORD2
+calibrate	KEYWORD2
+refresh	KEYWORD2
