@@ -9,7 +9,7 @@ char msg[4]; // command buffer
 int pos; // actuator position
 int lastpos;
 int sum; 
-int distance; //distance as detected by RF
+int dist; //distance as detected by RF
 char RF;
 
 void setup()
@@ -24,8 +24,8 @@ void setup()
   lastpos = pos;
   Serial.println(pos);
   Serial.println("Current distance:");
-  distance=getDistance();
-  Serial.println(distance);
+  dist=getDistance();
+  Serial.println(dist);
   Serial.println("Postion:  Distance Read:");
 }
 
@@ -37,7 +37,7 @@ void loop()
   {
     Serial.print(pos);
     Serial.print("   ");
-    Serial.println(distance);
+    Serial.println(dist);
     lastpos = pos;
     delay(25);
   }
@@ -50,8 +50,8 @@ void loop()
     msg[3] = '\0';
     if(msg[0]=='r')
     {
-      distance=getDistance();
-      movePosition(map(distance,0,1023,0,140));
+      dist=getDistance();
+      movePosition(map(dist,0,1023,0,140));
     }
     if(msg[0]!='r')
     {
@@ -77,7 +77,7 @@ void movePosition(int p) // move near a specified position
       pos = getPosition();
       Serial.print(pos); // report position while moving 
       Serial.print("   ");
-      Serial.println(distance);
+      Serial.println(dist);
       delay(50);
     }
     halt();
@@ -91,7 +91,7 @@ void movePosition(int p) // move near a specified position
       pos = getPosition();
       Serial.print(pos);
       Serial.print("   ");
-      Serial.println(distance);
+      Serial.println(dist);
       delay(50);
     }
     halt();
