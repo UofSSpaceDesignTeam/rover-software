@@ -1,5 +1,5 @@
 // Currently set up for test platform motor controller.
-// Wiring connections: blk -> A, red -> B, white -> 5v, yellow -> gnd
+// Wiring connections: blk -> B, red -> A, white -> 3.3v, yellow -> gnd
 // DIR -> pin 4, PWM -> pin 5, GND -> gnd, blue -> analog in 0
 
 #define FULL_IN 963 // raw adc values at limits
@@ -32,15 +32,6 @@ void setup()
 
 void loop()
 {
-  pos = getPosition();
-  if(abs(pos - lastpos) > 1) // watch for external movement
-  {
-    Serial.print(pos);
-    Serial.print("   ");
-    Serial.println(dist);
-    lastpos = pos;
-    delay(25);
-  }
   if(Serial.available()) // got a command
   {
     delay(50); // wait for all of it to come in
@@ -48,12 +39,12 @@ void loop()
     msg[1] = Serial.read();
     msg[2] = Serial.read();
     msg[3] = '\0';
-    if(msg[0]=='r')
+    if(msg[0] == 'r')
     {
       dist=getDistance();
       movePosition(map(dist,0,1023,0,140));
     }
-    if(msg[0]!='r')
+    else
     {
       movePosition(constrain(atoi(msg),0,140)); // move to given position
     }

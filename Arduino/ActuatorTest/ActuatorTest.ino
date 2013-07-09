@@ -97,5 +97,7 @@ void moveIn()
 void halt()
 {
    analogWrite(6,0);
+   digitalWrite(7,LOW);
+   digitalWrite(8,LOW);
 }
   
