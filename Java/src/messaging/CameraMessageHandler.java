@@ -13,7 +13,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
-public class CameraMessageHandler
+public class CameraMessageHandler implements Runnable
 {
 	
 	private Process cameraProcess;
@@ -37,7 +37,6 @@ public class CameraMessageHandler
 		
 		cameraOut = new InputStreamReader(instream);
 		cameraIn = new BufferedWriter(new OutputStreamWriter(outstream));
-		parse();
 		
 	}
 	
@@ -81,6 +80,12 @@ public class CameraMessageHandler
 		
 		
 
+	}
+
+	@Override
+	public void run()
+	{
+		parse();
 	}
 
 }
