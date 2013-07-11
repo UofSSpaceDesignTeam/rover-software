@@ -1,5 +1,5 @@
 // Currently set up for test platform motor controller.
-// Wiring connections: blk -> A, red -> B, white -> 5v, yellow -> gnd
+// Wiring connections: blk -> A, red -> B, white -> 3.3v, yellow -> gnd
 // DIR -> pin 4, PWM -> pin 5, GND -> gnd, blue -> analog in 0
 
 #define FULL_IN 963 // raw adc values at limits
