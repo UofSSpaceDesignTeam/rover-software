@@ -7,18 +7,24 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.util.Observable;
 
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
-public class CameraMessageHandler implements Runnable
+public class CameraMessageHandler extends Observable implements Runnable
 {
 	
 	private Process cameraProcess;
 	private Reader cameraOut;
 	private BufferedWriter cameraIn;
+	/**
+	 *  The current information from the camera with timestamp
+	 */
+	public JsonObject cameraData;
 	
 	public CameraMessageHandler(){
 		ProcessBuilder pb = new ProcessBuilder("/home/fit-pc/workspace/openni_grabber-Debug@RoverPCL/jsonTest");
@@ -49,6 +55,9 @@ public class CameraMessageHandler implements Runnable
 				{
 					if(cameraOut.ready())
 					{
+						cameraData = inputReader.parse(cameraOut).getAsJsonObject();
+						this.setChanged();
+						this.notifyObservers();						
 						System.out.println(inputReader.parse(cameraOut).toString());
 					}
 				} catch (JsonIOException e)
