@@ -20,6 +20,7 @@ public class CameraMessageHandler extends Observable implements Runnable
 	private Process cameraProcess;
 	private Reader cameraOut;
 	private BufferedWriter cameraIn;
+	private boolean stopped = false;
 	/**
 	 *  The current information from the camera with timestamp
 	 */
@@ -45,9 +46,19 @@ public class CameraMessageHandler extends Observable implements Runnable
 		
 	}
 	
+	public void stop()
+	{
+		this.stopped = true;
+	}
+	
+	public void resume()
+	{
+		this.stopped = false;
+	}
+	
 	public void parse()
 	{
-		while(true)
+		while(!stopped)
 		{
 				JsonParser inputReader = new JsonParser();
 				try
