@@ -33,6 +33,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 //convenient typedefs
 typedef pcl::PointXYZ PointT;
@@ -92,35 +93,69 @@ void downSample(PointCloud::ConstPtr input,
 
 // UTILITY METHODS
 
-// from the given input, removes all points more than 'threshold'
-// meters above (in negative Y direction) the given planeW
-void removePointsAbovePlane(Plane plane,
-						    PointCloud::Ptr input,
-						    PointCloud::Ptr output,
-						    double threshold){
+// returns the normal vector for a given plane
+Eigen::Vector3d normalVector(Plane plane){
+	Eigen::Vector3d normal(plane.values[0], plane.values[1], plane.values[2]);
+	return normal;
+}
 
+// returns the (shortest angle between) the two given vectors
+double angleBetween(Eigen::Vector3d v1, Eigen::Vector3d v2){
+	double rawAngle = acos(v1.dot(v2) / (v1.norm() * v2.norm()));
+
+	if (rawAngle > M_PI) rawAngle -= 2*M_PI;
+	else if (rawAngle < -M_PI) rawAngle += 2*M_PI;
+
+	return abs(rawAngle);
+}
+
+// from the given input, removes all points more than 'threshold'
+// meters above (in negative Y direction) the given plane
+void removePointsAbovePlane(Plane plane,
+						    PointCloud::ConstPtr input,
+						    PointCloud::Ptr output,
+						    double threshold)
+{
+	// TEMPORARY - don't remove anything
+	*output = *input;
 }
 
 // true if plane1 is orthogonal to plane2 to within 'tolerance' radians
 bool isOrthogonal(Plane plane1,
 				  Plane plane2,
-				  double tolerance){
-	return true;
+				  double tolerance)
+{
+	Eigen::Vector3d normal1, normal2;
+	normal1 = normalVector(plane1);
+	normal2 = normalVector(plane2);
+
+	double angle = angleBetween(normal1, normal2);
+
+
+	return abs(angle - M_PI/2.0) < tolerance;
+
 }
 
 // true if the plane is parallel to the plane formed by the X and Z axes
 // to within 'tolerance' radians
 bool isGround(Plane plane,
-				double tolerance){
-	return true;
+				double tolerance)
+{
+	Eigen::Vector3d normal = normalVector(plane);
+	Eigen::Vector3d vertical(0.0, 0.0, 1.0);
+
+	return angleBetween(normal, vertical) < tolerance;
 }
 
 // return the given point from the point of view of an observer standing
 // on the plane immediately below the camera (0,0,0)
-PointT relativeToGround(PointT point, Plane plane){
-	// find the shortest vector from the camera to the plane, then substract
+Eigen::Vector3d relativeToGround(Eigen::Vector3d point, Plane plane)
+{
+	// find the shortest vector from the camera to the plane, then subtract
 	// it from the point. TADA
-	return *(new PointT);
+
+    // TEMPORARY (DOESN'T DO ANYTHING):
+	return point;
 }
 
 // extracts planes from the input point cloud
@@ -136,12 +171,11 @@ void extractPlanes(PointCloud::Ptr input,
 				     float fraction,
 				     int maxPlanes,
 				     PointCloud::Ptr remainder,
-				     vector<Plane> planes,
-				     PointCloud::Ptr ground,
+				     vector<Plane> & planes,
+				     Plane * ground = NULL,
 				     float groundCheckPrecision = 0)
 {
- /*
-  *  Plane coefficients (new pcl::ModelCoefficients ());
+  Plane coefficients (new pcl::ModelCoefficients ());
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
   // Create the segmentation object
   pcl::SACSegmentation<PointT> seg;
@@ -152,7 +186,47 @@ void extractPlanes(PointCloud::Ptr input,
   seg.setMethodType (pcl::SAC_RANSAC);
   seg.setMaxIterations (1000);
   seg.setDistanceThreshold (precision);
-  */
+
+  // Create the filtering object
+  pcl::ExtractIndices<pcl::PointXYZ> extract;
+
+
+
+
+  int originalNumPoints = (int) input -> points.size();
+
+  PointCloud::Ptr temp(new PointCloud);
+    *temp = *input;
+
+  while (temp->points.size () > fraction * originalNumPoints && planes.size() < maxPlanes)
+    {
+      // Segment the largest planar component from the remaining cloud
+      seg.setInputCloud (temp);
+      seg.segment (*inliers, *coefficients);
+      if (inliers->indices.size () == 0)
+      {
+        cerr << "Could not estimate a planar model for the given dataset." << endl;
+        break;
+      }
+
+      // Extract the inliers
+      extract.setInputCloud (temp);
+      extract.setIndices (inliers);
+
+      // add the new coefficients, if valid
+      if (ground == NULL || isOrthogonal(coefficients, *ground, groundCheckPrecision)){
+    	  planes.push_back(coefficients);
+      } else {
+    	  // not valid, discard it by putting the inliers into the "remainder" pile
+    	  extract.setNegative(false);
+    	  extract.filter(*remainder);
+      }
+
+
+      // take all outliers, and repeat the process
+      extract.setNegative (true);
+      extract.filter (*temp);
+    }
 
 }
 
@@ -175,7 +249,7 @@ void segment (PointCloud::ConstPtr input)
 
   // blindly extract some planes, man
   extractPlanes(cloud_temp, precision, fraction,
-		  	  	6, cloud_remainder, planes, NULL);
+		  	  	6, cloud_remainder, planes);
 
 
   // find the ground plane
@@ -196,7 +270,7 @@ void segment (PointCloud::ConstPtr input)
 	  // extract all planes that are orthogonal or parallel to ground
 	  planes.clear();
 	  extractPlanes(cloud_temp, precision, fraction,
-			  	  	4, cloud_remainder, planes, ground, tolerance);
+			  	  	4, cloud_remainder, planes, &ground, tolerance);
 
 	  // get the obstacles
 	  downSample(cloud_remainder, obstacles, obstacleResolution);

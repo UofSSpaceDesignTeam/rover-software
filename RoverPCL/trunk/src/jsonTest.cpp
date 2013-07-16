@@ -44,7 +44,7 @@ int main(){
 
 	root["timestamp"] = 10; //arbitrary for now
 	root["planes"] = planes;
-	root["ground"] = planes;
+	root["ground"] = plane;
 	root["foundObstacles"] = true;
 	root["obstacles"] = obstacles;
 
