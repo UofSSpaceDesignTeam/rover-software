@@ -86,6 +86,13 @@ public class CameraMessageHandler extends Observable implements Runnable
 		}
 	}
 	
+
+	@Override
+	public void run()
+	{
+		parse();
+	}
+	
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -101,10 +108,5 @@ public class CameraMessageHandler extends Observable implements Runnable
 
 	}
 
-	@Override
-	public void run()
-	{
-		parse();
-	}
 
 }
