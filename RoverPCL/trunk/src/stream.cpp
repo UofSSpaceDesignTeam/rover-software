@@ -29,11 +29,16 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/ModelCoefficients.h>
 
+#include <json/json.h>
+#include <json/value.h>
+
 
 #include <cstdlib>
 #include <iostream>
 #include <vector>
 #include <cmath>
+
+
 
 //convenient typedefs
 typedef pcl::PointXYZ PointT;
@@ -99,6 +104,16 @@ Eigen::Vector3d normalVector(Plane plane){
 	return normal;
 }
 
+Eigen::Vector3d pointToVector (PointT p){
+	Eigen::Vector3d vec(p.x, p.y, p.z);
+	return vec;
+}
+
+PointT vectorToPoint (Eigen::Vector3d v){
+	PointT pt(v[0], v[1], v[2]);
+	return pt;
+}
+
 // returns the (shortest angle between) the two given vectors
 double angleBetween(Eigen::Vector3d v1, Eigen::Vector3d v2){
 	double rawAngle = acos(v1.dot(v2) / (v1.norm() * v2.norm()));
@@ -147,6 +162,8 @@ bool isGround(Plane plane,
 	return angleBetween(normal, vertical) < tolerance;
 }
 
+
+
 // return the given point from the point of view of an observer standing
 // on the plane immediately below the camera (0,0,0)
 Eigen::Vector3d relativeToGround(Eigen::Vector3d point, Plane plane)
@@ -163,7 +180,8 @@ Eigen::Vector3d relativeToGround(Eigen::Vector3d point, Plane plane)
 // part of it; extraction stops when 'fraction' or less of the original points
 // remain; the remaining points are returned in the 'remainder' pointcloud
 
-// if ground isn't NULL, only keep planes that are orthogonal to within
+Plane::Ptr ground (new pcl::ModelCoefficients ());
+// if foundGround is true, only keep planes that are orthogonal to within
 // groundCheckPrecision radians of the ground. If plane is not orthogonal,
 // put all its points into the remainder
 void extractPlanes(PointCloud::Ptr input,
@@ -172,10 +190,10 @@ void extractPlanes(PointCloud::Ptr input,
 				     int maxPlanes,
 				     PointCloud::Ptr remainder,
 				     vector<Plane> & planes,
-				     Plane * ground = NULL,
+				     bool foundGround,
 				     float groundCheckPrecision = 0)
 {
-  Plane coefficients (new pcl::ModelCoefficients ());
+  Plane::Ptr coefficients (new pcl::ModelCoefficients ());
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
   // Create the segmentation object
   pcl::SACSegmentation<PointT> seg;
@@ -214,8 +232,8 @@ void extractPlanes(PointCloud::Ptr input,
       extract.setIndices (inliers);
 
       // add the new coefficients, if valid
-      if (ground == NULL || isOrthogonal(coefficients, *ground, groundCheckPrecision)){
-    	  planes.push_back(coefficients);
+      if (!foundGround || isOrthogonal(*coefficients, *ground, groundCheckPrecision)){
+    	  planes.push_back(*coefficients);
       } else {
     	  // not valid, discard it by putting the inliers into the "remainder" pile
     	  extract.setNegative(false);
@@ -230,62 +248,102 @@ void extractPlanes(PointCloud::Ptr input,
 
 }
 
-void segment (PointCloud::ConstPtr input)
+// prints a plane to a json object
+Json::Value planeToJson(Plane p){
+	Json::Value j(Json::objectValue);
+	j["a"] = p.values[0];
+	j["b"] = p.values[1];
+	j["c"] = p.values[2];
+	j["d"] = p.values[3];
+	return j;
+}
+
+// splits the input point cloud into planes and obstacles; outputs the result into a Json object
+Json::Value segment (PointCloud::ConstPtr input)
 {
-  PointCloud::Ptr cloud_temp (new PointCloud),
-		  	  	  obstacles (new PointCloud),
-		  	  	  cloud_remainder (new PointCloud);
+	// create and initialize the json object
+	Json::Value root(Json::objectValue);
 
-  *cloud_temp = *input;
+	PointCloud::Ptr cloud_temp (new PointCloud),
+			obstacles (new PointCloud),
+			cloud_remainder (new PointCloud);
 
-  // read the precision
-  float precision = 0.03;
-  float fraction = 0.1;
-  double tolerance = 5 * 3.14159 / 180; // 5 degrees
-  double threshold = 0.5;
-  double obstacleResolution = 0.05;
+	*cloud_temp = *input;
 
-  vector<Plane> planes;
+	// read the precision
+	float precision = 0.03;
+	float fraction = 0.1;
+	double tolerance = 5 * 3.14159 / 180; // 5 degrees
+	double threshold = 0.5;
+	double obstacleResolution = 0.05;
 
-  // blindly extract some planes, man
-  extractPlanes(cloud_temp, precision, fraction,
-		  	  	6, cloud_remainder, planes);
+	vector<Plane> planes;
+
+	// blindly extract some planes, man
+	extractPlanes(cloud_temp, precision, fraction,
+			6, cloud_remainder, planes, false);
 
 
-  // find the ground plane
-  Plane ground;
-  bool foundGround = false;
-  for (int i = 0; i < planes.size() && !foundGround; i++){
-	  if (isGround(planes[i], tolerance)){
-		  ground = planes[i];
-		  foundGround = true;
-	  }
-  }
+	// find the ground plane
+	bool foundGround = false;
+	for (int i = 0; i < planes.size() && !foundGround; i++){
+		if (isGround(planes[i], tolerance)){
+			*ground = planes[i];
+			foundGround = true;
+		}
+	}
 
-  if (foundGround){
+	if (foundGround){
 
-	  // filter points too far above ground
-	  removePointsAbovePlane(ground, input, cloud_temp, threshold);
+		// filter points too far above ground
+		removePointsAbovePlane(*ground, input, cloud_temp, threshold);
 
-	  // extract all planes that are orthogonal or parallel to ground
-	  planes.clear();
-	  extractPlanes(cloud_temp, precision, fraction,
-			  	  	4, cloud_remainder, planes, &ground, tolerance);
+		// extract all planes that are orthogonal or parallel to ground
+		planes.clear();
+		extractPlanes(cloud_temp, precision, fraction,
+				4, cloud_remainder, planes, true, tolerance);
 
-	  // get the obstacles
-	  downSample(cloud_remainder, obstacles, obstacleResolution);
+		// get the obstacles
+		downSample(cloud_remainder, obstacles, obstacleResolution);
 
-	  for (PointCloud::iterator it = obstacles -> begin();
-		   it != obstacles -> end();
-		   it++){
-		  PointT pt = *it;
-		  PointT obstacle = relativeToGround(pt, ground);
+		Json::Value jObstacles(Json::arrayValue);
+		for (PointCloud::iterator it = obstacles -> begin();
+				it != obstacles -> end();
+				it++){
+			PointT pt = *it;
+			PointT obstacle = vectorToPoint(relativeToGround(pointToVector(pt), *ground));
 
-		  // OUTPUT OBSTACLE TO JAVA
-	  }
-  }
+			// add the obstacle to the Json obstacle array
+			Json::Value jObstacle(Json::objectValue);
+			jObstacle["x"] = obstacle.x;
+			jObstacle["y"] = obstacle.y;
+			jObstacle["z"] = obstacle.z;
+			jObstacle["radius"] = obstacleResolution;
 
-  // OUTPUT PLANES TO JAVA
+			jObstacles.append(jObstacle);
+			// OUTPUT OBSTACLE TO JAVA
+		}
+		root["obstacles"] = jObstacles;
+	}
+
+	root["foundObstacles"] = foundGround;
+
+	if (foundGround)
+		root["ground"] = planeToJson(*ground);
+
+	Json::Value jPlanes(Json::arrayValue);
+	for (int i = 0; i < planes.size(); i++){
+		jPlanes.append(planeToJson(planes[i]));
+	}
+
+	root["planes"] = jPlanes;
+	root["timestamp"] = 0; //MAGIC
+
+
+
+
+	return root;
+	// OUTPUT PLANES TO JAVA
 }
 
 
@@ -315,7 +373,9 @@ public:
 					new PointCloud);
 			downSample(cloud, downsampled, DOWNSAMPLE_FRAMES);
 
-			segment(downsampled);
+			Json::Value output = segment(downsampled);
+			Json::StyledWriter writer;
+			cout << writer.write(output);
 		}
 		counter ++;
 	}
