@@ -27,7 +27,7 @@ public class CameraMessageHandler extends Observable implements Runnable
 	public JsonObject cameraData;
 	
 	public CameraMessageHandler(){
-		ProcessBuilder pb = new ProcessBuilder("/home/fit-pc/workspace/openni_grabber-Debug@RoverPCL/jsonTest");
+		ProcessBuilder pb = new ProcessBuilder("/home/fit-pc/workspace/openni_grabber-Debug@RoverPCL/stream");
 		
 		try
 		{
