@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class Environment implements MapInterface, Observer
@@ -52,6 +53,11 @@ public class Environment implements MapInterface, Observer
 	{
 		JsonObject object = camera.getLatest();
 		System.out.println(object.getAsJsonArray("planes").toString());
+		JsonArray planes = object.getAsJsonArray("planes");
+		for(int i = 0; i< planes.size(); i++)
+		{
+			
+		}
 	}
 	
 	public static void main(String[] args)
