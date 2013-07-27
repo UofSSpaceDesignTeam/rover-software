@@ -1,5 +1,5 @@
 //wiring connections: IMU: vdd->3.3v, gnd->gnd, vio->3.3v, sda->sda(pin 20), 
-//scl->scl(pin 21) SERVO: red->5v, gnd->gnd, yellow->digital pin 6
+//scl->scl(pin 21) SERVO1: red->5v, gnd->gnd, yellow->digital pin 6  SERVO2: red->5v, gnd->gnd, yellow->digital pin 7
 #include <Wire.h>
 #include <I2Cdev.h>
 #include <MPU6050.h>
