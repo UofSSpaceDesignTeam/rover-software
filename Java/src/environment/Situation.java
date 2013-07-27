@@ -17,7 +17,7 @@ public class Situation {
 	private Point2D location;
 	
 	/**
-	 * Angle from positive x-axis, in radians
+	 * Angle from positive y-axis, in radians
 	 */
 	private double angle; 
 	
