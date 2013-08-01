@@ -194,8 +194,8 @@ int parseMessage()
       {
         int result[6] = {0,0,0,0,0,0};
         frontLeftMidRange.groupOn(); // power up group 1
-        delay(60); // wait for them to warm up
-        for(int i=0; i<20; i++) // read group 1, ~300ms
+        levelRangefinders();  // get the sensor pods ready
+        for(int i=0; i<20; i++) // read group 1, ~150ms
         {
           result[0] += frontLeftMidRange.readRaw();
           result[1] += frontRightMidRange.readRaw();
@@ -203,7 +203,7 @@ int parseMessage()
           result[3] += rearRightMidRange.readRaw();
           result[4] += rearLeftMidRange.readRaw();
           result[5] += leftSideMidRange.readRaw();
-          delay(10); // need some time between readings for reliability
+          delay(5); // need some time between readings for reliability
         }
         frontLeftMidRange.groupOff();
         for(int i=0; i<6; i++)

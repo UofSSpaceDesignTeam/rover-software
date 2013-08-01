@@ -69,7 +69,7 @@ Servo frontRightServo;
 Servo rightSideServo;
 Servo rearRightServo;
 Servo rearLeftServo;
-Servo leftSideServo; 
+Servo leftSideServo;
 Servo cameraPan; // pans the xtion
 
 Rangefinder frontLeftMidRange(2);
