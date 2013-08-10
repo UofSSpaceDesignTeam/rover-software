@@ -44,7 +44,9 @@ void drawButtons(){
   rect(d_outButton.myX,d_outButton.myY,d_outButton.myWidth,d_outButton.myHeight);
     //move digging mechanism in
   if(d_inButton.isActive()){fill(active_color);}else{fill(default_color);}
-  rect(d_inButton.myX,d_inButton.myY,d_inButton.myWidth,d_inButton.myHeight);
+    rect(d_inButton.myX,d_inButton.myY,d_inButton.myWidth,d_inButton.myHeight);
+  if(d_autoButton.isActive()){fill(active_color);}else{fill(default_color);}
+    rect(d_autoButton.myX,d_autoButton.myY,d_autoButton.myWidth,d_autoButton.myHeight);
 
   //bucket
   if(b_upButton.isActive()){fill(active_color);}else{fill(default_color);}
@@ -55,6 +57,10 @@ void drawButtons(){
   rect(b_dumpButton.myX,b_dumpButton.myY,b_dumpButton.myWidth,b_dumpButton.myHeight);
   if(b_levelButton.isActive()){fill(active_color);}else{fill(default_color);}
   rect(b_levelButton.myX,b_levelButton.myY,b_levelButton.myWidth,b_levelButton.myHeight);
+  if(b_autoButton.isActive()){fill(active_color);}else{fill(default_color);}
+  rect(b_autoButton.myX,b_autoButton.myY,b_autoButton.myWidth,b_autoButton.myHeight);
+  if(b_stopButton.isActive()){fill(active_color);}else{fill(default_color);}
+  rect(b_stopButton.myX,b_stopButton.myY,b_stopButton.myWidth,b_stopButton.myHeight);
   
   //video controls
   if(video_onButton.isActive()){fill(active_color);}else{fill(default_color);}
@@ -127,12 +133,17 @@ void drawButtons(){
   text(d_inButton.myLabel,d_inButton.myX+d_inButton.myWidth/2,d_inButton.myY+d_inButton.myHeight/2-3);
   text(d_outButton.myLabel,d_outButton.myX+d_outButton.myWidth/2,d_outButton.myY+d_outButton.myHeight/2-3);
   
+  text(d_autoButton.myLabel,d_autoButton.myX+d_autoButton.myWidth/2,d_autoButton.myY+d_autoButton.myHeight/2-3);
+  
   //bucket
   text(b_upButton.myLabel,b_upButton.myX+b_upButton.myWidth/2,b_upButton.myY+b_upButton.myHeight/2-3);
   text(b_downButton.myLabel,b_downButton.myX+b_downButton.myWidth/2,b_downButton.myY+b_downButton.myHeight/2-3);
   text(b_dumpButton.myLabel,b_dumpButton.myX+b_dumpButton.myWidth/2,b_dumpButton.myY+b_dumpButton.myHeight/2-3);
   text(b_levelButton.myLabel,b_levelButton.myX+b_levelButton.myWidth/2,b_levelButton.myY+b_levelButton.myHeight/2-3);
   
+  text(b_autoButton.myLabel,b_autoButton.myX+b_autoButton.myWidth/2,b_autoButton.myY+b_autoButton.myHeight/2-3);
+  text(b_stopButton.myLabel,b_stopButton.myX+b_stopButton.myWidth/2,b_stopButton.myY+b_stopButton.myHeight/2-3);
+
   //video buttons
   text(video_onButton.myLabel,video_onButton.myX+video_onButton.myWidth/2,video_onButton.myY+video_onButton.myHeight/2-3);
   text(video_offButton.myLabel,video_offButton.myX+video_offButton.myWidth/2,video_offButton.myY+video_offButton.myHeight/2-3);

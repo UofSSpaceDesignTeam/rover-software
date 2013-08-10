@@ -1,5 +1,5 @@
 // this is the slider actually shown in the UI
-HScrollbar speedbar = new HScrollbar(730,420,230,15,5);
+HScrollbar speedbar = new HScrollbar(740,420,230,15,2000);
 
 // this is the new class used to define/create a scroll bar
 class HScrollbar {

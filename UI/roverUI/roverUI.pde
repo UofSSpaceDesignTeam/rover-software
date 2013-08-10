@@ -1,7 +1,5 @@
 import processing.net.*;
-boolean keydown; /* keeps track of when a button is pressed released, (becomes true when a key is pressed and false when it is released
-                 to counteract the "hold key to repeat" function that all computer keyboards use
-                  eg: holding down the "k" key will type "kkkkkkkkkkkk" which we don't want for press-and-hold keyboard controls*/
+
 Client client; /* client used to connect to rover server*/ 
 String testIp = "127.0.0.1";/*for testing that does not need connection to rover, requires running test server program*/
 //String testIp = "10.227.0.179"; /*local IP of computer running test server; (this one varies between computers and networks so don't be afraid to change it as needed)*/
@@ -38,6 +36,11 @@ int last_message = 0;
 /* tracks amount of data sent over network (in bytes) */
 int bytes_sent = 0;  
 
+boolean keydown; /* keeps track of when a button is pressed released, (becomes true when a key is pressed and false when it is released
+                 to counteract the "hold key to repeat" function that all computer keyboards use
+                  eg: holding down the "k" key will type "kkkkkkkkkkkk" which we don't want for press-and-hold keyboard controls*/
+                  
+                  
 /*setup is run once at startup before starting the main "draw" loop 
  it is mainly used for giving variables their starting values and defining the size of the window the program will run in*/
 void setup() 
@@ -78,23 +81,6 @@ void setup()
   for (int i = 0; i < window_messages.length; i = i+1) {
    window_messages[i] = " ";
   }
- 
-//  try{ client = new Client(this, roverIp_wireless, comm_port); //
-//    println("wireless server " + roverIp_wireless + " is available");
-//    client.stop();
-//  } catch (NullPointerException a){ 
-//     try{ client = new Client(this, roverIp_tethered, comm_port); //
-//     println("tethered server " + roverIp_tethered + " is available");
-//     client.stop();
-//     } catch (NullPointerException b){ 
-//       try{ client = new Client(this, testIp, comm_port); //
-//       println("test server " + testIp + " is available");
-//       client.stop();
-//       } catch (NullPointerException c){ 
-//         println("No server available");
-//       }
-//     }   
-//  }
   
 }
 
@@ -107,34 +93,39 @@ void draw()
                             // with the x- and y-coordinates at the centre of the text
   
   background(230); // changes the colour of the window's background
-  fill(210); //sets colour of drawn objects 
+  fill(220); //sets colour of drawn objects 
   stroke(0); // sets colour of lines and borders to 0 (black)
-  strokeWeight(2); // sets thickness of lines and borders
-  //rect(35,120,85,240);  //}box around digger controls
-  // rect(35,120,170,120); //}
+  strokeWeight(1); // sets thickness of lines and borders
+  rect(10,120,85,120);  /*box around digger controls*/
+  rect(10,240,170,60); 
+  rect(95,120,85,120);
+  rect(10,300,170,60);
   
-  //rect(220,120,85,240);    //box arount bucket controls
+  rect(190,120,85,120);    /*boxes arount bucket controls */
+  rect(275,120,85,120);
+  rect(190,240,170,60);
+  rect(190,300,170,60);
   //rect(715,80,255,120);   //box around camera controls
   //rect(715,235,255,120);   //box around movement controls
   //rect(715,450,300,140);   //box around AI Status
-  rect(330,75,videoX,videoY);//Video box
+  rect(390,55,videoX,videoY);//Video box
 
   //  additional text labels for understanding the UI
   fill(0);
   textSize(24);
   //text("Excavation",160,70);
-  text("Camera",845,65);
-  text("Movement",845,220);
-  text("Video", 500,30);
+  text("Camera",885,65);
+  text("Movement",885,220);
+  text("Video", 560,20);
   text("Messages",200,400);
   textSize(16);
-  text("Digger",120,100);
-  text("Bucket",265,100);
+  text("Digger",95,100);
+  text("Bucket",275,100);
   text("AI Status",870,440);
   textSize(15);
-  text("Arrow Keys",925,355);
-  text("MIN",713,418);
-  text("MAX",990,418);
+  //text("Arrow Keys",925,355);
+  text("MIN",speedbar.xpos-15,speedbar.ypos+5);
+  text("MAX",speedbar.xpos+speedbar.swidth+18,speedbar.ypos+5);
   text(bytes_sent,30,60); 
   // This second part of the loop calls upon the functions 
   // that do all of the thinking
@@ -152,7 +143,7 @@ void draw()
 }
 
 
-byte[] debug = new byte[0];
+byte[] debug = new byte[1];
 
 boolean connected = false; // variable is set to true when client connects to a server
 // connection() - checks client connection status, then attempts to connect,disconnect, or reconnect
@@ -163,11 +154,11 @@ void connection() {
      
       try{client.ip(); // checks to see if client is already connected to the server
         if (millis() - timer > 1000) { // if connection is going to time out
-          //debug[0] = 0;
+          debug[0] = 0;
           if(millis()-last_message>message_delay){
             outMessage.Message(MessageProtocol.ID1_DEBUG,MessageProtocol.ID2_CHECK,debug);
-            outMessage.sendMessage();
-          //message to maintain connection (to do later);  // send message to maintain connection
+            //outMessage.sendMessage();
+          /*message to maintain connection (to do later);  // send message to maintain connection*/
             last_message = millis();
             timer = millis();  //reset timeout timer
           }

@@ -84,39 +84,67 @@ void keyPressed() {
       }
       
     } else { //case for alphanumeric keys and symbols
-      if (key == 'A'||key =='a') { 
-        d_downButton.activate();
-      } else if (key == 'Q'||key =='q') { 
-        d_upButton.activate();
-      }else if (key == 'W'||key =='w') { 
-        d_outButton.activate();
-      }else if (key == 'E'||key =='e') { 
-        d_inButton.activate();
-      }else if (key == 'D'||key =='d') { 
-        if(!d_digButton.isActive()){
-          d_digButton.activate();
-        } else{
-          d_stopButton.activate();
+      if(keydown == false){
+        keydown = true;
+        if (key == '1') {
+          
+        } else if (key == '2') { 
+          d_upButton.activate();
+        } else if (key == '3') { 
+          d_outButton.activate();
+        } else if (key == '4') {
+          b_upButton.activate();
+        } else if (key == '5') {
+          b_dumpButton.activate();
+        } else if (key == '6') {
+          
+        } else if (key == '7') {
+          
+        } else if (key == '8') {
+          
+        } else if (key == '9') {
+          
+        } else if (key == '0') {
+          
+        } else if (key == 'A'||key =='a') { 
+          d_autoButton.activate();
+        } else if (key == 'D'||key =='d') { 
+          if(!d_digButton.isActive()){
+            d_digButton.activate();
+          } else{
+            d_stopButton.activate();
+          }
+        } else if (key == 'E'||key =='e') { 
+          d_inButton.activate();
+        }else if (key == 'F'||key =='f') { 
+            b_autoButton.activate();
+        } else if (key == 'Q'||key =='q') { 
+          if(wireless_serverButton.isActive()){
+            wireless_serverButton.deactivate();
+            tethered_serverButton.activate();
+           } else if (tethered_serverButton.isActive()){
+            test_serverButton.activate();
+            tethered_serverButton.deactivate();
+          } else if (test_serverButton.isActive()){
+            test_serverButton.deactivate();
+            wireless_serverButton.activate();
+          }else {
+            test_serverButton.activate(); 
+          }
+        } else if (key == 'R'||key =='r') { 
+            b_downButton.activate();
+        }else if (key == 'S'||key =='s') { 
+            d_stopButton.activate();
+        }else if (key == 'T'||key =='t') { 
+            b_levelButton.activate();
+        } else if (key == 'W'||key =='w') { 
+          d_downButton.activate();
+        } else if (key == ' ') { 
+          stopButton.activate();
+          
         }
-      } else if (key == 'S'||key =='s') { 
-        if(wireless_serverButton.isActive()){
-          wireless_serverButton.deactivate();
-          tethered_serverButton.activate();
-         } else if (tethered_serverButton.isActive()){
-          test_serverButton.activate();
-          tethered_serverButton.deactivate();
-        } else if (test_serverButton.isActive()){
-          test_serverButton.deactivate();
-          wireless_serverButton.activate();
-        }else {
-          test_serverButton.activate(); 
-        }
-      } else if (key == ' ') { 
-        stopButton.activate();
-        
       }
     }
-  
 }
 
 
@@ -158,13 +186,62 @@ void keyReleased(){
     
     }
     
-  } else {
-    if (key == 'A') {
-   
-    } else { 
-
-    }
-  }  
+  }  else { //case for alphanumeric keys and symbols
+       if (key == '1') {
+        
+      } else if (key == '2') { 
+        d_upButton.deactivate();
+      } else if (key == '3') { 
+        d_outButton.deactivate();
+      } else if (key == '4') {
+        b_upButton.deactivate();
+      } else if (key == '5') {
+        b_dumpButton.deactivate();
+      } else if (key == '6') {
+        
+      } else if (key == '7') {
+        
+      } else if (key == '8') {
+        
+      } else if (key == '9') {
+        
+      } else if (key == '0') {
+        
+      } else if (key == 'A'||key =='a') { 
+        //d_autoButton.deactivate();
+      }else if (key == 'D'||key =='d') { 
+          if(d_digButton.isActive()){
+            //d_digButton.activate();
+          } 
+          if (d_stopButton.isActive()){
+            d_stopButton.deactivate();
+          }
+        } else if (key == 'E'||key =='e') { 
+        d_inButton.deactivate();
+      }else if (key == 'F'||key =='f') { 
+        //b_autoButton.deactivate();
+      } else if (key == 'R'||key =='r') { 
+          b_downButton.deactivate();
+          if(connected){
+            new_debug_message("STOP MOVING hopper");
+            byte[] data = new byte[1];
+            data[0]=0;
+            /*sets up the message to be sent*/
+            outMessage.Message(MessageProtocol.ID1_BUCKET,MessageProtocol.ID2_STOP_MOVE,data);
+            /*sends message*/
+            outMessage.sendMessage();
+          }
+      }else if (key == 'S'||key =='s') { 
+          d_stopButton.deactivate();
+      }else if (key == 'T'||key =='t') { 
+          b_levelButton.deactivate();
+      } else if (key == 'W'||key =='w') { 
+        d_downButton.deactivate();
+      } else if (key == ' ') { 
+        //stopButton.deactivate();
+        
+      }
+    }  
  
   
 }

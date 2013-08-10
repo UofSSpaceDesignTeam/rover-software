@@ -9,7 +9,7 @@ void debug_messages()
   //the following code is for drawing the message "box" itself
   fill(210); //sets fill colour to  light grey 
   stroke(0); // sets colour of the box borders to 0 (black)
-  strokeWeight(2); // sets thickness of the borders
+  strokeWeight(1); // sets thickness of the borders
   rect(10,420,405,170);  // draws the message box at the given coordinates
   
   //the following is for drawing the messages themselves

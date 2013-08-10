@@ -7,16 +7,25 @@ public abstract class MessageProtocol {
   public static final byte ID1_POWER ='P';
   public static final byte ID1_DEBUG ='D';
   public static final byte ID1_MOTORS ='M';
-
   public static final byte ID1_DIGGER ='G';
+  public static final byte ID1_BUCKET ='B';
   
   public static final byte ID2_CHECK ='C';
   public static final byte ID2_DEBUG ='B';
   public static final byte ID2_OFF ='O';
   public static final byte ID2_EMERGENCY_OFF ='E';
-  public static final byte ID2_RAISE ='R';
   public static final byte ID2_ENABLE_DISABLE ='E';
   public static final byte ID2_ROTATION ='S';
+  public static final byte ID2_RAISE ='R';
+  public static final byte ID2_LOWER ='L';
+  public static final byte ID2_OUT ='O';
+  public static final byte ID2_IN ='I'; 
+  public static final byte ID2_STOP_MOVE ='S';
+  public static final byte ID2_STOP_DIG ='H';
+  public static final byte ID2_DIG ='D';
+  public static final byte ID2_AUTO ='A';
+  public static final byte ID2_LEVEL ='H';
+  public static final byte ID2_DUMP ='D';
 
   public static final byte START_BYTE ='#';
   public static final byte END_BYTE ='\n';

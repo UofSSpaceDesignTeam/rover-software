@@ -146,6 +146,11 @@ void mousePressed() {
     //d_inButton.myColor = default_color;
     d_inButton.activate();
   }
+//Digger Auto Button  
+  if (overButton(d_autoButton.myX,d_autoButton.myY,d_autoButton.myWidth,d_autoButton.myHeight)) {
+    //d_inButton.myColor = default_color;
+    d_autoButton.activate();
+  }
 //Bucket Up Button
   if (overButton(b_upButton.myX,b_upButton.myY,b_upButton.myWidth,b_upButton.myHeight)) {
     //b_upButton.myColor = default_color;
@@ -166,7 +171,16 @@ void mousePressed() {
     //b_levelButton.myColor = default_color;
     b_levelButton.activate();
   }
-
+//Bucket Auto Button  
+  if (overButton(b_autoButton.myX,b_autoButton.myY,b_autoButton.myWidth,b_autoButton.myHeight)) {
+    //b_levelButton.myColor = default_color;
+    b_autoButton.activate();
+  }
+//Bucket Stop Button  
+  if (overButton(b_stopButton.myX,b_stopButton.myY,b_stopButton.myWidth,b_stopButton.myHeight)) {
+    //b_levelButton.myColor = default_color;
+    b_stopButton.activate();
+  }
 //Video On Button
   if (overButton(video_onButton.myX,video_onButton.myY,video_onButton.myWidth,video_onButton.myHeight)) {
     //video_onButton.myColor = default_color;
@@ -227,14 +241,14 @@ void mousePressed() {
   if (overButton(stopButton.myX,stopButton.myY,stopButton.myWidth,stopButton.myHeight)) {
     //stopButton.myColor = color(255,30,20);
     stopButton.activate();
-    
   }
-  if(overButton(713-15,417-10,30,23)){
-    speedbar.newspos = speedbar.sposMin;
-  }
-  if(overButton(980-10,417-10,40,23)){
-    speedbar.newspos = speedbar.sposMax;
-  }
+///*Speed slider min/max*/  
+//  if(overButton(713-15,417-10,30,23)){
+//    speedbar.newspos = speedbar.sposMin;
+//  }
+//  if(overButton(980-10,417-10,40,23)){
+//    speedbar.newspos = speedbar.sposMax;
+//  }
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,6 +275,42 @@ void mouseReleased() {
       }
     }
   }
+  if (d_upButton.isActive() || d_downButton.isActive() || d_inButton.isActive() || d_outButton.isActive()){
+    if(connected){
+      new_debug_message("STOP MOVING DIGGER");
+      d_upButton.deactivate();
+      d_downButton.deactivate();
+      d_inButton.deactivate();
+      d_outButton.deactivate();
+      
+       byte[] data = new byte[1];
+          data[0]=0;
+          /*sets up the message to be sent*/
+          outMessage.Message(MessageProtocol.ID1_DIGGER,MessageProtocol.ID2_STOP_MOVE,data);
+          /*sends message*/
+          outMessage.sendMessage();
+      
+    }
+  }
+  
+  if (b_upButton.isActive() || b_downButton.isActive() || b_levelButton.isActive() || b_dumpButton.isActive()||b_stopButton.isActive()){
+    if(connected){
+      new_debug_message("STOP MOVING DIGGER");
+      b_upButton.deactivate();
+      b_downButton.deactivate();
+      b_levelButton.deactivate();
+      b_dumpButton.deactivate();
+      b_stopButton.deactivate();
+       byte[] data = new byte[1];
+          data[0]=0;
+          /*sets up the message to be sent*/
+          outMessage.Message(MessageProtocol.ID1_BUCKET,MessageProtocol.ID2_STOP_MOVE,data);
+          /*sends message*/
+          outMessage.sendMessage();
+      
+    }
+  }
+  
   if (overButton(d_upButton.myX,d_upButton.myY,d_upButton.myWidth,d_upButton.myHeight)) {
     //d_upButton.myColor = default_color;
     //d_upButton.deactivate();
@@ -275,7 +325,7 @@ void mouseReleased() {
   }
   if (overButton(d_digButton.myX,d_digButton.myY,d_digButton.myWidth,d_stopButton.myHeight)) {
     //d_digButton.myColor = default_color;
-    d_digButton.deactivate();
+    //d_digButton.deactivate();
   }
   
   if (overButton(d_outButton.myX,d_outButton.myY,d_outButton.myWidth,d_outButton.myHeight)) {
