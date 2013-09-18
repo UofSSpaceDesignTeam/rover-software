@@ -1,9 +1,5 @@
 #include "Motor.h"
 
-#include <stdio.h>
-#include "Arduino.h"
-#include <inttypes.h>
-
 Motor::Motor()
 {
 	attached = false;

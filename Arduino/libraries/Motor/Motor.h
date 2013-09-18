@@ -3,9 +3,9 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
-#include <inttypes.h>
+#include <stdio.h>
 #include "Arduino.h"
-
+#include <inttypes.h>
 
 class Motor
 {
