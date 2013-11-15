@@ -18,8 +18,8 @@ pygame.init()
 
 def connect(port , x, y, frameps):
   global p
-  command = "nc -lu -p 3001 | mplayer -geometry 50%:30 -x 850 -y 450 -nosound -nolirc -noborder -hardframedrop -noautosub -fps frameps -demuxer h264es -nocache -"
-  p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+  command = "nc -lu -p 3001 | mplayer -geometry 50%:30 -x " + str(x) + " -y " + str(y) + " -nosound -nolirc -noborder -hardframedrop -noautosub -fps " + str(frameps) + " -demuxer h264es -nocache -"
+  p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 #	os.system(command)
 #
 # This is where the main loop starts
@@ -37,8 +37,9 @@ Clock = pygame.time.Clock()
  
 while mainloop:
    tickFPS = Clock.tick(fps)
+   escapecmd = 'QUIT\n'
    frameps = 35
-   x = 850
+   x = 830
    y = 450
    port = 3001
    mouse = pygame.mouse.get_pos()
@@ -53,7 +54,9 @@ while mainloop:
            if btn.obj.collidepoint(mouse):
               connect(port, x, y, frameps)
            elif btn2.obj.collidepoint(mouse):
-              os.kill(p.pid, signal.SIGINT)           
+              p.stdout.flush()
+              p.stdout.close()
+
            elif btn3.obj.collidepoint(mouse):
               print('button 3 clicked')
               
