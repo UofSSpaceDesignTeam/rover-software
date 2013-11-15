@@ -51,7 +51,7 @@ while mainloop:
                mainloop = False # Be IDLE friendly!
        elif event.type == pygame.MOUSEBUTTONDOWN:
            if btn.obj.collidepoint(mouse):
-              connect()
+              connect(port, x, y, frameps)
            elif btn2.obj.collidepoint(mouse):
               os.kill(p.pid, signal.SIGINT)           
            elif btn3.obj.collidepoint(mouse):
