@@ -7,7 +7,6 @@ import time
 import subprocess
 import socket
 from threading import Thread
-from Textbox import *
 from Button import *
 import pygame, random
 from pygame.locals import *

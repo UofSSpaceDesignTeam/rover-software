@@ -1,0 +1,12 @@
+# Pi commands #			# identifier #		# command #			# Data #
+restart				#P			R
+
+# Control Commands #
+control switch			#C			S				1 letter M for switch to movement and A to switch to Arm
+control Move			#C			M				2 chars throttle 2 chars steering 2chars pan 2 chars tilt
+control Arm			#C			A				TODO
+control Emergency Stop		#C			E
+
+# Experiment Commands #
+experiment start		#E			S
+Experiment Request Data		#E			D				none, returns Data
