@@ -122,9 +122,7 @@ def ask(screen):
             current_string[userBox]= current_string[userBox][0:-1]
         elif inkey == K_RETURN: #advances to next box if user presses enter, ends after the third
             pygame.draw.circle(screen, (0,0,0), (((screen.get_width() / 2) - 112),((userBox+1)*(screen.get_height() / 5) - 5)), 4, 0)
-            userBox += 1
-            if userBox == 3:
-                return current_string
+            return current_string
         elif inkey <= 127: #adds the cooresponding letter to the string
             current_string[userBox].append(chr(inkey))
         elif inkey == userClick: #if the user left clicks the mouse it will change to the box clicked on
@@ -135,10 +133,14 @@ def ask(screen):
                         userBox = x
         display_box(screen, string.join(current_string[userBox],""), userBox)
     return current_string
+while True:
+	screen = pygame.display.set_mode((324,240)) #initialize screen
+	answer = ask(screen) #call the function
+	print answer[0]
+	print answer[1]
+	print answer[2]
 
-screen = pygame.display.set_mode((324,240)) #initialize screen
-answer = ask(screen) #call the function
-print answer
+#print answer
 print answer[0]
-print answer[1]
-print answer[2]
+#print answer[1]
+#print answer[2]
