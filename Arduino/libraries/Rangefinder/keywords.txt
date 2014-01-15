@@ -1,3 +1,0 @@
-Rangefinder	KEYWORD1
-read	KEYWORD2
-attach	KEYWORD2

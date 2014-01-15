@@ -1,4 +1,0 @@
-#!/bin/bash
-rm CMakeCache.txt
-cmake .
-cmake -G"Eclipse CDT4 - Unix Makefiles" -D CMAKE_BUILD_TYPE=Debug .
