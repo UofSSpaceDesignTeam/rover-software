@@ -1,0 +1,23 @@
+Metadata-Version: 1.0
+Name: mplayer.py
+Version: 0.7.0
+Summary: Lightweight and dynamic MPlayer wrapper with a Pythonic API
+Home-page: http://code.google.com/p/python-mplayer/
+Author: Darwin M. Bautista
+Author-email: djclue917@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: X11 Applications :: GTK
+Classifier: Environment :: X11 Applications :: Qt
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
+Classifier: Natural Language :: English
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Multimedia :: Video :: Display
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

@@ -1,0 +1,6 @@
+moved communication to it's own file and rename gui
+--This line, and those below, will be ignored--
+
+A    gui.py
+D    communication.py
+A    Communication.py

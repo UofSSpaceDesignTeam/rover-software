@@ -8,6 +8,7 @@ import subprocess
 import socket
 from threading import Thread
 from Button import *
+from Communication import *
 import pygame, random
 from pygame.locals import *
 
@@ -15,6 +16,8 @@ from pygame.locals import *
 screen = pygame.display.set_mode((0,0),pygame.RESIZABLE)
 #cmd = ['nc', '-lu', '-p', 3001]|['mplayer', '-geometry', '50%:30', '-x', 850, '-y', 450, '-nosound', '-nolirc', '-noborder', '-hardframedrop', '-noautosub', '-fps', 35, '-demuxer', 'h264es', '-nocache']
 #screen = pygame.display.set_mode([1000,1000])
+
+#variables
 
 throttleDeadzone = 0.02
 throttleScale = 15
@@ -28,11 +31,24 @@ panScale = 40
 tiltDeadzone = 0.1
 tiltScale = 30
 
-rover = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-roverIP = ("192.168.1.103",3000)
+p = 0
+global on
+global controlState
+controlState = 'move'
+screen.fill([0,0,0])
+on = False
+
+escapecmd = 'QUIT\n'
+frameps = 35
+x = 850
+y = 400
+port = 3001
+ip1 = '192.168.1.103'
+ip2 = '192.168.1.104'
 
 pygame.init()
 pygame.joystick.init()
+
 #try:
  #       controller = pygame.joystick.Joystick(0)
 #except:
@@ -45,28 +61,18 @@ def controlThread():
 	try:
 		while(True):
 			(throttle, steering, pan, tilt) = getinput()
-			rover.send("#CM" + chr(throttle) + chr(steering) + chr(pan) + chr(tilt))
+			moveControl.move(chr(throttle) + chr(steering) + chr(pan) + chr(tilt))
 			time.sleep(0.05)
 
 	except:
 		print("closing connection")
-		rover.shutdown(socket.SHUT_RDWR)
-		rover.close()
+		moveControl.end(socket.SHUT_RDWR)
 		time.sleep(3)
 		raise
 
 
 def controlConnect():
-        print("Connecting to " + roverIP[0] + ":" + str(roverIP[1]))
-        while(True):
-                try:
-                        rover.connect(roverIP)
-                        break
-                except socket.error:
-                        print("Retrying...")
-                        time.sleep(3)
-
-        print("Connection Established")
+	xboxControl.link(controlState)
 
 def getinput():
         pygame.event.pump()
@@ -138,6 +144,12 @@ def camConnect(port , x, y, frameps, ip):
 # This is where the main loop starts
 #
 
+#Communications
+xboxControl = Communication()
+
+#Control setup
+controlConnect()
+
 #camera buttons
 camera1Btn = Button('Camera 1')
 camera2Btn = Button('Camera 2')
@@ -146,6 +158,7 @@ disconnectBtn = Button('Disconect')
 #control Buttons
 armBtn = Button('Arm')
 moveBtn = Button('Move')
+moveBtn.selected = True
 
 #experiment buttons
 startExperimentBtn = Button('Start Experiment')
@@ -159,18 +172,13 @@ innerBox = Button('USST')
 cameraBtnBox = Button('Cameras')
 controlBox = Button('Controls')
 
-#TextBoxes
-
 #xbox 360 controls
 #controller.init()
-#controlConnect()
+
 #thread = Thread(target = controlThread)
 #thread.start()
 
-p = 0
-global on
-screen.fill([0,0,0])
-on = False
+
  
 mainloop, x, y, color, fontsize, delta, fps =  True, 25 , 0, (32,32,32), 35, 1, 30
  
@@ -178,13 +186,6 @@ Clock = pygame.time.Clock()
  
 while mainloop:
    tickFPS = Clock.tick(fps)
-   escapecmd = 'QUIT\n'
-   frameps = 35
-   x = 850
-   y = 400
-   port = 3001
-   ip1 = '192.168.1.103'
-   ip2 = '192.168.1.104'
    mouse = pygame.mouse.get_pos()
    pygame.display.set_caption("Press Esc to quit. FPS: %.2f" % (Clock.get_fps()))
    for event in pygame.event.get():
@@ -219,10 +220,16 @@ while mainloop:
 	   elif armBtn.obj.collidepoint(mouse):
 	       armBtn.selected = True
 	       moveBtn.selected = False
+	       controlState = 'arm'
+	       xboxControl.disconnectMove()
+	       xboxControl.link(controlState)
 	   
 	   elif moveBtn.obj.collidepoint(mouse):
 	       armBtn.selected = False
                moveBtn.selected = True
+               controlState = 'move'
+               xboxControl.disconnectArm()
+	       xboxControl.link(controlState)
  
    #Boxes
    cameraBtnBox.default_color = (100,100,100)

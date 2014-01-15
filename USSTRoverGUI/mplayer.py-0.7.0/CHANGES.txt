@@ -1,0 +1,98 @@
+mplayer.py 0.7.0 - September 8, 2011
+
+Changes since 0.6.0
+
+--------------------
+     Highlights
+--------------------
+
+ * Expose ALL commands except get_* and *_property commands and
+   those which have the same name as their corresponding property.
+
+ * Better QPlayerView and GtkPlayerView widgets; the Player objects
+   are now directly accessible via the 'player' property.
+
+ * Getting output from MPlayer is now thread-safe (a Queue is now used)
+
+ * Data can now be obtained asynchronously from Player objects (via subscribers/callbacks)
+
+ * Improved generation of properties (using functools.partial objects)
+
+ * Added type checking to generated methods and properties
+
+ * Added value checking to generated properties
+
+ * Abstracted MPlayer type handling away from the core (see mtypes module)
+
+ * Python 2.x unicode and str fixes
+
+
+--------------------
+        API
+--------------------
+Changes:
+ * Renamed class: CommandPrefix -> CmdPrefix
+
+ * Renamed attribute: Player.command_prefix -> Player.cmd_prefix
+
+ * Renamed attribute: Player.path -> Player.exec_path
+
+ * The 'path' property of MPlayer is no longer renamed to 'filepath'.
+   Player.path now pertains to the actual 'path' property of MPlayer:
+
+      Player.filepath -> Player.path
+
+ * Renamed method: Player.stdout.hook() -> Player.stdout.connect()
+   (NOTE: Also applies to Player.stderr)
+
+ * Similarly, Player.stdout/stderr.unhook() has been renamed to disconnect().
+   Moreover, the parameter of disconnect() is now optional (default: None).
+   If no parameter is supplied, the list of subscribers is cleared.
+
+      unhook(subscriber) -> disconnect(subscriber=None)
+
+ * Removed optional 'prefix' parameter from generated methods.
+   That is, for instance:
+
+      Player.pause(prefix=None) -> Player.pause()
+
+ * The optional arguments of Player's generated methods are now None
+   by default instead of a blank string. As an example:
+
+      Player.loadfile(str0, int1='', prefix=None)
+
+                     -- to --
+
+      Player.loadfile(str0, int1=None)
+
+ * AsyncPlayer's optional 'socket_map' parameter has been renamed to 'map'.
+   The new signature is now:
+   AsyncPlayer(args=(), stdout=PIPE, stderr=None, autospawn=True, map=None)
+
+ * The complete/completed signal of GtkPlayerView/QPlayerView were replaced
+   with the 'eof' signal; the EOF code (int) is now passed to the callbacks.
+
+      def callback(eof_code):
+          print 'Seen EOF code: {0}'.format(eof_code)
+
+      v = QPlayerView()
+      v.eof.connect(callback)
+
+
+Additions:
+ * Class attribute: Player.version (version of the introspected MPlayer executable)
+
+ * Class property: {Q,Gtk}PlayerView.player
+   - the 'player' property can be used to directly access the underlying
+     QtPlayer or GPlayer object
+
+      qv = QPlayerView()
+      gv = GtkPlayerView()
+
+      qv.player # QtPlayer instance
+      gv.player # GPlayer instance
+
+
+Deletions:
+ * Player.get_meta_*():
+   Removed all get_meta_* methods. Use the 'metadata' property instead.
