@@ -29,8 +29,10 @@ class Communication:
 
 
 	def move(self, throttle, steering, pan, tilt):
-		self.move.send('CM' + chr(throttle) + chr(steering) + chr(pan) + chr(tilt))
+		self.move.send('# C M' + " " + chr(throttle) + " " + chr(steering) +" " + chr(pan)+" " + chr(tilt))
 		
+	def startCamera(self):
+		self.move.send('# C S')
 
 	def disconnectMove(self):
 		self.move.shutdown(socket.SHUT_RDWR)

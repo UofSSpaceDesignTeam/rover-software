@@ -6,7 +6,7 @@ control switch			#C			S				1 letter M for switch to movement and A to switch to 
 control Move			#C			M				2 chars throttle 2 chars steering 2chars pan 2 chars tilt
 control Arm			#C			A				TODO
 control Emergency Stop		#C			E
-start camera feed		#S			S
+start camera feed		#C			S
 
 # Experiment Commands #
 experiment start		#E			S
