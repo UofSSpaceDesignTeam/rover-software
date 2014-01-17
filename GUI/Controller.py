@@ -1,7 +1,6 @@
-#!/usr/bin/python
 
 # A library providing the interface to an XBox 360 Controller.
-# Written by Jordan Kubica
+# Added by Jordan
 
 	# dependency list
 
