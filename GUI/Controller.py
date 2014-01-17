@@ -1,40 +1,67 @@
+
 #!/usr/bin/python
 
-  # dependency list
+from ServoDriver import ServoDriver
+import socket
+import select
+import time
+import commands
 
-import pygame
+#	define our variables and objects
+debug = False
 
-  # global variables
+panServo = 14
+panMax = 140
+panMin = 45
+panOffset = 3
 
-leftJoystickDeadzoneX = 0.1
-leftJoystickDeadzoneY = 0.1
-rightJoystickDeadzoneX = 0.1
-rightJoystickDeadzoneY = 0.1
-triggerDeadzone = 0.1
+tiltServo = 13
+tiltMax = 120
+tiltMin = 70
+tiltOffset = 0
 
+steerServo = 15
+steerMax = 115
+steerMin = 71
+steerOffset = 2
 
+throttleServo = 12
+throttleMax = 105
+throttleMin = 85
+throttleOffset = 5
 
-  # function definitions
+servo = ServoDriver(0x46)
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-def setup():	# connect to xbox controller if one exists
-	pygame.init()
-	pygame.joystick.init()
-	try:
-	    controller = pygame.joystick.Joystick(0)
-	except:
-	  
+host = commands.getoutput("/home/pi/python/getIP")
+port = 3000
 
-def getAxes():	# returns a tuple of all joystick / trigger data (-1.0 to 1.0)
+#	make some useful functions
 
-def getTriggers():
-	# return tuple of 
-def getButtons():
+def setup():
+	print("Starting script!")
+	servo.setPWMFreq(50)
+	resetServos()
+
+def resetServos():
+	servo.set(panServo, 90 + panOffset)
+	servo.set(tiltServo, 90 + tiltOffset)
+	servo.set(steerServo, 90 + steerOffset)
+	servo.set(throttleServo, 90 + throttleOffset)
+
+def startServer():
+	server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	server.bind((host, port))
+	server.listen(1)
+	print("Server address:\t" + str(host) + ":" + str(port))
+	
+def getCommand(data):
 	if(not '#' in data):
 		return None
 	command = data.split('#', 1)[1]
 	if(len(command) < 7):
 		return None
-	return (command[0:6],5)
+	return command[0:6]
 	
 def executeCommand(command):
 	if("SH" in command):
