@@ -4,7 +4,7 @@
 
 	# dependency list
 	
-from pygame import font
+from pygame import font, Surface
 
 
 	# class definition
