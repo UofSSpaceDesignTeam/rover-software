@@ -1,168 +1,90 @@
-
 #!/usr/bin/python
 
-from ServoDriver import ServoDriver
-import socket
-import select
-import time
-import commands
+# A library providing the interface to an XBox 360 Controller.
+# Written by Jordan Kubica
 
-#	define our variables and objects
-debug = False
+	# dependency list
 
-panServo = 14
-panMax = 140
-panMin = 45
-panOffset = 3
+from pygame import joystick
 
-tiltServo = 13
-tiltMax = 120
-tiltMin = 70
-tiltOffset = 0
 
-steerServo = 15
-steerMax = 115
-steerMin = 71
-steerOffset = 2
+	# global variables
 
-throttleServo = 12
-throttleMax = 105
-throttleMin = 85
-throttleOffset = 5
+leftJoystickXScale = 1.0
+leftJoystickYScale = 1.0
+rightJoystickXScale = 1.0
+rightJoystickYScale = 1.0
+triggerScale = 1.0
 
-servo = ServoDriver(0x46)
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+leftJoystickXDeadzone = 0.16
+leftJoystickYDeadzone = 0.16
+rightJoystickXDeadzone = 0.16
+rightJoystickYDeadzone = 0.16
+triggerDeadzone = 0.1
 
-host = commands.getoutput("/home/pi/python/getIP")
-port = 3000
 
-#	make some useful functions
+	# function definitions
 
-def setup():
-	print("Starting script!")
-	servo.setPWMFreq(50)
-	resetServos()
-
-def resetServos():
-	servo.set(panServo, 90 + panOffset)
-	servo.set(tiltServo, 90 + tiltOffset)
-	servo.set(steerServo, 90 + steerOffset)
-	servo.set(throttleServo, 90 + throttleOffset)
-
-def startServer():
-	server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	server.bind((host, port))
-	server.listen(1)
-	print("Server address:\t" + str(host) + ":" + str(port))
+def setup():    # connect to xbox controller if one exists
+	joystick.init()
 	
-def getCommand(data):
-	if(not '#' in data):
-		return None
-	command = data.split('#', 1)[1]
-	if(len(command) < 7):
-		return None
-	return command[0:6]
+	try:
+		global controller
+		controller = joystick.Joystick(0)
+		controller.init();
+	except:
+		raise Exception("Error: Controller not detected")
+
+
+def getAxes():  # returns a tuple of all axis data (-1.0 to 1.0)
+	leftJoystickX = controller.get_axis(0)
+	leftJoystickY = -controller.get_axis(1)
+	rightJoystickX = controller.get_axis(4)
+	rightJoystickY = -controller.get_axis(3)
+	trigger = -controller.get_axis(2)
 	
-def executeCommand(command):
-	if("SH" in command):
-		resetServos()
-		print("Server shutdown by:\t" + str(address[0]))
-		client.close()
-		server.close()
-		quit()
-			
-	if("RB" in command):
-		resetServos()
-		print("Server shutdown by:\t" + str(address[0]))
-		client.close()
-		server.close()
-		time.sleep(3)
-		print("System rebooting...")
-		commands.getoutput("/sbin/shutdown -r now")
-		quit()
-
-	if("CM" in command):
-		throttle = ord(command[2]) + throttleOffset
-		if(throttle > throttleMax):
-			throttle = throttleMax
-		elif(throttle < throttleMin):
-			throttle = throttleMin
-		servo.set(throttleServo, throttle)
-		
-		steering = ord(command[3]) + steerOffset
-		if(steering > steerMax):
-			steering = steerMax
-		elif(steering < steerMin):
-			steering = steerMin
-		servo.set(steerServo, steering)
-		
-		pan = ord(command[4]) + panOffset
-		if(pan > panMax):
-			pan = panMax
-		elif(pan < panMin):
-			pan = panMin
-		servo.set(panServo, pan)
-		
-		tilt = ord(command[5]) + tiltOffset
-		if(tilt > tiltMax):
-			tilt = tiltMax
-		elif(tilt < tiltMin):
-			tilt = tiltMin
-		servo.set(tiltServo, tilt)
-		return
+	if(leftJoystickX < leftJoystickXDeadzone
+	and leftJoystickX > -leftJoystickXDeadzone):
+		leftJoystickX = 0
+	if(leftJoystickY < leftJoystickYDeadzone
+	and leftJoystickY > -leftJoystickYDeadzone):
+		leftJoystickY = 0
+	if(rightJoystickX < rightJoystickXDeadzone
+	and rightJoystickX > -rightJoystickXDeadzone):
+		rightJoystickX = 0
+	if(rightJoystickY < rightJoystickYDeadzone
+	and rightJoystickY > -rightJoystickYDeadzone):
+		rightJoystickY = 0
+	if(trigger < triggerDeadzone
+	and trigger > -triggerDeadzone):
+		trigger = 0
 	
+	leftJoystickX *= leftJoystickXScale
+	leftJoystickY *= leftJoystickYScale
+	rightJoystickX *= rightJoystickXScale
+	rightJoystickY *= rightJoystickYScale
+	trigger *= triggerScale
 	
-#	main execution
+	return (leftJoystickX, leftJoystickY, rightJoystickX,
+	rightJoystickY, trigger)
 
-setup()
-resetServos()
-startServer()
 
-try:
-	while(True):	# until we quit the server
-				
-		(client, address) = server.accept()
-		deadSocket = False
-		data = ""
-		command = ""
-		print("Connection Established:\t" + str(address[0]))
-			
-			
-		while(True):	# while this connection exists
-			
-			loopStart = time.time()	# either get a message or time out
-			while(time.time() - loopStart < 1):
-				dataReady = select.select([client], [], [], 0.1)
-				if(dataReady[0]):
-					newData = client.recv(100)
-					if(newData == ""):
-						client.close()
-						deadSocket = True
-						break
-					else:
-						data += newData
-					
-				command = getCommand(data)
-				if(command):
-					break
+def getButtons():	# returns the boolean state of all buttons
+	buttonA = controller.get_button(0)
+	buttonB = controller.get_button(1)
+	buttonX = controller.get_button(2)
+	buttonY = controller.get_button(3)
+	buttonLB = controller.get_button(4)
+	buttonRB = controller.get_button(5)
+	buttonBack = controller.get_button(6)
+	buttonStart = controller.get_button(7)
+	buttonLeftJoystick = controller.get_button(8)
+	buttonRightJoystick = controller.get_button(9)
+	
+	return (buttonA, buttonB, buttonX, buttonY, buttonLB, buttonRB,
+	buttonBack, buttonStart, buttonLeftJoystick, buttonRightJoystick)
 
-			if(deadSocket):
-				resetServos()
-				print("Connection Closed: " + str(address[0]))
-				break
-			
-			if(command):	# if we have a valid message
-				if(debug):
-					print("Message Received: " + command)
-				data = ""
-				client.send("#OK\n")
-				executeCommand(command)
-			else:
-				resetServos()	# shut off motor and center steering
-				print("No Message")
 
-except:
-	resetServos()
-	print("Error! Resetting servos and rebooting...")
-	#commands.getoutput("/sbin/shutdown -r now")
-	raise
+def getDPad():	# returns the x and y states of the D Pad buttons
+	return controller.get_hat(0)	# format is (x, y): -1, 0, or 1
+
