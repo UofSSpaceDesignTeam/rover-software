@@ -1,3 +1,3 @@
 #!/bin/bash
 nc 192.168.1.103 3001 -w 1 <<< request
-stdbuf -i50 -o50 nc -lu -p 3001 | stdbuf -i50 -o50 mplayer -nosound -hardframedrop -noautosub -fps 35 -demuxer h264es -nocache -
+stdbuf -i50 -o50 nc -l -p 3001 | stdbuf -i50 -o50 mplayer -nosound -hardframedrop -noautosub -fps 35 -demuxer h264es -nocache -

@@ -1,4 +1,5 @@
 import socket
+import time
 class Communication:
 
 	def __init__(self):
@@ -9,16 +10,21 @@ class Communication:
 
 
 	def link(self, controlState):
-		try:
-			if controlState == 'move':
-				self.move.connect(self.moveControlIP)
-				print("Connecting to " + self.moveControlIP[0] + ":" + str(self.moveControlIP[1]))
-			else:
-				self.arm.connect(self.armIP)
-				print("Connecting to " + self.armIP[0] + ":" + str(self.armIP[1]))
-		except socket.error:
-			print("Retrying...")
-			time.sleep(3)
+		connected = False
+		while(not connected):
+			try:
+				if controlState == 'move':
+					print("Connecting to " + self.moveControlIP[0] + ":" + str(self.moveControlIP[1]))
+					#self.move.connect(self.moveControlIP)
+					connected = True
+					print("Connected to " + self.moveControlIP[0] + ":" + str(self.moveControlIP[1]))
+				else:
+					print("Connecting to " + self.armIP[0] + ":" + str(self.armIP[1]))
+					self.arm.connect(self.armIP)
+					connected = True
+					print("Connected to " + self.armIP[0] + ":" + str(self.armIP[1]))
+			except socket.error:
+				print("Retrying...")
 		print("Connection Established")
 
 
