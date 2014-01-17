@@ -32,7 +32,7 @@ class Button:
 			return self.default_color
 
 
-	def draw(self, screen, mouse, rectcoord, labelcoord): # draw button shape
+	def draw(self, screen, mouse, rectcoord, labelcoord): # redraw the button
 		self.obj = pygame.draw.rect(screen, self.color(), rectcoord)
 		screen.blit(self.label(), labelcoord)
 
