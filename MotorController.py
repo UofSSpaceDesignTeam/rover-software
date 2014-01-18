@@ -2,8 +2,6 @@ import serial
 import time
 import pygame
 
-pygame.init()
-
 motor = serial.Serial("/dev/ttyAMA0")
 motor.baudrate=9600
 motor.timeout=3
@@ -12,6 +10,8 @@ motor.write("1,start\r\n")
 motor.write("1,home\r\n")
 
 time.sleep(.5)
+
+pygame.init()
 
 colorWhite = (255, 255, 255)
 colorGray = (125, 125, 125)
@@ -29,6 +29,8 @@ pygame.display.set_caption("Motor Controller Display")
 done = False
 clock = pygame.time.Clock()
 
+timespan = 0;
+
 rect_x = 88
 rect_y = 50
 
@@ -39,14 +41,14 @@ while not done:
             done = True # Flag that we are done so we exit this loop
 
     # logic
-
 	if timespan < 600:
-		if timespan == 1:
+		if timespan == 0:
 			motor.write("1,s500\r\n")
 		motor.write("1,getp\r\n")
 		position = motor.readline()
 		motor.write("1,gets\r\n")
 		speed = motor.readline()
+		timespan += 1
 	else:
 		if timespan == 600:
 			motor.write("1,s-500\r\n")
@@ -54,26 +56,21 @@ while not done:
 		position = motor.readline()
 		motor.write("1,gets\r\n")
 		speed = motor.readline()
+		timespan += 1
 		if timespan == 1200:
 			timespan = 0
 
     # end logic        
-
     screen.fill(WHITE)
-
     pygame.draw.rect(screen, GREEN, [rect_x, rect_y, 50, position/150])
-
     font = pygame.font.Font(None, 25)
-
-    xtext = font.render("speed: " + speed, True, BLACK)
-    ytext = font.render("position: " + position, True, BLACK)
- 
+    xtext = font.render("speed: " + "10", True, BLACK)
+    ytext = font.render("position: " + "10", True, BLACK)
     #put text on screen
     screen.blit(xtext, [10,400])
-    screen.blit(ytext, [10,425])  
+    screen.blit(ytext, [10,425]) 
+    clock.tick(60)
 
 pygame.display.flip()
-
-clock.tick(60)
 
 pygame.quit()
