@@ -41,6 +41,10 @@ class Communication:
 			# return false
 
 
+	def retrieveFile(filename): # use scp to grab a file from the pi
+		return
+
+
 	def disconnectMove(self):
 		self.socket.shutdown(socket.SHUT_RDWR)
 		self.socket.close()
