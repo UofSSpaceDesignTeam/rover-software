@@ -6,9 +6,9 @@
 	# dependency list
 
 import pygame
+import Controller
 from Button import Button
 from Box import Box
-import Controller
 from Communication import Communication
 import socket
 import commands
@@ -36,6 +36,7 @@ cameraPort = "3001"
 commandCameraStart = "#CS"
 commandTakePicture = ""
 commandControllerData = ""
+commandStopRover = ""
 
 
 colorWhite = (255, 255, 255)
@@ -72,13 +73,12 @@ def createButtons():
 	buttonList.append(moveButton)	# 5
 	buttonList.append(armButton)	# 6
 	
-	pictureButton = Button(takePicture, None, "Take Picture", 20, colorWhite, (475, 425, 200, 30), colorBlue, colorYellow)
-	buttonList.append(pictureButton)	# 7
-	
-	#runExperimentButton = Button("Run", 20, colorBlack, (1180, 925, 135, 20), colorBlue, colorYellow)
-	#createTableButton = Button("Plot Data", 20, colorBlack, (1380, 925, 135, 20), colorGray, colorYellow)
-	#buttonList.append(runExperimentButton)
-	#buttonList.append(createTableButton)
+	stopButton = Button(stopRover, None, "Stop Rover", 28, colorYellow, (140, 420, 400, 30), colorRed, colorRed)
+	pictureButton = Button(takePicture, None, "Take Picture", 24, colorWhite, (580, 420, 200, 30), colorBlue, colorYellow)
+	runExperimentButton = Button(runExperiment, None, "Run Experiment", 24, colorWhite, (820, 420, 200, 30), colorBlue, colorYellow)
+	buttonList.append(stopButton)	# 7
+	buttonList.append(pictureButton)	# 8
+	buttonList.append(runExperimentButton)	# 9
 
 
 def createBoxes():
@@ -93,12 +93,10 @@ def createBoxes():
 	controlBox = Box("Control Modes", 20, colorWhite, (0, 185, 125, 80), (16, 188), colorGray)
 	boxList.append(controlBox)
 	
-	experimentBox = Box("Data Plot Area", 40, colorWhite, (1040, 420, 460, 400), (1200, 500), colorGray)
-	experimentButtonBox = Box("Experiment", 20, colorWhite, (1160, 905, 375, 50), (1290, 907), colorGray)
+	experimentBox = Box("Data Plot Area", 40, colorWhite, (1040, 420, 460, 400), (1180, 600), colorGray)
 	boxList.append(experimentBox)
-	boxList.append(experimentButtonBox)
 	
-	fillerBox = Box("USST", 500, colorGreen, (1102, 602, 496, 296), (30, 450), colorWhite)
+	fillerBox = Box("USST", 500, colorGreen, (-1, -1, -1, -1), (30, 450), colorWhite)
 	boxList.append(fillerBox)
 
 
@@ -153,6 +151,11 @@ def takePicture(fakeArg):	# button-based
 	elif(buttonList[3].selected):
 		camConnect(4)
 
+def stopRover(fakeArg):	# button-based
+	driveControlConnection.send(commandStopRover)
+
+def runExperiment(fakeArg):	# button-based
+	return
 
 def camConnect(cameraNumber): # button-based
 	global p
