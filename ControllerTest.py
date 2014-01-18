@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # A simple utility to test the Controller library.
-# Written by Jordan Kubica
+# Added by Jordan Kubica
 
 	# dependency list
 
@@ -11,11 +11,6 @@ import time
 
 
 	# function definitions
-
-def setup():	# start the test environment
-	pygame.init()
-	Controller.setup()
-
 
 def printAxes():    # print the status of all controller axes
 	axes = Controller.getAxes()
@@ -40,9 +35,10 @@ def printDPad():	# print the state of the D Pad buttons
 
 
 	# main execution
-
+	
+pygame.init()
 try:
-	setup()
+	Controller.init()
 except Exception as e:
 	print(e)
 	exit(1)

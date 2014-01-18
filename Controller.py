@@ -7,7 +7,7 @@
 from pygame import joystick
 
 
-	# global variables
+	# global constants
 
 leftJoystickXScale = 1.0
 leftJoystickYScale = 1.0
@@ -24,9 +24,8 @@ triggerDeadzone = 0.1
 
 	# function definitions
 
-def setup():    # connect to xbox controller if one exists
+def init():    # connect to xbox controller if one exists
 	joystick.init()
-	
 	try:
 		global controller
 		controller = joystick.Joystick(0)
