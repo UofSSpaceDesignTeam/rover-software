@@ -6,10 +6,10 @@
 	# dependency list
 
 import pygame
-import Button
-import Box
+from Button import Button
+from Box import Box
 import Controller
-import Communication
+from Communication import Communication
 import socket
 import commands
 import os
@@ -27,7 +27,7 @@ driveControlPort = 3000
 armControlIP = "192.168.1.104"
 armControlPort = 3000
 
-cameraFramerate = "35"
+cameraFrameRate = "35"
 cameraPort = "3001"
 
 commandCameraStart = "#CS"
@@ -50,9 +50,9 @@ def createButtons():
 	
 	camera1Button = Button(camConnect, (1), "Camera 1", 20, colorBlack, (20, 20, 100, 20), colorBlue, colorYellow)
 	camera2Button = Button(camConnect, (2), "Camera 2", 20, colorBlack, (20, 50, 100, 20), colorBlue, colorYellow)
-	camera3Button = Button(camConnect, (1), "Camera 3", 20, colorBlack, (20, 50, 100, 20), colorGray, colorYellow)
-	camera4Button = Button(camConnect, (1), "Camera 4", 20, colorBlack, (20, 50, 100, 20), colorGray, colorYellow)
-	cameraStopButton = Button(camConnect, (0), "None", 20, colorBlack, (20, 100, 100, 20), colorBlue, colorYellow)
+	camera3Button = Button(camConnect, (3), "Camera 3", 20, colorBlack, (20, 80, 100, 20), colorBlue, colorYellow)
+	camera4Button = Button(camConnect, (4), "Camera 4", 20, colorBlack, (20, 110, 100, 20), colorBlue, colorYellow)
+	cameraStopButton = Button(camConnect, (0), "None", 20, colorBlack, (20, 140, 100, 20), colorBlue, colorYellow)
 	cameraStopButton.selected = True
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
@@ -61,8 +61,8 @@ def createButtons():
 	buttonList.append(cameraStopButton)	# 4
 	
 	
-	moveButton = Button(setMode, ("drive"), "Drive", 30, colorRed, (120, 200, 100, 20), colorBlue, colorYellow)
-	armButton = Button(setMode, ("arm"), "Arm", 30, colorRed, (10, 200, 100, 20), colorBlue, colorYellow)
+	moveButton = Button(setMode, ("drive"), "Drive", 20, colorRed, (120, 200, 100, 20), colorBlue, colorYellow)
+	armButton = Button(setMode, ("arm"), "Arm", 20, colorRed, (10, 200, 100, 20), colorBlue, colorYellow)
 	moveButton.selected = True
 	buttonList.append(moveButton)	# 5
 	buttonList.append(armButton)	# 6
@@ -106,10 +106,15 @@ def drawBoxes():
 
 def setMode(mode):	# button-based
 	global controlMode
-	controlMode = mode
 	for modeButton in buttonList[5:6]:
 		modeButton.selected = False
-		modeButton.draw()
+	if(mode == "drive"):
+		controlMode = "drive"
+		buttonList[5].selected = True
+	if(mode == "arm"):
+		controlMode = "arm"
+		buttonList[6].selected = True
+	drawButtons()
 
 def getinput():
 	global axes, buttons, dPad
@@ -125,29 +130,31 @@ def camConnect(cameraNumber): # button-based
 		p.stdout.close
 	except:
 		pass
+	
 	for cameraButton in buttonList[0:4]:
 		cameraButton.selected = False
-		cameraButton.draw()
+	
 	if(cameraNumber == 1):
 		driveControlConnection.send(commandCameraStart)
+		buttonList[0].selected = True;
 	elif(cameraNumber == 2):
 		armControlConnection.send(commandCameraStart)
-	else:
-		return
+		buttonList[1].selected = True;
 	
-	command = ("stdbuf -i50 -o50 nc -l -p "+ cameraPort + " | stdbuf -i50 -o50 mplayer -x 850 -y 400" +
-			" -nosound + -hardframedrop -noautosub -fps " + cameraFrameRate + " -ontop" +
-			" -geometry 50%:50 -demuxer h264es -nocache -")
-	p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
-		stdout=subprocess.PIPE, stderr=None)
+	drawButtons()
+	
+	# command = ("stdbuf -i50 -o50 nc -l -p "+ cameraPort + " | stdbuf -i50 -o50 mplayer -x 850 -y 400" +
+			# " -nosound + -hardframedrop -noautosub -fps " + cameraFrameRate + " -ontop" +
+			# " -geometry 50%:50 -demuxer h264es -nocache -")
+	# p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
+		# stdout=subprocess.PIPE, stderr=None)
 
 
 	# main execution
 
 pygame.init()
 Clock = pygame.time.Clock()
-tickFPS = Clock.tick(30)
-screen = pygame.display.set_mode((1600, 900))
+screen = pygame.display.set_mode((1400, 800))
 Controller.init()
 driveControlConnection = Communication(driveControlIP, driveControlPort)
 armControlConnection = Communication(armControlIP, armControlPort)
@@ -157,23 +164,15 @@ drawBoxes()
 drawButtons()
 pygame.display.update()
 
-
-#Control setup
-#cThr = Thread(target = controlConnect)
-#cThr.start()
-
-#thread = Thread(target = controlThread)
-#thread.start()
-
 mainloop = True
  
 while mainloop:
-	#escapecmd = 'QUIT\n'
+	escapecmd = 'QUIT\n'
 	mouse = pygame.mouse.get_pos()
+	Clock.tick(30)
 	pygame.display.set_caption("Press Esc to quit. FPS: " + str(round(Clock.get_fps(), 2)))
 	
-	eventList = pygame.event.get(pygame.QUIT, pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN)
-	for event in eventList:
+	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			mainloop = False
 		elif event.type == pygame.KEYDOWN:
@@ -184,7 +183,6 @@ while mainloop:
 				if(button.obj.collidepoint(mouse)):
 					button.press()
 	
-	pygame.event.pump()
 	pygame.display.update()
 
 

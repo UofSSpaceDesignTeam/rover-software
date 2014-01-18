@@ -4,7 +4,7 @@
 
 	# dependency list
 	
-from pygame import font, Surface
+import pygame
 
 
 	# class definition
@@ -26,7 +26,7 @@ class Button:
 
 	def renderLabel(self):	# returns a Surface with the button label on it
 		font = pygame.font.Font(None, self.fontSize)
-		return font.render(self.text, 1, self.fontColor, self.getColor())
+		return font.render(self.text, 1, self.fontColor)
 
 
 	def getColor(self):	# returns the color of the button (3-tuple)
@@ -39,14 +39,11 @@ class Button:
 	def draw(self, screen): # redraw the button with centered label
 		label = self.renderLabel()
 		labelSize = label.get_size()
-		labelXPosition = self.rect[0] + 0.5 * (self.rect[3] - labelSize[0])
-		labelYPosition = self.rect[1] + 0.5 * (self.rect[4] - labelSize[1])
+		labelXPosition = self.rect[0] + 0.5 * (self.rect[2] - labelSize[0])
+		labelYPosition = self.rect[1] + 0.5 * (self.rect[3] - labelSize[1])
 		self.obj = pygame.draw.rect(screen, self.getColor(), self.rect)
 		screen.blit(label, (labelXPosition, labelYPosition))
 
 
 	def press(self):	# activate the button
 		self.function(self.args)
-		selected = True
-		draw()
-
