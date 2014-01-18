@@ -1,40 +1,79 @@
 import serial
 import time
+import pygame
+
+pygame.init()
 
 motor = serial.Serial("/dev/ttyAMA0")
 motor.baudrate=9600
 motor.timeout=3
 
-print motor.name
-
-time.sleep(2)
-
-motor.write("1.start\r\n")
-print("start command sent")
-
+motor.write("1,start\r\n")
 motor.write("1,home\r\n")
 
-time.sleep(3)
+time.sleep(.5)
 
-motor.write("1,getsi\r\n")
+colorWhite = (255, 255, 255)
+colorGray = (125, 125, 125)
+colorBlack = (0, 0, 0)
+colorRed = (240, 0, 0)
+colorGreen = (0, 240, 0)
+colorBlue = (0, 0, 240)
+colorYellow = (250, 250, 0)
 
-print(morot.readline())
+size = (400, 500)
+screen = pygame.display.set_mode(size)
 
-time.sleep(2)
+pygame.display.set_caption("Motor Controller Display")
 
-while(1):
-	motor.write("1,s500\r\n")
-	for i in range(0,20):
+done = False
+clock = pygame.time.Clock()
+
+rect_x = 88
+rect_y = 50
+
+while not done:
+ 
+    for event in pygame.event.get(): # User did something
+        if event.type == pygame.QUIT: # If user clicked close
+            done = True # Flag that we are done so we exit this loop
+
+    # logic
+
+	if timespan < 600:
+		if timespan == 1:
+			motor.write("1,s500\r\n")
 		motor.write("1,getp\r\n")
-		print(motor.readline())
+		position = motor.readline()
 		motor.write("1,gets\r\n")
-		print(motor.readline())
-		time.sleep(.5)
-
-	motor.write("1,s-500\r\n")
-	for j in range(0,20):
+		speed = motor.readline()
+	else:
+		if timespan == 600:
+			motor.write("1,s-500\r\n")
 		motor.write("1,getp\r\n")
-		print(motor.readline())
+		position = motor.readline()
 		motor.write("1,gets\r\n")
-		print(motor.readline())
-		time.sleep(.5)
+		speed = motor.readline()
+		if timespan == 1200:
+			timespan = 0
+
+    # end logic        
+
+    screen.fill(WHITE)
+
+    pygame.draw.rect(screen, GREEN, [rect_x, rect_y, 50, position/150])
+
+    font = pygame.font.Font(None, 25)
+
+    xtext = font.render("speed: " + speed, True, BLACK)
+    ytext = font.render("position: " + position, True, BLACK)
+ 
+    #put text on screen
+    screen.blit(xtext, [10,400])
+    screen.blit(ytext, [10,425])  
+
+pygame.display.flip()
+
+clock.tick(60)
+
+pygame.quit()
