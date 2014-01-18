@@ -29,6 +29,8 @@ pygame.display.set_caption("Motor Controller Display")
 done = False
 clock = pygame.time.Clock()
 
+pygame.display.update()
+
 timespan = 0;
 
 rect_x = 88
@@ -69,8 +71,7 @@ while not done:
     #put text on screen
     screen.blit(xtext, [10,400])
     screen.blit(ytext, [10,425]) 
+    pygame.display.update()
     clock.tick(60)
-
-pygame.display.flip()
 
 pygame.quit()
