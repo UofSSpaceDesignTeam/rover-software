@@ -16,7 +16,7 @@ WHITE    = ( 255, 255, 255)
 BLUE     = (   0,   0, 255)
 GREEN    = (   0, 255,   0)
 RED      = ( 255,   0,   0)
- 
+YELLOW   = ( 225, 225,   0) 
  
 # Set the height and width of the screen
 size = (400, 500)
@@ -32,6 +32,10 @@ clock = pygame.time.Clock()
 
 rect_x = 175
 rect_y = 200
+
+colour = GREEN
+
+
 
 # -------------------------------------------
 # main loop
@@ -53,6 +57,22 @@ while not done:
 
     axes = Controller.getAxes()
     roundedAxes = [round(i,2) for i in axes]
+
+    buttons = Controller.getButtons()
+
+
+    if buttons[0]:
+        colour = GREEN
+
+    if buttons[1]:
+        colour = RED
+
+    if buttons[2]:
+        colour = BLUE 
+
+    if buttons[3]:
+        colour = YELLOW
+    
 	
    
     # Move the rectangle starting point
@@ -82,7 +102,7 @@ while not done:
 
  
     # Draw a rectangle
-    pygame.draw.rect(screen, GREEN, [rect_x, rect_y, 50, 50])
+    pygame.draw.rect(screen, colour , [rect_x, rect_y, 50, 50])
 
 
     #Text
@@ -93,10 +113,13 @@ while not done:
     # True means anti-aliased, BLACK is colour
     xtext = font.render("x-axis: " + str( roundedAxes[0] ), True, BLACK)
     ytext = font.render("y-axis: " + str( roundedAxes[1]), True, BLACK)
+    ctext = font.render("colour: " + str( colour), True, BLACK)
  
     #put text on screen
     screen.blit(xtext, [10,400])
-    screen.blit(ytext, [10,425])        
+    screen.blit(ytext, [10,425])
+    screen.blit(ctext, [10,450])
+    
   
     # drawing above comment
     # ---------------------------------------------------------
