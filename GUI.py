@@ -45,34 +45,37 @@ colorYellow = (250, 250, 0)
 	# function definitions
 
 def createButtons():
-	global buttonList = []
+	global buttonList
+	buttonList = []
 	
-	camera1Button = Button((camConnect, 1), "Camera 1", 20, colorBlack, (20, 20, 100, 20), colorBlue, colorYellow)
-	camera2Button = Button((camConnect, 2), "Camera 2", 20, colorBlack, (20, 50, 100, 20), colorBlue, colorYellow)
-	camera3Button = Button((camConnect, 1), "Camera 3", 20, colorBlack, (20, 50, 100, 20), colorGray, colorYellow)
-	camera4Button = Button((camConnect, 1), "Camera 4", 20, colorBlack, (20, 50, 100, 20), colorGray, colorYellow)
-	cameraStopButton = Button((camConnect, 0), "None", 20, colorBlack, (20, 100, 100, 20), colorBlue, colorYellow)
+	camera1Button = Button(camConnect, (1), "Camera 1", 20, colorBlack, (20, 20, 100, 20), colorBlue, colorYellow)
+	camera2Button = Button(camConnect, (2), "Camera 2", 20, colorBlack, (20, 50, 100, 20), colorBlue, colorYellow)
+	camera3Button = Button(camConnect, (1), "Camera 3", 20, colorBlack, (20, 50, 100, 20), colorGray, colorYellow)
+	camera4Button = Button(camConnect, (1), "Camera 4", 20, colorBlack, (20, 50, 100, 20), colorGray, colorYellow)
+	cameraStopButton = Button(camConnect, (0), "None", 20, colorBlack, (20, 100, 100, 20), colorBlue, colorYellow)
 	cameraStopButton.selected = True
-	buttonList.append(camera1Button)
-	buttonList.append(camera2Button)
-	buttonList.append(camera3Button)
-	buttonList.append(camera4Button)
-	buttonList.append(cameraStopButton)
+	buttonList.append(camera1Button)	# 0
+	buttonList.append(camera2Button)	# 1
+	buttonList.append(camera3Button)	# 2
+	buttonList.append(camera4Button)	# 3
+	buttonList.append(cameraStopButton)	# 4
 	
-	armButton = Button("Arm", 30, colorRed, (10, 200, 100, 20), colorBlue, colorYellow)
-	moveButton = Button("Drive", 30, colorRed, (120, 200, 100, 20), colorBlue, colorYellow)
+	
+	moveButton = Button(setMode, ("drive"), "Drive", 30, colorRed, (120, 200, 100, 20), colorBlue, colorYellow)
+	armButton = Button(setMode, ("arm"), "Arm", 30, colorRed, (10, 200, 100, 20), colorBlue, colorYellow)
 	moveButton.selected = True
-	buttonList.append(armButton)
-	buttonList.append(moveButton)
+	buttonList.append(moveButton)	# 5
+	buttonList.append(armButton)	# 6
 	
-	runExperimentButton = Button("Run", 20, colorBlack, (1180, 925, 135, 20), colorBlue, colorYellow)
-	createTableButton = Button("Plot Data", 20, colorBlack, (1380, 925, 135, 20), colorGray, colorYellow)
-	buttonList.append(runExperimentButton)
-	buttonList.append(createTableButton)
+	#runExperimentButton = Button("Run", 20, colorBlack, (1180, 925, 135, 20), colorBlue, colorYellow)
+	#createTableButton = Button("Plot Data", 20, colorBlack, (1380, 925, 135, 20), colorGray, colorYellow)
+	#buttonList.append(runExperimentButton)
+	#buttonList.append(createTableButton)
 
 
 def createBoxes():
-	global boxList = []
+	global boxList
+	boxList = []
 	
 	cameraBox = Box("Video Area", 20, colorWhite, (400, 0, 880, 415), (780, 420), colorGray)
 	cameraButtonBox = Box("Camera Feeds", 20, colorWhite, (0, 0, 150, 150), (41, 2), colorGray)
@@ -92,29 +95,21 @@ def createBoxes():
 
 
 def drawButtons():
-	for i in buttonList
+	for i in buttonList:
 		i.draw(screen)
 
 
 def drawBoxes():
-	for i in boxList
+	for i in boxList:
 		i.draw(screen)
 
 
-def controlThread():
-	try:
-		while(True):
-			(throttle, steering, pan, tilt) = getinput()
-			moveControl.move(chr(throttle) + chr(steering) + chr(pan) + chr(tilt))
-	except:
-		print("closing connection")
-		moveControl.end(socket.SHUT_RDWR)
-		raise
-
-
-def controlConnect():
-	xboxControl.link(controlState)
-
+def setMode(mode):	# button-based
+	global controlMode
+	controlMode = mode
+	for modeButton in buttonList[5:6]:
+		modeButton.selected = False
+		modeButton.draw()
 
 def getinput():
 	global axes, buttons, dPad
@@ -123,26 +118,26 @@ def getinput():
 	dPad = Controller.getDPad()
 
 
-def camConnect(cameraNumber):
+def camConnect(cameraNumber): # button-based
+	global p
 	try:
 		p.stdout.flush
 		p.stdout.close
 	except:
 		pass
-	for cameraButton in buttonList[0:4]
+	for cameraButton in buttonList[0:4]:
 		cameraButton.selected = False
 		cameraButton.draw()
-	if(cameraNumber == 1)
+	if(cameraNumber == 1):
 		driveControlConnection.send(commandCameraStart)
-	elif(cameraNumber == 2)
+	elif(cameraNumber == 2):
 		armControlConnection.send(commandCameraStart)
-	else
+	else:
 		return
 	
 	command = ("stdbuf -i50 -o50 nc -l -p "+ cameraPort + " | stdbuf -i50 -o50 mplayer -x 850 -y 400" +
 			" -nosound + -hardframedrop -noautosub -fps " + cameraFrameRate + " -ontop" +
 			" -geometry 50%:50 -demuxer h264es -nocache -")
-	global p
 	p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
 		stdout=subprocess.PIPE, stderr=None)
 
@@ -152,10 +147,15 @@ def camConnect(cameraNumber):
 pygame.init()
 Clock = pygame.time.Clock()
 tickFPS = Clock.tick(30)
-screen = pygame.display.set_mode(1600, 900)
-Controller.setup()
+screen = pygame.display.set_mode((1600, 900))
+Controller.init()
 driveControlConnection = Communication(driveControlIP, driveControlPort)
 armControlConnection = Communication(armControlIP, armControlPort)
+createButtons()
+createBoxes()
+drawBoxes()
+drawButtons()
+pygame.display.update()
 
 
 #Control setup
@@ -169,11 +169,11 @@ mainloop = True
  
 while mainloop:
 	#escapecmd = 'QUIT\n'
-	pygame.event.pump()
 	mouse = pygame.mouse.get_pos()
-	pygame.display.set_caption("Press Esc to quit. FPS: " + str(round(Clock.get_fps(), 2))
+	pygame.display.set_caption("Press Esc to quit. FPS: " + str(round(Clock.get_fps(), 2)))
 	
-	for event in pygame.event.get():
+	eventList = pygame.event.get(pygame.QUIT, pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN)
+	for event in eventList:
 		if event.type == pygame.QUIT:
 			mainloop = False
 		elif event.type == pygame.KEYDOWN:
@@ -181,32 +181,13 @@ while mainloop:
 				mainloop = False
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			for button in buttonList:
-				if(button.obj.collidepoint(mouse))
+				if(button.obj.collidepoint(mouse)):
 					button.press()
 	
-	elif armButton.obj.collidepoint(mouse):
-	armButton.selected = True
-	moveButton.selected = False
-	moveButton.draw(screen, mouse, (120, 200, 100, 20), (150,202))
-	armButton.draw(screen, mouse,  (10, 200, 100, 20), (45,202))
-	controlState = 'arm'
-	#xboxControl.disconnectMove()
-	#xboxControl.link(controlState)
-	
-	elif moveButton.obj.collidepoint(mouse):
-	armButton.selected = False
-	moveButton.selected = True
-	moveButton.draw(screen, mouse, (120, 200, 100, 20), (150,202))
-	armButton.draw(screen, mouse,  (10, 200, 100, 20), (45,202))
-	controlState = 'move'
-	#xboxControl.disconnectArm()
-	#xboxControl.link(controlState)
-
-
-
+	pygame.event.pump()
 	pygame.display.update()
 
-	
+
 	# end of execution cleanup
 
 pygame.quit()

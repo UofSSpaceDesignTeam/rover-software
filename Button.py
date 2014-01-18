@@ -11,7 +11,7 @@ from pygame import font, Surface
 	
 class Button:
 
-	def __init__(self, (function, *args), text, fontSize, fontColor, rect, defaultColor, selectedColor):
+	def __init__(self, function, (args), text, fontSize, fontColor, rect, defaultColor, selectedColor):
 		self.function = function
 		self.args = args
 		self.text = text
@@ -48,4 +48,5 @@ class Button:
 	def press(self):	# activate the button
 		self.function(self.args)
 		selected = True
+		draw()
 
