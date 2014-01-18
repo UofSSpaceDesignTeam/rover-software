@@ -27,6 +27,12 @@ driveControlPort = 3000
 armControlIP = "192.168.1.104"
 armControlPort = 3000
 
+cameraFramerate = "35"
+cameraPort = "3001"
+
+commandCameraStart = "#CS"
+commandControllerData = ""
+
 colorWhite = (255, 255, 255)
 colorGray = (125, 125, 125)
 colorBlack = (0, 0, 0)
@@ -41,11 +47,11 @@ colorYellow = (250, 250, 0)
 def createButtons():
 	global buttonList = []
 	
-	camera1Button = Button("Camera 1", 20, colorBlack, (20, 20, 100, 20), colorBlue, colorYellow)
-	camera2Button = Button("Camera 2", 20, colorBlack, (20, 50, 100, 20), colorBlue, colorYellow)
-	camera3Button = Button("Camera 3", 20, colorBlack, (20, 50, 100, 20), colorGray, colorYellow)
-	camera4Button = Button("Camera 4", 20, colorBlack, (20, 50, 100, 20), colorGray, colorYellow)
-	cameraStopButton = Button("None", 20, colorBlack, (20, 100, 100, 20), colorBlue, colorYellow)
+	camera1Button = Button((camConnect, 1), "Camera 1", 20, colorBlack, (20, 20, 100, 20), colorBlue, colorYellow)
+	camera2Button = Button((camConnect, 2), "Camera 2", 20, colorBlack, (20, 50, 100, 20), colorBlue, colorYellow)
+	camera3Button = Button((camConnect, 1), "Camera 3", 20, colorBlack, (20, 50, 100, 20), colorGray, colorYellow)
+	camera4Button = Button((camConnect, 1), "Camera 4", 20, colorBlack, (20, 50, 100, 20), colorGray, colorYellow)
+	cameraStopButton = Button((camConnect, 0), "None", 20, colorBlack, (20, 100, 100, 20), colorBlue, colorYellow)
 	cameraStopButton.selected = True
 	buttonList.append(camera1Button)
 	buttonList.append(camera2Button)
@@ -100,7 +106,6 @@ def controlThread():
 		while(True):
 			(throttle, steering, pan, tilt) = getinput()
 			moveControl.move(chr(throttle) + chr(steering) + chr(pan) + chr(tilt))
-
 	except:
 		print("closing connection")
 		moveControl.end(socket.SHUT_RDWR)
@@ -118,18 +123,35 @@ def getinput():
 	dPad = Controller.getDPad()
 
 
-def camConnect(port , x, y, frameps, ip):
-  global p
-  xboxControl.startCamera()
-  command = "stdbuf -i50 -o50 nc -l -p 3001 | stdbuf -i50 -o50 mplayer -nosound -hardframedrop -noautosub -fps 35 -demuxer h264es -nocache -"
-  p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-  os.system("echo request | nc -c 1 -v "+ str(ip) + " " + str(port))
-  #command = "nc -l -p "+ str(port) +" | mplayer -ontop -geometry 50%:50 -x " + str(x) + " -y " + str(y) + " -nosound -nolirc -noborder -framedrop -noautosub -fps " + str(frameps) + " -demuxer h264es -nocache -"
+def camConnect(cameraNumber):
+	try:
+		p.stdout.flush
+		p.stdout.close
+	except:
+		pass
+	for cameraButton in buttonList[0:4]
+		cameraButton.selected = False
+		cameraButton.draw()
+	if(cameraNumber == 1)
+		driveControlConnection.send(commandCameraStart)
+	elif(cameraNumber == 2)
+		armControlConnection.send(commandCameraStart)
+	else
+		return
+	
+	command = ("stdbuf -i50 -o50 nc -l -p "+ cameraPort + " | stdbuf -i50 -o50 mplayer -x 850 -y 400" +
+			" -nosound + -hardframedrop -noautosub -fps " + cameraFrameRate + " -ontop" +
+			" -geometry 50%:50 -demuxer h264es -nocache -")
+	global p
+	p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
+		stdout=subprocess.PIPE, stderr=None)
 
 
 	# main execution
 
 pygame.init()
+Clock = pygame.time.Clock()
+tickFPS = Clock.tick(30)
 screen = pygame.display.set_mode(1600, 900)
 Controller.setup()
 driveControlConnection = Communication(driveControlIP, driveControlPort)
@@ -140,76 +162,51 @@ armControlConnection = Communication(armControlIP, armControlPort)
 #cThr = Thread(target = controlConnect)
 #cThr.start()
 
-
 #thread = Thread(target = controlThread)
 #thread.start()
 
- 
-mainloop, x, y, color, fontsize, delta, fps =  True, 25 , 0, (32,32,32), 35, 1, 30
- 
-Clock = pygame.time.Clock()
+mainloop = True
  
 while mainloop:
-   escapecmd = 'QUIT\n'
-   frameps = 35
-   x = 850
-   y = 400
-   port = 3001
-   ip1 = '192.168.1.103'
-   ip2 = '192.168.1.104'
-   tickFPS = Clock.tick(fps)
-   mouse = pygame.mouse.get_pos()
-   pygame.display.set_caption("Press Esc to quit. FPS: %.2f" % (Clock.get_fps()))
-   for event in pygame.event.get():
-       if event.type == pygame.QUIT:
-           mainloop = False # Be IDLE friendly!
-       elif event.type == pygame.KEYDOWN:
-           if event.key == pygame.K_ESCAPE:
-               mainloop = False # Be IDLE friendly!
-       elif event.type == pygame.MOUSEBUTTONDOWN:
-           if camera1Button.obj.collidepoint(mouse):
-	       if not on:
-		   camConnect(port, x, y, frameps, ip1)
-		   on = True
-	       elif on:
-		   print 
-		   p.stdout.flush()
-		   p.stdout.close()
-		   camConnect(port, x, y, frameps, ip1)
-	   elif camera2Button.obj.collidepoint(mouse):
-	       if not on:
-		   camConnect(port, x, y, frameps, ip2)
-		   on = True
-	       elif on:
-		   p.stdout.flush()
-		   p.stdout.close()
-		   camConnect(port, x, y, frameps, ip2)	      
-           elif disconnectButton.obj.collidepoint(mouse):
-	       if on:
-	           p.stdout.flush()
-	           p.stdout.close()
-	           on = False
-	           
-	   elif armButton.obj.collidepoint(mouse):
-	       armButton.selected = True
-	       moveButton.selected = False
-	       moveButton.draw(screen, mouse, (120, 200, 100, 20), (150,202))
-	       armButton.draw(screen, mouse,  (10, 200, 100, 20), (45,202))
-	       controlState = 'arm'
-	       #xboxControl.disconnectMove()
-	       #xboxControl.link(controlState)
-	   
-	   elif moveButton.obj.collidepoint(mouse):
-	       armButton.selected = False
-               moveButton.selected = True
-               moveButton.draw(screen, mouse, (120, 200, 100, 20), (150,202))
-	       armButton.draw(screen, mouse,  (10, 200, 100, 20), (45,202))
-               controlState = 'move'
-               #xboxControl.disconnectArm()
-	       #xboxControl.link(controlState)
+	#escapecmd = 'QUIT\n'
+	pygame.event.pump()
+	mouse = pygame.mouse.get_pos()
+	pygame.display.set_caption("Press Esc to quit. FPS: " + str(round(Clock.get_fps(), 2))
+	
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			mainloop = False
+		elif event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE:
+				mainloop = False
+		elif event.type == pygame.MOUSEBUTTONDOWN:
+			for button in buttonList:
+				if(button.obj.collidepoint(mouse))
+					button.press()
+	
+	elif armButton.obj.collidepoint(mouse):
+	armButton.selected = True
+	moveButton.selected = False
+	moveButton.draw(screen, mouse, (120, 200, 100, 20), (150,202))
+	armButton.draw(screen, mouse,  (10, 200, 100, 20), (45,202))
+	controlState = 'arm'
+	#xboxControl.disconnectMove()
+	#xboxControl.link(controlState)
+	
+	elif moveButton.obj.collidepoint(mouse):
+	armButton.selected = False
+	moveButton.selected = True
+	moveButton.draw(screen, mouse, (120, 200, 100, 20), (150,202))
+	armButton.draw(screen, mouse,  (10, 200, 100, 20), (45,202))
+	controlState = 'move'
+	#xboxControl.disconnectArm()
+	#xboxControl.link(controlState)
 
 
 
-   pygame.display.update()
- 
+	pygame.display.update()
+
+	
+	# end of execution cleanup
+
 pygame.quit()
