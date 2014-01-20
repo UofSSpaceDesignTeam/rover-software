@@ -21,9 +21,10 @@ def getAxis(): #collects the position of the left x-axis
 	LXRounded = round(LXAxis, 2)
 
 def makePacket(axisPos):
-	commandStr = '1,s/r/n"
-	accel = #do some math here with axisPos!!
-	pack = commandStr[:4] + accel + commandStr[4:]
+	commandStr1 = "1,s" 
+	commandStr2 = "\r\n"
+	accel = # make some math like str(axisPos*2)
+	pack = commandStr1 + accel + commandStr2
 	return pack
 
 #Main Execution
