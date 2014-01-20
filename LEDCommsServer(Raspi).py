@@ -1,3 +1,5 @@
+# This code is deprecated.  See led.py on Pi2 for more recent implementation of a socket-server
+
 import socket
 #import RPi.GPIO as GPIO
 #GPIO.setup(7, GPIO.OUT)
@@ -5,7 +7,7 @@ import socket
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-IP='localhost'
+IP=''
 port=5001
 
 sock.bind((IP,port))
