@@ -14,8 +14,14 @@ def startSocket(): #sets up the socket
 	sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	IP="192.168.1.104"
 	port=5001
-	print("Connecting...")
-	sock.connect_ex((IP,port))
+	connected=False
+	while(connected==False):
+		print("Connecting...")
+		try:
+			sock.connect((IP,port))
+			connected=True
+		except:
+			connected=False
 	print("Connected to Pi")
 
 def getAxis(): #collects the position of the left x-axis
@@ -28,10 +34,9 @@ def makePacket(axisPos):  #builds a string of control data
 	commandStr1="1,s" 
 	commandStr2="\r\n"
 	print(axisPos)
-	accel=3000*axisPos
+	accel=str(int(3000*axisPos))
 	print(accel)
-	accels=str(accel)
-	pack=commandStr1 + accels + commandStr2
+	pack=commandStr1 + accel + commandStr2
 	return pack
 
 #Main Execution
@@ -51,7 +56,6 @@ while(True):
 	pygame.event.pump()
 	print("Preparing packet")
 	print(makePacket(getAxis()))
-	data=makePacket(getAxis())
-	sock.sendall(data)
+	sock.send(makePacket(getAxis()))
 	print("Packet sent")
 	time.sleep(0.25)
