@@ -23,6 +23,7 @@ def startSocket(): #sets up the socket
 		except:
 			connected=False
 	print("Connected to Pi")
+	return sock
 
 def getAxis(): #collects the position of the left x-axis
 	LXAxis=Controller.getAxes()[0]
