@@ -30,9 +30,6 @@ driveControlPort = 3000
 armControlIP = "192.168.1.104"
 armControlPort = 3000
 
-cameraFrameRate = "35"
-cameraPort = "3001"
-
 commandCameraStart = "# C S"
 commandTakePicture = ""
 commandControllerData = ""
@@ -179,9 +176,14 @@ def camConnect(cameraNumber): # button-based
 		buttonList[2].selected = True
 	elif(cameraNumber == 4):
 		buttonList[3].selected = True
-	command = ("stdbuf -i50 -o50 nc -l -p "+ str(cameraPort) + ' | stdbuf -i50 -o50 mplayer -x 850 -y 400 -nosound -hardframedrop -noautosub -fps ' + str(cameraFrameRate) + ' -ontop -geometry 50%:50 -demuxer h264es -nocache -')
-	p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
-		stdout=subprocess.PIPE, stderr=None)
+	if(os.name == "posix"): # linux machine
+		command = ("nc -l -p 3001 | mplayer -x 850 -y 400 -nosound -hardframedrop -noautosub -fps 35 -ontop -geometry 50%:50 -demuxer h264es -nocache -")
+		p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
+			stdout=subprocess.PIPE, stderr=None)
+	else: #windows
+		command = "cam.bat"
+		p = subprocess.Popen(str(command), shell=True, stdin=None,
+			stdout=None, stderr=None)
 	time.sleep(1)
 	driveControlConnection.send(str(commandCameraStart))
 	drawBoxes()
