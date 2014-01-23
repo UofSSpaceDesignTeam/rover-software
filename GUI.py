@@ -30,11 +30,6 @@ driveControlPort = 3000
 armControlIP = "192.168.1.104"
 armControlPort = 3000
 
-commandCameraStart = "# C S"
-commandTakePicture = ""
-commandControllerData = ""
-commandStopRover = ""
-
 
 colorWhite = (255, 255, 255)
 colorGray = (125, 125, 125)
@@ -185,7 +180,7 @@ def camConnect(cameraNumber): # button-based
 		p = subprocess.Popen(str(command), shell=True, stdin=None,
 			stdout=None, stderr=None)
 	time.sleep(1)
-	driveControlConnection.send(str(commandCameraStart))
+	driveControlConnection.connectCam()
 	drawBoxes()
 	drawButtons()
 	
@@ -194,9 +189,9 @@ def camConnect(cameraNumber): # button-based
 
 def camDisonnect(fakeArg): # button-based
 	if(buttonList[0].selected):
-		driveControlConnection.disconnect()
+		driveControlConnection.disconnectCam()
 	elif(buttonList[1].selected):
-		armControlConnection.disconnect()
+		armControlConnection.disconnectCam()
 	for cameraButton in buttonList[0:4]:
 		cameraButton.selected = False
 	buttonList[4].selected = True

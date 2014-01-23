@@ -11,6 +11,11 @@ import time
 	# class definition
 
 class Communication:
+	commandCameraStart = "# C S"
+	commandCameraDisconnect = "# C C"
+	commandTakePicture = ""
+	commandControllerData = ""
+	commandStopRover = ""
 
 	def __init__(self, IP, port):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -50,6 +55,9 @@ class Communication:
 		return
 
 
-	def disconnect(self):
-		self.socket.close()
+	def disconnectCam(self):
+		self.socket.send(commandCameraDisconnect)
+		
+	def connectCam(self):
+		self.socket.send(commandCameraStart)
 

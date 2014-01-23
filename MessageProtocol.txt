@@ -7,6 +7,7 @@ control Move			#C			M				2 chars throttle 2 chars steering 2chars pan 2 chars ti
 control Arm			#C			A				TODO
 control Emergency Stop		#C			E
 start camera feed		#C			S
+close camera feed		#C			C
 
 # Experiment Commands #
 experiment start		#E			S
