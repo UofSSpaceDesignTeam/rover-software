@@ -33,7 +33,7 @@ armControlPort = 3000
 cameraFrameRate = "35"
 cameraPort = "3001"
 
-commandCameraStart = "#CS"
+commandCameraStart = "# C S"
 commandTakePicture = ""
 commandControllerData = ""
 commandStopRover = ""
@@ -58,7 +58,7 @@ def createButtons():
 	camera2Button = Button(camConnect, (2), "Camera 2", 20, colorBlack, (12, 50, 100, 20), colorBlue, colorYellow)
 	camera3Button = Button(camConnect, (3), "Camera 3", 20, colorBlack, (12, 80, 100, 20), colorBlue, colorYellow)
 	camera4Button = Button(camConnect, (4), "Camera 4", 20, colorBlack, (12, 110, 100, 20), colorBlue, colorYellow)
-	cameraStopButton = Button(camConnect, (0), "None", 20, colorBlack, (12, 140, 100, 20), colorBlue, colorYellow)
+	cameraStopButton = Button(camDisonnect, (0), "None", 20, colorBlack, (12, 140, 100, 20), colorBlue, colorYellow)
 	cameraStopButton.selected = True
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
@@ -170,64 +170,77 @@ def camConnect(cameraNumber): # button-based
 	
 	if(cameraNumber == 0):
 		buttonList[4].selected = True
+
 	elif(cameraNumber == 1):
-		driveControlConnection.send(commandCameraStart)
 		buttonList[0].selected = True
 	elif(cameraNumber == 2):
-		armControlConnection.send(commandCameraStart)
 		buttonList[1].selected = True
 	elif(cameraNumber == 3):
 		buttonList[2].selected = True
 	elif(cameraNumber == 4):
 		buttonList[3].selected = True
-	
+	command = ("stdbuf -i50 -o50 nc -l -p "+ str(cameraPort) + ' | stdbuf -i50 -o50 mplayer -x 850 -y 400 -nosound -hardframedrop -noautosub -fps ' + str(cameraFrameRate) + ' -ontop -geometry 50%:50 -demuxer h264es -nocache -')
+	p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
+		stdout=subprocess.PIPE, stderr=None)
+	time.sleep(1)
+	driveControlConnection.send(str(commandCameraStart))
 	drawBoxes()
 	drawButtons()
 	
-	# command = ("stdbuf -i50 -o50 nc -l -p "+ cameraPort + " | stdbuf -i50 -o50 mplayer -x 850 -y 400" +
-			# " -nosound + -hardframedrop -noautosub -fps " + cameraFrameRate + " -ontop" +
-			# " -geometry 50%:50 -demuxer h264es -nocache -")
-	# p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
-		# stdout=subprocess.PIPE, stderr=None)
+	
+
+
+def camDisonnect(fakeArg): # button-based
+	if(buttonList[0].selected):
+		driveControlConnection.disconnect()
+	elif(buttonList[1].selected):
+		armControlConnection.disconnect()
+	for cameraButton in buttonList[0:4]:
+		cameraButton.selected = False
+	buttonList[4].selected = True
+	drawButtons()
 
 
 	# main execution
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (25,30)
-pygame.init()
-Clock = pygame.time.Clock()
-screen = pygame.display.set_mode((1500, 800))
-if(useController):
-	Controller.init()
 driveControlConnection = Communication(driveControlIP, driveControlPort)
-armControlConnection = Communication(armControlIP, armControlPort)
-createButtons()
-createBoxes()
-drawBoxes()
-drawButtons()
-pygame.display.update()
-
-mainloop = True
- 
-while mainloop:
-	escapecmd = 'QUIT\n'
-	mouse = pygame.mouse.get_pos()
+if not driveControlConnection.Connect(5):
+	print("could not connect.")
+else:
+	os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (25,30)
+	pygame.init()
+	Clock = pygame.time.Clock()
+	screen = pygame.display.set_mode((1500, 800))
 	if(useController):
-		getInput()
-	Clock.tick(30)
-	pygame.display.set_caption("Press Esc to quit. FPS: " + str(round(Clock.get_fps(), 2)))
-	
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			mainloop = False
-		elif event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_ESCAPE:
-				mainloop = False
-		elif event.type == pygame.MOUSEBUTTONDOWN:
-			for button in buttonList:
-				if(button.obj.collidepoint(mouse)):
-					button.press()
-	
+		Controller.init()
+	armControlConnection = Communication(armControlIP, armControlPort)
+	createButtons()
+	createBoxes()
+	drawBoxes()
+	drawButtons()
 	pygame.display.update()
+
+	mainloop = True
+	
+	while mainloop:
+		escapecmd = 'QUIT\n'
+		mouse = pygame.mouse.get_pos()
+		if(useController):
+			getInput()
+		Clock.tick(30)
+		pygame.display.set_caption("Press Esc to quit. FPS: " + str(round(Clock.get_fps(), 2)))
+		
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				mainloop = False
+			elif event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_ESCAPE:
+					mainloop = False
+			elif event.type == pygame.MOUSEBUTTONDOWN:
+				for button in buttonList:
+					if(button.obj.collidepoint(mouse)):
+						button.press()
+		
+		pygame.display.update()
 
 
 	# end of execution cleanup

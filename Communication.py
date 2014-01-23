@@ -18,34 +18,38 @@ class Communication:
 		self.port = port
 
 
-	def connect(self):
-		return
-		# connected = False
-		# while(not connected):
-			# try:
-				# print("Connecting to " + self.moveControlIP[0] + ":" + str(self.moveControlIP[1]))
-				# self.socket.connect((self.IP, self.port))
-				# connected = True
-				# print("Connected to " + self.IP + ":" + str(self.port))
-			# except socket.error:
-				# print("Retrying...")
+	def Connect(self, retries):
+		connected = False
+		print("Connecting to " + self.IP + ":" + str(self.port))
+		for i in range (0, retries):
+			try:
+				self.socket.connect((self.IP, self.port))
+				connected = True
+				print("Connected to " + self.IP + ":" + str(self.port))
+			except socket.error:
+				print("retry " + str(i+1))
+			if connected:
+				return True
+			else:
+				time.sleep(1)
+		return False
+			
 
 
 	def send(self, data):
-		return
-		# try:
-			# self.socket.sendall(data)
-			# return True
-		# except socket.error as e:
-			# print(e)
-			# return false
+		try:
+			print(data)
+			self.socket.sendall(data)
+			return True
+		except socket.error as e:
+			print(e)
+			return False
 
 
 	def retrieveFile(filename): # use scp to grab a file from the pi
 		return
 
 
-	def disconnectMove(self):
-		self.socket.shutdown(socket.SHUT_RDWR)
+	def disconnect(self):
 		self.socket.close()
 
