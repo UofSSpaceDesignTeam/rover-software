@@ -234,7 +234,6 @@ else:
 	screen = pygame.display.set_mode((1500, 800))
 	if(useController):
 		Controller.init()
-	armControlConnection = Communication(armControlIP, armControlPort)
 	createButtons()
 	createBoxes()
 	drawBoxes()
