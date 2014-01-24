@@ -32,7 +32,7 @@ IPraspi4 = "192.168.1.106"
 # netcat video on 3001
 driveClientPort = 3002
 armClientPort = 3003
-CameraClientPort = 3004
+CameraClientPort = 3000
 
 colorWhite = (255, 255, 255)
 colorGray = (125, 125, 125)
