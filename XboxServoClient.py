@@ -14,7 +14,7 @@ IP="192.168.1.104"
 port=5001
 deadzone=.1
 deadzoneDelay=.1
-
+  
 def startSocket(): #sets up the socket
 	sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	connected=False
@@ -34,17 +34,20 @@ def getAxis(): #collects the position of the left x-axis
 	print("LXRounded: " + str(LXRounded))
 	return LXRounded
 	
-def getButtons():
+def getButtons(): #Collects button data (only one for now)
 	Abutton=Controller.getButtons()[0]
 	return Abutton
 
 def makePacket(axisPos,button):  #builds a string of control data
+	#Index characters for identifying data (subject to change)
 	indexStrServo ="A"
 	indexStrLED ="B"
 	commandStr1 = "1,s" 
 	commandStr2 = "\r\n"
 	
-	#Create the servo command
+	#Create the servo command from axis position.
+	#Note that the motor must pause before changing direction
+	#This action is defined in the function below
 	print(axisPos)
 	if(abs(axisPos) <= deadzone):
 		time.sleep(deadzoneDelay)
@@ -57,11 +60,11 @@ def makePacket(axisPos,button):  #builds a string of control data
 	elif(button==0):
 		buttoncmd="000"
 		
-	#Make packet
+	#Complile long packet of all the collected data
 	pack = indexStrServo + commandStr1 + accel + commandStr2 + indexStrLED + buttoncmd
 	return pack
 
-#Main Execution
+#Main Execution 
 
 pygame.init()
 

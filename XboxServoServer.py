@@ -82,7 +82,7 @@ while(True):
 		GPIO.output(7,GPIO.LOW)
 		print("LED1 OFF")
 		LEDOff=True
-	motor.write(motorCmd)
+	motor.write(motorCmd) 
 	
 	#motor.write("1,getp\r\n")
 	#print("Servo at Pos: " + motor.readline())
