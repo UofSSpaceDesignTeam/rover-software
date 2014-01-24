@@ -9,7 +9,7 @@ import pygame
 import Controller
 from Button import Button
 from Box import Box
-from Communication import Communication
+from Communication import *
 import socket
 import commands
 import os
@@ -24,12 +24,15 @@ from threading import Thread
 
 useController = False
 
-driveControlIP = "192.168.1.103"
-driveControlPort = 3000
+IPraspi1 = "192.168.1.103"
+IPraspi2 = "192.168.1.104"
+IPraspi3 = "192.168.1.105"
+IPraspi4 = "192.168.1.106"
 
-armControlIP = "192.168.1.104"
-armControlPort = 3000
-
+# netcat video on 3001
+driveClientPort = 3002
+armClientPort = 3003
+CameraClientPort = 3004
 
 colorWhite = (255, 255, 255)
 colorGray = (125, 125, 125)
@@ -160,48 +163,70 @@ def camConnect(cameraNumber): # button-based
 	for cameraButton in buttonList[0:5]:
 		cameraButton.selected = False
 	
-	if(cameraNumber == 0):
-		buttonList[4].selected = True
-
-	elif(cameraNumber == 1):
-		buttonList[0].selected = True
-	elif(cameraNumber == 2):
-		buttonList[1].selected = True
-	elif(cameraNumber == 3):
-		buttonList[2].selected = True
-	elif(cameraNumber == 4):
-		buttonList[3].selected = True
 	if(os.name == "posix"): # linux machine
 		command = ("nc -l -p 3001 | mplayer -x 850 -y 400 -nosound -hardframedrop -noautosub -fps 35 -ontop -geometry 50%:50 -demuxer h264es -nocache -")
 		p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
 			stdout=subprocess.PIPE, stderr=None)
 	else: #windows
-		command = "cam.bat"
+		command = "cam.bat" # needs to be maintained properly.
 		p = subprocess.Popen(str(command), shell=True, stdin=None,
 			stdout=None, stderr=None)
+	
 	time.sleep(1)
-	driveControlConnection.connectCam()
+	
+	if(cameraNumber == 1):
+		buttonList[0].selected = True
+		cameraRaspi1.startCamera()
+	elif(cameraNumber == 2):
+		buttonList[1].selected = True
+		cameraRaspi2.startCamera()
+	elif(cameraNumber == 3):
+		buttonList[2].selected = True
+		cameraRaspi3.startCamera()
+	elif(cameraNumber == 4):
+		buttonList[3].selected = True
+		cameraRaspi4.startCamera()
+
 	drawBoxes()
 	drawButtons()
-	
-	
 
 
 def camDisonnect(fakeArg): # button-based
 	if(buttonList[0].selected):
-		driveControlConnection.disconnectCam()
+		cameraRaspi1.stopCamera()
 	elif(buttonList[1].selected):
-		armControlConnection.disconnectCam()
+		cameraRaspi2.stopCamera()
 	for cameraButton in buttonList[0:4]:
 		cameraButton.selected = False
 	buttonList[4].selected = True
 	drawButtons()
 
 
+def connectClients():
+	for client in clientList:
+		if not client.Connect(5):
+			return False
+	
+	return True
+
+
 	# main execution
-driveControlConnection = Communication(driveControlIP, driveControlPort)
-if not driveControlConnection.Connect(5):
-	print("could not connect.")
+
+global clientList
+clientList = []
+
+cameraRaspi1 = CameraClient(IPraspi1, CameraClientPort)
+cameraRaspi2 = CameraClient(IPraspi2, CameraClientPort)
+cameraRaspi3 = CameraClient(IPraspi3, CameraClientPort)
+cameraRaspi4 = CameraClient(IPraspi4, CameraClientPort)
+
+clientList.append(cameraRaspi1)
+#clientList.append(cameraRaspi2)
+#clientList.append(cameraRaspi3)
+#clientList.append(cameraRaspi4)
+
+if not connectClients():
+	print("Could not connect all clients.")
 else:
 	os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (25,30)
 	pygame.init()
