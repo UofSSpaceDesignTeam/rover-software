@@ -50,7 +50,7 @@ try:
 		(commandSocket, clientAddress) = serverSocket.accept()
 		print("Connected to " + str(clientAddress)) 
 		while(True):
-			data = com.recv(256)
+			data = commandSocket.recv(256)
 			if(data == ""): # socket closing
 				break
 			else:
@@ -59,4 +59,4 @@ try:
 except socket.error as e:
 	print(e)
 	time.Sleep(2)
-	subprocess.call("python CameraServer.py")
+	subprocess.call("python CameraServer.py") # restart on connection failure
