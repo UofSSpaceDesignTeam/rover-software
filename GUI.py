@@ -255,7 +255,7 @@ else:
 		if(useController):
 			getInput()
 		Clock.tick(30)
-		pygame.display.set_caption("Press Esc to quit. FPS: " + str(round(Clock.get_fps(), 2)))
+		pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps")
 		
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
