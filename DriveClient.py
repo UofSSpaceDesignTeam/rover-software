@@ -27,9 +27,9 @@ class DriveClient: # class for drive systems
 			try:
 				self.socket.connect((self.IP, self.port))
 				connected = True
-				print("Connected to " + self.IP + ":" + str(self.port))
+				print("\tConnected to " + self.IP + ":" + str(self.port))
 			except socket.error:
-				print("retry " + str(i+1))
+				print("\tretry " + str(i+1))
 			if connected:
 				return True
 			else:

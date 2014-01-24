@@ -19,6 +19,7 @@ videoPort = 3001
 def startCamera(clientAddress):
 	global p
 	command = "raspivid -b 500000 -ex fixedfps -fps 20 -t 0 -rot 180 -o - | nc " + str(clientAddress) + " " + str(videoPort)
+	print(command)
 	p = subprocess.Popen(str(command),shell=True,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
 def stopCamera():
