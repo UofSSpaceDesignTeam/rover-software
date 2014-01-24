@@ -1,3 +1,9 @@
+#WORK IN PROGRESS!!!
+#Proof of Concept to test receiving control data over Sockets from an Xbox Controlled
+#Written by Austin Shirley
+
+#TODO: send back data about servo position and speed
+
 import serial
 import time
 import socket

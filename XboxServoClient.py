@@ -3,8 +3,6 @@
 #Based off Jordan's ControllerTest and my LEDCommsTest code.
 #Written by Austin Shirley
 
-#TODO: Make an accompanying server on the Pi to listen for commands.
-
 import pygame
 import Controller
 import socket
