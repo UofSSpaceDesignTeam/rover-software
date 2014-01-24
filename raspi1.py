@@ -21,7 +21,19 @@ def connectCamera():
 	command = "raspivid -b 500000 -ex fixedfps -fps 20 -t 0 -rot 180 -o - | nc 192.168.1.4 3001"
 	p = subprocess.Popen(str(command),shell=True,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
-		
+def parseCommand(datan)
+	if(datan[1] == "C"):#camera/control stuff
+		if(datan[2] == "S"):
+			connectCamera()
+			print("Camera connected")
+		elif(datan[2] == "C"):
+			print("Camera disconnecting")
+			p.stdout.flush
+			p.stdout.close
+			p.kill()
+			p.terminate()
+#	elif(datan[1] == "C"):#control stuff
+
 server.bind((IP,motorPort))
 connectListener()
 while True:
@@ -29,16 +41,8 @@ while True:
 	print("Data Recieved ",str(data))
 	try:
 		datan = str(data)
+		datan = datan.split(" ")
+		parseCommand(datan)
 	except:
 		print("invalid input")
-	datan = datan.split(" ")
-	if(datan[1] == "C"):#camera/control stuff
-		if(datan[2] == "S"):
-			connectCamera()
-			print("Camera connected")
-		elif(datan[2] == "C"):
-			p.stdout.flush
-			p.stdout.close
-			p.kill()
-			p.terminate()
-#	elif(datan[1] == "C"):#control stuff
+
