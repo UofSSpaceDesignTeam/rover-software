@@ -9,7 +9,9 @@ import pygame
 import Controller
 from Button import Button
 from Box import Box
-from Communication import *
+from DriveClient import DriveClient
+from CameraClient import CameraClient
+from ArmClient import ArmClient
 import socket
 import commands
 import os
