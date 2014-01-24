@@ -1,5 +1,6 @@
 #Simple example server for control of GPIO Pins using Sockets
 #ToDo: make the server able to close a connection if the host disconnects spontaneously and listen again.
+#By Austin Shirley
 
 import RPi.GPIO as GPIO
 import socket

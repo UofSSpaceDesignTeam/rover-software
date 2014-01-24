@@ -10,10 +10,15 @@ import Controller
 import socket
 import time
 
+#Define Some variables
+scaleFactor=1000
+IP="192.168.1.104"
+port=5001
+deadzone=.1
+deadzoneDelay=.1
+
 def startSocket(): #sets up the socket
 	sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	IP="192.168.1.104"
-	port=5001
 	connected=False
 	while(connected==False):
 		print("Connecting...")
@@ -27,19 +32,35 @@ def startSocket(): #sets up the socket
 
 def getAxis(): #collects the position of the left x-axis
 	LXAxis=Controller.getAxes()[0]
-	LXRounded=round(LXAxis, 2)
+	LXRounded=round(LXAxis, 3) #Rounds the value to 3 decimal places
 	print("LXRounded: " + str(LXRounded))
 	return LXRounded
+	
+def getButtons():
+	Abutton=Controller.getButtons()[0]
+	return Abutton
 
-def makePacket(axisPos):  #builds a string of control data
-	commandStr1="1,s" 
-	commandStr2="\r\n"
+def makePacket(axisPos,button):  #builds a string of control data
+	indexStrServo ="A"
+	indexStrLED ="B"
+	commandStr1 = "1,s" 
+	commandStr2 = "\r\n"
+	
+	#Create the servo command
 	print(axisPos)
-	if(abs(axisPos) <= .1):
-		time.sleep(.15)
-	accel=str(int(1000*axisPos))
-	print(accel)
-	pack=commandStr1 + accel + commandStr2
+	if(abs(axisPos) <= deadzone):
+		time.sleep(deadzoneDelay)
+	accel=str(int(scaleFactor*axisPos))
+	
+	#Create the LED Command
+	print(button)
+	if(button==1):
+		buttoncmd="001"
+	elif(button==0):
+		buttoncmd="000"
+		
+	#Make packet
+	pack = indexStrServo + commandStr1 + accel + commandStr2 + indexStrLED + buttoncmd
 	return pack
 
 #Main Execution
@@ -58,7 +79,8 @@ time.sleep(1)
 while(True):
 	pygame.event.pump()
 	print("Preparing packet")
-	print(makePacket(getAxis()))
-	sock.sendall(makePacket(getAxis()))
+	pack = makePacket(getAxis(), getButtons())
+	print(pack)
+	sock.sendall(pack)
 	print("Packet sent")
 	time.sleep(0.01)
