@@ -168,7 +168,7 @@ class CameraClient: # class to handle camera feeds
 	def Connect(self, retries):
 		connected = False
 		self.socket.settimeout(1.0)
-		print("Connecting ArmClient to " + self.IP + ":" + str(self.port))
+		print("Connecting CameraClient to " + self.IP + ":" + str(self.port))
 		for i in range (0, retries):
 			try:
 				self.socket.connect((self.IP, self.port))
