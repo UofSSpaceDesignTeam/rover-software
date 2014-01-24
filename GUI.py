@@ -32,7 +32,7 @@ IPraspi4 = "192.168.1.106"
 # netcat video on 3001
 driveClientPort = 3002
 armClientPort = 3003
-CameraClientPort = 3000
+cameraClientPort = 3000
 
 colorWhite = (255, 255, 255)
 colorGray = (125, 125, 125)
@@ -147,7 +147,8 @@ def takePicture(fakeArg):	# button-based
 		camConnect(4)
 
 def stopRover(fakeArg):	# button-based
-	driveControlConnection.send(commandStopRover)
+	driveControl.stopMotors()
+	armControl.stopMotors()
 
 def runExperiment(fakeArg):	# button-based
 	return
@@ -164,11 +165,11 @@ def camConnect(cameraNumber): # button-based
 		cameraButton.selected = False
 	
 	if(os.name == "posix"): # linux machine
-		command = ("nc -l -p 3001 | mplayer -x 850 -y 400 -nosound -hardframedrop -noautosub -fps 35 -ontop -geometry 50%:50 -demuxer h264es -nocache -")
+		command = ("nc -l -p 3001 | mplayer -x 880 -y 415 -nosound -quiet -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 165:30 -demuxer h264es -nocache -")
 		p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
 			stdout=subprocess.PIPE, stderr=None)
 	else: #windows
-		command = "cam.bat" # needs to be maintained properly.
+		command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
 		p = subprocess.Popen(str(command), shell=True, stdin=None,
 			stdout=None, stderr=None)
 	
@@ -204,7 +205,7 @@ def camDisonnect(fakeArg): # button-based
 
 def connectClients():
 	for client in clientList:
-		if not client.Connect(5):
+		if not client.connect(5):
 			return False
 	
 	return True
@@ -215,11 +216,17 @@ def connectClients():
 global clientList
 clientList = []
 
-cameraRaspi1 = CameraClient(IPraspi1, CameraClientPort)
-cameraRaspi2 = CameraClient(IPraspi2, CameraClientPort)
-cameraRaspi3 = CameraClient(IPraspi3, CameraClientPort)
-cameraRaspi4 = CameraClient(IPraspi4, CameraClientPort)
+driveControl = DriveClient(IPraspi1, driveClientPort)
+armControl = ArmClient(IPraspi2, armClientPort)
+cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
+cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
+cameraRaspi3 = CameraClient(IPraspi3, cameraClientPort)
+cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
 
+# enable or disable connectivity here
+
+#clientList.append(driveControl)
+#clientList.append(armControl
 clientList.append(cameraRaspi1)
 #clientList.append(cameraRaspi2)
 #clientList.append(cameraRaspi3)

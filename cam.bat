@@ -1,3 +1,3 @@
 @echo off
 cd winmp
-nc.exe -l -p 3001 | mplayer.exe -x 800 -y 340 -nosound -noborder -hardframedrop -noautosub -fps 35 -ontop -geometry 50%:50 -demuxer h264es -nocache -"
+nc.exe -l -p 3001 | mplayer.exe -x 880 -y 415 -nosound -noborder -hardframedrop -noautosub -quiet -fps 40 -priority high -ontop -geometry 165:30 -demuxer h264es -nocache -"

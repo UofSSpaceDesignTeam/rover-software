@@ -13,11 +13,11 @@ class DriveClient: # class for drive systems
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.IP = IP
 		self.port = port
-		self.commandMotorSet = "# M S"
-		self.commandMotorStop = "# M Q"
-		self.commandGPSData = "# G D"
+		self.commandMotorSet = "#MS"
+		self.commandMotorStop = "#MQ"
+		self.commandGPSData = "#GD"
 
-	def Connect(self, retries):
+	def connect(self, retries):
 		connected = False
 		self.socket.settimeout(1.0)
 		print("Connecting DriveClient to " + self.IP + ":" + str(self.port))
@@ -74,14 +74,15 @@ class ArmClient: # class for arm systems
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.IP = IP
 		self.port = port
-		self.commandPanBase = "# A B" # spin base left / right
-		self.commandLiftWrist = "# A L" # translate wrist joint up/down
-		self.commandTiltWrist = "# A W" # rotate wrist joint up/down
-		self.commandPanHand = "# A P" # move gripper left/right
-		self.commandTwistHand = "# A H" # twist gripper cw/ccw
-		self.commandGripper = "# A G" # open or close gripper
-
-	def Connect(self, retries):
+		self.commandPanBase = "#AB" # spin base left / right
+		self.commandLiftWrist = "#AL" # translate wrist joint up/down
+		self.commandTiltWrist = "#AW" # rotate wrist joint up/down
+		self.commandPanHand = "#AP" # move gripper left/right
+		self.commandTwistHand = "#AH" # twist gripper cw/ccw
+		self.commandGripper = "#AG" # open or close gripper
+		self.commandArmStop = "#AS" # stop all actuators
+	
+	def connect(self, retries):
 		connected = False
 		self.socket.settimeout(1.0)
 		print("Connecting ArmClient to " + self.IP + ":" + str(self.port))
@@ -97,7 +98,7 @@ class ArmClient: # class for arm systems
 			else:
 				time.sleep(1)
 		return False
-
+	
 	def panBase(self, speed):
 		try:
 			self.socket.send(self.commandPanBase)
@@ -106,8 +107,8 @@ class ArmClient: # class for arm systems
 		except socket.error as e:
 			print(e)
 			return False
-
-	def LiftWrist(self, speed):
+	
+	def liftWrist(self, speed):
 		try:
 			self.socket.send(self.commandLiftWrist)
 			self.socket.send(chr(speed))
@@ -115,8 +116,8 @@ class ArmClient: # class for arm systems
 		except socket.error as e:
 			print(e)
 			return False
-
-	def TiltWrist(self, speed):
+	
+	def tiltWrist(self, speed):
 		try:
 			self.socket.send(self.commandTiltWrist)
 			self.socket.send(chr(speed))
@@ -124,8 +125,8 @@ class ArmClient: # class for arm systems
 		except socket.error as e:
 			print(e)
 			return False
-
-	def PanHand(self, speed):
+	
+	def panHand(self, speed):
 		try:
 			self.socket.send(self.commandPanHand)
 			self.socket.send(chr(speed))
@@ -133,8 +134,8 @@ class ArmClient: # class for arm systems
 		except socket.error as e:
 			print(e)
 			return False
-
-	def TwistHand(self, speed):
+	
+	def twistHand(self, speed):
 		try:
 			self.socket.send(self.commandTwistHand)
 			self.socket.send(chr(speed))
@@ -142,11 +143,19 @@ class ArmClient: # class for arm systems
 		except socket.error as e:
 			print(e)
 			return False
-
-	def Gripper(self, speed):
+	
+	def gripper(self, speed):
 		try:
 			self.socket.send(self.commandGripper)
 			self.socket.send(chr(speed))
+			return True
+		except socket.error as e:
+			print(e)
+			return False
+
+	def stopMotors(self):
+		try:
+			self.socket.send(self.commandArmStop)
 			return True
 		except socket.error as e:
 			print(e)
@@ -159,10 +168,10 @@ class CameraClient: # class to handle camera feeds
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.IP = IP
 		self.port = port
-		self.commandCameraStart = "# C S"
-		self.commandCameraEnd = "# C E"
+		self.commandCameraStart = "#CS"
+		self.commandCameraEnd = "#CE"
 
-	def Connect(self, retries):
+	def connect(self, retries):
 		connected = False
 		self.socket.settimeout(1.0)
 		print("Connecting CameraClient to " + self.IP + ":" + str(self.port))
