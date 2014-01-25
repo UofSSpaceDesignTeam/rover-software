@@ -49,7 +49,6 @@ def stopSockets():
 		pass
 
 
-
 	# main execution
 
 global clientAddress
@@ -61,14 +60,14 @@ try:
 	print("\tVideo will be sent on port " + str(videoPort))
 	while(True):
 		(commandSocket, clientAddress) = serverSocket.accept()
-		print("Connected to " + str(clientAddress[0])) 
+		print("Connected to " + str(clientAddress[0]))
 		while(True):
 			data = commandSocket.recv(256)
 			if(data == ""): # socket closing
 				break
 			else:
 				parseCommand(data)
-		print("Connection from " + str(clientAddress[0]) + " closed")
+		print("Connection to " + str(clientAddress[0]) + " was closed")
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	stopSockets()
