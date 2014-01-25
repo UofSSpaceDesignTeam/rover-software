@@ -16,16 +16,17 @@ videoPort = 3001
 
 	# functions
 
-def startCamera(clientAddress):
+def startCamera():
 	global p
-	command = "raspivid -b 500000 -ex fixedfps -fps 20 -t 0 -rot 180 -o - | nc " + str(clientAddress) + " " + str(videoPort)
+	command = "raspivid -b 500000 -ex fixedfps -fps 20 -t 0 -rot 180 -o - | nc " + clientAddress[0] + " " + str(videoPort)
 	print(command)
 	p = subprocess.Popen(str(command),shell=True,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
 def stopCamera():
-	p.stdout.flush
-	p.stdout.close
-	subprocess.call("killall nc; killall raspivid")
+	try:
+		subprocess.call("sudo killall nc; sudo killall raspivid", shell = True)
+	except:
+		pass
 
 def parseCommand(command):
 	if(len(command) > 2 and command[0] == "#"): # is valid
@@ -33,9 +34,20 @@ def parseCommand(command):
 			if(command[2] == "S"): #CS
 				print("starting camera feed")
 				startCamera()
-			elif(datan[2] == "E"): #CE
+			elif(command[2] == "E"): #CE
 				print("stopping camera feed")
 				stopCamera()
+
+def stopSockets():
+	try:
+		commandSocket.close()
+	except:
+		pass
+	try:
+		serverSocket.close()
+	except:
+		pass
+
 
 
 	# main execution
@@ -49,33 +61,22 @@ try:
 	print("\tVideo will be sent on port " + str(videoPort))
 	while(True):
 		(commandSocket, clientAddress) = serverSocket.accept()
-		print("Connected to " + str(clientAddress)) 
+		print("Connected to " + str(clientAddress[0])) 
 		while(True):
 			data = commandSocket.recv(256)
 			if(data == ""): # socket closing
 				break
 			else:
 				parseCommand(data)
-		print("Connection from " + str(clientAddress) + " closed")
+		print("Connection from " + str(clientAddress[0]) + " closed")
 except KeyboardInterrupt:
-	print("manual shutdown...")
-	try:
-		commandSocket.close()
-	except:
-		pass
-	try:
-		serverSocket.close()
-	except:
-		pass
+	print("\nmanual shutdown...")
+	stopSockets()
 except socket.error as e:
 	print(e)
-	try:
-		commandSocket.close()
-	except:
-		pass
-	try:
-		serverSocket.close()
-	except:
-		pass
-	time.Sleep(2)
-	subprocess.call("python CameraServer.py") # restart on connection failure
+	stopSockets()
+	time.sleep(2)
+	subprocess.Popen("sudo python CameraServer.py", shell = True) # restart on connection failure
+except:
+	print(e)
+	stopSockets()
