@@ -15,8 +15,8 @@ class DriveClient: # class for drive systems
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.IP = IP
 		self.port = port
-		self.commandMotorSet = "#MS"
-		self.commandMotorStop = "#MQ"
+		self.commandControlData = "#DD"
+		self.commandRoverStop = "#DS"
 		self.commandGPSData = "#GD"
 
 	def connect(self, retries):
@@ -36,11 +36,11 @@ class DriveClient: # class for drive systems
 				time.sleep(1)
 		return False
 
-	def setMotors(self, leftMotor, rightMotor):
+	def sendControlData(self, throttle, steering):
 		try:
-			self.socket.send(self.commandMotorSet)
-			self.socket.send(chr(leftMotor))
-			self.socket.send(chr(rightMotor))
+			self.socket.send(self.commandControlData)
+			self.socket.send(chr(throttle))
+			self.socket.send(chr(steering))
 			return True
 		except socket.error as e:
 			print(e)
@@ -49,7 +49,7 @@ class DriveClient: # class for drive systems
 
 	def stopMotors(self):
 		try:
-			self.socket.send(self.commandMotorStop)
+			self.socket.send(self.commandRoverStop)
 			return True
 		except socket.error as e:
 			print(e)
