@@ -54,6 +54,15 @@ def parseController(command):
 			if(command[2] == "S"): # Drive, Stop
 				stopDrive()
 
+def stopSockets():
+	try:
+		commandSocket.close()
+	except:
+		pass
+	try:
+		serverSocket.close()
+	except:
+		pass
 
 				
 # Main Program
