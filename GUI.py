@@ -24,7 +24,7 @@ from threading import Thread
 
 	# global constants
 
-useController = False
+useController = True
 
 IPraspi1 = "192.168.1.103"
 IPraspi2 = "192.168.1.104"
@@ -227,9 +227,9 @@ cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
 
 # enable or disable connectivity here
 
-#clientList.append(driveControl)
+clientList.append(driveControl)
 #clientList.append(armControl
-clientList.append(cameraRaspi1)
+#clientList.append(cameraRaspi1)
 #clientList.append(cameraRaspi2)
 #clientList.append(cameraRaspi3)
 #clientList.append(cameraRaspi4)
@@ -256,8 +256,15 @@ else:
 		mouse = pygame.mouse.get_pos()
 		if(useController):
 			getInput()
+			throttle = int(axes[1] * 128) + 128
+			steering = max(throttle, 0)
+			steering = min(throttle, 255)
+			steering = int(axes[0] * 128) + 128
+			steering = max(steering, 0)
+			steering = min(steering, 255)
+			driveControl.sendControlData(throttle, steering)
 		Clock.tick(30)
-		pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps")
+		pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps)")
 		
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:

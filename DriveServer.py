@@ -99,5 +99,6 @@ except socket.error as e:
 	time.sleep(2)
 	subprocess.Popen("sudo python CameraServer.py", shell = True) # restart on connection failure
 except:
-	print(e)
 	stopSockets()
+	raise
+	
