@@ -257,12 +257,13 @@ else:
 		if(useController):
 			getInput()
 			throttle = int(axes[1] * 128) + 128
-			steering = max(throttle, 0)
-			steering = min(throttle, 255)
+			throttle = max(throttle, 0)
+			throttle = min(throttle, 255)
 			steering = int(axes[0] * 128) + 128
 			steering = max(steering, 0)
 			steering = min(steering, 255)
 			driveControl.sendControlData(throttle, steering)
+			time.sleep(0.25)
 		Clock.tick(30)
 		pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps)")
 		

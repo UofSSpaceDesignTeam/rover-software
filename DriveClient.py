@@ -38,9 +38,7 @@ class DriveClient: # class for drive systems
 
 	def sendControlData(self, throttle, steering):
 		try:
-			self.socket.send(self.commandControlData)
-			self.socket.send(chr(throttle))
-			self.socket.send(chr(steering))
+			self.socket.send(self.commandControlData + chr(steering) + chr(throttle))
 			return True
 		except socket.error as e:
 			print(e)
