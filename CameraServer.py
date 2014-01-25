@@ -59,5 +59,13 @@ try:
 		print("Connection from " + str(clientAddress) + " closed")
 except socket.error as e:
 	print(e)
+	try:
+		commandSocket.close()
+	except:
+		pass
+	try:
+		serverSocket.close()
+	except:
+		pass
 	time.Sleep(2)
 	subprocess.call("python CameraServer.py") # restart on connection failure
