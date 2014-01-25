@@ -2,6 +2,7 @@
 
 import socket
 import time
+import subprocess
 #import serial
 # Reserved for serial multiplexing.
 #import RPi.GPIO as GPIO
@@ -46,12 +47,13 @@ def stopDrive():
 	return
 
 def parseController(command):
-	if(len(command) > 2 and command[0] == "#"): # is valid
+	if(command[0] == "#"): # is valid
 		if(command[1] == "D"):
-			if(command[2] == "D"): # Drive, Data
-				axis=command.partition(D)[2]
-				print(axis)
-			if(command[2] == "S"): # Drive, Stop
+			if(command[2] == "D" and len(command) > 4): # Drive, Data
+				xAxis = int(ord(command[3]))
+				yAxis = int(ord(command[4]))
+				print(xAxis,yAxis)
+			elif(command[2] == "S"): # Drive, Stop
 				stopDrive()
 
 def stopSockets():
@@ -97,7 +99,7 @@ except socket.error as e:
 	print(e)
 	stopSockets()
 	time.sleep(2)
-	subprocess.Popen("sudo python CameraServer.py", shell = True) # restart on connection failure
+	subprocess.Popen("sudo python DriveServer.py", shell = True) # restart on connection failure
 except:
 	stopSockets()
 	raise
