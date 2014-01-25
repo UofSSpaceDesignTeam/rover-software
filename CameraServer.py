@@ -57,6 +57,16 @@ try:
 			else:
 				parseCommand(data)
 		print("Connection from " + str(clientAddress) + " closed")
+except KeyboardInterrupt:
+	print("manual shutdown...")
+	try:
+		commandSocket.close()
+	except:
+		pass
+	try:
+		serverSocket.close()
+	except:
+		pass
 except socket.error as e:
 	print(e)
 	try:
