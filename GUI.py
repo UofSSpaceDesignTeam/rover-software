@@ -234,7 +234,7 @@ def connectClients(fakeArg):
 global clientList
 clientList = []
 
-driveControl = DriveClient(IPraspi1, driveClientPort)
+driveControl = DriveClient(IPraspi2, driveClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
 cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
 cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
