@@ -3,12 +3,12 @@
 import socket
 import time
 import subprocess
-#import serial
+import serial
 # Reserved for serial multiplexing.
 #import RPi.GPIO as GPIO
 
 # Motor Contols Variables
-#scaleFactor=1000
+scaleFactor=.55
 #deadzone=.1
 #deadzoneDelay=.1
 global xAxis
@@ -16,7 +16,7 @@ global yAxis
 
 # Serial Variables
 sBaudrate=9600
-sTimeout=3
+sTimeout=.2
 
 # Server Variables
 drivePort=3002
@@ -24,12 +24,13 @@ global clientAddress
 
 def beginSerial():
 	drive=serial.Serial("/dev/ttyAMA0")
-	motor.baudrate = sBaudrate
-	motor.timeout = sTimeout
-	print(motor.name)
-	motor.write("1,start\r\n")
-	print("Start command sent!")
-	return motor
+	drive.baudrate = sBaudrate
+	drive.timeout = sTimeout
+	print(drive.name)
+	drive.write("1,start\r\n")
+	drive.write("2,start\r\n")
+	print("Left/Right start commands sent!")
+	return drive
 
 # Currently Reserved for serial multiplexing
 def beginGPIO():
@@ -40,10 +41,58 @@ def beginGPIO():
 #	print("GPIO Initialized")
 	return
 
-def driveCommand(axis):
-	leftCenter=0
+def sendSerial(leftThrust,rightThrust):
+	leftMotor="1"
+	rightMotor="2"
+	Start=",s"
+	End="\r\n"
+	lSignal = str(leftMotor + Start + str(int(leftThrust*scaleFactor)) + End)
+	rSignal = str(rightMotor + Start + str(int(rightThrust*scaleFactor)) + End)
+	print(rSignal)
+	print(rSignal)
+	print(lSignal)
+	drive.write(lSignal)
+	drive.write(rSignal)
+	drive.write("1,gets\r\n")
+	feedback1=drive.readline()
+	drive.write("2,gets\r\n")
+	feedback2=drive.readline()
+	print("Feedback: " + feedback1 + feedback2)
+	if(feedback1 == "1,E1\r\n"):
+		beginSerial()
 
-def stopDrive():
+def driveCommand(xAxis,yAxis):
+	xMid=128
+	yMid=128
+	drive=yAxis-yMid
+	steer=xAxis-xMid
+
+	# This is wrong... :(
+	#if(steer < 0):
+	#	leftThrust=drive+steer
+	#	rightThrust=drive-steer
+	#elif(steer > 0):
+	#	leftThrust=drive+steer
+	#	rightThrust=drive-steer
+
+	if(steer == 0):
+		leftThrust=drive
+		rightThrust=drive
+	else:
+		leftThrust=drive+steer
+		rightThrust=drive-steer
+
+	print(leftThrust,rightThrust)
+	sendSerial(leftThrust,rightThrust)
+
+
+def stopDrive(): 
+	#add something here for emergency stop
+	return
+	
+def resetDrive():
+	#add something here for emergency restart
+	#currently implemented autorestart in sendSerial function
 	return
 
 def parseController(command):
@@ -53,6 +102,7 @@ def parseController(command):
 				xAxis = int(ord(command[3]))
 				yAxis = int(ord(command[4]))
 				print(xAxis,yAxis)
+				driveCommand(xAxis,yAxis)
 			elif(command[2] == "S"): # Drive, Stop
 				stopDrive()
 
@@ -70,7 +120,7 @@ def stopSockets():
 # Main Program
 
 # Setup
-#beginSerial()
+drive=beginSerial()
 #beginGPIO()
 
 # Begin connection
