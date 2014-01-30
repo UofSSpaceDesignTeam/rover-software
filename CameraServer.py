@@ -54,7 +54,7 @@ def stopSockets():
 global clientAddress
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
-	serverSocket.bind(("", commandPort))
+	ServerSocket.bind(("", commandPort))
 	serverSocket.listen(0)
 	print("CameraServer listening on port " + str(commandPort))
 	print("\tVideo will be sent on port " + str(videoPort))

@@ -24,7 +24,7 @@ from threading import Thread
 
 	# global constants
 
-useController = True
+useController = False
 
 IPraspi1 = "192.168.1.103"
 IPraspi2 = "192.168.1.104"
@@ -63,7 +63,6 @@ def createButtons():
 	buttonList.append(camera4Button)	# 3
 	buttonList.append(cameraStopButton)	# 4
 	
-	
 	moveButton = Button(setMode, ("drive"), "Drive", 20, colorRed, (12, 205, 100, 20), colorBlue, colorYellow)
 	armButton = Button(setMode, ("arm"), "Arm", 20, colorRed, (12, 235, 100, 20), colorBlue, colorYellow)
 	moveButton.selected = True
@@ -76,6 +75,12 @@ def createButtons():
 	buttonList.append(stopButton)	# 7
 	buttonList.append(pictureButton)	# 8
 	buttonList.append(runExperimentButton)	# 9
+	
+	controllerConnect = Button(connectController, None,"Connect Controller", 20,colorBlack,(5,300,150,20),colorBlue,colorYellow)
+	buttonList.append(controllerConnect)	#10
+	
+	clientConnect = Button(connectClients, None,"Connect Clients", 20,colorBlack,(5,340,150,20),colorBlue,colorYellow)
+	buttonList.append(clientConnect)
 
 
 def createBoxes():
@@ -119,6 +124,16 @@ def setMode(mode):	# button-based
 		buttonList[6].selected = True
 	drawButtons()
 
+def connectController(fakeArg):
+	global useController
+	try:
+		Controller.init()
+		useController = True
+	except:
+		print("controller not connected")
+		pass
+
+	
 def getInput():
 	global axes, buttons, dPad
 	axes = Controller.getAxes()
@@ -205,9 +220,10 @@ def camDisonnect(fakeArg): # button-based
 	drawButtons()
 
 
-def connectClients():
+def connectClients(fakeArg):
 	for client in clientList:
 		if not client.connect(5):
+			print("Could not connect all clients.")
 			return False
 	
 	return True
@@ -234,53 +250,51 @@ clientList.append(driveControl)
 #clientList.append(cameraRaspi3)
 #clientList.append(cameraRaspi4)
 
-if not connectClients():
-	print("Could not connect all clients.")
-else:
-	os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (25,30)
-	pygame.init()
-	Clock = pygame.time.Clock()
-	screen = pygame.display.set_mode((1500, 800))
+#if not connectClients():
+	#print("Could not connect all clients.")
+#else:
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (25,30)
+pygame.init()
+Clock = pygame.time.Clock()
+screen = pygame.display.set_mode((1500, 800))
+#if(useController):
+	#Controller.init()
+createButtons()
+createBoxes()
+drawBoxes()
+drawButtons()
+pygame.display.update()
+mainloop = True
+
+while mainloop:
+	escapecmd = 'QUIT\n'
+	mouse = pygame.mouse.get_pos()
 	if(useController):
-		Controller.init()
-	createButtons()
-	createBoxes()
-	drawBoxes()
-	drawButtons()
+		getInput()
+		throttle = int(axes[1] * 128) + 128
+		throttle = max(throttle, 0)
+		throttle = min(throttle, 255)
+		steering = int(axes[0] * 128) + 128
+		steering = max(steering, 0)
+		steering = min(steering, 255)
+		driveControl.sendControlData(throttle, steering)
+		time.sleep(0.25)
+	Clock.tick(30)
+	pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps)")
+	
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			mainloop = False
+		elif event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE:
+				mainloop = False
+		elif event.type == pygame.MOUSEBUTTONDOWN:
+			for button in buttonList:
+				if(button.obj.collidepoint(mouse)):
+					button.press()
+	
 	pygame.display.update()
 
-	mainloop = True
-	
-	while mainloop:
-		escapecmd = 'QUIT\n'
-		mouse = pygame.mouse.get_pos()
-		if(useController):
-			getInput()
-			throttle = int(axes[1] * 128) + 128
-			throttle = max(throttle, 0)
-			throttle = min(throttle, 255)
-			steering = int(axes[0] * 128) + 128
-			steering = max(steering, 0)
-			steering = min(steering, 255)
-			driveControl.sendControlData(throttle, steering)
-			time.sleep(0.25)
-		Clock.tick(30)
-		pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps)")
-		
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				mainloop = False
-			elif event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_ESCAPE:
-					mainloop = False
-			elif event.type == pygame.MOUSEBUTTONDOWN:
-				for button in buttonList:
-					if(button.obj.collidepoint(mouse)):
-						button.press()
-		
-		pygame.display.update()
-
-
-	# end of execution cleanup
+# end of execution cleanup
 
 pygame.quit()
