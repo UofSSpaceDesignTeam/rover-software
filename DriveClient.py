@@ -34,6 +34,7 @@ class DriveClient: # class for drive systems
 				return True
 			else:
 				time.sleep(1)
+		print("\tCould not connect.")
 		return False
 
 	def sendControlData(self, throttle, steering):
@@ -66,4 +67,12 @@ class DriveClient: # class for drive systems
 		except exception as e:
 			print(e)
 			return (False, 0, 0)
+	
+	def test(self):
+		try:
+			self.socket.settimeout(0.1)
+			self.socket.send("HELLO THAR")
+			return True
+		except socket.error as e:
+			return False
 

@@ -33,6 +33,7 @@ class CameraClient: # class to handle camera feeds
 				return True
 			else:
 				time.sleep(1)
+		print("\tCould not connect.")
 		return False
 	
 	def startCamera(self):
@@ -49,5 +50,13 @@ class CameraClient: # class to handle camera feeds
 			return True
 		except socket.error as e:
 			print(e)
+			return False
+
+	def test(self):
+		try:
+			self.socket.settimeout(0.1)
+			self.socket.send("HELLO THAR")
+			return True
+		except socket.error as e:
 			return False
 

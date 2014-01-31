@@ -18,7 +18,6 @@ class Box:
 		self.rect = rect
 		self.textPosition = textPosition
 		self.color = color
-		self.obj = None
 
 
 	def renderLabel(self):	# returns a Surface with the box label on it
@@ -27,6 +26,6 @@ class Box:
 
 
 	def draw(self, screen): # redraw the box and the label text
-		self.obj = pygame.draw.rect(screen, self.color, self.rect)
+		pygame.draw.rect(screen, self.color, self.rect)
 		screen.blit(self.renderLabel(), self.textPosition)
 
