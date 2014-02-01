@@ -22,11 +22,9 @@ class TextOutput():
 	def write(self,text):
 		if len(text) < 3: 
 			return
-		#elif(len(text) > 25):
-			#i = text[:25]
-			#t = text[25:]
-			#self.write(self,i[0])
-			#self.write(self,t)
+		elif(len(text) > 60):
+			self.write(text[:60])
+			self.write(text[60:])
 		else:
 			self.list.append(text)
 			if(len(self.list) >= self.maxArraySize):
