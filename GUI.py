@@ -57,7 +57,7 @@ def createButtons():
 	camera2Button = Button(camConnect, (2), "Camera 2", 20, colorBlack, (12, 50, 100, 20), colorBlue, colorYellow)
 	camera3Button = Button(camConnect, (3), "Camera 3", 20, colorBlack, (12, 80, 100, 20), colorBlue, colorYellow)
 	camera4Button = Button(camConnect, (4), "Camera 4", 20, colorBlack, (12, 110, 100, 20), colorBlue, colorYellow)
-	cameraStopButton = Button(camDisonnect, (0), "None", 20, colorBlack, (12, 140, 100, 20), colorBlue, colorYellow)
+	cameraStopButton = Button(camDisconnect, (0), "None", 20, colorBlack, (12, 140, 100, 20), colorBlue, colorYellow)
 	cameraStopButton.selected = True
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
@@ -214,7 +214,7 @@ def camConnect(cameraNumber): # button-based
 	drawIndicators()
 
 
-def camDisonnect(fakeArg): # button-based
+def camDisconnect(fakeArg): # button-based
 	if(buttonList[0].selected):
 		cameraRaspi1.stopCamera()
 	elif(buttonList[1].selected):
