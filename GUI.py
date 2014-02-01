@@ -141,6 +141,7 @@ def drawBoxes():
 		i.draw(screen)
 	screen.blit(background, (130, 0))
 
+
 def drawIndicators():
 	for i in indicatorList:
 		i.refresh()
@@ -199,7 +200,7 @@ def camConnect(cameraNumber): # button-based
 	if not indicatorList[cameraNumber - 1].selected:
 		return
 	if(os.name == "posix"): # linux machine
-		command = ("nc -l -p 3001 | mplayer -x 880 -y 415 -nosound -quiet -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 165:30 -demuxer h264es -nocache -")
+		command = ("nc -l -p 3001 | mplayer -x 960 -y 540 -nosound -quiet -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 155:30 -demuxer h264es -nocache -")
 		p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
 	else: #windows
 		command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
