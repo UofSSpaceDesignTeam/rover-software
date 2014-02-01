@@ -93,7 +93,7 @@ def createBoxes():
 	controlBox = Box("Control Modes", 20, colorWhite, (0, 175, 125, 80), (16, 177), colorGray)
 	boxList.append(controlBox)
 	
-	actionBox = Box("Actions", 22, colorWhite, (0, 260, 125, 110), (35, 264), colorGray)
+	actionBox = Box("Actions", 22, colorWhite, (0, 260, 125, 115), (35, 264), colorGray)
 	boxList.append(actionBox)
 	
 	connectionsBox = Box("Connections", 24, colorWhite, (1095, 0, 160, 360), (1115, 8), colorDarkBlue)
