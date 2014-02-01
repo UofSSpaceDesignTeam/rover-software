@@ -29,7 +29,6 @@ class ArmClient: # class for arm systems
 		self.socket.settimeout(1.0)
 		try:
 			self.socket.connect((self.IP, self.port))
-			connected = True
 			print("Connected ArmClient to " + self.IP + ":" + str(self.port))
 			return True
 		except socket.error:
@@ -38,7 +37,6 @@ class ArmClient: # class for arm systems
 			time.sleep(1)
 			try:
 				self.socket.connect((self.IP, self.port))
-				connected = True
 				print("Connected ArmClient to " + self.IP + ":" + str(self.port))
 				return True
 			except socket.error:

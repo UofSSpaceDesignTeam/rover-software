@@ -25,7 +25,6 @@ class DriveClient: # class for drive systems
 		self.socket.settimeout(1.0)
 		try:
 			self.socket.connect((self.IP, self.port))
-			connected = True
 			print("Connected DriveClient to " + self.IP + ":" + str(self.port))
 			return True
 		except socket.error:
@@ -34,7 +33,6 @@ class DriveClient: # class for drive systems
 			time.sleep(1)
 			try:
 				self.socket.connect((self.IP, self.port))
-				connected = True
 				print("Connected DriveClient to " + self.IP + ":" + str(self.port))
 				return True
 			except socket.error:

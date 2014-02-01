@@ -24,7 +24,6 @@ class CameraClient: # class to handle camera feeds
 		self.socket.settimeout(1.0)
 		try:
 			self.socket.connect((self.IP, self.port))
-			connected = True
 			print("Connected CameraClient to " + self.IP + ":" + str(self.port))
 			return True
 		except socket.error:
@@ -33,7 +32,6 @@ class CameraClient: # class to handle camera feeds
 			time.sleep(1)
 			try:
 				self.socket.connect((self.IP, self.port))
-				connected = True
 				print("Connected CameraClient to " + self.IP + ":" + str(self.port))
 				return True
 			except socket.error:
