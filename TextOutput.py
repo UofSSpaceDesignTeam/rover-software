@@ -9,7 +9,7 @@ class TextOutput():
 		self.rect = (left,top,width,height)
 		self.innerRect = (left+2,top+2,width-4,height-4)
 		self.textStartleft = left + fontsize/20
-		self.textStarttop = top +fontsize/10 
+		self.textStarttop = top +fontsize/10 +1
 		self.maxArraySize = arraySize +1
 		self.hOffset = fontsize + fontsize/10
 		self.vOffset = fontsize + fontsize/10
@@ -20,12 +20,13 @@ class TextOutput():
 		self.obj2 = None
 	
 	def write(self,text):
-		if len(text) < 3: return
-		elif(len(text) > 25):
+		if len(text) < 3: 
+			return
+		#elif(len(text) > 25):
 			#i = text[:25]
 			#t = text[25:]
-			#self.write(self,(text[i])
-			#self.write(self,text[t])
+			#self.write(self,i[0])
+			#self.write(self,t)
 		else:
 			self.list.append(text)
 			if(len(self.list) >= self.maxArraySize):
