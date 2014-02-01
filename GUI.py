@@ -155,11 +155,7 @@ def checkController(fakeArg): # button-based
 	if Controller.isConnected:
 		return True
 	else:
-		try:
-			Controller.init()
-			return True
-		except:
-			return False
+		return False
 
 
 def getInput():
@@ -264,6 +260,11 @@ Clock = pygame.time.Clock()
 screen = pygame.display.set_mode((1260, 700))
 logo = pygame.image.load("logo.png")
 
+try:
+	Controller.init()
+except:
+	pass
+
 createBoxes()
 drawBoxes()
 createButtons()
@@ -293,13 +294,14 @@ while mainloop:
 		if Controller.isConnected:
 			getInput()
 			if controlMode == "drive":
-				throttle = int(axes[1] * 128) + 128
-				throttle = max(throttle, 0)
-				throttle = min(throttle, 255)
-				steering = int(axes[0] * 128) + 128
-				steering = max(steering, 0)
-				steering = min(steering, 255)
-				driveControl.sendControlData(throttle, steering)
+				if indicatorList[4].active:
+					throttle = int(axes[1] * 128) + 128
+					throttle = max(throttle, 0)
+					throttle = min(throttle, 255)
+					steering = int(axes[0] * 128) + 128
+					steering = max(steering, 0)
+					steering = min(steering, 255)
+					driveControl.sendControlData(throttle, steering)
 			elif controlMode == "arm":
 				pass
 		controllerSendTimer = pygame.time.get_ticks()
