@@ -9,9 +9,11 @@ import pygame
 import Controller
 from Button import Button
 from Box import Box
+from Indicator import Indicator
 from DriveClient import DriveClient
 from CameraClient import CameraClient
 from ArmClient import ArmClient
+from TextOutput import TextOutput
 import socket
 import commands
 import os
@@ -23,8 +25,6 @@ from threading import Thread
 
 
 	# global constants
-
-useController = False
 
 IPraspi1 = "192.168.1.103"
 IPraspi2 = "192.168.1.104"
@@ -41,7 +41,9 @@ colorGray = (125, 125, 125)
 colorBlack = (0, 0, 0)
 colorRed = (240, 0, 0)
 colorGreen = (0, 240, 0)
+colorDarkGreen = (0, 100, 0)
 colorBlue = (0, 0, 240)
+colorDarkBlue = (0, 0, 120)
 colorYellow = (250, 250, 0)
 
 
@@ -63,43 +65,61 @@ def createButtons():
 	buttonList.append(camera4Button)	# 3
 	buttonList.append(cameraStopButton)	# 4
 	
-	moveButton = Button(setMode, ("drive"), "Drive", 20, colorRed, (12, 205, 100, 20), colorBlue, colorYellow)
-	armButton = Button(setMode, ("arm"), "Arm", 20, colorRed, (12, 235, 100, 20), colorBlue, colorYellow)
+	moveButton = Button(setMode, ("drive"), "Drive", 20, colorBlack, (12, 195, 100, 20), colorBlue, colorYellow)
+	armButton = Button(setMode, ("arm"), "Arm", 20, colorBlack, (12, 225, 100, 20), colorBlue, colorYellow)
 	moveButton.selected = True
 	buttonList.append(moveButton)	# 5
 	buttonList.append(armButton)	# 6
 	
-	stopButton = Button(stopRover, None, "Stop Rover", 28, colorYellow, (140, 420, 400, 30), colorRed, colorRed)
-	pictureButton = Button(takePicture, None, "Take Picture", 24, colorWhite, (580, 420, 200, 30), colorBlue, colorYellow)
-	runExperimentButton = Button(runExperiment, None, "Run Experiment", 24, colorWhite, (820, 420, 200, 30), colorBlue, colorYellow)
+	stopButton = Button(stopRover, None, "Stop", 24, colorYellow, (12, 285, 100, 20), colorRed, colorRed)
+	pictureButton = Button(takePicture, None, "Picture", 20, colorWhite, (12, 315, 100, 20), colorBlue, colorYellow)
+	runExperimentButton = Button(runExperiment, None, "Science", 20, colorWhite, (12, 345, 100, 20), colorBlue, colorYellow)
 	buttonList.append(stopButton)	# 7
 	buttonList.append(pictureButton)	# 8
 	buttonList.append(runExperimentButton)	# 9
 	
-	controllerConnect = Button(connectController, None,"Connect Controller", 20,colorBlack,(5,300,150,20),colorBlue,colorYellow)
-	buttonList.append(controllerConnect)	#10
-	
-	clientConnect = Button(connectClients, None,"Connect Clients", 20,colorBlack,(5,340,150,20),colorBlue,colorYellow)
-	buttonList.append(clientConnect)
+	connectButton = Button(connectClients, None, "Connect All", 24, colorWhite, (1120, 320, 120, 30), colorBlue, colorGreen)
+	buttonList.append(connectButton) #10
 
 
 def createBoxes():
 	global boxList
 	boxList = []
 	
-	cameraBox = Box("Video Area", 40, colorWhite, (140, 0, 880, 415), (500, 180), colorGray)
 	cameraButtonBox = Box("Camera Feeds", 20, colorWhite, (0, 0, 125, 170), (17, 2), colorGray)
-	boxList.append(cameraBox)
 	boxList.append(cameraButtonBox)
 	
-	controlBox = Box("Control Modes", 20, colorWhite, (0, 185, 125, 80), (16, 188), colorGray)
+	controlBox = Box("Control Modes", 20, colorWhite, (0, 175, 125, 80), (16, 177), colorGray)
 	boxList.append(controlBox)
 	
-	experimentBox = Box("Data Plot Area", 40, colorWhite, (1040, 420, 460, 400), (1180, 600), colorGray)
-	boxList.append(experimentBox)
+	actionBox = Box("Actions", 22, colorWhite, (0, 260, 125, 110), (35, 264), colorGray)
+	boxList.append(actionBox)
 	
-	fillerBox = Box("USST", 500, colorGreen, (-1, -1, -1, -1), (30, 450), colorWhite)
-	boxList.append(fillerBox)
+	connectionsBox = Box("Connections", 24, colorWhite, (1095, 0, 160, 360), (1115, 8), colorDarkBlue)
+	boxList.append(connectionsBox)
+
+
+def createIndicators():
+	global indicatorList
+	indicatorList = []
+	
+	camera1Indicator = Indicator(checkClient, cameraRaspi1, "Camera 1", colorWhite, (1110, 40), colorRed, colorGreen)
+	camera2Indicator = Indicator(checkClient, cameraRaspi2, "Camera 2", colorWhite, (1110, 80), colorRed, colorGreen)
+	camera3Indicator = Indicator(checkClient, cameraRaspi3, "Camera 3", colorWhite, (1110, 120), colorRed, colorGreen)
+	camera4Indicator = Indicator(checkClient, cameraRaspi4, "Camera 4", colorWhite, (1110, 160), colorRed, colorGreen)
+	
+	driveIndicator = Indicator(checkClient, driveControl, "Drive System", colorWhite, (1110, 200), colorRed, colorGreen)
+	armIndicator = Indicator(checkClient, armControl, "Arm System", colorWhite, (1110, 240), colorRed, colorGreen)
+	
+	controllerIndicator = Indicator(checkController, None, "Controller", colorWhite, (1110, 280), colorRed, colorGreen)
+	
+	indicatorList.append(camera1Indicator) #0
+	indicatorList.append(camera2Indicator) #1
+	indicatorList.append(camera3Indicator) #2
+	indicatorList.append(camera4Indicator) #3
+	indicatorList.append(driveIndicator) #4
+	indicatorList.append(armIndicator) #5
+	indicatorList.append(controllerIndicator) #6
 
 
 def drawButtons():
@@ -109,6 +129,12 @@ def drawButtons():
 
 def drawBoxes():
 	for i in boxList:
+		i.draw(screen)
+	screen.blit(logo, (130, 0))
+
+def drawIndicators():
+	for i in indicatorList:
+		i.refresh()
 		i.draw(screen)
 
 
@@ -124,74 +150,53 @@ def setMode(mode):	# button-based
 		buttonList[6].selected = True
 	drawButtons()
 
-def connectController(fakeArg):
-	global useController
-	try:
-		Controller.init()
-		useController = True
-	except:
-		print("controller not connected")
-		pass
 
-	
+def checkController(fakeArg): # button-based
+	if Controller.isConnected:
+		return True
+	else:
+		try:
+			Controller.init()
+			return True
+		except:
+			return False
+
+
 def getInput():
 	global axes, buttons, dPad
 	axes = Controller.getAxes()
 	buttons = Controller.getButtons()
 	dPad = Controller.getDPad()
-	
+
+
 def takePicture(fakeArg):	# button-based
-	if(buttonList[4].selected):
-		return
-		
-	try:
-		p.stdout.flush
-		p.stdout.close
-	except:
-		pass
-	
-	if(buttonList[0].selected):
-		driveControlConnection.send(commandTakePicture)
-		driveControlConnection.retrieveFile("picture.jpg")
-		camConnect(1)
-	elif(buttonList[1].selected):
-		armControlConnection.send(commandTakePicture)
-		armControlConnection.retrieveFile("picture.jpg")
-		camConnect(2)
-	elif(buttonList[2].selected):
-		camConnect(3)
-	elif(buttonList[3].selected):
-		camConnect(4)
+	return
+
 
 def stopRover(fakeArg):	# button-based
 	driveControl.stopMotors()
 	armControl.stopMotors()
 
+
 def runExperiment(fakeArg):	# button-based
 	return
 
+
+def checkClient(client): # test connection
+	return client.test()
+
+
 def camConnect(cameraNumber): # button-based
-	global p
-	try:
-		p.stdout.flush
-		p.stdout.close
-	except:
-		pass
-	
+	camDisconnect(None)
 	for cameraButton in buttonList[0:5]:
 		cameraButton.selected = False
-	
 	if(os.name == "posix"): # linux machine
 		command = ("nc -l -p 3001 | mplayer -x 880 -y 415 -nosound -quiet -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 165:30 -demuxer h264es -nocache -")
-		p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE,
-			stdout=subprocess.PIPE, stderr=None)
+		p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
 	else: #windows
 		command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
-		p = subprocess.Popen(str(command), shell=True, stdin=None,
-			stdout=None, stderr=None)
-	
-	time.sleep(1)
-	
+		p = subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
+	time.sleep(0.5)
 	if(cameraNumber == 1):
 		buttonList[0].selected = True
 		cameraRaspi1.startCamera()
@@ -204,9 +209,9 @@ def camConnect(cameraNumber): # button-based
 	elif(cameraNumber == 4):
 		buttonList[3].selected = True
 		cameraRaspi4.startCamera()
-
 	drawBoxes()
 	drawButtons()
+	drawIndicators()
 
 
 def camDisonnect(fakeArg): # button-based
@@ -217,19 +222,23 @@ def camDisonnect(fakeArg): # button-based
 	for cameraButton in buttonList[0:4]:
 		cameraButton.selected = False
 	buttonList[4].selected = True
+	if(os.name == "posix"): # linux machine
+		command = ("sudo killall nc; sudo killall mplayer")
+		subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
+	else: #windows
+		command = "camStop.bat" # EXTERNAL FILE. Needs to be kept up to date.
+		subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
 	drawButtons()
 
 
-def connectClients(fakeArg):
+def connectClients(fakeArg): # button-based
 	for client in clientList:
-		if not client.connect(5):
-			print("Could not connect all clients.")
-			return False
-	
-	return True
+		client.connect(0)
+	drawIndicators()
 
 
-	# main execution
+
+	# main execution #############################################################################
 
 global clientList
 clientList = []
@@ -241,44 +250,60 @@ cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
 cameraRaspi3 = CameraClient(IPraspi3, cameraClientPort)
 cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
 
-# enable or disable connectivity here
-
 clientList.append(driveControl)
-#clientList.append(armControl
-#clientList.append(cameraRaspi1)
-#clientList.append(cameraRaspi2)
-#clientList.append(cameraRaspi3)
-#clientList.append(cameraRaspi4)
+clientList.append(armControl)
+clientList.append(cameraRaspi1)
+clientList.append(cameraRaspi2)
+clientList.append(cameraRaspi3)
+clientList.append(cameraRaspi4)
 
-#if not connectClients():
-	#print("Could not connect all clients.")
-#else:
+
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (25,30)
 pygame.init()
 Clock = pygame.time.Clock()
-screen = pygame.display.set_mode((1500, 800))
-#if(useController):
-	#Controller.init()
-createButtons()
+screen = pygame.display.set_mode((1260, 700))
+logo = pygame.image.load("logo.png")
+
 createBoxes()
 drawBoxes()
+createButtons()
 drawButtons()
+createIndicators()
+drawIndicators()
+
 pygame.display.update()
 mainloop = True
 
+setMode("drive")
+
+indicatorTimer = 0
+redrawTimer = 0
+controllerSendTimer = 0
+
 while mainloop:
-	escapecmd = 'QUIT\n'
 	mouse = pygame.mouse.get_pos()
-	if(useController):
-		getInput()
-		throttle = int(axes[1] * 128) + 128
-		throttle = max(throttle, 0)
-		throttle = min(throttle, 255)
-		steering = int(axes[0] * 128) + 128
-		steering = max(steering, 0)
-		steering = min(steering, 255)
-		driveControl.sendControlData(throttle, steering)
-		time.sleep(0.25)
+	
+	if pygame.time.get_ticks() - redrawTimer > 4000: # whole display redraw timer
+		drawBoxes()
+		drawButtons()
+		drawIndicators()
+		redrawTimer = pygame.time.get_ticks()
+	
+	if pygame.time.get_ticks() - controllerSendTimer > 250: # controller data sending timer
+		if Controller.isConnected:
+			getInput()
+			if controlMode == "drive":
+				throttle = int(axes[1] * 128) + 128
+				throttle = max(throttle, 0)
+				throttle = min(throttle, 255)
+				steering = int(axes[0] * 128) + 128
+				steering = max(steering, 0)
+				steering = min(steering, 255)
+				driveControl.sendControlData(throttle, steering)
+			elif controlMode == "arm":
+				pass
+		controllerSendTimer = pygame.time.get_ticks()
+		
 	Clock.tick(30)
 	pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps)")
 	

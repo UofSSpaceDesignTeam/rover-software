@@ -70,9 +70,9 @@ class DriveClient: # class for drive systems
 	
 	def test(self):
 		try:
-			self.socket.settimeout(0.1)
-			self.socket.send("HELLO THAR")
+			self.socket.settimeout(0.0)
+			self.socket.send("TST")
 			return True
-		except socket.error as e:
+		except socket.error:
 			return False
 

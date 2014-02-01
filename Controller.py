@@ -21,6 +21,7 @@ rightJoystickXDeadzone = 0.16
 rightJoystickYDeadzone = 0.16
 triggerDeadzone = 0.1
 
+isConnected = False
 
 	# function definitions
 
@@ -28,8 +29,10 @@ def init():    # connect to xbox controller if one exists
 	joystick.init()
 	try:
 		global controller
+		global isConnected
 		controller = joystick.Joystick(0)
 		controller.init();
+		isConnected = True
 	except:
 		raise Exception("Error: Controller not detected")
 
