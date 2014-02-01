@@ -8,10 +8,10 @@ class TextOutput():
 		self.height = height
 		self.rect = (left,top,width,height)
 		self.innerRect = (left+2,top+2,width-4,height-4)
-		self.textStartleft = left + fontsize/10
-		self.textStarttop = top +fontsize/10
+		self.textStartleft = left + fontsize/20
+		self.textStarttop = top +fontsize/20
 		self.maxArraySize = arraySize +1
-		self.vOffset = fontsize + fontsize/10
+		self.vOffset = fontsize + fontsize/20
 		self.list = []
 		self.color = color
 		self.textcolor = fontcolor
@@ -20,7 +20,7 @@ class TextOutput():
 	
 	def write(self,text):
 		text.rstrip()
-		if len(text) < 5: return
+		if len(text) < 3: return
 		self.list.append(text)
 		if(len(self.list) >= self.maxArraySize):
 			self.list.remove(self.list[0])

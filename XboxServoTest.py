@@ -16,27 +16,27 @@ def startSocket(): #sets up the socket
 	port=5001
 	connected=False
 	while(connected==False):
-		print("Connecting...")
+		console.output("Connecting...")
 		try:
 			sock.connect((IP,port))
 			connected=True
 		except:
 			connected=False
-	print("Connected to Pi")
+	console.output("Connected to Pi")
 	return sock
 
 def getAxis(): #collects the position of the left x-axis
 	LXAxis=Controller.getAxes()[0]
 	LXRounded=round(LXAxis, 2)
-	print("LXRounded: " + str(LXRounded))
+	console.output("LXRounded: " + str(LXRounded))
 	return LXRounded
 
 def makePacket(axisPos):  #builds a string of control data
 	commandStr1="1,s" 
 	commandStr2="\r\n"
-	print(axisPos)
+	console.output(axisPos)
 	accel=str(int(3000*axisPos))
-	print(accel)
+	console.output(accel)
 	pack=commandStr1 + accel + commandStr2
 	return pack
 
@@ -47,7 +47,7 @@ pygame.init()
 try:
 	Controller.init()
 except Exception as e:
-	print(e)
+	console.output(e)
 	exit(1)	
 
 startSocket()
@@ -55,8 +55,8 @@ time.sleep(1)
 
 while(True):
 	pygame.event.pump()
-	print("Preparing packet")
-	print(makePacket(getAxis()))
+	console.output("Preparing packet")
+	console.output(makePacket(getAxis()))
 	sock.send(makePacket(getAxis()))
-	print("Packet sent")
+	console.output("Packet sent")
 	time.sleep(0.25)

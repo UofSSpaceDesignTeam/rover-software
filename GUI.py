@@ -19,6 +19,7 @@ import commands
 import os
 import signal
 import time
+import sys
 from datetime import date
 import subprocess
 from threading import Thread
@@ -121,7 +122,15 @@ def createIndicators():
 	indicatorList.append(armIndicator) #5
 	indicatorList.append(controllerIndicator) #6
 
-
+def connectConsole():
+	global console
+	console = TextOutput(15,colorGreen,30,540,700,150,10,colorWhite)
+	#t = threading.Thread(target=console.loop,args =())
+	#t.start()
+	#connect stderr and stdout to console
+	sys.stdout = console
+	#sys.stderr = console
+	
 def drawButtons():
 	for i in buttonList:
 		i.draw(screen)
@@ -192,7 +201,7 @@ def camConnect(cameraNumber): # button-based
 	else: #windows
 		command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
 		p = subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
-	time.sleep(0.5)
+	time.sleep(0)
 	if(cameraNumber == 1):
 		buttonList[0].selected = True
 		cameraRaspi1.startCamera()
@@ -260,11 +269,7 @@ Clock = pygame.time.Clock()
 screen = pygame.display.set_mode((1260, 700))
 logo = pygame.image.load("logo.png")
 
-try:
-	Controller.init()
-except:
-	pass
-
+connectConsole()
 createBoxes()
 drawBoxes()
 createButtons()
@@ -308,7 +313,7 @@ while mainloop:
 		
 	Clock.tick(30)
 	pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps)")
-	
+	console.draw(screen)
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			mainloop = False
