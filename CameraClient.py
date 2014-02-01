@@ -18,13 +18,13 @@ class CameraClient: # class to handle camera feeds
 		self.port = port
 		self.commandCameraStart = "#CS"
 		self.commandCameraEnd = "#CE"
+		self.commandCameraPicture = "#CP"
 
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.settimeout(1.0)
 		try:
 			self.socket.connect((self.IP, self.port))
-			print("Connected CameraClient to " + self.IP + ":" + str(self.port))
 			return True
 		except socket.error:
 			pass
@@ -32,11 +32,9 @@ class CameraClient: # class to handle camera feeds
 			time.sleep(1)
 			try:
 				self.socket.connect((self.IP, self.port))
-				print("Connected CameraClient to " + self.IP + ":" + str(self.port))
 				return True
 			except socket.error:
 				pass
-		sys.stderr.write("Could not connect CameraClient to " + self.IP + ":" + str(self.port))
 		return False
 	
 	def startCamera(self):
@@ -44,7 +42,7 @@ class CameraClient: # class to handle camera feeds
 			self.socket.send(self.commandCameraStart)
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e.strerror)
 			return False
 	
 	def stopCamera(self):
@@ -52,7 +50,15 @@ class CameraClient: # class to handle camera feeds
 			self.socket.send(self.commandCameraEnd)
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e.strerror)
+			return False
+
+	def takePicture(self):
+		try:
+			self.socket.send(self.commandCameraPicture)
+			return True
+		except socket.error as e:
+			sys.stderr.write(e.strerror)
 			return False
 
 	def test(self):

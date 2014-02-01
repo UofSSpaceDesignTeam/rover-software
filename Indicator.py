@@ -37,8 +37,5 @@ class Indicator:
 
 
 	def refresh(self):	# call boolean function to determine state
-		if self.function(self.args):
-			self.active = True
-		else:
-			self.active = False
+		self.active = self.function(self.args)
 

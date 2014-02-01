@@ -74,8 +74,8 @@ def createButtons():
 	buttonList.append(armButton)	# 6
 	
 	stopButton = Button(stopRover, None, "Stop", 24, colorYellow, (12, 285, 100, 20), colorRed, colorRed)
-	pictureButton = Button(takePicture, None, "Picture", 20, colorWhite, (12, 315, 100, 20), colorBlue, colorYellow)
-	runExperimentButton = Button(runExperiment, None, "Science", 20, colorWhite, (12, 345, 100, 20), colorBlue, colorYellow)
+	pictureButton = Button(takePicture, None, "Picture", 20, colorWhite, (12, 315, 100, 20), colorBlue, colorGreen)
+	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorWhite, (12, 345, 100, 20), colorBlue, colorYellow)
 	buttonList.append(stopButton)	# 7
 	buttonList.append(pictureButton)	# 8
 	buttonList.append(runExperimentButton)	# 9
@@ -182,7 +182,30 @@ def getInput():
 
 
 def takePicture(fakeArg):	# button-based
-	return
+	cameraNumber = 0
+	for i in range(0, 4):
+		if buttonList[i].selected:
+			cameraNumber = i + 1
+	if cameraNumber == 0:
+		return
+	buttonList[8].selected = True
+	drawButtons()
+	pygame.display.update()
+	camDisconnect(None)
+	time.sleep(1)
+	if cameraNumber == 1:
+		cameraRaspi1.takePicture()
+		IP = IPraspi1
+	elif cameraNumber == 2:
+		cameraRaspi2.takePicture()
+		IP = IPraspi2
+	elif cameraNumber == 3:
+		cameraRaspi3.takePicture()
+		IP = IPraspi3
+	elif cameraNumber == 4:
+		cameraRaspi4.takePicture()
+	buttonList[8].selected = False
+	drawButtons()
 
 
 def stopRover(fakeArg):	# button-based
@@ -213,13 +236,16 @@ def camConnect(cameraNumber): # button-based
 	if not indicatorList[cameraNumber - 1].active:
 		return
 	buttonList[4].selected = False
+	buttonList[cameraNumber - 1].selected = True
+	drawButtons()
+	pygame.display.update()
 	if(os.name == "posix"): # linux machine
 		command = ("nc -l -p 3001 | mplayer -x 960 -y 540 -nosound -quiet -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 156:58 -demuxer h264es -nocache -")
 		subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
 	else: #windows
 		command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
 		subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
-	time.sleep(0)
+	time.sleep(0.5)
 	if(cameraNumber == 1):
 		buttonList[0].selected = True
 		cameraRaspi1.startCamera()
@@ -232,9 +258,7 @@ def camConnect(cameraNumber): # button-based
 	elif(cameraNumber == 4):
 		buttonList[3].selected = True
 		cameraRaspi4.startCamera()
-	drawBoxes()
 	drawButtons()
-	drawIndicators()
 
 
 def camDisconnect(fakeArg): # button-based
@@ -352,9 +376,11 @@ while mainloop:
 	error.draw(screen)
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
+			camDisconnect(None)
 			mainloop = False
 		elif event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
+				camDisconnect(None)
 				mainloop = False
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			for button in buttonList:

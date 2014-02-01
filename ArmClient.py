@@ -29,7 +29,6 @@ class ArmClient: # class for arm systems
 		self.socket.settimeout(1.0)
 		try:
 			self.socket.connect((self.IP, self.port))
-			print("Connected ArmClient to " + self.IP + ":" + str(self.port))
 			return True
 		except socket.error:
 			pass
@@ -37,11 +36,9 @@ class ArmClient: # class for arm systems
 			time.sleep(1)
 			try:
 				self.socket.connect((self.IP, self.port))
-				print("Connected ArmClient to " + self.IP + ":" + str(self.port))
 				return True
 			except socket.error:
 				pass
-		sys.stderr.write("Could not connect ArmClient to " + self.IP + ":" + str(self.port))
 		return False
 	
 	def panBase(self, speed):
@@ -50,7 +47,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e)
 			return False
 	
 	def liftWrist(self, speed):
@@ -59,7 +56,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e)
 			return False
 	
 	def tiltWrist(self, speed):
@@ -68,7 +65,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e)
 			return False
 	
 	def panHand(self, speed):
@@ -77,7 +74,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e)
 			return False
 	
 	def twistHand(self, speed):
@@ -86,7 +83,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e)
 			return False
 	
 	def gripper(self, speed):
@@ -95,7 +92,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e)
 			return False
 
 	def stopMotors(self):
@@ -103,12 +100,12 @@ class ArmClient: # class for arm systems
 			self.socket.send(self.commandArmStop)
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e)
 			return False
 
 	def test(self):
 		try:
-			self.socket.settimeout(0.0)
+			self.socket.settimeout(0.05)
 			self.socket.send("TST")
 			return True
 		except socket.error:

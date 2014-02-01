@@ -25,7 +25,6 @@ class DriveClient: # class for drive systems
 		self.socket.settimeout(1.0)
 		try:
 			self.socket.connect((self.IP, self.port))
-			print("Connected DriveClient to " + self.IP + ":" + str(self.port))
 			return True
 		except socket.error:
 			pass
@@ -33,11 +32,9 @@ class DriveClient: # class for drive systems
 			time.sleep(1)
 			try:
 				self.socket.connect((self.IP, self.port))
-				print("Connected DriveClient to " + self.IP + ":" + str(self.port))
 				return True
 			except socket.error:
 				pass
-		sys.stderr.write("Could not connect DriveClient to " + self.IP + ":" + str(self.port))
 		return False
 
 	def sendControlData(self, throttle, steering):
@@ -45,7 +42,7 @@ class DriveClient: # class for drive systems
 			self.socket.send(self.commandControlData + chr(steering) + chr(throttle))
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e)
 			self.stopMotors()
 			return False
 
@@ -54,7 +51,7 @@ class DriveClient: # class for drive systems
 			self.socket.send(self.commandRoverStop)
 			return True
 		except socket.error as e:
-			print(e)
+			sys.stderr.write(e)
 			return False
 
 	def getGPSData(self):
@@ -62,13 +59,13 @@ class DriveClient: # class for drive systems
 			self.socket.settimeout(0.3)
 			self.socket.send(self.commandGPSData)
 			GPSData = self.socket.recv(256)
-			print(GPSData)
+			sys.stderr.write(GPSData)
 			GPSList = GPSData.split(" ")
 			lat = int(GPSList[0])
 			lon = int(GPSList[1])
 			return (True, lat, lon)
 		except exception as e:
-			print(e)
+			sys.stderr.write(e)
 			return (False, 0, 0)
 	
 	def test(self):
