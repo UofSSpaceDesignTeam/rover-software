@@ -252,6 +252,7 @@ def connectClients(fakeArg): # button-based
 		client.connect(0)
 	buttonList[10].selected = False
 	drawIndicators()
+	pygame.display.update()
 
 
 

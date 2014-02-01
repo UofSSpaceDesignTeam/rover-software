@@ -31,14 +31,14 @@ class ArmClient: # class for arm systems
 			try:
 				self.socket.connect((self.IP, self.port))
 				connected = True
-				print("\tConnected to " + self.IP + ":" + str(self.port))
+				print("    Connected to " + self.IP + ":" + str(self.port))
 			except socket.error:
-				print("\tretry " + str(i+1))
+				print("    retry " + str(i+1))
 			if connected:
 				return True
 			else:
 				time.sleep(1)
-		print("\tCould not connect.")
+		print("    Could not connect.")
 		return False
 	
 	def panBase(self, speed):

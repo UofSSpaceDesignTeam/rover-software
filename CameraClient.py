@@ -59,7 +59,7 @@ class CameraClient: # class to handle camera feeds
 
 	def test(self):
 		try:
-			self.socket.settimeout(0.0)
+			self.socket.settimeout(0.05)
 			self.socket.send("TST")
 			return True
 		except socket.error:
