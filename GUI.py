@@ -20,7 +20,7 @@ import os
 import signal
 import time
 import sys
-from virtualRobot import virtualRobot
+#from virtualRobot import virtualRobot
 from datetime import date
 import subprocess
 from threading import Thread
@@ -333,8 +333,8 @@ createButtons()
 drawButtons()
 createIndicators()
 drawIndicators()
-createRobot()
-robot.draw(screen)
+#createRobot()
+#robot.draw(screen)
 
 pygame.display.update()
 mainloop = True
