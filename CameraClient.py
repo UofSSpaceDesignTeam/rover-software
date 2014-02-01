@@ -24,21 +24,21 @@ class CameraClient: # class to handle camera feeds
 		try:
 			self.socket.connect((self.IP, self.port))
 			connected = True
-			print("\tConnected to " + self.IP + ":" + str(self.port))
+			print("    Connected to " + self.IP + ":" + str(self.port))
 			return True
 		except socket.error:
 			pass
 		for i in range (0, retries):
-			print("\tretry " + str(i+1))
+			print("    retry " + str(i+1))
 			time.sleep(1)
 			try:
 				self.socket.connect((self.IP, self.port))
 				connected = True
-				print("\tConnected to " + self.IP + ":" + str(self.port))
+				print("    Connected to " + self.IP + ":" + str(self.port))
 				return True
 			except socket.error:
 				pass
-		print("\tCould not connect.")
+		print("    Could not connect.")
 		return False
 	
 	def startCamera(self):

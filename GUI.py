@@ -139,7 +139,7 @@ def drawButtons():
 def drawBoxes():
 	for i in boxList:
 		i.draw(screen)
-	screen.blit(logo, (130, 0))
+	screen.blit(background, (130, 0))
 
 def drawIndicators():
 	for i in indicatorList:
@@ -192,9 +192,12 @@ def checkClient(client): # test connection
 
 
 def camConnect(cameraNumber): # button-based
-	camDisconnect(None)
-	for cameraButton in buttonList[0:5]:
-		cameraButton.selected = False
+	for cameraButton in buttonList[0:4]:
+		if cameraButton.selected:
+			return
+	buttonList[4].selected = False
+	if not indicatorList[cameraNumber - 1].selected:
+		return
 	if(os.name == "posix"): # linux machine
 		command = ("nc -l -p 3001 | mplayer -x 880 -y 415 -nosound -quiet -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 165:30 -demuxer h264es -nocache -")
 		p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
@@ -224,6 +227,10 @@ def camDisconnect(fakeArg): # button-based
 		cameraRaspi1.stopCamera()
 	elif(buttonList[1].selected):
 		cameraRaspi2.stopCamera()
+	elif(buttonList[2].selected):
+		cameraRaspi3.stopCamera()
+	elif(buttonList[3].selected):
+		cameraRaspi4.stopCamera()
 	for cameraButton in buttonList[0:4]:
 		cameraButton.selected = False
 	buttonList[4].selected = True
@@ -267,7 +274,7 @@ os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (25,30)
 pygame.init()
 Clock = pygame.time.Clock()
 screen = pygame.display.set_mode((1260, 700))
-logo = pygame.image.load("logo.png")
+background = pygame.image.load("background.png")
 
 connectConsole()
 createBoxes()
