@@ -24,21 +24,25 @@ class ArmClient: # class for arm systems
 		self.commandArmStop = "#AS" # stop all actuators
 	
 	def connect(self, retries):
-		connected = False
+		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.settimeout(1.0)
-		print("Connecting ArmClient to " + self.IP + ":" + str(self.port))
+		try:
+			self.socket.connect((self.IP, self.port))
+			connected = True
+			print("Connected ArmClient to " + self.IP + ":" + str(self.port))
+			return True
+		except socket.error:
+			pass
 		for i in range (0, retries):
+			time.sleep(1)
 			try:
 				self.socket.connect((self.IP, self.port))
 				connected = True
-				print("    Connected to " + self.IP + ":" + str(self.port))
-			except socket.error:
-				print("    retry " + str(i+1))
-			if connected:
+				print("Connected ArmClient to " + self.IP + ":" + str(self.port))
 				return True
-			else:
-				time.sleep(1)
-		print("    Could not connect.")
+			except socket.error:
+				pass
+		print("Could not connect ArmClient to " + self.IP + ":" + str(self.port))
 		return False
 	
 	def panBase(self, speed):

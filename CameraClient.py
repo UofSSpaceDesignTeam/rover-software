@@ -21,25 +21,23 @@ class CameraClient: # class to handle camera feeds
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.settimeout(1.0)
-		print("Connecting CameraClient to " + self.IP + ":" + str(self.port))
 		try:
 			self.socket.connect((self.IP, self.port))
 			connected = True
-			print("    Connected to " + self.IP + ":" + str(self.port))
+			print("Connected CameraClient to " + self.IP + ":" + str(self.port))
 			return True
 		except socket.error:
 			pass
 		for i in range (0, retries):
-			print("    retry " + str(i+1))
 			time.sleep(1)
 			try:
 				self.socket.connect((self.IP, self.port))
 				connected = True
-				print("    Connected to " + self.IP + ":" + str(self.port))
+				print("Connected CameraClient to " + self.IP + ":" + str(self.port))
 				return True
 			except socket.error:
 				pass
-		print("    Could not connect.")
+		print("Could not connect CameraClient to " + self.IP + ":" + str(self.port))
 		return False
 	
 	def startCamera(self):
