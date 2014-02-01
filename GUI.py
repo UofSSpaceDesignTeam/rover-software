@@ -20,6 +20,7 @@ import os
 import signal
 import time
 import sys
+from virtualRobot import virtualRobot
 from datetime import date
 import subprocess
 from threading import Thread
@@ -122,17 +123,21 @@ def createIndicators():
 	indicatorList.append(armIndicator) #5
 	indicatorList.append(controllerIndicator) #6
 
+def createRobot():
+	global robot
+	robot = virtualRobot(1110,500,100,150)
+
 
 def connectConsole():
 	global output
 	global error
-	output = TextOutput(15,colorGreen,30,540,350,160,13,colorWhite)
-	error = TextOutput(15,colorRed,380,540,350,160,13,colorWhite)
+	output = TextOutput(15,colorGreen,0,540,350,160,13,colorWhite)
+	error = TextOutput(15,colorRed,350,540,350,160,13,colorWhite)
 	#t = threading.Thread(target=output.loop,args =())
 	#t.start()
 	#connect stderr and stdout to output
 	sys.stdout = output
-	sys.stderr = error
+	#sys.stderr = error
 
 
 def drawButtons():
@@ -304,6 +309,8 @@ createButtons()
 drawButtons()
 createIndicators()
 drawIndicators()
+createRobot()
+robot.draw(screen)
 
 pygame.display.update()
 mainloop = True
