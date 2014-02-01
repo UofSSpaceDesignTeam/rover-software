@@ -20,7 +20,6 @@ class TextOutput():
 		self.obj2 = None
 	
 	def write(self,text):
-		text.rstrip()
 		if len(text) < 3: return
 		self.list.append(text)
 		if(len(self.list) >= self.maxArraySize):
@@ -34,11 +33,13 @@ class TextOutput():
 	def draw(self,screen):
 		self.obj1 = pygame.draw.rect(screen, self.color, self.rect)
 		self.obj2 = pygame.draw.rect(screen,(0,0,0,0),self.innerRect)
-		i=len(self.list)
-		offset = i -len(self.list)-1
-		while( i>0):
-			i = i-1
+		offset=len(self.list)
+		i=0
+		offset = offset -len(self.list)-1
+		while( i<len(self.list)):
 			screen.blit(self.renderText(i), (self.textStartleft + self.hOffset,self.textStarttop-self.vOffset-(offset)*self.vOffset))
+			#n = n-1
+			i = i+1
 			offset=offset-1
 
 
