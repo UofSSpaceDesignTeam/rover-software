@@ -132,7 +132,7 @@ def connectConsole():
 	#t.start()
 	#connect stderr and stdout to output
 	sys.stdout = output
-	#sys.stderr = error
+	sys.stderr = error
 
 
 def drawButtons():

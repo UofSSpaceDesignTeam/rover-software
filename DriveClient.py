@@ -6,6 +6,7 @@
 
 import socket
 import time
+import sys
 
 
 	# class definition
@@ -38,7 +39,7 @@ class DriveClient: # class for drive systems
 				return True
 			except socket.error:
 				pass
-		print("Could not connect DriveClient to " + self.IP + ":" + str(self.port))
+		sys.stderr.write("Could not connect DriveClient to " + self.IP + ":" + str(self.port))
 		return False
 
 	def sendControlData(self, throttle, steering):

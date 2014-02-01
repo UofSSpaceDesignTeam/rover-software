@@ -6,6 +6,7 @@
 
 import socket
 import time
+import sys
 
 
 	# class definition
@@ -42,7 +43,7 @@ class ArmClient: # class for arm systems
 				return True
 			except socket.error:
 				pass
-		print("Could not connect ArmClient to " + self.IP + ":" + str(self.port))
+		sys.stderr.write("Could not connect ArmClient to " + self.IP + ":" + str(self.port))
 		return False
 	
 	def panBase(self, speed):
