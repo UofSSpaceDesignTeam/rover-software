@@ -9,7 +9,7 @@ class TextOutput():
 		self.rect = (left,top,width,height)
 		self.innerRect = (left+2,top+2,width-4,height-4)
 		self.textStartleft = left + fontsize/20
-		self.textStarttop = top +fontsize/20
+		self.textStarttop = top +fontsize/10 
 		self.maxArraySize = arraySize +1
 		self.hOffset = fontsize + fontsize/10
 		self.vOffset = fontsize + fontsize/10
@@ -21,9 +21,15 @@ class TextOutput():
 	
 	def write(self,text):
 		if len(text) < 3: return
-		self.list.append(text)
-		if(len(self.list) >= self.maxArraySize):
-			self.list.remove(self.list[0])
+		elif(len(text) > 25):
+			#i = text[:25]
+			#t = text[25:]
+			#self.write(self,(text[i])
+			#self.write(self,text[t])
+		else:
+			self.list.append(text)
+			if(len(self.list) >= self.maxArraySize):
+				self.list.remove(self.list[0])
 
 	def renderText(self, counter):
 		font = pygame.font.Font(None, self.textSize)
