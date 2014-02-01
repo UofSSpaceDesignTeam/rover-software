@@ -210,10 +210,10 @@ def camConnect(cameraNumber): # button-based
 	buttonList[4].selected = False
 	if(os.name == "posix"): # linux machine
 		command = ("nc -l -p 3001 | mplayer -x 960 -y 540 -nosound -quiet -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 155:30 -demuxer h264es -nocache -")
-		p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
+		subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
 	else: #windows
 		command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
-		p = subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
+		subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
 	time.sleep(0)
 	if(cameraNumber == 1):
 		buttonList[0].selected = True
