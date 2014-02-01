@@ -277,7 +277,6 @@ clientList.append(cameraRaspi2)
 clientList.append(cameraRaspi3)
 clientList.append(cameraRaspi4)
 
-
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (25,30)
 pygame.init()
 logo = pygame.image.load('logo.png')
@@ -285,6 +284,11 @@ pygame.display.set_icon(logo)
 Clock = pygame.time.Clock()
 screen = pygame.display.set_mode((1260, 700))
 background = pygame.image.load("background.png")
+
+try:
+	Controller.init()
+except:
+	pass
 
 connectConsole()
 createBoxes()
