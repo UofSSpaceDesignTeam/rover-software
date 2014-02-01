@@ -11,7 +11,8 @@ class TextOutput():
 		self.textStartleft = left + fontsize/20
 		self.textStarttop = top +fontsize/20
 		self.maxArraySize = arraySize +1
-		self.vOffset = fontsize + fontsize/20
+		self.hOffset = fontsize + fontsize/10
+		self.vOffset = fontsize + fontsize/10
 		self.list = []
 		self.color = color
 		self.textcolor = fontcolor
@@ -37,7 +38,7 @@ class TextOutput():
 		offset = i -len(self.list)-1
 		while( i>0):
 			i = i-1
-			screen.blit(self.renderText(i), (self.textStartleft,self.textStarttop-self.vOffset-(offset)*self.vOffset))
+			screen.blit(self.renderText(i), (self.textStartleft + self.hOffset,self.textStarttop-self.vOffset-(offset)*self.vOffset))
 			offset=offset-1
 
 

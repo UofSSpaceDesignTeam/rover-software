@@ -123,12 +123,12 @@ def createIndicators():
 	indicatorList.append(controllerIndicator) #6
 
 def connectConsole():
-	global console
-	console = TextOutput(15,colorGreen,30,540,700,150,10,colorWhite)
-	#t = threading.Thread(target=console.loop,args =())
+	global output
+	output = TextOutput(15,colorGreen,30,540,700,160,10,colorWhite)
+	#t = threading.Thread(target=output.loop,args =())
 	#t.start()
-	#connect stderr and stdout to console
-	sys.stdout = console
+	#connect stderr and stdout to output
+	sys.stdout = output
 	#sys.stderr = console
 	
 def drawButtons():
@@ -327,7 +327,7 @@ while mainloop:
 		
 	Clock.tick(30)
 	pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps)")
-	console.draw(screen)
+	output.draw(screen)
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			mainloop = False
