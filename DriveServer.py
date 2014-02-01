@@ -21,7 +21,7 @@ global emergency
 
 # Serial Variables
 sBaudrate=9600
-sTimeout=.1
+sTimeout=.2
 
 
 # Server Variables
@@ -58,33 +58,31 @@ def sendSerial(leftThrust,rightThrust): # Encodes commands to Kangaroo Format an
 	lSignal = str(leftMotor + Start + str(int(leftThrust*scaleFactor)) + End)
 	rSignal = str(rightMotor + Start + str(int(rightThrust*scaleFactor)) + End)
 	print(rSignal)
-	print(rSignal)
 	print(lSignal)
 	drive.write(lSignal)
 	drive.write(rSignal)
+	sendFeedback(lSignal,rSignal)
 
-def sendFeedback(): # Gets speed position back from wheel and looks for error
+def sendFeedback(lSignal,rSignal): # Gets speed position back from wheel and looks for error
 	drive.write("1,gets\r\n")
 	feedbackL=drive.readline()
 	drive.write("2,gets\r\n")
 	feedbackR=drive.readline()
-	print("Feedback: " + feedback1 + feedback2)
+	print("Feedback: " + feedbackL + feedbackR)
 	
 	# Detecting if motor stops when it shouldn't etc
 	# Encoder Errors > Emergency Failure > Wheel Jams
 	# Currently only implemented for two wheels
 	
 	# Detecting wheel jam
+	lwheelJam = 0
+	rwheelJam = 0
 	if(feedbackL == "1,s0\r\n"):
 		if(lSignal != "1,s0\r\n"):
 			lwheelJam = 1
-		else:
-			lwheelJam = 0
 	if(feedbackR == "2,s0\r\n"):
 		if(rSignal != "2,s0\r\n"):
 			rwheelJam = 1
-		else:
-			rwheelJam = 0
 	
 	# Detecting a failed emergency stop
 	if(emergency == True):
@@ -106,7 +104,7 @@ def sendFeedback(): # Gets speed position back from wheel and looks for error
 		print("Attempting Restart")
 	
 	# Send data back on the Socket
-	driveServer.send("#DE" + lwheelJam + rwheelJam)
+	driveSocket.send("#DE" + str(lwheelJam) + str(rwheelJam))
 
 def driveCommand(xAxis,yAxis): # Converts controller position to Thrust commands
 	xMid=128
@@ -128,6 +126,7 @@ def stopDrive(): # Handles Emergency Stop
 	drive.write("1,s0\r\n")
 	drive.write("1,s0\r\n")
 	emergency = True
+	time.sleep(2)
 	return
 
 def parseController(command): # Parses Socket Data back to Axis positions
@@ -172,8 +171,8 @@ try:
 			if(data == ""): # socket closing
 				break
 			else:
+				emergency = False
 				parseController(data)
-				sendFeedback()
 		print("Connection from " + str(clientAddress[0]) + " closed")
 
 # Exception Handling
