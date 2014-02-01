@@ -122,6 +122,7 @@ def createIndicators():
 	indicatorList.append(armIndicator) #5
 	indicatorList.append(controllerIndicator) #6
 
+
 def connectConsole():
 	global output
 	global error
@@ -132,7 +133,8 @@ def connectConsole():
 	#connect stderr and stdout to output
 	sys.stdout = output
 	#sys.stderr = error
-	
+
+
 def drawButtons():
 	for i in buttonList:
 		i.draw(screen)
@@ -164,10 +166,7 @@ def setMode(mode):	# button-based
 
 
 def checkController(fakeArg): # button-based
-	if Controller.isConnected:
-		return True
-	else:
-		return False
+	return Controller.isConnected
 
 
 def getInput():
@@ -182,8 +181,16 @@ def takePicture(fakeArg):	# button-based
 
 
 def stopRover(fakeArg):	# button-based
-	driveControl.stopMotors()
-	armControl.stopMotors()
+	try:
+		if indicatorList[4].active:
+			driveControl.stopMotors()
+	except:
+		pass
+	try:
+		if indicatorList[5].active:
+			armControl.stopMotors()
+	except:
+		pass
 
 
 def runExperiment(fakeArg):	# button-based
