@@ -38,7 +38,6 @@ class TextOutput():
 		offset = offset -len(self.list)-1
 		while( i<len(self.list)):
 			screen.blit(self.renderText(i), (self.textStartleft + self.hOffset,self.textStarttop-self.vOffset-(offset)*self.vOffset))
-			#n = n-1
 			i = i+1
 			offset=offset-1
 

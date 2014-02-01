@@ -124,12 +124,14 @@ def createIndicators():
 
 def connectConsole():
 	global output
-	output = TextOutput(15,colorGreen,30,540,700,160,10,colorWhite)
+	global error
+	output = TextOutput(15,colorGreen,30,540,350,160,10,colorWhite)
+	error = TextOutput(15,colorRed,380,540,350,160,10,colorWhite)
 	#t = threading.Thread(target=output.loop,args =())
 	#t.start()
 	#connect stderr and stdout to output
 	sys.stdout = output
-	#sys.stderr = console
+	sys.stderr = error
 	
 def drawButtons():
 	for i in buttonList:
@@ -329,6 +331,7 @@ while mainloop:
 	Clock.tick(30)
 	pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps)")
 	output.draw(screen)
+	error.draw(screen)
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			mainloop = False
