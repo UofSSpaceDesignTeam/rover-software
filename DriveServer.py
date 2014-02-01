@@ -1,4 +1,6 @@
-# Used on the Pi to controll drive motors
+# Used on the Pi to control drive motors
+# Added by Austin Shirley
+
 
 import socket
 import time
@@ -7,21 +9,27 @@ import serial
 # Reserved for serial multiplexing.
 #import RPi.GPIO as GPIO
 
+
 # Motor Contols Variables
 scaleFactor=.55
 #deadzone=.1
 #deadzoneDelay=.1
 global xAxis
 global yAxis
+global emergency
+
 
 # Serial Variables
 sBaudrate=9600
-sTimeout=.2
+sTimeout=.1
+
 
 # Server Variables
 drivePort=3002
 global clientAddress
 
+
+# Function Definitions
 def beginSerial():
 	drive=serial.Serial("/dev/ttyAMA0")
 	drive.baudrate = sBaudrate
@@ -32,16 +40,17 @@ def beginSerial():
 	print("Left/Right start commands sent!")
 	return drive
 
-# Currently Reserved for serial multiplexing
-def beginGPIO():
+# Section Currently Reserved for serial multiplexing (Not Implemented)
+#def beginGPIO():
 #	GPIO.cleanup()
 #	GPIO.setmode(GPIO.BOARD)
 #	GPIO.setup(7,GPIO.OUT)
 #	GPIO.setup(11,GPIO.OUT)
 #	print("GPIO Initialized")
-	return
+#	return
 
-def sendSerial(leftThrust,rightThrust):
+
+def sendSerial(leftThrust,rightThrust): # Encodes commands to Kangaroo Format and sends via Serial
 	leftMotor="1"
 	rightMotor="2"
 	Start=",s"
@@ -53,28 +62,58 @@ def sendSerial(leftThrust,rightThrust):
 	print(lSignal)
 	drive.write(lSignal)
 	drive.write(rSignal)
-	drive.write("1,gets\r\n")
-	feedback1=drive.readline()
-	drive.write("2,gets\r\n")
-	feedback2=drive.readline()
-	print("Feedback: " + feedback1 + feedback2)
-	if(feedback1 == "1,E1\r\n"):
-		beginSerial()
 
-def driveCommand(xAxis,yAxis):
+def sendFeedback(): # Gets speed position back from wheel and looks for error
+	drive.write("1,gets\r\n")
+	feedbackL=drive.readline()
+	drive.write("2,gets\r\n")
+	feedbackR=drive.readline()
+	print("Feedback: " + feedback1 + feedback2)
+	
+	# Detecting if motor stops when it shouldn't etc
+	# Encoder Errors > Emergency Failure > Wheel Jams
+	# Currently only implemented for two wheels
+	
+	# Detecting wheel jam
+	if(feedbackL == "1,s0\r\n"):
+		if(lSignal != "1,s0\r\n"):
+			lwheelJam = 1
+		else:
+			lwheelJam = 0
+	if(feedbackR == "2,s0\r\n"):
+		if(rSignal != "2,s0\r\n"):
+			rwheelJam = 1
+		else:
+			rwheelJam = 0
+	
+	# Detecting a failed emergency stop
+	if(emergency == True):
+		if(feedbackL != "1,s0\r\n"):
+			lwheelJam = 3
+			print("EMERGENCY STOP FAILED!")
+		if(feedbackR != "1,s0\r\n"):
+			rwheelJam = 3
+			print("EMERGENCY STOP FAILED!")
+	
+	# Encoder Errors
+	if(feedbackL == "1,E1\r\n"):
+		drive.write("1,start\r\n")
+		lwheelJam = 4
+		print("Attempting Restart")
+	if(feedbackR == "2,E1\r\n"):
+		drive.write("2,start\r\n")
+		rwheelJam = 4
+		print("Attempting Restart")
+	
+	# Send data back on the Socket
+	driveServer.send("#DE" + lwheelJam + rwheelJam)
+
+def driveCommand(xAxis,yAxis): # Converts controller position to Thrust commands
 	xMid=128
 	yMid=128
 	drive=yAxis-yMid
 	steer=xAxis-xMid
-
-	# This is wrong... :(
-	#if(steer < 0):
-	#	leftThrust=drive+steer
-	#	rightThrust=drive-steer
-	#elif(steer > 0):
-	#	leftThrust=drive+steer
-	#	rightThrust=drive-steer
-
+	
 	if(steer == 0):
 		leftThrust=drive
 		rightThrust=drive
@@ -85,17 +124,13 @@ def driveCommand(xAxis,yAxis):
 	print(leftThrust,rightThrust)
 	sendSerial(leftThrust,rightThrust)
 
-
-def stopDrive(): 
-	#add something here for emergency stop
-	return
-	
-def resetDrive():
-	#add something here for emergency restart
-	#currently implemented autorestart in sendSerial function
+def stopDrive(): # Handles Emergency Stop
+	drive.write("1,s0\r\n")
+	drive.write("1,s0\r\n")
+	emergency = True
 	return
 
-def parseController(command):
+def parseController(command): # Parses Socket Data back to Axis positions
 	if(command[0] == "#"): # is valid
 		if(command[1] == "D"):
 			if(command[2] == "D" and len(command) > 4): # Drive, Data
@@ -106,7 +141,7 @@ def parseController(command):
 			elif(command[2] == "S"): # Drive, Stop
 				stopDrive()
 
-def stopSockets():
+def stopSockets(): # Stops sockets on error condition
 	try:
 		commandSocket.close()
 	except:
@@ -116,7 +151,7 @@ def stopSockets():
 	except:
 		pass
 
-				
+
 # Main Program
 
 # Setup
@@ -137,8 +172,8 @@ try:
 			if(data == ""): # socket closing
 				break
 			else:
-				# Parse joystick information and convert it to simpleSerial motor commands
 				parseController(data)
+				sendFeedback()
 		print("Connection from " + str(clientAddress[0]) + " closed")
 
 # Exception Handling
@@ -153,4 +188,3 @@ except socket.error as e:
 except:
 	stopSockets()
 	raise
-	
