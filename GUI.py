@@ -125,13 +125,13 @@ def createIndicators():
 def connectConsole():
 	global output
 	global error
-	output = TextOutput(15,colorGreen,30,540,350,160,10,colorWhite)
-	error = TextOutput(15,colorRed,380,540,350,160,10,colorWhite)
+	output = TextOutput(15,colorGreen,30,540,350,160,13,colorWhite)
+	error = TextOutput(15,colorRed,380,540,350,160,13,colorWhite)
 	#t = threading.Thread(target=output.loop,args =())
 	#t.start()
 	#connect stderr and stdout to output
 	sys.stdout = output
-	sys.stderr = error
+	#sys.stderr = error
 	
 def drawButtons():
 	for i in buttonList:

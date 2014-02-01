@@ -12,7 +12,7 @@ class TextOutput():
 		self.textStarttop = top +fontsize/10 +1
 		self.maxArraySize = arraySize +1
 		self.hOffset = fontsize + fontsize/10
-		self.vOffset = fontsize + fontsize/10
+		self.vOffset = fontsize -2
 		self.list = []
 		self.color = color
 		self.textcolor = fontcolor
