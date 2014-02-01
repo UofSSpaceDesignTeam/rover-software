@@ -196,9 +196,9 @@ def camConnect(cameraNumber): # button-based
 	for cameraButton in buttonList[0:4]:
 		if cameraButton.selected:
 			return
-	buttonList[4].selected = False
-	if not indicatorList[cameraNumber - 1].selected:
+	if not indicatorList[cameraNumber - 1].active:
 		return
+	buttonList[4].selected = False
 	if(os.name == "posix"): # linux machine
 		command = ("nc -l -p 3001 | mplayer -x 960 -y 540 -nosound -quiet -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 155:30 -demuxer h264es -nocache -")
 		p = subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
@@ -245,8 +245,12 @@ def camDisconnect(fakeArg): # button-based
 
 
 def connectClients(fakeArg): # button-based
+	buttonList[10].selected = True
+	drawButtons()
+	pygame.display.update()
 	for client in clientList:
 		client.connect(0)
+	buttonList[10].selected = False
 	drawIndicators()
 
 
