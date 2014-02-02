@@ -1,4 +1,5 @@
 # A script continuously run by each Pi with a camera attached.
+# RUN WITH SUDO
 
 	# dependencies
 	
@@ -64,18 +65,22 @@ try:
 		while(True):
 			data = commandSocket.recv(256)
 			if(data == ""): # socket closing
+				stopCamera()
 				break
 			else:
 				parseCommand(data)
 		print("Connection to " + str(clientAddress[0]) + " was closed")
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
+	stopCamera()
 	stopSockets()
 except socket.error as e:
 	print(e)
+	stopCamera()
 	stopSockets()
 	time.sleep(2)
 	subprocess.Popen("sudo python CameraServer.py", shell = True) # restart on connection failure
 except:
 	print(e)
+	stopCamera()
 	stopSockets()
