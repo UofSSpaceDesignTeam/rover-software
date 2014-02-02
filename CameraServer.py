@@ -84,3 +84,4 @@ except:
 	print(e)
 	stopCamera()
 	stopSockets()
+

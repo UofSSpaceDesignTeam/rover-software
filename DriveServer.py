@@ -1,4 +1,5 @@
 # Used on the Pi to control drive motors
+# RUN WITH SUDO
 # Added by Austin Shirley
 
 
@@ -10,28 +11,26 @@ import serial
 #import RPi.GPIO as GPIO
 
 
-# Motor Contols Variables
-scaleFactor=.55
-#deadzone=.1
-#deadzoneDelay=.1
+# Motor Control Variables
+scaleFactor = 0.55
 global xAxis
 global yAxis
 global emergency
 
 
 # Serial Variables
-sBaudrate=9600
-sTimeout=.2
+sBaudrate = 9600
+sTimeout = 0.2
 
 
 # Server Variables
-drivePort=3002
+drivePort = 3002
 global clientAddress
 
 
 # Function Definitions
 def beginSerial():
-	drive=serial.Serial("/dev/ttyAMA0")
+	drive = serial.Serial("/dev/ttyAMA0")
 	drive.baudrate = sBaudrate
 	drive.timeout = sTimeout
 	print(drive.name)
@@ -126,19 +125,19 @@ def stopDrive(): # Handles Emergency Stop
 	drive.write("1,s0\r\n")
 	drive.write("1,s0\r\n")
 	emergency = True
-	time.sleep(2)
-	return
 
 def parseController(command): # Parses Socket Data back to Axis positions
-	if(command[0] == "#"): # is valid
-		if(command[1] == "D"):
-			if(command[2] == "D" and len(command) > 4): # Drive, Data
-				xAxis = int(ord(command[3]))
-				yAxis = int(ord(command[4]))
-				print(xAxis,yAxis)
-				driveCommand(xAxis,yAxis)
-			elif(command[2] == "S"): # Drive, Stop
-				stopDrive()
+	if len(command) > 2:
+		if(command[0] == "#"): # is valid
+			if(command[1] == "D"):
+				if(command[2] == "D" and len(command) > 4): # Drive, Data
+					xAxis = int(ord(command[3]))
+					yAxis = int(ord(command[4]))
+					print(xAxis,yAxis)
+					driveCommand(xAxis,yAxis)
+				elif(command[2] == "S"): # Drive, Stop
+					stopDrive()
+					time.sleep(2)
 
 def stopSockets(): # Stops sockets on error condition
 	try:
@@ -169,21 +168,26 @@ try:
 		while(True):
 			data = driveSocket.recv(256)
 			if(data == ""): # socket closing
+				stopDrive()
 				break
 			else:
 				emergency = False
 				parseController(data)
-		print("Connection from " + str(clientAddress[0]) + " closed")
+		print("Connection to " + str(clientAddress[0]) + " was closed")
 
 # Exception Handling
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
+	stopDrive()
 	stopSockets()
 except socket.error as e:
 	print(e)
+	stopDrive()
 	stopSockets()
 	time.sleep(2)
 	subprocess.Popen("sudo python DriveServer.py", shell = True) # restart on connection failure
 except:
+	print(e)
+	stopDrive()
 	stopSockets()
-	raise
+
