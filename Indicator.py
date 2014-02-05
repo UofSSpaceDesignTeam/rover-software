@@ -5,7 +5,7 @@
 	# dependency list
 	
 import pygame
-
+import sys
 
 	# class definition
 	
