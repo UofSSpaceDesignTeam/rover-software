@@ -37,5 +37,10 @@ class Indicator:
 
 
 	def refresh(self):	# call boolean function to determine state
-		self.active = self.function(self.args)
-
+		if self.function(self.args):
+			self.active = True
+		elif self.active:
+			sys.stderr.write(self.text + " connection lost")
+			self.active = False
+		else:
+			self.active = False
