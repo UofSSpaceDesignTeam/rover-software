@@ -13,9 +13,7 @@ import serial
 
 # Motor Control Variables
 scaleFactor = 0.55
-global xAxis
-global yAxis
-global emergency
+emergency = False
 
 
 # Serial Variables
@@ -63,6 +61,7 @@ def sendSerial(leftThrust,rightThrust): # Encodes commands to Kangaroo Format an
 	sendFeedback(lSignal,rSignal)
 
 def sendFeedback(lSignal,rSignal): # Gets speed position back from wheel and looks for error
+	global emergency
 	drive.write("1,gets\r\n")
 	feedbackL=drive.readline()
 	drive.write("2,gets\r\n")
@@ -122,12 +121,14 @@ def driveCommand(xAxis,yAxis): # Converts controller position to Thrust commands
 	sendSerial(leftThrust,rightThrust)
 
 def stopDrive(): 	# Handles Emergency Stop
+	global emergency
 	drive.write("1,s0\r\n")
 	drive.write("1,s0\r\n")
 	emergency = True
 	return
 
 def parseController(command): # Parses Socket Data back to Axis positions
+	global emergency
 	if len(command) > 2:
 		if(command[0] == "#"): # is valid
 			if(command[1] == "D"):
@@ -137,7 +138,7 @@ def parseController(command): # Parses Socket Data back to Axis positions
 					print(xAxis,yAxis)
 					driveCommand(xAxis,yAxis)
 					if(emergency == True):
-						if(xAxis == 127 and yAxis == 127):
+						if(xAxis == 128 and yAxis == 128):
 							emergency = False
 							print("Resuming Control")
 						else:
@@ -145,6 +146,7 @@ def parseController(command): # Parses Socket Data back to Axis positions
 							stopDrive()
 							time.sleep(2)
 				elif(command[2] == "S"): # Drive, Stop
+					print("emergency stop command received")
 					stopDrive()
 					time.sleep(2)
 
@@ -188,13 +190,13 @@ except KeyboardInterrupt:
 	stopDrive()
 	stopSockets()
 except socket.error as e:
-	print(e)
+	print(e.strerror)
 	stopDrive()
 	stopSockets()
 	time.sleep(2)
 	subprocess.Popen("sudo python DriveServer.py", shell = True) # restart on connection failure
 except:
-	print(e)
 	stopDrive()
 	stopSockets()
+	raise
 
