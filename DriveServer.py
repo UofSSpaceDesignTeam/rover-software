@@ -125,6 +125,8 @@ def stopDrive(): # Handles Emergency Stop
 	drive.write("1,s0\r\n")
 	drive.write("1,s0\r\n")
 	emergency = True
+	time.sleep(2)
+	return
 
 def parseController(command): # Parses Socket Data back to Axis positions
 	if len(command) > 2:
