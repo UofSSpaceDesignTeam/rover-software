@@ -55,7 +55,7 @@ def stopSockets():
 global clientAddress
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
-	ServerSocket.bind(("", commandPort))
+	serverSocket.bind(("", commandPort))
 	serverSocket.listen(0)
 	print("CameraServer listening on port " + str(commandPort))
 	print("\tVideo will be sent on port " + str(videoPort))
@@ -75,13 +75,13 @@ except KeyboardInterrupt:
 	stopCamera()
 	stopSockets()
 except socket.error as e:
-	print(e)
+	print(e.strerror)
 	stopCamera()
 	stopSockets()
 	time.sleep(2)
 	subprocess.Popen("sudo python CameraServer.py", shell = True) # restart on connection failure
 except:
-	print(e)
 	stopCamera()
 	stopSockets()
+	raise
 
