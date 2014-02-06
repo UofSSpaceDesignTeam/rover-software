@@ -199,4 +199,3 @@ except:
 	stopDrive()
 	stopSockets()
 	raise
-
