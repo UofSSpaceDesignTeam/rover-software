@@ -121,11 +121,10 @@ def driveCommand(xAxis,yAxis): # Converts controller position to Thrust commands
 	print(leftThrust,rightThrust)
 	sendSerial(leftThrust,rightThrust)
 
-def stopDrive(): # Handles Emergency Stop
+def stopDrive(): 	# Handles Emergency Stop
 	drive.write("1,s0\r\n")
 	drive.write("1,s0\r\n")
 	emergency = True
-	time.sleep(2)
 	return
 
 def parseController(command): # Parses Socket Data back to Axis positions
@@ -137,6 +136,14 @@ def parseController(command): # Parses Socket Data back to Axis positions
 					yAxis = int(ord(command[4]))
 					print(xAxis,yAxis)
 					driveCommand(xAxis,yAxis)
+					if(emergency == True):
+						if(xAxis == 127 and yAxis == 127):
+							emergency = False
+							print("Resuming Control")
+						else:
+							print("Please centre the Controller Axis to continue")
+							stopDrive()
+							time.sleep(2)
 				elif(command[2] == "S"): # Drive, Stop
 					stopDrive()
 					time.sleep(2)
@@ -150,7 +157,6 @@ def stopSockets(): # Stops sockets on error condition
 		serverSocket.close()
 	except:
 		pass
-
 
 # Main Program
 
@@ -173,7 +179,6 @@ try:
 				stopDrive()
 				break
 			else:
-				emergency = False
 				parseController(data)
 		print("Connection to " + str(clientAddress[0]) + " was closed")
 
