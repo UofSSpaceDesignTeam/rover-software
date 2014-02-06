@@ -40,7 +40,7 @@ class Indicator:
 		if self.function(self.args):
 			self.active = True
 		elif self.active:
-			sys.stderr.write(self.text + " connection lost")
+			sys.stderr.write(self.text + " connection lost\n")
 			self.active = False
 		else:
 			self.active = False

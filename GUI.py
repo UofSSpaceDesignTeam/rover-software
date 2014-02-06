@@ -123,7 +123,7 @@ def connectConsole():
 	#t.start()
 	#connect stderr and stdout to output
 	sys.stdout = output
-	#sys.stderr = error
+	sys.stderr = error
 
 def drawButtons():
 	for i in buttonList:
@@ -303,7 +303,6 @@ try:
 except:
 	pass
 
-connectConsole()
 createBoxes()
 drawBoxes()
 createButtons()
@@ -321,6 +320,8 @@ setMode("drive")
 indicatorTimer = 0
 redrawTimer = 0
 controllerSendTimer = 0
+
+connectConsole()
 
 while mainloop:
 	mouse = pygame.mouse.get_pos()
