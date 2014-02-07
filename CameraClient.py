@@ -42,7 +42,7 @@ class CameraClient: # class to handle camera feeds
 			self.socket.send(self.commandCameraStart)
 			return True
 		except socket.error as e:
-			sys.stderr.write(e.strerror)
+			#sys.stderr.write(e.strerror)
 			return False
 	
 	def stopCamera(self):
@@ -50,7 +50,7 @@ class CameraClient: # class to handle camera feeds
 			self.socket.send(self.commandCameraEnd)
 			return True
 		except socket.error as e:
-			sys.stderr.write(e.strerror)
+			#sys.stderr.write(e.strerror)
 			return False
 
 	def takePicture(self):
@@ -58,7 +58,7 @@ class CameraClient: # class to handle camera feeds
 			self.socket.send(self.commandCameraPicture)
 			return True
 		except socket.error as e:
-			sys.stderr.write(e.strerror)
+			#sys.stderr.write(e.strerror)
 			return False
 
 	def test(self):
