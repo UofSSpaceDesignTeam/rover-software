@@ -9,6 +9,8 @@ import subprocess
 import serial
 # Reserved for serial multiplexing.
 #import RPi.GPIO as GPIO
+# Reserved for Sabertooth Packetized Mode
+#import struct
 
 
 # Motor Control Variables
@@ -28,7 +30,7 @@ global clientAddress
 
 # Function Definitions
 def beginSerial():
-	drive = serial.Serial("/dev/ttyAMA0")
+	drive = serial.Serial("/dev/ttyAMA0", bytesize=8, parity='N', stopbits=1, )
 	drive.baudrate = sBaudrate
 	drive.timeout = sTimeout
 	print(drive.name)
