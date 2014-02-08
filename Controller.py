@@ -9,8 +9,8 @@ from pygame import joystick
 
 	# global constants
 
-leftJoystickXScale = 1.0
-leftJoystickYScale = 1.0
+leftJoystickXScale = 1.1
+leftJoystickYScale = 1.1
 rightJoystickXScale = 1.0
 rightJoystickYScale = 1.0
 triggerScale = 1.0
