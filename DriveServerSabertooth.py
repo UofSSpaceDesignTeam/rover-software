@@ -1,6 +1,8 @@
 # Used on the Pi to control drive motors
 # Added by Austin Shirley
 
+## To Do: Reduce shut-down delay and implement skid steer
+
 
 import socket
 import time
@@ -165,13 +167,15 @@ beginSabertooth()
 
 # Begin connection
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 try:
 	serverSocket.bind(("", drivePort))
 	serverSocket.listen(0)
 	print("DriveServer listening on port " + str(drivePort))
 	while(True):
 		(driveSocket, clientAddress) = serverSocket.accept()
-		print("Connected to " + str(clientAddress[0])) 
+		driveSocket.settimeout(1.15)
+		print("Connected to " + str(clientAddress[0]))
 		while(True):
 			data = driveSocket.recv(256)
 			if(data == ""): # socket closing
@@ -191,7 +195,7 @@ except socket.error as e:
 	sabertoothKill()
 	stopSockets()
 	time.sleep(2)
-	subprocess.Popen("sudo python DriveServer.py", shell = True) # restart on connection failure
+	subprocess.Popen("sudo python DriveServerSabertooth.py", shell = True) # restart on connection failure
 except:
 	sabertoothKill()
 	stopSockets()
