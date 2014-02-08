@@ -5,6 +5,9 @@
 
 	# dependency list
 
+import sys
+sys.dont_write_bytecode = True
+	
 import pygame
 import Controller
 from Button import Button
@@ -19,7 +22,7 @@ import commands
 import os
 import signal
 import time
-import sys
+
 #from virtualRobot import virtualRobot
 from datetime import date
 import subprocess
