@@ -6,6 +6,7 @@
 	# dependency list
 
 import sys
+# disables generation of .pyc files
 sys.dont_write_bytecode = True
 	
 import pygame
@@ -17,13 +18,12 @@ from DriveClient import DriveClient
 from CameraClient import CameraClient
 from ArmClient import ArmClient
 from TextOutput import TextOutput
+from VirtualRobot import VirtualRobot
 import socket
 import commands
 import os
 import signal
 import time
-
-from VirtualRobot import VirtualRobot
 from datetime import date
 import subprocess
 from threading import Thread
@@ -67,9 +67,10 @@ def createButtons():
 	armButton = Button(setMode, ("arm"), "Arm", 20, colorBlack, (12, 225, 100, 20), colorBlue, colorYellow)
 	moveButton.selected = True
 	stopButton = Button(stopRover, None, "Stop", 24, colorYellow, (12, 285, 100, 20), colorRed, colorRed)
-	pictureButton = Button(takePicture, None, "Picture", 20, colorWhite, (12, 315, 100, 20), colorBlue, colorGreen)
-	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorWhite, (12, 345, 100, 20), colorBlue, colorYellow)
-	connectButton = Button(connectClients, None, "Connect All", 24, colorWhite, (1120, 280, 120, 30), colorBlue, colorGreen)
+	pictureButton = Button(takePicture, None, "Picture", 20, colorBlack, (12, 315, 100, 20), colorBlue, colorGreen)
+	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 345, 100, 20), colorBlue, colorYellow)
+	connectButton = Button(connectClients, None, "Connect All", 24, colorBlack, (1115, 280, 120, 30), colorBlue, colorGreen)
+	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 405, 100, 20), colorBlue, colorDarkGreen)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -81,17 +82,20 @@ def createButtons():
 	buttonList.append(pictureButton)	# 8
 	buttonList.append(runExperimentButton)	# 9
 	buttonList.append(connectButton) #10
+	buttonList.append(quitButton) #11
 
 def createBoxes():
 	global boxList
 	boxList = []
 	cameraButtonBox = Box("Camera Feeds", 20, colorWhite, (0, 0, 125, 170), (17, 2), colorGray)
 	controlBox = Box("Control Modes", 20, colorWhite, (0, 175, 125, 80), (16, 177), colorGray)
-	actionBox = Box("Actions", 22, colorWhite, (0, 260, 125, 115), (35, 264), colorGray)
+	actionBox = Box("Rover Actions", 20, colorWhite, (0, 260, 125, 115), (18, 264), colorGray)
+	uiBox = Box("User Interface", 20, colorWhite, (0, 380, 125, 115), (18, 384), colorGray)
 	connectionsBox = Box("Connections", 24, colorWhite, (1095, 0, 160, 360), (1115, 8), colorDarkBlue)
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
 	boxList.append(actionBox)
+	boxList.append(uiBox)
 	boxList.append(connectionsBox)
 
 def createIndicators():
@@ -218,7 +222,7 @@ def camConnect(cameraNumber): # button-based
 	drawButtons()
 	pygame.display.update()
 	if(os.name == "posix"): # linux machine
-		command = ("nc -l -p 3001 | mplayer -xy 0.5 -nosound -quiet -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 156:58 -demuxer h264es -nocache -")
+		command = ("nc -l -p 3001 | mplayer -really-quiet -xy 0.5 -nosound -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 156:58 -demuxer h264es -nocache -")
 		subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
 	else: #windows
 		command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
@@ -237,7 +241,6 @@ def camConnect(cameraNumber): # button-based
 		buttonList[3].selected = True
 		cameraRaspi4.startCamera()
 	drawButtons()
-
 
 def camDisconnect(fakeArg): # button-based
 	if(buttonList[0].selected):
@@ -258,7 +261,6 @@ def camDisconnect(fakeArg): # button-based
 		command = "camStop.bat" # EXTERNAL FILE. Needs to be kept up to date.
 		subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
 	drawButtons()
-
 
 def connectClients(fakeArg): # button-based
 	buttonList[10].selected = True
@@ -282,6 +284,10 @@ def connectClients(fakeArg): # button-based
 	drawButtons()
 	pygame.display.update()
 
+
+def quit(fakeArg): # button-based
+	camDisconnect(None)
+	pygame.quit()
 
 
 	# main execution #############################################################################
@@ -357,19 +363,15 @@ while mainloop:
 	error.draw(screen)
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
-			camDisconnect(None)
-			mainloop = False
+			quit()
 		elif event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
-				camDisconnect(None)
-				mainloop = False
+				quit()
 		elif event.type == pygame.MOUSEBUTTONDOWN:
+			mouse = pygame.mouse.get_pos()
 			for button in buttonList:
 				if(button.obj.collidepoint(mouse)):
 					button.press()
 	
 	pygame.display.update()
 
-# end of execution cleanup
-
-pygame.quit()

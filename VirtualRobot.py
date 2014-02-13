@@ -9,7 +9,7 @@ colorDarkGreen = (0, 100, 0)
 colorBlue = (0, 0, 240)
 colorDarkBlue = (0, 0, 120)
 colorYellow = (250, 250, 0)
-class virtualRobot():
+class VirtualRobot():
 
 
 	def __init__(self,left,top, width,height):
