@@ -298,7 +298,7 @@ pygame.init()
 logo = pygame.image.load('logo.png')
 pygame.display.set_icon(logo)
 Clock = pygame.time.Clock()
-screen = pygame.display.set_mode((1260, 700))
+screen = pygame.display.set_mode((1260, 700), pygame.NOFRAME)
 background = pygame.image.load("background.png")
 
 try:
