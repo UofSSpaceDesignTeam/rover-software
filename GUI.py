@@ -23,7 +23,7 @@ import os
 import signal
 import time
 
-#from virtualRobot import virtualRobot
+from VirtualRobot import VirtualRobot
 from datetime import date
 import subprocess
 from threading import Thread
