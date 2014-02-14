@@ -66,7 +66,7 @@ def createButtons():
 	moveButton = Button(setMode, ("drive"), "Drive", 20, colorBlack, (12, 204, 100, 20), colorLightBlue, colorGreen)
 	armButton = Button(setMode, ("arm"), "Arm", 20, colorBlack, (12, 234, 100, 20), colorLightBlue, colorGreen)
 	moveButton.selected = True
-	stopButton = Button(stopRover, None, "Stop", 24, colorYellow, (12, 294, 100, 20), colorRed, colorRed)
+	stopButton = Button(stopRover, None, "Stop", 22, colorYellow, (12, 294, 100, 20), colorRed, colorRed)
 	pictureButton = Button(takePicture, None, "Picture", 20, colorBlack, (12, 324, 100, 20), colorLightBlue, colorYellow)
 	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 354, 100, 20), colorLightBlue, colorYellow)
 	connectButton = Button(connectClients, None, "Connect All", 20, colorBlack, (1107, 180, 100, 20), colorLightBlue, colorYellow)
@@ -90,7 +90,7 @@ def createBoxes():
 	cameraButtonBox = Box("Camera Feeds", 22, colorWhite, (0, 0, 125, 175), (11, 6), colorGray)
 	controlBox = Box("Control Modes", 22, colorWhite, (0, 180, 125, 83), (9, 185), colorGray)
 	actionBox = Box("Rover Actions", 22, colorWhite, (0, 268, 125, 115), (10, 274), colorGray)
-	uiBox = Box("User Interface", 22, colorWhite, (0, 389, 125, 115), (12, 395), colorGray)
+	uiBox = Box("User Interface", 22, colorWhite, (0, 389, 125, 55), (12, 395), colorGray)
 	connectionsBox = Box("Connections", 22, colorWhite, (1095, 0, 125, 235), (1110, 6), colorGray)
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
@@ -179,15 +179,20 @@ def takePicture(fakeArg):	# button-based
 	time.sleep(1)
 	if cameraNumber == 1:
 		cameraRaspi1.takePicture()
-		IP = IPraspi1
+		time.sleep(2.5)
+		camConnect(1)
 	elif cameraNumber == 2:
 		cameraRaspi2.takePicture()
-		IP = IPraspi2
+		time.sleep(2.5)
+		camConnect(2)
 	elif cameraNumber == 3:
 		cameraRaspi3.takePicture()
-		IP = IPraspi3
+		time.sleep(2.5)
+		camConnect(3)
 	elif cameraNumber == 4:
 		cameraRaspi4.takePicture()
+		time.sleep(2.5)
+		camConnect(4)
 	buttonList[8].selected = False
 	drawButtons()
 
