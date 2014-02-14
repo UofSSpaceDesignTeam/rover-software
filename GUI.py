@@ -58,20 +58,20 @@ colorYellow = (250, 250, 0)
 def createButtons():
 	global buttonList
 	buttonList = []
-	camera1Button = Button(camConnect, (1), "Camera 1", 20, colorBlack, (12, 20, 100, 20), colorLightBlue, colorYellow)
-	camera2Button = Button(camConnect, (2), "Camera 2", 20, colorBlack, (12, 50, 100, 20), colorLightBlue, colorYellow)
-	camera3Button = Button(camConnect, (3), "Camera 3", 20, colorBlack, (12, 80, 100, 20), colorLightBlue, colorYellow)
-	camera4Button = Button(camConnect, (4), "Camera 4", 20, colorBlack, (12, 110, 100, 20), colorLightBlue, colorYellow)
-	cameraStopButton = Button(camDisconnect, (0), "None", 20, colorBlack, (12, 140, 100, 20), colorLightBlue, colorYellow)
+	camera1Button = Button(camConnect, (1), "Camera 1", 20, colorBlack, (12, 25, 100, 20), colorLightBlue, colorGreen)
+	camera2Button = Button(camConnect, (2), "Camera 2", 20, colorBlack, (12, 55, 100, 20), colorLightBlue, colorGreen)
+	camera3Button = Button(camConnect, (3), "Camera 3", 20, colorBlack, (12, 85, 100, 20), colorLightBlue, colorGreen)
+	camera4Button = Button(camConnect, (4), "Camera 4", 20, colorBlack, (12, 115, 100, 20), colorLightBlue, colorGreen)
+	cameraStopButton = Button(camDisconnect, (0), "None", 20, colorBlack, (12, 145, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton.selected = True
-	moveButton = Button(setMode, ("drive"), "Drive", 20, colorBlack, (12, 195, 100, 20), colorLightBlue, colorYellow)
-	armButton = Button(setMode, ("arm"), "Arm", 20, colorBlack, (12, 225, 100, 20), colorLightBlue, colorYellow)
+	moveButton = Button(setMode, ("drive"), "Drive", 20, colorBlack, (12, 195, 100, 20), colorLightBlue, colorGreen)
+	armButton = Button(setMode, ("arm"), "Arm", 20, colorBlack, (12, 225, 100, 20), colorLightBlue, colorGreen)
 	moveButton.selected = True
 	stopButton = Button(stopRover, None, "Stop", 24, colorYellow, (12, 285, 100, 20), colorRed, colorRed)
-	pictureButton = Button(takePicture, None, "Picture", 20, colorBlack, (12, 315, 100, 20), colorLightBlue, colorGreen)
+	pictureButton = Button(takePicture, None, "Picture", 20, colorBlack, (12, 315, 100, 20), colorLightBlue, colorYellow)
 	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 345, 100, 20), colorLightBlue, colorYellow)
-	connectButton = Button(connectClients, None, "Connect All", 24, colorBlack, (1115, 280, 120, 30), colorLightBlue, colorGreen)
-	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 405, 100, 20), colorLightBlue, colorRed)
+	connectButton = Button(connectClients, None, "Connect All", 24, colorBlack, (1115, 280, 120, 30), colorLightBlue, colorYellow)
+	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 405, 100, 20), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -88,10 +88,10 @@ def createButtons():
 def createBoxes():
 	global boxList
 	boxList = []
-	cameraButtonBox = Box("Camera Feeds", 20, colorWhite, (0, 0, 125, 170), (17, 2), colorGray)
-	controlBox = Box("Control Modes", 20, colorWhite, (0, 175, 125, 80), (16, 177), colorGray)
-	actionBox = Box("Rover Actions", 20, colorWhite, (0, 260, 125, 115), (18, 264), colorGray)
-	uiBox = Box("User Interface", 20, colorWhite, (0, 380, 125, 115), (18, 384), colorGray)
+	cameraButtonBox = Box("Camera Feeds", 22, colorWhite, (0, 0, 125, 170), (11, 6), colorGray)
+	controlBox = Box("Control Modes", 22, colorWhite, (0, 175, 125, 80), (16, 177), colorGray)
+	actionBox = Box("Rover Actions", 22, colorWhite, (0, 260, 125, 115), (18, 264), colorGray)
+	uiBox = Box("User Interface", 22, colorWhite, (0, 380, 125, 115), (18, 384), colorGray)
 	connectionsBox = Box("Connections", 24, colorWhite, (1099, 0, 160, 360), (1122, 8), colorGray)
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
@@ -288,7 +288,7 @@ def connectClients(fakeArg): # button-based
 
 def quit(fakeArg): # button-based
 	buttonList[11].selected = True
-	buttonList[11].draw()
+	buttonList[11].draw(screen)
 	pygame.display.update()
 	camDisconnect(None)
 	pygame.quit()
