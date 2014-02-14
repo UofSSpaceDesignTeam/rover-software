@@ -175,10 +175,10 @@ def takePicture(fakeArg):	# button-based
 	if cameraNumber == 0:
 		return
 	buttonList[8].selected = True
-	camDisconnect(None)
 	drawButtons()
 	screen.blit(cameraSplash, (130, 0))
 	pygame.display.update()
+	camDisconnect(None)
 	time.sleep(1)
 	if cameraNumber == 1:
 		cameraRaspi1.takePicture()
@@ -197,7 +197,8 @@ def takePicture(fakeArg):	# button-based
 		time.sleep(2.5)
 		camConnect(4)
 	buttonList[8].selected = False
-	screen.blit(background, (130, 0))
+	global redrawTimer
+	redrawTimer = pygame.time.get_ticks()
 	drawButtons()
 	pygame.display.update()
 
