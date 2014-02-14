@@ -42,12 +42,13 @@ armClientPort = 3003
 cameraClientPort = 3000
 
 colorWhite = (255, 255, 255)
-colorGray = (125, 125, 125)
+colorGray = (100, 100, 100)
 colorBlack = (0, 0, 0)
 colorRed = (240, 0, 0)
 colorGreen = (0, 240, 0)
 colorDarkGreen = (0, 100, 0)
 colorBlue = (0, 0, 240)
+colorLightBlue = (100, 100, 250)
 colorDarkBlue = (0, 0, 120)
 colorYellow = (250, 250, 0)
 
@@ -57,20 +58,20 @@ colorYellow = (250, 250, 0)
 def createButtons():
 	global buttonList
 	buttonList = []
-	camera1Button = Button(camConnect, (1), "Camera 1", 20, colorBlack, (12, 20, 100, 20), colorBlue, colorYellow)
-	camera2Button = Button(camConnect, (2), "Camera 2", 20, colorBlack, (12, 50, 100, 20), colorBlue, colorYellow)
-	camera3Button = Button(camConnect, (3), "Camera 3", 20, colorBlack, (12, 80, 100, 20), colorBlue, colorYellow)
-	camera4Button = Button(camConnect, (4), "Camera 4", 20, colorBlack, (12, 110, 100, 20), colorBlue, colorYellow)
-	cameraStopButton = Button(camDisconnect, (0), "None", 20, colorBlack, (12, 140, 100, 20), colorBlue, colorYellow)
+	camera1Button = Button(camConnect, (1), "Camera 1", 20, colorBlack, (12, 20, 100, 20), colorLightBlue, colorYellow)
+	camera2Button = Button(camConnect, (2), "Camera 2", 20, colorBlack, (12, 50, 100, 20), colorLightBlue, colorYellow)
+	camera3Button = Button(camConnect, (3), "Camera 3", 20, colorBlack, (12, 80, 100, 20), colorLightBlue, colorYellow)
+	camera4Button = Button(camConnect, (4), "Camera 4", 20, colorBlack, (12, 110, 100, 20), colorLightBlue, colorYellow)
+	cameraStopButton = Button(camDisconnect, (0), "None", 20, colorBlack, (12, 140, 100, 20), colorLightBlue, colorYellow)
 	cameraStopButton.selected = True
-	moveButton = Button(setMode, ("drive"), "Drive", 20, colorBlack, (12, 195, 100, 20), colorBlue, colorYellow)
-	armButton = Button(setMode, ("arm"), "Arm", 20, colorBlack, (12, 225, 100, 20), colorBlue, colorYellow)
+	moveButton = Button(setMode, ("drive"), "Drive", 20, colorBlack, (12, 195, 100, 20), colorLightBlue, colorYellow)
+	armButton = Button(setMode, ("arm"), "Arm", 20, colorBlack, (12, 225, 100, 20), colorLightBlue, colorYellow)
 	moveButton.selected = True
 	stopButton = Button(stopRover, None, "Stop", 24, colorYellow, (12, 285, 100, 20), colorRed, colorRed)
-	pictureButton = Button(takePicture, None, "Picture", 20, colorBlack, (12, 315, 100, 20), colorBlue, colorGreen)
-	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 345, 100, 20), colorBlue, colorYellow)
-	connectButton = Button(connectClients, None, "Connect All", 24, colorBlack, (1115, 280, 120, 30), colorBlue, colorGreen)
-	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 405, 100, 20), colorBlue, colorDarkGreen)
+	pictureButton = Button(takePicture, None, "Picture", 20, colorBlack, (12, 315, 100, 20), colorLightBlue, colorGreen)
+	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 345, 100, 20), colorLightBlue, colorYellow)
+	connectButton = Button(connectClients, None, "Connect All", 24, colorBlack, (1115, 280, 120, 30), colorLightBlue, colorGreen)
+	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 405, 100, 20), colorLightBlue, colorRed)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -81,8 +82,8 @@ def createButtons():
 	buttonList.append(stopButton)	# 7
 	buttonList.append(pictureButton)	# 8
 	buttonList.append(runExperimentButton)	# 9
-	buttonList.append(connectButton) #10
-	buttonList.append(quitButton) #11
+	buttonList.append(connectButton)	# 10
+	buttonList.append(quitButton)	# 11
 
 def createBoxes():
 	global boxList
@@ -91,7 +92,7 @@ def createBoxes():
 	controlBox = Box("Control Modes", 20, colorWhite, (0, 175, 125, 80), (16, 177), colorGray)
 	actionBox = Box("Rover Actions", 20, colorWhite, (0, 260, 125, 115), (18, 264), colorGray)
 	uiBox = Box("User Interface", 20, colorWhite, (0, 380, 125, 115), (18, 384), colorGray)
-	connectionsBox = Box("Connections", 24, colorWhite, (1095, 0, 160, 360), (1115, 8), colorDarkBlue)
+	connectionsBox = Box("Connections", 24, colorWhite, (1099, 0, 160, 360), (1122, 8), colorGray)
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
 	boxList.append(actionBox)
@@ -101,13 +102,13 @@ def createBoxes():
 def createIndicators():
 	global indicatorList
 	indicatorList = []
-	camera1Indicator = Indicator(checkClient, cameraRaspi1, "Camera 1", colorWhite, (1110, 40), colorRed, colorGreen)
-	camera2Indicator = Indicator(checkClient, cameraRaspi2, "Camera 2", colorWhite, (1110, 80), colorRed, colorGreen)
-	camera3Indicator = Indicator(checkClient, cameraRaspi3, "Camera 3", colorWhite, (1110, 120), colorRed, colorGreen)
-	camera4Indicator = Indicator(checkClient, cameraRaspi4, "Camera 4", colorWhite, (1110, 160), colorRed, colorGreen)
-	driveIndicator = Indicator(checkClient, driveControl, "Drive System", colorWhite, (1110, 200), colorRed, colorGreen)
-	armIndicator = Indicator(checkClient, armControl, "Arm System", colorWhite, (1110, 240), colorRed, colorGreen)
-	controllerIndicator = Indicator(checkController, None, "Controller", colorWhite, (1110, 325), colorRed, colorGreen)
+	camera1Indicator = Indicator(checkClient, cameraRaspi1, "Camera 1", colorWhite, (1112, 40), colorRed, colorGreen)
+	camera2Indicator = Indicator(checkClient, cameraRaspi2, "Camera 2", colorWhite, (1112, 80), colorRed, colorGreen)
+	camera3Indicator = Indicator(checkClient, cameraRaspi3, "Camera 3", colorWhite, (1112, 120), colorRed, colorGreen)
+	camera4Indicator = Indicator(checkClient, cameraRaspi4, "Camera 4", colorWhite, (1112, 160), colorRed, colorGreen)
+	driveIndicator = Indicator(checkClient, driveControl, "Drive System", colorWhite, (1112, 200), colorRed, colorGreen)
+	armIndicator = Indicator(checkClient, armControl, "Arm System", colorWhite, (1112, 240), colorRed, colorGreen)
+	controllerIndicator = Indicator(checkController, None, "Controller", colorWhite, (1112, 325), colorRed, colorGreen)
 	
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
@@ -139,7 +140,7 @@ def drawButtons():
 def drawBoxes():
 	for i in boxList:
 		i.draw(screen)
-	screen.blit(background, (130, 0))
+	screen.blit(background, (132, 0))
 
 def drawIndicators():
 	for i in indicatorList:
@@ -286,6 +287,9 @@ def connectClients(fakeArg): # button-based
 
 
 def quit(fakeArg): # button-based
+	buttonList[11].selected = True
+	buttonList[11].draw()
+	pygame.display.update()
 	camDisconnect(None)
 	pygame.quit()
 
