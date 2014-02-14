@@ -41,7 +41,7 @@ def parseCommand(command):
 			elif(command[2] == "E"): #CE
 				print("stopping camera feed")
 				stopCamera()
-			elif(command[2]== "P")
+			elif(command[2]== "P"):
 				print("taking picture")
 				takePicture()
 
