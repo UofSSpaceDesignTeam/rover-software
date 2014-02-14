@@ -14,6 +14,9 @@ from threading import Thread
 commandPort = 3000
 videoPort = 3001
 
+	# variables
+global iname
+iname = 1
 
 	# functions
 
@@ -38,6 +41,14 @@ def parseCommand(command):
 			elif(command[2] == "E"): #CE
 				print("stopping camera feed")
 				stopCamera()
+			elif(command[2]== "P")
+				print("taking picture")
+				takePicture()
+
+def takePicture():
+	myname=str(iname)+".jpg"
+	os.system("raspistill -t 1000 -o img/"+myname)
+	iname+=1
 
 def stopSockets():
 	try:
