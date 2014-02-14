@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 # The main program for controlling the rover
-# Added by Dylan
 
 	# dependency list
 
@@ -108,7 +107,6 @@ def createIndicators():
 	driveIndicator = Indicator(checkClient, driveControl, "Drive System", colorWhite, (1108, 130), colorRed, colorGreen)
 	armIndicator = Indicator(checkClient, armControl, "Arm System", colorWhite, (1108, 155), colorRed, colorGreen)
 	controllerIndicator = Indicator(checkController, None, "Controller", colorWhite, (1108, 210), colorRed, colorGreen)
-	
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
 	indicatorList.append(camera3Indicator) #2
@@ -137,18 +135,22 @@ def drawButtons():
 def drawBoxes():
 	for i in boxList:
 		i.draw(screen)
-	screen.blit(background, (130, 0))
 
 def drawIndicators():
 	for i in indicatorList:
 		i.refresh()
 		i.draw(screen)
+	for i in range(0, 4):
+		if buttonList[i].selected:
+			if not indicatorList[i].active:
+				camDisconnect(None)
+				drawButtons()
 
 def setMode(mode):	# button-based
 	global controlMode
 	for modeButton in buttonList[5:7]:
 		modeButton.selected = False
-	if(mode == "drive"):
+	if mode == "drive":
 		controlMode = "drive"
 		buttonList[5].selected = True
 	if(mode == "arm"):
@@ -173,9 +175,10 @@ def takePicture(fakeArg):	# button-based
 	if cameraNumber == 0:
 		return
 	buttonList[8].selected = True
-	drawButtons()
-	pygame.display.update()
 	camDisconnect(None)
+	drawButtons()
+	screen.blit(cameraSplash, (130, 0))
+	pygame.display.update()
 	time.sleep(1)
 	if cameraNumber == 1:
 		cameraRaspi1.takePicture()
@@ -194,7 +197,9 @@ def takePicture(fakeArg):	# button-based
 		time.sleep(2.5)
 		camConnect(4)
 	buttonList[8].selected = False
+	screen.blit(background, (130, 0))
 	drawButtons()
+	pygame.display.update()
 
 def stopRover(fakeArg):	# button-based
 	try:
@@ -223,6 +228,7 @@ def camConnect(cameraNumber): # button-based
 	buttonList[4].selected = False
 	buttonList[cameraNumber - 1].selected = True
 	drawButtons()
+	screen.blit(cameraSplash, (130, 0))
 	pygame.display.update()
 	if(os.name == "posix"): # linux machine
 		command = ("nc -l -p 3001 | mplayer -really-quiet -xy 0.5 -nosound -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 156:58 -demuxer h264es -nocache -")
@@ -243,6 +249,7 @@ def camConnect(cameraNumber): # button-based
 	elif(cameraNumber == 4):
 		buttonList[3].selected = True
 		cameraRaspi4.startCamera()
+	redrawTimer = pygame.time.get_ticks()
 	drawButtons()
 
 def camDisconnect(fakeArg): # button-based
@@ -305,13 +312,17 @@ cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
 driveControl = DriveClient(IPraspi2, driveClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
 
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (25,30)
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (30,30)
 pygame.init()
+pygame.display.set_caption("USST Rover GUI")
 logo = pygame.image.load('logo.png')
 pygame.display.set_icon(logo)
 Clock = pygame.time.Clock()
 screen = pygame.display.set_mode((1220, 700), pygame.NOFRAME)
-background = pygame.image.load("background.png")
+background = pygame.image.load("background.jpg")
+cameraSplash = pygame.image.load("camera.jpg")
+screen.blit(background, (130, 0))
+
 
 try:
 	Controller.init()
@@ -343,6 +354,7 @@ while mainloop:
 	
 	if pygame.time.get_ticks() - redrawTimer > 4000: # whole display redraw timer
 		drawBoxes()
+		screen.blit(background, (130, 0))
 		drawButtons()
 		drawIndicators()
 		redrawTimer = pygame.time.get_ticks()
@@ -364,7 +376,6 @@ while mainloop:
 		controllerSendTimer = pygame.time.get_ticks()
 		
 	Clock.tick(30)
-	pygame.display.set_caption("USST Rover GUI ("+ str(round(Clock.get_fps())) + " fps)")
 	output.draw(screen)
 	error.draw(screen)
 	for event in pygame.event.get():
