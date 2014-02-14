@@ -26,7 +26,6 @@ import signal
 import time
 from datetime import date
 import subprocess
-from threading import Thread
 
 
 	# global constants
@@ -64,14 +63,14 @@ def createButtons():
 	camera4Button = Button(camConnect, (4), "Camera 4", 20, colorBlack, (12, 115, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton = Button(camDisconnect, (0), "None", 20, colorBlack, (12, 145, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton.selected = True
-	moveButton = Button(setMode, ("drive"), "Drive", 20, colorBlack, (12, 195, 100, 20), colorLightBlue, colorGreen)
-	armButton = Button(setMode, ("arm"), "Arm", 20, colorBlack, (12, 225, 100, 20), colorLightBlue, colorGreen)
+	moveButton = Button(setMode, ("drive"), "Drive", 20, colorBlack, (12, 204, 100, 20), colorLightBlue, colorGreen)
+	armButton = Button(setMode, ("arm"), "Arm", 20, colorBlack, (12, 234, 100, 20), colorLightBlue, colorGreen)
 	moveButton.selected = True
-	stopButton = Button(stopRover, None, "Stop", 24, colorYellow, (12, 285, 100, 20), colorRed, colorRed)
-	pictureButton = Button(takePicture, None, "Picture", 20, colorBlack, (12, 315, 100, 20), colorLightBlue, colorYellow)
-	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 345, 100, 20), colorLightBlue, colorYellow)
-	connectButton = Button(connectClients, None, "Connect All", 24, colorBlack, (1115, 280, 120, 30), colorLightBlue, colorYellow)
-	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 405, 100, 20), colorLightBlue, colorYellow)
+	stopButton = Button(stopRover, None, "Stop", 24, colorYellow, (12, 294, 100, 20), colorRed, colorRed)
+	pictureButton = Button(takePicture, None, "Picture", 20, colorBlack, (12, 324, 100, 20), colorLightBlue, colorYellow)
+	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 354, 100, 20), colorLightBlue, colorYellow)
+	connectButton = Button(connectClients, None, "Connect All", 20, colorBlack, (1107, 180, 100, 20), colorLightBlue, colorYellow)
+	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 415, 100, 20), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -88,11 +87,11 @@ def createButtons():
 def createBoxes():
 	global boxList
 	boxList = []
-	cameraButtonBox = Box("Camera Feeds", 22, colorWhite, (0, 0, 125, 170), (11, 6), colorGray)
-	controlBox = Box("Control Modes", 22, colorWhite, (0, 175, 125, 80), (16, 177), colorGray)
-	actionBox = Box("Rover Actions", 22, colorWhite, (0, 260, 125, 115), (18, 264), colorGray)
-	uiBox = Box("User Interface", 22, colorWhite, (0, 380, 125, 115), (18, 384), colorGray)
-	connectionsBox = Box("Connections", 24, colorWhite, (1099, 0, 160, 360), (1122, 8), colorGray)
+	cameraButtonBox = Box("Camera Feeds", 22, colorWhite, (0, 0, 125, 175), (11, 6), colorGray)
+	controlBox = Box("Control Modes", 22, colorWhite, (0, 180, 125, 83), (9, 185), colorGray)
+	actionBox = Box("Rover Actions", 22, colorWhite, (0, 268, 125, 115), (10, 274), colorGray)
+	uiBox = Box("User Interface", 22, colorWhite, (0, 389, 125, 115), (12, 395), colorGray)
+	connectionsBox = Box("Connections", 22, colorWhite, (1095, 0, 125, 235), (1110, 6), colorGray)
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
 	boxList.append(actionBox)
@@ -102,13 +101,13 @@ def createBoxes():
 def createIndicators():
 	global indicatorList
 	indicatorList = []
-	camera1Indicator = Indicator(checkClient, cameraRaspi1, "Camera 1", colorWhite, (1112, 40), colorRed, colorGreen)
-	camera2Indicator = Indicator(checkClient, cameraRaspi2, "Camera 2", colorWhite, (1112, 80), colorRed, colorGreen)
-	camera3Indicator = Indicator(checkClient, cameraRaspi3, "Camera 3", colorWhite, (1112, 120), colorRed, colorGreen)
-	camera4Indicator = Indicator(checkClient, cameraRaspi4, "Camera 4", colorWhite, (1112, 160), colorRed, colorGreen)
-	driveIndicator = Indicator(checkClient, driveControl, "Drive System", colorWhite, (1112, 200), colorRed, colorGreen)
-	armIndicator = Indicator(checkClient, armControl, "Arm System", colorWhite, (1112, 240), colorRed, colorGreen)
-	controllerIndicator = Indicator(checkController, None, "Controller", colorWhite, (1112, 325), colorRed, colorGreen)
+	camera1Indicator = Indicator(checkClient, cameraRaspi1, "Camera 1", colorWhite, (1108, 30), colorRed, colorGreen)
+	camera2Indicator = Indicator(checkClient, cameraRaspi2, "Camera 2", colorWhite, (1108, 55), colorRed, colorGreen)
+	camera3Indicator = Indicator(checkClient, cameraRaspi3, "Camera 3", colorWhite, (1108, 80), colorRed, colorGreen)
+	camera4Indicator = Indicator(checkClient, cameraRaspi4, "Camera 4", colorWhite, (1108, 105), colorRed, colorGreen)
+	driveIndicator = Indicator(checkClient, driveControl, "Drive System", colorWhite, (1108, 130), colorRed, colorGreen)
+	armIndicator = Indicator(checkClient, armControl, "Arm System", colorWhite, (1108, 155), colorRed, colorGreen)
+	controllerIndicator = Indicator(checkController, None, "Controller", colorWhite, (1108, 210), colorRed, colorGreen)
 	
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
@@ -125,10 +124,8 @@ def createRobot():
 def connectConsole():
 	global output
 	global error
-	output = TextOutput(15,colorGreen,0,540,350,160,13,colorWhite)
-	error = TextOutput(15,colorRed,350,540,350,160,13,colorWhite)
-	#t = threading.Thread(target=output.loop,args =())
-	#t.start()
+	output = TextOutput(15, colorGreen, (4, 542, 350, 158), 13, colorGray)
+	error = TextOutput(15, colorRed, (348, 542, 350, 158), 13, colorGray)
 	#connect stderr and stdout to output
 	sys.stdout = output
 	sys.stderr = error
@@ -140,7 +137,7 @@ def drawButtons():
 def drawBoxes():
 	for i in boxList:
 		i.draw(screen)
-	screen.blit(background, (132, 0))
+	screen.blit(background, (130, 0))
 
 def drawIndicators():
 	for i in indicatorList:
@@ -308,7 +305,7 @@ pygame.init()
 logo = pygame.image.load('logo.png')
 pygame.display.set_icon(logo)
 Clock = pygame.time.Clock()
-screen = pygame.display.set_mode((1260, 700), pygame.NOFRAME)
+screen = pygame.display.set_mode((1220, 700), pygame.NOFRAME)
 background = pygame.image.load("background.png")
 
 try:
@@ -367,10 +364,10 @@ while mainloop:
 	error.draw(screen)
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
-			quit()
+			quit(None)
 		elif event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
-				quit()
+				quit(None)
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			mouse = pygame.mouse.get_pos()
 			for button in buttonList:

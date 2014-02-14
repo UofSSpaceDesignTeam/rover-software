@@ -3,7 +3,7 @@ import time
 
 class TextOutput():
 	
-	def __init__(self,fontsize,fontcolor, left, top, width, height,arraySize,color):
+	def __init__(self, fontsize, fontcolor, (left, top, width, height), arraySize, color):
 		self.textSize = fontsize
 		self.height = height
 		self.rect = (left,top,width,height)
