@@ -6,7 +6,6 @@
 import subprocess
 import socket
 import time
-from threading import Thread
 
 
 	# constants
@@ -14,21 +13,19 @@ from threading import Thread
 commandPort = 3000
 videoPort = 3001
 
-	# variables
-global iname
-iname = 1
 
 	# functions
 
 def startCamera():
-	global p
 	command = "raspivid -b 500000 -ex fixedfps -fps 20 -t 0 -rot 180 -o - | nc " + clientAddress[0] + " " + str(videoPort)
 	print(command)
-	p = subprocess.Popen(str(command),shell=True,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+	subprocess.call(str(command), shell = True)
 
 def stopCamera():
+	command = "sudo killall nc; sudo killall raspivid"
+	print(command)
 	try:
-		subprocess.call("sudo killall nc; sudo killall raspivid", shell = True)
+		subprocess.call(str(command), shell = True)
 	except:
 		pass
 
@@ -41,14 +38,14 @@ def parseCommand(command):
 			elif(command[2] == "E"): #CE
 				print("stopping camera feed")
 				stopCamera()
-			elif(command[2]== "P"):
+			elif(command[2]== "P"): #CP
 				print("taking picture")
 				takePicture()
 
 def takePicture():
-	myname=str(iname)+".jpg"
-	os.system("raspistill -t 1000 -o img/"+myname)
-	iname+=1
+	command = "raspistill -t 1000 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime())
+	print(command)
+	subprocess.call(str(command), shell = True)
 
 def stopSockets():
 	try:
@@ -68,11 +65,11 @@ serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
 	serverSocket.bind(("", commandPort))
 	serverSocket.listen(0)
-	print("CameraServer listening on port " + str(commandPort))
-	print("\tVideo will be sent on port " + str(videoPort))
+	print("CameraServer port: " + str(commandPort))
+	print("Video port: " + str(videoPort))
 	while(True):
 		(commandSocket, clientAddress) = serverSocket.accept()
-		print("Connected to " + str(clientAddress[0]))
+		print("Connected to: " + str(clientAddress[0]))
 		while(True):
 			data = commandSocket.recv(256)
 			if(data == ""): # socket closing
@@ -80,7 +77,7 @@ try:
 				break
 			else:
 				parseCommand(data)
-		print("Connection to " + str(clientAddress[0]) + " was closed")
+		print("Connection to: " + str(clientAddress[0]) + " closed")
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	stopCamera()
@@ -89,10 +86,11 @@ except socket.error as e:
 	print(e.strerror)
 	stopCamera()
 	stopSockets()
-	time.sleep(2)
-	subprocess.Popen("sudo python CameraServer.py", shell = True) # restart on connection failure
+	time.sleep(5)
+	#subprocess.call("sudo reboot", shell = True)
 except:
+	print(e.strerror)
 	stopCamera()
 	stopSockets()
-	raise
+	#subprocess.call("sudo reboot", shell = True)
 
