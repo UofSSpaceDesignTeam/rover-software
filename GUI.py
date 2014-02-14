@@ -231,7 +231,7 @@ def camConnect(cameraNumber): # button-based
 	screen.blit(cameraSplash, (130, 0))
 	pygame.display.update()
 	if(os.name == "posix"): # linux machine
-		command = ("nc -l -p 3001 | mplayer -really-quiet -xy 0.5 -nosound -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 156:58 -demuxer h264es -nocache -")
+		command = ("nc -l -p 3001 | mplayer -really-quiet -xy 0.5 -nosound -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 160:58 -demuxer h264es -nocache -")
 		subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
 	else: #windows
 		command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
