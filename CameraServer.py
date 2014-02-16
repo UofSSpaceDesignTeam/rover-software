@@ -43,7 +43,7 @@ def parseCommand(command):
 				takePicture()
 
 def takePicture():
-	command = "raspistill -t 1000 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime())
+	command = "raspistill -t 1000 -rot 180 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg"
 	print(command)
 	subprocess.call(command, shell = True)
 
