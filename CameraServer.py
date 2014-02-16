@@ -18,14 +18,14 @@ videoPort = 3001
 
 def startCamera():
 	command = "raspivid -b 500000 -ex fixedfps -fps 20 -t 0 -rot 180 -o - | nc " + clientAddress[0] + " " + str(videoPort)
-	print(command)
-	subprocess.call(str(command), shell = True)
+	#print(command)
+	subprocess.Popen(command, shell = True)
 
 def stopCamera():
 	command = "sudo killall nc; sudo killall raspivid"
-	print(command)
+	#print(command)
 	try:
-		subprocess.call(str(command), shell = True)
+		subprocess.call(command, shell = True)
 	except:
 		pass
 
@@ -45,7 +45,7 @@ def parseCommand(command):
 def takePicture():
 	command = "raspistill -t 1000 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime())
 	print(command)
-	subprocess.call(str(command), shell = True)
+	subprocess.call(command, shell = True)
 
 def stopSockets():
 	try:
@@ -89,8 +89,8 @@ except socket.error as e:
 	time.sleep(5)
 	#subprocess.call("sudo reboot", shell = True)
 except:
-	print(e.strerror)
 	stopCamera()
 	stopSockets()
 	#subprocess.call("sudo reboot", shell = True)
+	raise
 
