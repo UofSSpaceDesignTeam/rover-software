@@ -20,27 +20,36 @@ class VirtualRobot():
 		self.body = (left,top,width,height)
 		self.color = colorGray
 		self.sColor = colorYellow
-		self.driveCol = colorRed
-		self.armCol = colorRed
+		self.armCol = colorBlue
 		self.armCamCol = colorRed
 		self.driveCamCol = colorRed
 		self.arm = (left+width/2,top-height/4,width/4,height/4)
-		self.armCam = (left+width/2-width/8,top-height/4,width/8,width/8)
-		self.driveCam = (left+width/2-width/8,top +height/2,width/8,width/8)
-		self.driveWheel1 = (left,top,width/8,height)
-		self.driveWheel2 = (left+width*7/8,top,width/8,height)
-		self.driveWheel1Obj= None
-		self.driveWheel2Obj=None
+		self.armCam = (left+width/2+width/16,top-height/4,width/8,width/8)
+		self.driveCam = (left+width/2-width/16,top +height/2,width/8,width/8)
+		self.driveWheel = pygame.image.load("./pictures/redWheel.jpg")
 		self.armObj = None
 		self.armCamObj = None
 		self.bodyObj = None
 		self.driveCamObj = None
 
 	def draw(self,screen):
-		self.armObj = pygame.draw.rect(screen, self.armCol, self.arm)
-		self.armCamObj = pygame.draw.rect(screen,self.armCamCol, self.armCam)
 		self.bodyObj = pygame.draw.rect(screen,self.color,self.body)
-		self.driveWheel1Obj = pygame.draw.rect(screen,self.driveCol,self.driveWheel1)
-		self.driveWheel2Obj = pygame.draw.rect(screen,self.driveCol,self.driveWheel2)
+		self.armObj = pygame.draw.rect(screen, self.armCol, self.arm)
+		screen.blit(self.driveWheel,(self.left,self.top))
+		screen.blit(self.driveWheel,(self.left,self.top + self.height - 30))
+		screen.blit(self.driveWheel,(self.left + self.width - 15, self.top))
+		screen.blit(self.driveWheel,(self.left+self.width -15, self.top + self.height - 30))
 		self.driveCamObj = pygame.draw.rect(screen,self.driveCamCol,self.driveCam)
-		
+		self.armCamObj = pygame.draw.rect(screen,self.armCamCol, self.armCam)
+
+	def turnOnCamera(self, i):
+		if(i == 0):
+			self.driveCamCol = colorGreen
+		elif(i == 1):
+			self.armCamCol = colorGreen
+			
+	def turnOffCamera(self, i):
+		if(i == 0):
+			self.driveCamCol = colorRed
+		elif(i == 1):
+			self.armCamCol = colorRed

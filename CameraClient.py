@@ -61,6 +61,11 @@ class CameraClient: # class to handle camera feeds
 			#sys.stderr.write(e.strerror)
 			return False
 
+	def getPicture(self):
+		cmd = ("scp " + str(self.IP) + ": /home/pi/pictures/* ./robotPictures/" )
+		print(cmd)
+		subprocess.call(cmd, shell = True)
+
 	def test(self):
 		try:
 			self.socket.settimeout(0.05)

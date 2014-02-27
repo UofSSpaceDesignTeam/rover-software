@@ -117,7 +117,7 @@ def createIndicators():
 
 def createRobot():
 	global robot
-	robot = virtualRobot(1110,500,100,150)
+	robot = VirtualRobot(1110,500,100,150)
 
 def connectConsole():
 	global output
@@ -137,14 +137,22 @@ def drawBoxes():
 		i.draw(screen)
 
 def drawIndicators():
+	x = 0
 	for i in indicatorList:
 		i.refresh()
 		i.draw(screen)
+		if(x <4):
+			if indicatorList[x].active:
+				robot.turnOnCamera(x)
+			else:
+				robot.turnOffCamera(x)
+		x = x+1
 	for i in range(0, 4):
 		if buttonList[i].selected:
 			if not indicatorList[i].active:
 				camDisconnect(None)
 				drawButtons()
+	robot.draw(screen)
 
 def setMode(mode):	# button-based
 	global controlMode
@@ -183,17 +191,25 @@ def takePicture(fakeArg):	# button-based
 	if cameraNumber == 1:
 		cameraRaspi1.takePicture()
 		time.sleep(2.5)
+		cameraRaspi1.getPicture()
+		time.sleep(2.5)
 		camConnect(1)
 	elif cameraNumber == 2:
 		cameraRaspi2.takePicture()
+		time.sleep(2.5)
+		cameraRaspi2.getPicture()
 		time.sleep(2.5)
 		camConnect(2)
 	elif cameraNumber == 3:
 		cameraRaspi3.takePicture()
 		time.sleep(2.5)
+		cameraRaspi3.getPicture()
+		time.sleep(2.5)
 		camConnect(3)
 	elif cameraNumber == 4:
 		cameraRaspi4.takePicture()
+		time.sleep(2.5)
+		cameraRaspi4.getPicture()
 		time.sleep(2.5)
 		camConnect(4)
 	time.sleep(0.75)
@@ -317,12 +333,12 @@ armControl = ArmClient(IPraspi2, armClientPort)
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (20, 20)
 pygame.init()
 pygame.display.set_caption("USST Rover GUI")
-logo = pygame.image.load('logo.png')
+logo = pygame.image.load('./pictures/logo.png')
 pygame.display.set_icon(logo)
 Clock = pygame.time.Clock()
 screen = pygame.display.set_mode((1220, 700), pygame.NOFRAME)
-background = pygame.image.load("background.jpg")
-cameraSplash = pygame.image.load("camera.jpg")
+background = pygame.image.load("./pictures/background.jpg")
+cameraSplash = pygame.image.load("./pictures/camera.jpg")
 screen.blit(background, (130, 0))
 
 
@@ -331,14 +347,14 @@ try:
 except:
 	pass
 
+createRobot()
+robot.draw(screen)
 createBoxes()
 drawBoxes()
 createButtons()
 drawButtons()
 createIndicators()
 drawIndicators()
-#createRobot()
-#robot.draw(screen)
 
 pygame.display.update()
 mainloop = True
@@ -376,7 +392,6 @@ while mainloop:
 			elif controlMode == "arm":
 				pass
 		controllerSendTimer = pygame.time.get_ticks()
-		
 	Clock.tick(30)
 	output.draw(screen)
 	error.draw(screen)
