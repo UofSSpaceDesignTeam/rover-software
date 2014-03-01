@@ -156,6 +156,7 @@ except KeyboardInterrupt:
 	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
+	raise
 	stopSabertooth()
 	stopSockets()
 	time.sleep(2)
