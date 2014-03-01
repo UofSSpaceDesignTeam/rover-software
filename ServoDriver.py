@@ -17,25 +17,22 @@ class Servo:
 		self.scale = (max - min) / 180
 		self.set(default)
 
-	def set(channel, position):
+	def set(self, position):
 		position = max(position, 0)
 		position = min(position, 180)
 		position *= self.scale
 		position += self.min
-		driver.setServo(self.channel, self.position)
+		self.driver.setServo(self.channel, position)
 
 class ServoDriver:
 	def __init__(self):
-		self.pwm = PWM(0x40, debug = True)
-		pwm.setPWMFreq(60)
+		self.pwm = PWM(0x40, debug = False)
+		self.pwm.setPWMFreq(60)
 
-	def setServo(channel, position):
-		if(channel >= 0 and channel <= 15)
-			if(position >= 0 and position <= 180)
-				pwm.setPWM(channel, 0, position)
-			else
-				print("invalid servo position")
-		else
+	def setServo(self, channel, position):
+		if(channel >= 0 and channel <= 15):
+			self.pwm.setPWM(channel, 0, position)
+		else:
 			print("invalid servo channel")
 
 
@@ -87,7 +84,6 @@ class PWM:
     self.i2c.write8(self.__MODE1, oldmode | 0x80)
 
   def setPWM(self, channel, on, off):
-    "Sets a single PWM channel"
     self.i2c.write8(self.__LED0_ON_L+4*channel, on & 0xFF)
     self.i2c.write8(self.__LED0_ON_H+4*channel, on >> 8)
     self.i2c.write8(self.__LED0_OFF_L+4*channel, off & 0xFF)
@@ -100,7 +96,6 @@ class Adafruit_I2C:
   def __init__(self, address, busnum=-1, debug=False):
     self.address = address
     self.bus = smbus.SMBus(1)
-      busnum if busnum >= 0 else Adafruit_I2C.getPiI2CBusNumber())
     self.debug = debug
 
   def reverseByteOrder(self, data):

@@ -34,9 +34,8 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(checksum)))
 	
 def stopSabertooth():
-	for address in controllerAddress:
-		sendSabertooth(address,commandIn1,0)
-		sendSabertooth(address,commandIn2,0)
+	sendSabertooth(controllerAddress,commandIn1,0)
+	sendSabertooth(controllerAddress,commandIn2,0)
 	
 def parseCommand(command): # Parses Socket Data back to Axis positions
 	global emergency
@@ -55,8 +54,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				# elif(command[2] == "W": # rotate wrist joint up/down
 					# if(emergency == False)
 						# rotateWrist(int(ord(command[3])))
-				elif(command[2] == "P": # pan gripper left/right
-					if(emergency == False)	
+				if command[2] == "P": # pan gripper left/right
+					if emergency == False:	
 						wristPan.set(int(ord(command[3])))
 				# elif(command[2] == "H": # twist gripper cw/ccw
 					# if(emergency == False)
@@ -90,11 +89,12 @@ try:
 	controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
 	controller.baudrate = 9600
 	controller.timeout = 0.2
-	sendSabertooth(address, 16, ramping)
-	sendSabertooth(address, 17, deadband)
+	sendSabertooth(controllerAddress, 16, ramping)
+	sendSabertooth(controllerAddress, 17, deadband)
 except:
 	print("motor controller setup failed!")
 	time.sleep(2)
+	raise
 	#subprocess.call("sudo reboot", shell = True)
 
 # set up GPIOs
@@ -104,6 +104,7 @@ try:
 except:
 	print("GPIO setup failed!")
 	time.sleep(2)
+	raise
 	#subprocess.call("sudo reboot", shell = True)
 
 # set up servo driver
@@ -113,21 +114,22 @@ try:
 except:
 	print("Servo setup failed!")
 	time.sleep(2)
+	raise
 	#subprocess.call("sudo reboot", shell = True)
 	
 # begin server connection
 try:
 	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	serverSocket.bind(("", drivePort))
+	serverSocket.bind(("", armPort))
 	serverSocket.listen(0)
 	print("using serial port " + controller.name)
-	print("DriveServer listening on port " + str(drivePort))
+	print("ArmServer listening on port " + str(armPort))
 	while(True):
-		(driveSocket, clientAddress) = serverSocket.accept()
-		driveSocket.settimeout(1.15)
+		(armSocket, clientAddress) = serverSocket.accept()
+		armSocket.settimeout(1.15)
 		print("Connected to " + str(clientAddress[0]))
 		while(True):
-			data = driveSocket.recv(256)
+			data = armSocket.recv(256)
 			if(data == ""): # socket closing
 				stopSabertooth()
 				break
