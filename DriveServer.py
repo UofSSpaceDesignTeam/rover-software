@@ -157,7 +157,16 @@ except KeyboardInterrupt:
 	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
-	raise
+	print("stopping")
+	stopSabertooth()
+	stopSockets()
+	time.sleep(2)
+	GPIO.cleanup()
+	#subprocess.call("sudo reboot", shell = True)
+except socket.timeout as e:
+	except socket.error as e:
+	print(e.strerror)
+	print ("stopping")
 	stopSabertooth()
 	stopSockets()
 	time.sleep(2)
