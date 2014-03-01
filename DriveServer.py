@@ -40,6 +40,7 @@ def sendSabertooth(address, command, speed):
 	
 def stopSabertooth():
 	for address in controllerAddress:
+		print "stopping"
 		sendSabertooth(address,commandRF,0)
 		sendSabertooth(address,commandLF,0)
 
