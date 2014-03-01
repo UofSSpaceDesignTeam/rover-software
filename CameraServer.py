@@ -60,7 +60,6 @@ def stopSockets():
 
 	# main execution
 
-global clientAddress
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
 	serverSocket.bind(("", commandPort))

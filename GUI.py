@@ -384,12 +384,12 @@ while mainloop:
 			getInput()
 			if controlMode == "drive":
 				if indicatorList[4].active:
-					throttle = int(axes[1] * 128) + 128
+					throttle = int(axes[1] * 127) + 127
 					throttle = max(throttle, 0)
-					throttle = min(throttle, 255)
-					steering = int(axes[0] * 128) + 128
+					throttle = min(throttle, 254)
+					steering = int(axes[0] * 127) + 127
 					steering = max(steering, 0)
-					steering = min(steering, 255)
+					steering = min(steering, 254)
 					driveControl.sendControlData(throttle, steering)
 			elif controlMode == "arm":
 				pass
