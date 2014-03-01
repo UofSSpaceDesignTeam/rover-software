@@ -1,6 +1,6 @@
-# Used on the Pi to control drive motors
+# Used on the Pi to control arm actuators
 # RUN WITH SUDO
-# Added by Austin Shirley
+# Added by Jordan Kubica
 
 
 import socket
@@ -24,7 +24,7 @@ sTimeout = 0.2
 
 
 # Server Variables
-drivePort = 3002
+armPort = 3003
 
 
 # Function Definitions

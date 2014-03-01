@@ -29,8 +29,10 @@ import subprocess
 
 	# global constants
 
+IPraspi2 = "10.64.226.138" # arm test rig
+
 IPraspi1 = "192.168.1.103"
-IPraspi2 = "192.168.1.104"
+#IPraspi2 = "192.168.1.104"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "192.168.1.106"
 
@@ -333,12 +335,12 @@ armControl = ArmClient(IPraspi2, armClientPort)
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (20, 20)
 pygame.init()
 pygame.display.set_caption("USST Rover GUI")
-logo = pygame.image.load('./pictures/logo.png')
+logo = pygame.image.load('./graphics/logo.png')
 pygame.display.set_icon(logo)
 Clock = pygame.time.Clock()
 screen = pygame.display.set_mode((1220, 700), pygame.NOFRAME)
-background = pygame.image.load("./pictures/background.jpg")
-cameraSplash = pygame.image.load("./pictures/camera.jpg")
+background = pygame.image.load("./graphics/background.jpg")
+cameraSplash = pygame.image.load("./graphics/camera.jpg")
 screen.blit(background, (130, 0))
 
 
