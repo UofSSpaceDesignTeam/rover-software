@@ -1,159 +1,80 @@
-# Used on the Pi to control arm actuators
-# RUN WITH SUDO
+# A script continuously run by the arm control pi.
 # Added by Jordan Kubica
-
 
 import socket
 import time
 import subprocess
 import serial
-# Reserved for serial multiplexing.
-#import RPi.GPIO as GPIO
-# Reserved for Sabertooth Packetized Mode
-#import struct
+from ServoDriver import *
+import RPi.GPIO as GPIO # for hardware reset system
 
+	# constants	
 
-# Motor Control Variables
+armPort = 3003
 scaleFactor = 0.55
+deadband = 0
+ramping = 20
+commandIn1 = 0
+commandOut1 = 1
+commandIn2 = 4
+commandOut2 = 5
+controllerAddress = 128
+
+	# global variables
+
 emergency = False
 
+	# Function Definitions
 
-# Serial Variables
-sBaudrate = 9600
-sTimeout = 0.2
-
-
-# Server Variables
-armPort = 3003
-
-
-# Function Definitions
-def beginSerial():
-	drive = serial.Serial("/dev/ttyAMA0", bytesize=8, parity='N', stopbits=1, )
-	drive.baudrate = sBaudrate
-	drive.timeout = sTimeout
-	print(drive.name)
-	drive.write("1,start\r\n")
-	drive.write("2,start\r\n")
-	print("Left/Right start commands sent!")
-	return drive
-
-# Section Currently Reserved for serial multiplexing (Not Implemented)
-#def beginGPIO():
-#	GPIO.cleanup()
-#	GPIO.setmode(GPIO.BOARD)
-#	GPIO.setup(7,GPIO.OUT)
-#	GPIO.setup(11,GPIO.OUT)
-#	print("GPIO Initialized")
-#	return
-
-
-def sendSerial(leftThrust,rightThrust): # Encodes commands to Kangaroo Format and sends via Serial
-	leftMotor="1"
-	rightMotor="2"
-	Start=",s"
-	End="\r\n"
-	lSignal = str(leftMotor + Start + str(int(leftThrust*scaleFactor)) + End)
-	rSignal = str(rightMotor + Start + str(int(rightThrust*scaleFactor)) + End)
-	print(rSignal)
-	print(lSignal)
-	drive.write(lSignal)
-	drive.write(rSignal)
-	sendFeedback(lSignal,rSignal)
-
-def sendFeedback(lSignal,rSignal): # Gets speed position back from wheel and looks for error
+def sendSabertooth(address, command, speed):
+	checksum = int(address) + int(command) + int(speed) & 127
+	controller.write(chr(int(address)))
+	controller.write(chr(int(command)))
+	controller.write(chr(int(speed)))
+	controller.write(chr(int(checksum)))
+	
+def stopSabertooth():
+	for address in controllerAddress:
+		sendSabertooth(address,commandIn1,0)
+		sendSabertooth(address,commandIn2,0)
+	
+def parseCommand(command): # Parses Socket Data back to Axis positions
 	global emergency
-	drive.write("1,gets\r\n")
-	feedbackL=drive.readline()
-	drive.write("2,gets\r\n")
-	feedbackR=drive.readline()
-	print("Feedback: " + feedbackL + feedbackR)
-	
-	# Detecting if motor stops when it shouldn't etc
-	# Encoder Errors > Emergency Failure > Wheel Jams
-	# Currently only implemented for two wheels
-	
-	# Detecting wheel jam
-	lwheelJam = 0
-	rwheelJam = 0
-	if(feedbackL == "1,s0\r\n"):
-		if(lSignal != "1,s0\r\n"):
-			lwheelJam = 1
-	if(feedbackR == "2,s0\r\n"):
-		if(rSignal != "2,s0\r\n"):
-			rwheelJam = 1
-	
-	# Detecting a failed emergency stop
-	if(emergency == True):
-		if(feedbackL != "1,s0\r\n"):
-			lwheelJam = 3
-			print("EMERGENCY STOP FAILED!")
-		if(feedbackR != "1,s0\r\n"):
-			rwheelJam = 3
-			print("EMERGENCY STOP FAILED!")
-	
-	# Encoder Errors
-	if(feedbackL == "1,E1\r\n"):
-		drive.write("1,start\r\n")
-		lwheelJam = 4
-		print("Attempting Restart")
-	if(feedbackR == "2,E1\r\n"):
-		drive.write("2,start\r\n")
-		rwheelJam = 4
-		print("Attempting Restart")
-	
-	# Send data back on the Socket
-	driveSocket.send("#DE" + str(lwheelJam) + str(rwheelJam))
-
-def driveCommand(xAxis,yAxis): # Converts controller position to Thrust commands
-	xMid=128
-	yMid=128
-	drive=yAxis-yMid
-	steer=xAxis-xMid
-	
-	if(steer == 0):
-		leftThrust=drive
-		rightThrust=drive
-	else:
-		leftThrust=drive+steer
-		rightThrust=drive-steer
-
-	print(leftThrust,rightThrust)
-	sendSerial(leftThrust,rightThrust)
-
-def stopDrive(): 	# Handles Emergency Stop
-	global emergency
-	drive.write("1,s0\r\n")
-	drive.write("1,s0\r\n")
-	emergency = True
-	return
-
-def parseController(command): # Parses Socket Data back to Axis positions
-	global emergency
-	if len(command) > 2:
+	if len(command) > 3:
 		if(command[0] == "#"): # is valid
-			if(command[1] == "D"):
-				if(command[2] == "D" and len(command) > 4): # Drive, Data
-					xAxis = int(ord(command[3]))
-					yAxis = int(ord(command[4]))
-					print(xAxis,yAxis)
-					driveCommand(xAxis,yAxis)
-					if(emergency == True):
-						if(xAxis == 128 and yAxis == 128):
-							emergency = False
-							print("Resuming Control")
-						else:
-							print("Please centre the Controller Axis to continue")
-							stopDrive()
-							time.sleep(2)
-				elif(command[2] == "S"): # Drive, Stop
-					print("emergency stop command received")
-					stopDrive()
-					time.sleep(2)
-
+			if(command[1] == "A"):
+				# if(command[2] == "B": # rotate base
+					# if(emergency == False)
+						# rotateBase(int(ord(command[3])))
+				# elif(command[2] == "L": # translate wrist joint up/down
+					# if(emergency == False)
+						# liftWrist(int(ord(command[3])))
+				# elif(command[2] == "M": # translate wrist joint in/out
+					# if(emergency == False)
+						# moveWrist(int(ord(command[3])))
+				# elif(command[2] == "W": # rotate wrist joint up/down
+					# if(emergency == False)
+						# rotateWrist(int(ord(command[3])))
+				elif(command[2] == "P": # pan gripper left/right
+					if(emergency == False)	
+						wristPan.set(int(ord(command[3])))
+				# elif(command[2] == "H": # twist gripper cw/ccw
+					# if(emergency == False)
+						# twistGripper(int(ord(command[3])))
+				# elif(command[2] == "G": # open or close gripper
+					# if(emergency == False)
+						# moveGripper(int(ord(command[3])))
+				# elif(command[2] == "S": # stop all actuators
+					# stopSabertooth()
+					# print("emergency stop")
+					# emergency = True
+				# elif(command[2] == "C"):
+					# emergency = False
+	
+					
 def stopSockets(): # Stops sockets on error condition
 	try:
-		commandSocket.close()
+		armSocket.close()
 	except:
 		pass
 	try:
@@ -161,42 +82,72 @@ def stopSockets(): # Stops sockets on error condition
 	except:
 		pass
 
-# Main Program
 
-# Setup
-drive=beginSerial()
-#beginGPIO()
+### Main Program  ###
 
-# Begin connection
-serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# set up motor controller
 try:
+	controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
+	controller.baudrate = 9600
+	controller.timeout = 0.2
+	sendSabertooth(address, 16, ramping)
+	sendSabertooth(address, 17, deadband)
+except:
+	print("motor controller setup failed!")
+	time.sleep(2)
+	#subprocess.call("sudo reboot", shell = True)
+
+# set up GPIOs
+try:
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setup(7, GPIO.OUT)
+except:
+	print("GPIO setup failed!")
+	time.sleep(2)
+	#subprocess.call("sudo reboot", shell = True)
+
+# set up servo driver
+try:
+	servoDriver = ServoDriver()
+	wristPan = Servo(servoDriver, 9, 1200, 1800, 90)
+except:
+	print("Servo setup failed!")
+	time.sleep(2)
+	#subprocess.call("sudo reboot", shell = True)
+	
+# begin server connection
+try:
+	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	serverSocket.bind(("", drivePort))
 	serverSocket.listen(0)
+	print("using serial port " + controller.name)
 	print("DriveServer listening on port " + str(drivePort))
 	while(True):
 		(driveSocket, clientAddress) = serverSocket.accept()
-		print("Connected to " + str(clientAddress[0])) 
+		driveSocket.settimeout(1.15)
+		print("Connected to " + str(clientAddress[0]))
 		while(True):
 			data = driveSocket.recv(256)
 			if(data == ""): # socket closing
-				stopDrive()
+				stopSabertooth()
 				break
 			else:
 				parseController(data)
 		print("Connection to " + str(clientAddress[0]) + " was closed")
-
-# Exception Handling
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
-	stopDrive()
+	stopSabertooth()
 	stopSockets()
+	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
-	stopDrive()
+	stopSabertooth()
 	stopSockets()
+	GPIO.cleanup()
 	time.sleep(2)
-	subprocess.Popen("sudo python DriveServer.py", shell = True) # restart on connection failure
+	#subprocess.call("sudo reboot", shell = True)
 except:
-	stopDrive()
+	stopSabertooth()
 	stopSockets()
+	GPIO.cleanup()
 	raise

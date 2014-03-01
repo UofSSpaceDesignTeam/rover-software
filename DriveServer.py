@@ -40,7 +40,6 @@ def sendSabertooth(address, command, speed):
 	
 def stopSabertooth():
 	for address in controllerAddress:
-		print "stopping"
 		sendSabertooth(address,commandRF,0)
 		sendSabertooth(address,commandLF,0)
 
@@ -72,7 +71,7 @@ def setMotors(xAxis, yAxis): # sends motor commands based on joystick position
 		for address in controllerAddress:
 			sendSabertooth(address, commandRR, -1 * rightSpeed)
 	
-def parseController(command): # Parses Socket Data back to Axis positions
+def parseCommand(command): # Parses Socket Data back to Axis positions
 	global emergency
 	if len(command) > 2:
 		if(command[0] == "#"): # is valid
@@ -96,7 +95,7 @@ def parseController(command): # Parses Socket Data back to Axis positions
 
 def stopSockets(): # Stops sockets on error condition
 	try:
-		commandSocket.close()
+		driveSocket.close()
 	except:
 		pass
 	try:
@@ -148,7 +147,7 @@ try:
 				stopSabertooth()
 				break
 			else:
-				parseController(data)
+				parseCommand(data)
 		print("Connection to " + str(clientAddress[0]) + " was closed")
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
@@ -157,7 +156,6 @@ except KeyboardInterrupt:
 	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
-	print("stopping")
 	stopSabertooth()
 	stopSockets()
 	time.sleep(2)
@@ -165,7 +163,6 @@ except socket.error as e:
 	#subprocess.call("sudo reboot", shell = True)
 except socket.timeout as e:
 	print(e.strerror)
-	print ("stopping")
 	stopSabertooth()
 	stopSockets()
 	time.sleep(2)

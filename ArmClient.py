@@ -18,11 +18,13 @@ class ArmClient: # class for arm systems
 		self.port = port
 		self.commandPanBase = "#AB" # spin base left / right
 		self.commandLiftWrist = "#AL" # translate wrist joint up/down
+		self.commandMoveWrist = "#AM" # translate wrist joint in/out
 		self.commandTiltWrist = "#AW" # rotate wrist joint up/down
 		self.commandPanHand = "#AP" # move gripper left/right
 		self.commandTwistHand = "#AH" # twist gripper cw/ccw
 		self.commandGripper = "#AG" # open or close gripper
 		self.commandArmStop = "#AS" # stop all actuators
+		self.commandArmResume = "#AC" # cancel emergency stop
 	
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

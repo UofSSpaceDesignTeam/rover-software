@@ -64,8 +64,8 @@ def createButtons():
 	camera4Button = Button(camConnect, (4), "Camera 4", 20, colorBlack, (12, 115, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton = Button(camDisconnect, (0), "None", 20, colorBlack, (12, 145, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton.selected = True
-	moveButton = Button(setMode, ("drive"), "Drive", 20, colorBlack, (12, 204, 100, 20), colorLightBlue, colorGreen)
-	armButton = Button(setMode, ("arm"), "Arm", 20, colorBlack, (12, 234, 100, 20), colorLightBlue, colorGreen)
+	moveButton = Button(setDriveMode, None, "Drive", 20, colorBlack, (12, 204, 100, 20), colorLightBlue, colorGreen)
+	armButton = Button(setArmMode, None, "Arm", 20, colorBlack, (12, 234, 100, 20), colorLightBlue, colorGreen)
 	moveButton.selected = True
 	stopButton = Button(stopRover, None, "Stop", 22, colorYellow, (12, 294, 100, 20), colorRed, colorRed)
 	pictureButton = Button(takePicture, None, "Picture", 20, colorBlack, (12, 324, 100, 20), colorLightBlue, colorYellow)
@@ -156,16 +156,16 @@ def drawIndicators():
 				drawButtons()
 	robot.draw(screen)
 
-def setMode(mode):	# button-based
-	global controlMode
-	for modeButton in buttonList[5:7]:
-		modeButton.selected = False
-	if mode == "drive":
-		controlMode = "drive"
-		buttonList[5].selected = True
-	if(mode == "arm"):
-		controlMode = "arm"
-		buttonList[6].selected = True
+def setDriveMode(fakeArg):	# button-based
+	# todo: stop arm movements
+	buttonList[5].selected = True
+	buttonList[6].selected = False
+	drawButtons()
+	
+def setArmMode(fakeArg):	# button-based
+	# todo: stop driving
+	buttonList[5].selected = False
+	buttonList[6].selected = True
 	drawButtons()
 
 def checkController(fakeArg): # button-based
@@ -361,7 +361,7 @@ drawIndicators()
 pygame.display.update()
 mainloop = True
 
-setMode("drive")
+setDriveMode(None)
 
 indicatorTimer = 0
 redrawTimer = 0
@@ -382,8 +382,8 @@ while mainloop:
 	if pygame.time.get_ticks() - controllerSendTimer > 250: # controller data sending timer
 		if Controller.isConnected:
 			getInput()
-			if controlMode == "drive":
-				if indicatorList[4].active:
+			if buttonList[5].active: # drive mode
+				if indicatorList[4].active: # drive mode
 					throttle = int(axes[1] * 127) + 127
 					throttle = max(throttle, 0)
 					throttle = min(throttle, 254)
@@ -391,9 +391,13 @@ while mainloop:
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					driveControl.sendControlData(throttle, steering)
-			elif controlMode == "arm":
-				pass
-		controllerSendTimer = pygame.time.get_ticks()
+			elif buttonList[6].active: # arm mode
+				if indicatorList[5].active:
+					wristPan = int(axes[2] * 90) + 90
+					if wristPan != 90:
+						armControl.panHand(wristPan)
+				
+	controllerSendTimer = pygame.time.get_ticks()
 	Clock.tick(30)
 	output.draw(screen)
 	error.draw(screen)
