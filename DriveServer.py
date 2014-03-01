@@ -139,7 +139,7 @@ try:
 	print("DriveServer listening on port " + str(drivePort))
 	while(True):
 		(driveSocket, clientAddress) = serverSocket.accept()
-		driveSocket.settimeout(1.15)
+		driveSocket.settimeout(2)
 		print("Connected to " + str(clientAddress[0]))
 		while(True):
 			data = driveSocket.recv(256)
