@@ -12,7 +12,8 @@ import serial
 
 
 	# constants	
-	
+
+drivePort = 3002
 scaleFactor = 0.55
 deadband = 0
 ramping = 20
@@ -25,7 +26,6 @@ controllerAddress = [128, 129, 130]
 
 	# global variables
 
-drivePort = 3002
 emergency = False
 
 
