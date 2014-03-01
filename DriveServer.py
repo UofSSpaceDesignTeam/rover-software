@@ -164,7 +164,6 @@ except socket.error as e:
 	GPIO.cleanup()
 	#subprocess.call("sudo reboot", shell = True)
 except socket.timeout as e:
-	except socket.error as e:
 	print(e.strerror)
 	print ("stopping")
 	stopSabertooth()
