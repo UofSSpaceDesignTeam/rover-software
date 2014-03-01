@@ -8,7 +8,7 @@ import socket
 import time
 import subprocess
 import serial
-#import RPi.GPIO as GPIO # for hardware reset system
+import RPi.GPIO as GPIO # for hardware reset system
 
 
 	# constants	
@@ -33,15 +33,15 @@ emergency = False
 
 def sendSabertooth(address, command, speed):
 	checksum = int(address) + int(command) + int(speed) & 127
-	drive.write(chr(int(address)))
-	drive.write(chr(int(command)))
-	drive.write(chr(int(speed)))
-	drive.write(chr(int(checksum)))
+	controller.write(chr(int(address)))
+	controller.write(chr(int(command)))
+	controller.write(chr(int(speed)))
+	controller.write(chr(int(checksum)))
 	
 def stopSabertooth():
 	for address in controllerAddress:
-		sendSabertooth(address,RF,0)
-		sendSabertooth(address,LF,0)
+		sendSabertooth(address,commandRF,0)
+		sendSabertooth(address,commandLF,0)
 
 def setMotors(xAxis, yAxis): # sends motor commands based on joystick position
 	throttle = (yAxis - 127) / 127.0  # range is now -1 to 1
@@ -111,23 +111,23 @@ try:
 	controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
 	controller.baudrate = 9600
 	controller.timeout = 0.2
-	controller.write
 	for address in controllerAddress:
 		sendSabertooth(address, 16, ramping)
 		sendSabertooth(address, 17, deadband)
 except:
 	print("motor controller setup failed!")
 	time.sleep(2)
+	raise
 	#subprocess.call("sudo reboot", shell = True)
 
 # set up GPIOs
 try:
-	GPIO.cleanup()
 	GPIO.setmode(GPIO.BOARD)
-	#GPIO.setup(7, GPIO.OUT)
+	GPIO.setup(12, GPIO.OUT)
 except:
 	print("GPIO setup failed!")
 	time.sleep(2)
+	raise
 	#subprocess.call("sudo reboot", shell = True)
 
 # begin server connection
@@ -153,13 +153,16 @@ except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	stopSabertooth()
 	stopSockets()
+	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
 	stopSabertooth()
 	stopSockets()
 	time.sleep(2)
+	GPIO.cleanup()
 	#subprocess.call("sudo reboot", shell = True)
 except:
 	stopSabertooth()
 	stopSockets()
+	GPIO.cleanup()
 	raise
