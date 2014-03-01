@@ -100,7 +100,7 @@ except:
 # set up GPIOs
 try:
 	GPIO.setmode(GPIO.BOARD)
-	GPIO.setup(7, GPIO.OUT)
+	#GPIO.setup(7, GPIO.OUT)
 except:
 	print("GPIO setup failed!")
 	time.sleep(2)
@@ -110,7 +110,7 @@ except:
 # set up servo driver
 try:
 	servoDriver = ServoDriver()
-	wristPan = Servo(servoDriver, 9, 1200, 1800, 90)
+	wristPan = Servo(servoDriver, 4, 1200, 1800, 90)
 except:
 	print("Servo setup failed!")
 	time.sleep(2)
@@ -126,7 +126,6 @@ try:
 	print("ArmServer listening on port " + str(armPort))
 	while(True):
 		(armSocket, clientAddress) = serverSocket.accept()
-		armSocket.settimeout(1.15)
 		print("Connected to " + str(clientAddress[0]))
 		while(True):
 			data = armSocket.recv(256)
@@ -134,7 +133,7 @@ try:
 				stopSabertooth()
 				break
 			else:
-				parseController(data)
+				parseCommand(data)
 		print("Connection to " + str(clientAddress[0]) + " was closed")
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
@@ -147,6 +146,7 @@ except socket.error as e:
 	stopSockets()
 	GPIO.cleanup()
 	time.sleep(2)
+	raise
 	#subprocess.call("sudo reboot", shell = True)
 except:
 	stopSabertooth()

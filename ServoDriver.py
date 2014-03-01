@@ -18,20 +18,21 @@ class Servo:
 		self.set(default)
 
 	def set(self, position):
-		position = max(position, 0)
-		position = min(position, 180)
-		position *= self.scale
-		position += self.min
-		self.driver.setServo(self.channel, position)
+		pulse = max(position, 0)
+		pulse = min(pulse, 180)
+		pulse *= self.scale
+		pulse += self.min
+		self.driver.setServo(self.channel, pulse)
 
 class ServoDriver:
 	def __init__(self):
-		self.pwm = PWM(0x40, debug = False)
+		self.pwm = PWM(0x40, debug = True)
 		self.pwm.setPWMFreq(60)
 
-	def setServo(self, channel, position):
+	def setServo(self, channel, pulse):
 		if(channel >= 0 and channel <= 15):
-			self.pwm.setPWM(channel, 0, position)
+			print("ch" + str(channel) + ": " + str(pulse))
+			self.pwm.setPWM(channel, 0, pulse / 4.096)
 		else:
 			print("invalid servo channel")
 
