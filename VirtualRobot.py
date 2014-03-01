@@ -26,7 +26,7 @@ class VirtualRobot():
 		self.arm = (left+width/2,top-height/4,width/4,height/4)
 		self.armCam = (left+width/2+width/16,top-height/4,width/8,width/8)
 		self.driveCam = (left+width/2-width/16,top +height/2,width/8,width/8)
-		self.driveWheel = pygame.image.load("./pictures/redWheel.jpg")
+		self.driveWheel = pygame.image.load("./graphics/redWheel.jpg")
 		self.armObj = None
 		self.armCamObj = None
 		self.bodyObj = None
