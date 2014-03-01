@@ -1,4 +1,4 @@
-# Used on the Pi to control drive motors
+# A script continuously run by the drive control Pi.
 # Added by Austin Shirley
 
 ## To Do: Reduce shut-down delay and implement skid steer
@@ -27,9 +27,6 @@ controllerAddress = [128, 129, 130]
 
 drivePort = 3002
 emergency = False
-speedR = 0
-speedL = 0
-speed = 0
 
 
 	# Function Definitions
