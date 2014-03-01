@@ -48,8 +48,8 @@ def setMotors(xAxis, yAxis): # sends motor commands based on joystick position
 	steering = (xAxis - 127) / 127.0
 	
 	# Math for SkidSteer
-	leftSpeed = 
-	rightSpeed = 
+	leftSpeed = 127*throttle
+	rightSpeed = 127*throttle
 	
 	leftSpeed = max(leftSpeed, -127)
 	leftSpeed = min(leftSpeed, 127)
