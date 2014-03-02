@@ -1,8 +1,7 @@
 # A script continuously run by the drive control Pi.
-# Added by Austin Shirley
+# RUN WITH SUDO
 
-## To Do: Reduce shut-down delay and implement skid steer
-
+# dependency list
 
 import socket
 import time
@@ -10,8 +9,7 @@ import subprocess
 import serial
 import RPi.GPIO as GPIO # for hardware reset system
 
-
-	# constants	
+# global constants	
 
 drivePort = 3002
 scaleFactor = 0.55
@@ -23,13 +21,11 @@ commandLF = 4
 commandLR = 5
 controllerAddress = [128, 129, 130]
 
-
-	# global variables
+# global variables
 
 emergency = False
 
-
-	# Function Definitions
+# Function Definitions
 
 def sendSabertooth(address, command, speed):
 	checksum = int(address) + int(command) + int(speed) & 127
@@ -48,8 +44,8 @@ def setMotors(xAxis, yAxis): # sends motor commands based on joystick position
 	steering = (xAxis - 127) / 127.0
 	
 	# Math for SkidSteer
-	leftSpeed = 127*throttle
-	rightSpeed = 127*throttle
+	leftSpeed = throttle + steering
+	rightSpeed = throttle - steering
 	
 	leftSpeed = max(leftSpeed, -127)
 	leftSpeed = min(leftSpeed, 127)
@@ -71,7 +67,7 @@ def setMotors(xAxis, yAxis): # sends motor commands based on joystick position
 		for address in controllerAddress:
 			sendSabertooth(address, commandRR, -1 * rightSpeed)
 	
-def parseCommand(command): # Parses Socket Data back to Axis positions
+def parseCommand(command): # parses and executes remote commands
 	global emergency
 	if len(command) > 2:
 		if(command[0] == "#"): # is valid
@@ -123,7 +119,7 @@ except:
 # set up GPIOs
 try:
 	GPIO.setmode(GPIO.BOARD)
-	GPIO.setup(12, GPIO.OUT)
+	#GPIO.setup(12, GPIO.OUT)
 except:
 	print("GPIO setup failed!")
 	time.sleep(2)

@@ -1,15 +1,12 @@
+# A library to communicate with the rover camera systems
 
-# A library to communicate with the rover's camera systems
-# Added by Jordan
-
-	# dependency list
+# dependency list
 
 import socket
 import time
 import sys
 
-
-	# class definition
+# class definition
 
 class CameraClient: # class to handle camera feeds	
 	def __init__(self, IP, port):
@@ -29,7 +26,7 @@ class CameraClient: # class to handle camera feeds
 		except socket.error:
 			pass
 		for i in range (0, retries):
-			time.sleep(1)
+			time.sleep(0.25)
 			try:
 				self.socket.connect((self.IP, self.port))
 				return True

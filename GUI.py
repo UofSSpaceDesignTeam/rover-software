@@ -1,12 +1,9 @@
-#!/usr/bin/python
+# The main program for controlling the rover from a base station. Requires Python 2.7 and pygame.
 
-# The main program for controlling the rover
-
-	# dependency list
+# dependency list
 
 import sys
-# disables generation of .pyc files
-sys.dont_write_bytecode = True
+sys.dont_write_bytecode = True # stops .pyc generation in subsequent imports
 	
 import pygame
 import Controller
@@ -19,28 +16,21 @@ from ArmClient import ArmClient
 from TextOutput import TextOutput
 from VirtualRobot import VirtualRobot
 import socket
-import commands
 import os
-import signal
 import time
 from datetime import date
 import subprocess
 
-
-	# global constants
-
-IPraspi2 = "10.64.226.138" # arm test rig
+# global constants
 
 IPraspi1 = "192.168.1.103"
-#IPraspi2 = "192.168.1.104"
+IPraspi2 = "10.64.226.138" #"192.168.1.104"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "192.168.1.106"
-
-# netcat video on 3001
+# netcat-ed video on port 3001
 driveClientPort = 3002
 armClientPort = 3003
 cameraClientPort = 3000
-
 colorWhite = (255, 255, 255)
 colorGray = (100, 100, 100)
 colorBlack = (0, 0, 0)
@@ -52,10 +42,9 @@ colorLightBlue = (100, 100, 250)
 colorDarkBlue = (0, 0, 120)
 colorYellow = (250, 250, 0)
 
+# function definitions
 
-	# function definitions
-
-def createButtons():
+def createButtons(): # creates interactive buttons, and places them in a list in a defined order.
 	global buttonList
 	buttonList = []
 	camera1Button = Button(camConnect, (1), "Camera 1", 20, colorBlack, (12, 25, 100, 20), colorLightBlue, colorGreen)
@@ -85,7 +74,7 @@ def createButtons():
 	buttonList.append(connectButton)	# 10
 	buttonList.append(quitButton)	# 11
 
-def createBoxes():
+def createBoxes(): # creates simple graphical elements, and places them in a list
 	global boxList
 	boxList = []
 	cameraButtonBox = Box("Camera Feeds", 22, colorWhite, (0, 0, 125, 175), (11, 6), colorGray)
@@ -99,15 +88,15 @@ def createBoxes():
 	boxList.append(uiBox)
 	boxList.append(connectionsBox)
 
-def createIndicators():
+def createIndicators(): # creates visual status indicators, and places them in a list in a defined order.
 	global indicatorList
 	indicatorList = []
-	camera1Indicator = Indicator(checkClient, cameraRaspi1, "Camera 1", colorWhite, (1108, 30), colorRed, colorGreen)
-	camera2Indicator = Indicator(checkClient, cameraRaspi2, "Camera 2", colorWhite, (1108, 55), colorRed, colorGreen)
-	camera3Indicator = Indicator(checkClient, cameraRaspi3, "Camera 3", colorWhite, (1108, 80), colorRed, colorGreen)
-	camera4Indicator = Indicator(checkClient, cameraRaspi4, "Camera 4", colorWhite, (1108, 105), colorRed, colorGreen)
-	driveIndicator = Indicator(checkClient, driveControl, "Drive System", colorWhite, (1108, 130), colorRed, colorGreen)
-	armIndicator = Indicator(checkClient, armControl, "Arm System", colorWhite, (1108, 155), colorRed, colorGreen)
+	camera1Indicator = Indicator(testClient, cameraRaspi1, "Camera 1", colorWhite, (1108, 30), colorRed, colorGreen)
+	camera2Indicator = Indicator(testClient, cameraRaspi2, "Camera 2", colorWhite, (1108, 55), colorRed, colorGreen)
+	camera3Indicator = Indicator(testClient, cameraRaspi3, "Camera 3", colorWhite, (1108, 80), colorRed, colorGreen)
+	camera4Indicator = Indicator(testClient, cameraRaspi4, "Camera 4", colorWhite, (1108, 105), colorRed, colorGreen)
+	driveIndicator = Indicator(testClient, driveControl, "Drive System", colorWhite, (1108, 130), colorRed, colorGreen)
+	armIndicator = Indicator(testClient, armControl, "Arm System", colorWhite, (1108, 155), colorRed, colorGreen)
 	controllerIndicator = Indicator(checkController, None, "Controller", colorWhite, (1108, 210), colorRed, colorGreen)
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
@@ -117,16 +106,12 @@ def createIndicators():
 	indicatorList.append(armIndicator) #5
 	indicatorList.append(controllerIndicator) #6
 
-def createRobot():
-	global robot
-	robot = VirtualRobot(1110,500,100,150)
-
-def connectConsole():
+def connectConsole(): # set up the info / error message boxes
 	global output
 	global error
 	output = TextOutput(15, colorGreen, (4, 542, 350, 158), 13, colorGray)
 	error = TextOutput(15, colorRed, (348, 542, 350, 158), 13, colorGray)
-	#connect stderr and stdout to output
+	#connect stderr and stdout
 	sys.stdout = output
 	sys.stderr = error
 
@@ -139,21 +124,17 @@ def drawBoxes():
 		i.draw(screen)
 
 def drawIndicators():
-	x = 0
 	for i in indicatorList:
 		i.refresh()
 		i.draw(screen)
-		if(x <4):
-			if indicatorList[x].active:
-				robot.turnOnCamera(x)
-			else:
-				robot.turnOffCamera(x)
-		x = x+1
 	for i in range(0, 4):
 		if buttonList[i].selected:
 			if not indicatorList[i].active:
 				camDisconnect(None)
 				drawButtons()
+	
+def drawRobot():
+	# todo: check UI state, set robot status accordingly
 	robot.draw(screen)
 
 def setDriveMode(fakeArg):	# button-based
@@ -236,7 +217,7 @@ def stopRover(fakeArg):	# button-based
 def runExperiment(fakeArg):	# button-based
 	return
 
-def checkClient(client): # test connection
+def testClient(client): # button-based
 	return client.test()
 	
 def camConnect(cameraNumber): # button-based
@@ -253,7 +234,7 @@ def camConnect(cameraNumber): # button-based
 	if(os.name == "posix"): # linux machine
 		command = ("nc -l -p 3001 | mplayer -really-quiet -xy 0.5 -nosound -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 150:48 -demuxer h264es -nocache -")
 		subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
-	else: #windows
+	else: # windows
 		command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
 		subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
 	time.sleep(0.5)
@@ -314,7 +295,6 @@ def connectClients(fakeArg): # button-based
 	drawButtons()
 	pygame.display.update()
 
-
 def quit(fakeArg): # button-based
 	buttonList[11].selected = True
 	buttonList[11].draw(screen)
@@ -322,9 +302,9 @@ def quit(fakeArg): # button-based
 	camDisconnect(None)
 	pygame.quit()
 
+# program execution starts here
 
-	# main execution #############################################################################
-
+# create communication clients
 cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
 cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
 cameraRaspi3 = CameraClient(IPraspi3, cameraClientPort)
@@ -332,6 +312,7 @@ cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
 driveControl = DriveClient(IPraspi2, driveClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
 
+# set up pygame resources
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (20, 20)
 pygame.init()
 pygame.display.set_caption("USST Rover GUI")
@@ -342,47 +323,43 @@ screen = pygame.display.set_mode((1220, 700), pygame.NOFRAME)
 background = pygame.image.load("./graphics/background.jpg")
 cameraSplash = pygame.image.load("./graphics/camera.jpg")
 screen.blit(background, (130, 0))
+robot = VirtualRobot(1110,500,100,150)
 
-
+# check for controller
 try:
 	Controller.init()
 except:
 	pass
 
-createRobot()
-robot.draw(screen)
+# initialize all the UI elements
 createBoxes()
 drawBoxes()
 createButtons()
 drawButtons()
 createIndicators()
 drawIndicators()
-
+drawRobot()
 pygame.display.update()
 mainloop = True
-
 setDriveMode(None)
-
 indicatorTimer = 0
 redrawTimer = 0
 controllerSendTimer = 0
-
 connectConsole()
 
-while mainloop:
-	mouse = pygame.mouse.get_pos()
-	
-	if pygame.time.get_ticks() - redrawTimer > 4000: # whole display redraw timer
+while True: # main execution loop
+	# check scheduled tasks
+	if pygame.time.get_ticks() - redrawTimer > 10000: # whole display redraw timer
+		redrawTimer = pygame.time.get_ticks()
 		drawBoxes()
 		screen.blit(background, (130, 0))
 		drawButtons()
 		drawIndicators()
-		redrawTimer = pygame.time.get_ticks()
-	
-	if pygame.time.get_ticks() - controllerSendTimer > 250: # controller data sending timer
+	if pygame.time.get_ticks() - controllerSendTimer > 200: # control data send timer
+		controllerSendTimer = pygame.time.get_ticks()
 		if Controller.isConnected:
 			getInput()
-			if buttonList[5].active: # drive mode
+			if buttonList[5].selected: # drive mode
 				if indicatorList[4].active: # drive mode
 					throttle = int(axes[1] * 127) + 127
 					throttle = max(throttle, 0)
@@ -391,13 +368,13 @@ while mainloop:
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					driveControl.sendControlData(throttle, steering)
-			elif buttonList[6].active: # arm mode
+			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
 					wristPan = int(axes[2] * 90) + 90
-					if wristPan != 90:
-						armControl.panHand(wristPan)
-				
-	controllerSendTimer = pygame.time.get_ticks()
+					armControl.panHand(wristPan)	
+	
+	# update UI state, check events
+	mouse = pygame.mouse.get_pos()
 	Clock.tick(30)
 	output.draw(screen)
 	error.draw(screen)
@@ -412,6 +389,5 @@ while mainloop:
 			for button in buttonList:
 				if(button.obj.collidepoint(mouse)):
 					button.press()
-	
 	pygame.display.update()
 

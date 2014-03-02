@@ -1,5 +1,6 @@
 # A script continuously run by the arm control pi.
-# Added by Jordan Kubica
+
+# dependency list
 
 import socket
 import time
@@ -8,68 +9,61 @@ import serial
 from ServoDriver import *
 import RPi.GPIO as GPIO # for hardware reset system
 
-	# constants	
+# global constants	
 
 armPort = 3003
 scaleFactor = 0.55
-deadband = 0
-ramping = 20
-commandIn1 = 0
-commandOut1 = 1
-commandIn2 = 4
-commandOut2 = 5
-controllerAddress = 128
 
-	# global variables
+# global variables
 
 emergency = False
 
-	# Function Definitions
+# function definitions
 
-def sendSabertooth(address, command, speed):
-	checksum = int(address) + int(command) + int(speed) & 127
-	controller.write(chr(int(address)))
-	controller.write(chr(int(command)))
-	controller.write(chr(int(speed)))
-	controller.write(chr(int(checksum)))
+def setActuators(speedActuator1, speedActuator2): # sends control data to kangaroo
+	drive.write("1,s" + str(int(speedActuator1 * scaleFactor)) + "\r\n")
+	drive.write("2,s" + str(int(speedActuator2 * scaleFactor)) + "\r\n")
 	
-def stopSabertooth():
-	sendSabertooth(controllerAddress,commandIn1,0)
-	sendSabertooth(controllerAddress,commandIn2,0)
+def getFeedback()
+	drive.write("1,getp\r\n")
+	feedback1 = drive.readline()
+	drive.write("2,getp\r\n")
+	feedback2 = drive.readline()
+	return (feedback1, feedback2)
 	
 def parseCommand(command): # Parses Socket Data back to Axis positions
 	global emergency
 	if len(command) > 3:
 		if(command[0] == "#"): # is valid
 			if(command[1] == "A"):
-				# if(command[2] == "B": # rotate base
-					# if(emergency == False)
-						# rotateBase(int(ord(command[3])))
-				# elif(command[2] == "L": # translate wrist joint up/down
-					# if(emergency == False)
-						# liftWrist(int(ord(command[3])))
-				# elif(command[2] == "M": # translate wrist joint in/out
-					# if(emergency == False)
-						# moveWrist(int(ord(command[3])))
-				# elif(command[2] == "W": # rotate wrist joint up/down
-					# if(emergency == False)
-						# rotateWrist(int(ord(command[3])))
+				if(command[2] == "B": # rotate base
+					if(emergency == False)
+						pass
+				elif(command[2] == "L": # translate wrist joint up/down
+					if(emergency == False)
+						pass
+				elif(command[2] == "M": # translate wrist joint in/out
+					if(emergency == False)
+						pass
+				elif(command[2] == "W": # rotate wrist joint up/down
+					if(emergency == False)
+						pass
 				if command[2] == "P": # pan gripper left/right
 					if emergency == False:	
-						wristPan.set(int(ord(command[3])))
-				# elif(command[2] == "H": # twist gripper cw/ccw
-					# if(emergency == False)
-						# twistGripper(int(ord(command[3])))
-				# elif(command[2] == "G": # open or close gripper
-					# if(emergency == False)
-						# moveGripper(int(ord(command[3])))
-				# elif(command[2] == "S": # stop all actuators
-					# stopSabertooth()
-					# print("emergency stop")
-					# emergency = True
-				# elif(command[2] == "C"):
-					# emergency = False
-	
+						wristPan.setRelative(int(ord(command[3])))
+				elif(command[2] == "H": # twist gripper cw/ccw
+					if(emergency == False)
+						pass
+				elif(command[2] == "G": # open or close gripper
+					if(emergency == False)
+						pass
+				elif(command[2] == "S": # stop all actuators
+					setActuators(0, 0)
+					servoDriver.reset()
+					print("emergency stop")
+					emergency = True
+				elif(command[2] == "C"):
+					emergency = False
 					
 def stopSockets(): # Stops sockets on error condition
 	try:
@@ -84,15 +78,15 @@ def stopSockets(): # Stops sockets on error condition
 
 ### Main Program  ###
 
-# set up motor controller
+# set up kangaroo
 try:
 	controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
 	controller.baudrate = 9600
 	controller.timeout = 0.2
-	sendSabertooth(controllerAddress, 16, ramping)
-	sendSabertooth(controllerAddress, 17, deadband)
+	controller.write("1,start\r\n")
+	controller.write("2,start\r\n")
 except:
-	print("motor controller setup failed!")
+	print("kangaroo setup failed!")
 	time.sleep(2)
 	raise
 	#subprocess.call("sudo reboot", shell = True)
@@ -110,7 +104,7 @@ except:
 # set up servo driver
 try:
 	servoDriver = ServoDriver()
-	wristPan = Servo(servoDriver, 4, 1200, 1800, 90)
+	wristPan = Servo(servoDriver, 4, 1200, 1800, 1500, False)
 except:
 	print("Servo setup failed!")
 	time.sleep(2)

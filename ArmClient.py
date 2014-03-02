@@ -2,16 +2,15 @@
 # A library to communicate with the rover's arm control system
 # Added by Jordan
 
-	# dependency list
+# dependency list
 
 import socket
 import time
 import sys
 
+# class definition
 
-	# class definition
-	
-class ArmClient: # class for arm systems
+class ArmClient: # class for arm control
 	def __init__(self, IP, port):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.IP = IP
@@ -35,7 +34,7 @@ class ArmClient: # class for arm systems
 		except socket.error:
 			pass
 		for i in range (0, retries):
-			time.sleep(1)
+			time.sleep(0.25)
 			try:
 				self.socket.connect((self.IP, self.port))
 				return True
@@ -49,7 +48,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			sys.stderr.write(e)
+			sys.stderr.write(e.strerror)
 			return False
 	
 	def liftWrist(self, speed):
@@ -58,7 +57,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			sys.stderr.write(e)
+			sys.stderr.write(e.strerror)
 			return False
 	
 	def tiltWrist(self, speed):
@@ -67,16 +66,15 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			sys.stderr.write(e)
+			sys.stderr.write(e.strerror)
 			return False
 	
 	def panHand(self, speed):
 		try:
-			self.socket.send(self.commandPanHand)
-			self.socket.send(chr(speed))
+			self.socket.send(self.commandPanHand + chr(speed))
 			return True
 		except socket.error as e:
-			sys.stderr.write(e)
+			sys.stderr.write(e.strerror)
 			return False
 	
 	def twistHand(self, speed):
@@ -85,7 +83,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			sys.stderr.write(e)
+			sys.stderr.write(e.strerror)
 			return False
 	
 	def gripper(self, speed):
@@ -94,7 +92,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(chr(speed))
 			return True
 		except socket.error as e:
-			sys.stderr.write(e)
+			sys.stderr.write(e.strerror)
 			return False
 
 	def stopMotors(self):
@@ -102,7 +100,7 @@ class ArmClient: # class for arm systems
 			self.socket.send(self.commandArmStop)
 			return True
 		except socket.error as e:
-			sys.stderr.write(e)
+			sys.stderr.write(e.strerror)
 			return False
 
 	def test(self):
