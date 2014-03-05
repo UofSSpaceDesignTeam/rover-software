@@ -39,6 +39,8 @@ class VirtualRobot():
 		screen.blit(self.driveWheel,(self.left,self.top + self.height - 30))
 		screen.blit(self.driveWheel,(self.left + self.width - 15, self.top))
 		screen.blit(self.driveWheel,(self.left+self.width -15, self.top + self.height - 30))
+		screen.blit(self.driveWheel, (self.left, self.top + self.height/2))
+		screen.blit(self.driveWheel,(self.left + self.width-15, self.top+self.height/2))
 		self.driveCamObj = pygame.draw.rect(screen,self.driveCamCol,self.driveCam)
 		self.armCamObj = pygame.draw.rect(screen,self.armCamCol, self.armCam)
 

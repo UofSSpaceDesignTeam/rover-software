@@ -23,7 +23,7 @@ class TextOutput():
 	def write(self,text):
 		if len(text) < 3: 
 			return
-		elif(text = self.lastMessage):
+		elif(text == self.lastMessage):
 			return
 		elif(len(text) > 60):
 			self.lastMessage = text
