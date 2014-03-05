@@ -53,7 +53,7 @@ class ServoDriver:
 		self.i2c = I2C()
 		self.reset()
 	
-	def reset():
+	def reset(self):
 		self.i2c.write(self.__MODE1, 0x00)
 		time.sleep(0.05)
 		oldmode = self.i2c.read(self.__MODE1);
@@ -82,15 +82,15 @@ class I2C:
 	
 	def write(self, reg, value):
 		try:
-		self.bus.write_byte_data(0x40, reg, value)
-	except IOError, err:
-		print "Error accessing servo board at 0x40: Check your I2C"
+			self.bus.write_byte_data(0x40, reg, value)
+		except IOError, err:
+			print "Error accessing servo board at 0x40: Check your I2C"
 
 	def read(self, reg):
-	try:
-		result = self.bus.read_byte_data(0x40, reg)
-		return result
-	except IOError, err:
-		print "Error accessing servo board at 0x40: Check your I2C"
-		return None
+		try:
+			result = self.bus.read_byte_data(0x40, reg)
+			return result
+		except IOError, err:
+			print "Error accessing servo board at 0x40: Check your I2C"
+			return None
 

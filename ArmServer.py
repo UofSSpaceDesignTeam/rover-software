@@ -21,48 +21,48 @@ emergency = False
 # function definitions
 
 def setActuators(speedActuator1, speedActuator2): # sends control data to kangaroo
-	drive.write("1,s" + str(int(speedActuator1 * scaleFactor)) + "\r\n")
-	drive.write("2,s" + str(int(speedActuator2 * scaleFactor)) + "\r\n")
+	controller.write("1,s" + str(int(speedActuator1 * scaleFactor)) + "\r\n")
+	controller.write("2,s" + str(int(speedActuator2 * scaleFactor)) + "\r\n")
 	
-def getFeedback()
-	drive.write("1,getp\r\n")
-	feedback1 = drive.readline()
-	drive.write("2,getp\r\n")
-	feedback2 = drive.readline()
+def getFeedback():
+	controller.write("1,getp\r\n")
+	feedback1 = controller.readline()
+	controller.write("2,getp\r\n")
+	feedback2 = controller.readline()
 	return (feedback1, feedback2)
 	
 def parseCommand(command): # Parses Socket Data back to Axis positions
 	global emergency
 	if len(command) > 3:
-		if(command[0] == "#"): # is valid
-			if(command[1] == "A"):
-				if(command[2] == "B": # rotate base
-					if(emergency == False)
+		if command[0] == "#": # is valid
+			if command[1] == "A":
+				if command[2] == "B": # rotate base
+					if emergency == False:
 						pass
-				elif(command[2] == "L": # translate wrist joint up/down
-					if(emergency == False)
+				elif command[2] == "L": # translate wrist joint up/down
+					if emergency == False:
 						pass
-				elif(command[2] == "M": # translate wrist joint in/out
-					if(emergency == False)
+				elif command[2] == "M": # translate wrist joint in/out
+					if emergency == False:
 						pass
-				elif(command[2] == "W": # rotate wrist joint up/down
-					if(emergency == False)
+				elif command[2] == "W": # rotate wrist joint up/down
+					if emergency == False:
 						pass
-				if command[2] == "P": # pan gripper left/right
+				elif command[2] == "P": # pan gripper left/right
 					if emergency == False:	
 						wristPan.setRelative(int(ord(command[3])))
-				elif(command[2] == "H": # twist gripper cw/ccw
-					if(emergency == False)
+				elif command[2] == "H": # twist gripper cw/ccw
+					if emergency == False:
 						pass
-				elif(command[2] == "G": # open or close gripper
-					if(emergency == False)
+				elif command[2] == "G": # open or close gripper
+					if emergency == False:
 						pass
-				elif(command[2] == "S": # stop all actuators
+				elif command[2] == "S": # stop all actuators
 					setActuators(0, 0)
 					servoDriver.reset()
 					print("emergency stop")
 					emergency = True
-				elif(command[2] == "C"):
+				elif command[2] == "C":
 					emergency = False
 					
 def stopSockets(): # Stops sockets on error condition
@@ -104,7 +104,7 @@ except:
 # set up servo driver
 try:
 	servoDriver = ServoDriver()
-	wristPan = Servo(servoDriver, 4, 1200, 1800, 1500, False)
+	wristPan = Servo(servoDriver, 4, 1200, 1800, 1500)
 except:
 	print("Servo setup failed!")
 	time.sleep(2)
@@ -131,19 +131,19 @@ try:
 		print("Connection to " + str(clientAddress[0]) + " was closed")
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
-	stopSabertooth()
+	setActuators(0, 0)
 	stopSockets()
 	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
-	stopSabertooth()
+	setActuators(0, 0)
 	stopSockets()
 	GPIO.cleanup()
 	time.sleep(2)
 	raise
 	#subprocess.call("sudo reboot", shell = True)
 except:
-	stopSabertooth()
+	setActuators(0, 0)
 	stopSockets()
 	GPIO.cleanup()
 	raise
