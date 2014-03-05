@@ -16,16 +16,21 @@ class TextOutput():
 		self.list = []
 		self.color = color
 		self.textcolor = fontcolor
+		self.lastMessage = None
 		self.obj1 = None
 		self.obj2 = None
 	
 	def write(self,text):
 		if len(text) < 3: 
 			return
+		elif(text = self.lastMessage):
+			return
 		elif(len(text) > 60):
+			self.lastMessage = text
 			self.write(text[:60])
 			self.write(text[60:])
 		else:
+			self.lastMessage = text
 			self.list.append(text)
 			if(len(self.list) >= self.maxArraySize):
 				self.list.remove(self.list[0])
