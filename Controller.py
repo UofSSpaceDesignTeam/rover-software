@@ -15,10 +15,10 @@ rightJoystickXScale = 1.0
 rightJoystickYScale = 1.0
 triggerScale = 1.0
 
-leftJoystickXDeadzone = 0.16
-leftJoystickYDeadzone = 0.16
-rightJoystickXDeadzone = 0.16
-rightJoystickYDeadzone = 0.16
+leftJoystickXDeadzone = 0.2
+leftJoystickYDeadzone = 0.2
+rightJoystickXDeadzone = 0.2
+rightJoystickYDeadzone = 0.2
 triggerDeadzone = 0.1
 
 isConnected = False

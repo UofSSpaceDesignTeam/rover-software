@@ -355,7 +355,7 @@ while True: # main execution loop
 		screen.blit(background, (130, 0))
 		drawButtons()
 		drawIndicators()
-	if pygame.time.get_ticks() - controllerSendTimer > 200: # control data send timer
+	if pygame.time.get_ticks() - controllerSendTimer > 100: # control data send timer
 		controllerSendTimer = pygame.time.get_ticks()
 		if Controller.isConnected:
 			getInput()
@@ -370,7 +370,7 @@ while True: # main execution loop
 					driveControl.sendControlData(throttle, steering)
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
-					wristPan = int(axes[2] * 90) + 90
+					wristPan = int(axes[2] * -80) + 127
 					armControl.panHand(wristPan)	
 	
 	# update UI state, check events
