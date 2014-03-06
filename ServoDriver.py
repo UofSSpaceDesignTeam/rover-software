@@ -17,11 +17,11 @@ class Servo:
 		self.currentPosition = default
 
 	def setRelative(self, change):
-		self.currentPosition += (change - 127) * 1.5
+		self.currentPosition += (change - 127)
 		self.currentPosition = max(self.currentPosition, self.minimum)
 		self.currentPosition = min(self.currentPosition, self.maximum)
 		self.driver.setServo(self.channel, int(self.currentPosition))
-		print("(a)ch" + str(self.channel) + ": " + str(self.currentPosition))
+		#print("(r)ch" + str(self.channel) + ": " + str(self.currentPosition))
 		
 	def setAbsolute(self, position):
 		pulse = position - 127
@@ -30,7 +30,7 @@ class Servo:
 		pulse = max(pulse, self.minimum)
 		pulse = min(pulse, self.maximum)
 		self.driver.setServo(self.channel, int(pulse))
-		print("(r)ch" + str(self.channel) + ": " + str(self.currentPosition))
+		#print("(a)ch" + str(self.channel) + ": " + str(self.currentPosition))
 	
 
 class ServoDriver:
@@ -66,7 +66,7 @@ class ServoDriver:
 	
 	def setServo(self, channel, pulse):
 		if(channel >= 0 and channel <= 15):
-			print("ch" + str(channel) + ": " + str(pulse))
+			#print("ch" + str(channel) + ": " + str(pulse))
 			tick = int(pulse / 4.8828)
 			self.i2c.write(self.__LED0_ON_L+4*channel, 0x00)
 			self.i2c.write(self.__LED0_ON_H+4*channel, 0x00)

@@ -47,13 +47,13 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						pass
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
-						pass
+						wristTilt.setRelative(int(ord(command[3])))
 				elif command[2] == "P": # pan gripper left/right
 					if emergency == False:	
 						wristPan.setRelative(int(ord(command[3])))
 				elif command[2] == "H": # twist gripper cw/ccw
 					if emergency == False:
-						pass
+						wristTwist.setRelative(int(ord(command[3])))
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
 						pass
@@ -104,7 +104,9 @@ except:
 # set up servo driver
 try:
 	servoDriver = ServoDriver()
-	wristPan = Servo(servoDriver, 4, 1200, 1800, 1500)
+	wristPan = Servo(servoDriver, 11, 830, 2350, 1600)
+	wristTilt = Servo(servoDriver, 10, 1000, 1700, 1370)
+	wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)
 except:
 	print("Servo setup failed!")
 	time.sleep(2)
@@ -124,7 +126,7 @@ try:
 		while(True):
 			data = armSocket.recv(256)
 			if(data == ""): # socket closing
-				stopSabertooth()
+				setActuators(0, 0)
 				break
 			else:
 				parseCommand(data)
