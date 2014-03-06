@@ -26,14 +26,13 @@ class TextOutput():
 		elif(text == self.lastMessage):
 			return
 		elif(len(text) > 60):
-			self.lastMessage = text
 			self.write(text[:60])
 			self.write(text[60:])
 		else:
-			self.lastMessage = text
 			self.list.append(text)
 			if(len(self.list) >= self.maxArraySize):
 				self.list.remove(self.list[0])
+		self.lastMessage = text
 
 	def renderText(self, counter):
 		font = pygame.font.Font(None, self.textSize)
