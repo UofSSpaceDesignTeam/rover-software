@@ -62,8 +62,7 @@ class ArmClient: # class for arm control
 	
 	def tiltWrist(self, speed):
 		try:
-			self.socket.send(self.commandTiltWrist)
-			self.socket.send(chr(speed))
+			self.socket.send(self.commandTiltWrist + chr(speed))
 			return True
 		except socket.error as e:
 			sys.stderr.write(e.strerror)
@@ -79,8 +78,7 @@ class ArmClient: # class for arm control
 	
 	def twistHand(self, speed):
 		try:
-			self.socket.send(self.commandTwistHand)
-			self.socket.send(chr(speed))
+			self.socket.send(self.commandTwistHand + chr(speed))
 			return True
 		except socket.error as e:
 			sys.stderr.write(e.strerror)
