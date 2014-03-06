@@ -27,6 +27,7 @@ class VirtualRobot():
 		self.armCam = (left+width/2+width/16,top-height/4,width/8,width/8)
 		self.driveCam = (left+width/2-width/16,top +height/2,width/8,width/8)
 		self.driveWheel = pygame.image.load("./graphics/redwheel.png")
+		self.drivecamera = pygame.image.load("./graphics/rcamera.png")
 		self.armObj = None
 		self.armCamObj = None
 		self.bodyObj = None
@@ -41,7 +42,7 @@ class VirtualRobot():
 		screen.blit(self.driveWheel,(self.left+self.width -15, self.top + self.height - 30))
 		screen.blit(self.driveWheel, (self.left, self.top + self.height/2))
 		screen.blit(self.driveWheel,(self.left + self.width-15, self.top+self.height/2))
-		self.driveCamObj = pygame.draw.rect(screen,self.driveCamCol,self.driveCam)
+		screen.blit(self.drivecamera,(self.left+self.width/2-self.width/16,self.top+self.height/2))
 		self.armCamObj = pygame.draw.rect(screen,self.armCamCol, self.armCam)
 
 	def turnOnCamera(self, i):
