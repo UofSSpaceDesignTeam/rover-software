@@ -20,9 +20,9 @@ emergency = False
 
 # function definitions
 
-def setActuators(speedActuator1, speedActuator2): # sends control data to kangaroo
-	controller.write("1,s" + str(int(speedActuator1 * scaleFactor)) + "\r\n")
-	controller.write("2,s" + str(int(speedActuator2 * scaleFactor)) + "\r\n")
+def moveActuators(change1, change2): # sends movement data to kangaroo
+	controller.write("1,pi" + str(int(speedActuator1 * scaleFactor)) + "\r\n"
+	controller.write("2,pi" + str(int(speedActuator2 * scaleFactor)) + "\r\n")
 	
 def getFeedback():
 	controller.write("1,getp\r\n")
@@ -41,7 +41,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						pass
 				elif command[2] == "L": # translate wrist joint up/down
 					if emergency == False:
-						pass
+						moveActuators(int(ord(command[3])) - 127, 0)
 				elif command[2] == "M": # translate wrist joint in/out
 					if emergency == False:
 						pass
@@ -58,7 +58,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					if emergency == False:
 						pass
 				elif command[2] == "S": # stop all actuators
-					setActuators(0, 0)
+					moveActuators(0, 0)
 					servoDriver.reset()
 					print("emergency stop")
 					emergency = True
@@ -126,26 +126,26 @@ try:
 		while(True):
 			data = armSocket.recv(256)
 			if(data == ""): # socket closing
-				setActuators(0, 0)
+				moveActuators(0, 0)
 				break
 			else:
 				parseCommand(data)
 		print("Connection to " + str(clientAddress[0]) + " was closed")
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
-	setActuators(0, 0)
+	moveActuators(0, 0)
 	stopSockets()
 	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
-	setActuators(0, 0)
+	moveActuators(0, 0)
 	stopSockets()
 	GPIO.cleanup()
 	time.sleep(2)
 	raise
 	#subprocess.call("sudo reboot", shell = True)
 except:
-	setActuators(0, 0)
+	moveActuators(0, 0)
 	stopSockets()
 	GPIO.cleanup()
 	raise

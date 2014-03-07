@@ -44,8 +44,7 @@ class ArmClient: # class for arm control
 	
 	def panBase(self, speed):
 		try:
-			self.socket.send(self.commandPanBase)
-			self.socket.send(chr(speed))
+			self.socket.send(self.commandPanBase + chr(speed))
 			return True
 		except socket.error as e:
 			sys.stderr.write(e.strerror)
@@ -53,8 +52,7 @@ class ArmClient: # class for arm control
 	
 	def liftWrist(self, speed):
 		try:
-			self.socket.send(self.commandLiftWrist)
-			self.socket.send(chr(speed))
+			self.socket.send(self.commandLiftWrist + chr(speed))
 			return True
 		except socket.error as e:
 			sys.stderr.write(e.strerror)

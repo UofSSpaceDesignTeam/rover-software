@@ -371,13 +371,21 @@ while True: # main execution loop
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
 					wristPan = int(axes[2] * 80) + 127
-					armControl.panHand(wristPan)
-					time.sleep(0.005)
+					if wristPan != 127:
+						armControl.panHand(wristPan)
+						time.sleep(0.005)
 					wristTwist = 127 - int(axes[4] * 120)
-					armControl.twistHand(wristTwist)
-					time.sleep(0.005)
+					if wristTwist != 127:
+						armControl.twistHand(wristTwist)
+						time.sleep(0.005)
 					wristTilt = 127 - int(axes[3] * 17)
-					armControl.tiltWrist(wristTilt)
+					if wristTilt != 127:
+						armControl.tiltWrist(wristTilt)
+						time.sleep(0.005)
+					wristLift = int(axes[0] * 10) + 127
+					if(wristLift != 127
+						armControl.liftWrist(wristLift)
+						time.sleep(0.005)
 	
 	# update UI state, check events
 	mouse = pygame.mouse.get_pos()

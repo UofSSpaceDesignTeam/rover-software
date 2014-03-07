@@ -58,7 +58,7 @@ class CameraClient: # class to handle camera feeds
 			#sys.stderr.write(e.strerror)
 			return False
 
-	def getPicture(self):
+	def getPicture(self): #todo: windows version
 		cmd = ("scp " + str(self.IP) + ": /home/pi/pictures/* ./robotPictures/" )
 		print(cmd)
 		subprocess.call(cmd, shell = True)
