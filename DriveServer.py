@@ -73,8 +73,7 @@ def setMotors2(yAxisr, yAxisl): # sends motor commands based on joystick1/2 y po
 	#NOTE: xAxis is now read as yAxisr.  Make sure to change this in GUI.
 	throttlel = (yAxisl - 127) / 127.0  # range is now -1 to 1
 	throttler = (yAxisr - 127) / 127.0
-	
-<<<<<<< .mine
+
 	# Math for SkidSteer
 	leftSpeed = (throttlel) * 127
 	rightSpeed = (throttler) * 127
