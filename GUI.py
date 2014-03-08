@@ -383,7 +383,7 @@ while True: # main execution loop
 						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
 					wristLift = int(axes[0] * 10) + 127
-					if(wristLift != 127
+					if wristLift != 127:
 						armControl.liftWrist(wristLift)
 						time.sleep(0.005)
 	
