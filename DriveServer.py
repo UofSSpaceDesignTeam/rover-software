@@ -20,6 +20,8 @@ commandRR = 1
 commandLF = 4
 commandLR = 5
 controllerAddress = [128, 129, 130]
+steermult = .88
+skidmode = 1
 
 # global variables
 
@@ -44,8 +46,38 @@ def setMotors(xAxis, yAxis): # sends motor commands based on joystick position
 	steering = (xAxis - 127) / 127.0
 	
 	# Math for SkidSteer
-	leftSpeed = throttle + steering
-	rightSpeed = throttle - steering
+	leftSpeed = (throttle - (steering * steermult)) * 127
+	rightSpeed = (throttle + (steering * steermult)) * 127
+
+	leftSpeed = max(leftSpeed, -127)
+	leftSpeed = min(leftSpeed, 127)
+	rightSpeed = max(rightSpeed, -127)
+	rightSpeed = min(rightSpeed, 127)
+	
+	# send forward / reverse commands to controllers
+	if(leftSpeed >= 0):
+		for address in controllerAddress:
+			sendSabertooth(address, commandLF, leftSpeed)
+	else:
+		for address in controllerAddress:
+			sendSabertooth(address, commandLR, -1 * leftSpeed)
+			
+	if(rightSpeed >= 0):
+		for address in controllerAddress:
+			sendSabertooth(address, commandRF, rightSpeed)
+	else:
+		for address in controllerAddress:
+			sendSabertooth(address, commandRR, -1 * rightSpeed)
+
+def setMotors2(yAxisr, yAxisl): # sends motor commands based on joystick1/2 y position
+	#NOTE: xAxis is now read as yAxisr.  Make sure to change this in GUI.
+	throttlel = (yAxisl - 127) / 127.0  # range is now -1 to 1
+	throttler = (yAxisr - 127) / 127.0
+	
+<<<<<<< .mine
+	# Math for SkidSteer
+	leftSpeed = (throttlel) * 127
+	rightSpeed = (throttler) * 127
 	
 	leftSpeed = max(leftSpeed, -127)
 	leftSpeed = min(leftSpeed, 127)
@@ -66,28 +98,35 @@ def setMotors(xAxis, yAxis): # sends motor commands based on joystick position
 	else:
 		for address in controllerAddress:
 			sendSabertooth(address, commandRR, -1 * rightSpeed)
-	
+			
 def parseCommand(command): # parses and executes remote commands
 	global emergency
+	global skidmode
 	if len(command) > 2:
 		if(command[0] == "#"): # is valid
 			if(command[1] == "D"):
 				if(command[2] == "D" and len(command) > 4): # Drive, Data
-					xAxis = int(ord(command[3]))
-					yAxis = int(ord(command[4]))
-					print(xAxis, yAxis)
-					setMotors(xAxis, yAxis)
+					Axis1 = int(ord(command[3]))
+					Axis2 = int(ord(command[4]))
+					print(Axis1, Axis2) #x+y in mode 1 or ry+ly in mode 2
+					if(skidmode == 1):
+						setMotors(Axis1, Axis2)
+					if(skidmode == 2):
+						setmotors2(Axis1, Axis2)
 					if(emergency == True):
-						if(xAxis == 127 and yAxis == 127):
+						if(Axis1 == 127 and Axis2 == 127):
 							emergency = False
 						else:
 							print("Check controller connection and release joystick.")
 							stopSabertooth()
 							time.sleep(2)
+				if(command[2] == "M"): # Mode Switch
+					skidmode = int(ord(command[3]))
 				elif(command[2] == "S"): # Stop
 					stopSabertooth()
 					print("emergency stop")
 					emergency = True
+					
 
 def stopSockets(): # Stops sockets on error condition
 	try:
