@@ -23,7 +23,7 @@ import subprocess
 
 # global constants
 
-IPraspi1 = "192.168.1.103"
+IPraspi1 = "10.64.226.83" #192.168.1.103
 IPraspi2 = "10.64.226.138" #"192.168.1.104"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "192.168.1.106"
@@ -309,7 +309,7 @@ cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
 cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
 cameraRaspi3 = CameraClient(IPraspi3, cameraClientPort)
 cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
-driveControl = DriveClient(IPraspi2, driveClientPort)
+driveControl = DriveClient(IPraspi1, driveClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
 
 # set up pygame resources
