@@ -16,6 +16,7 @@ class DriveClient: # class for drive control
 		self.commandControlData = "#DD"
 		self.commandRoverStop = "#DS"
 		self.commandGPSData = "#GD"
+		self.commandSkidSwitch = "#DM"
 
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,7 +43,14 @@ class DriveClient: # class for drive control
 			#sys.stderr.write(e.strerror)
 			self.stopMotors()
 			return False
-
+	
+	def sendSkidSwitch(self, skidmode):
+		try:
+			self.socket.send(self.commandSkidSwitch + chr(skidmode))
+			return True
+		except socket.error as e:
+			return False
+	
 	def stopMotors(self):
 		try:
 			self.socket.send(self.commandRoverStop)
