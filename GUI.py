@@ -47,20 +47,21 @@ colorYellow = (250, 250, 0)
 def createButtons(): # creates interactive buttons, and places them in a list in a defined order.
 	global buttonList
 	buttonList = []
-	camera1Button = Button(camConnect, (1), "Camera 1", 20, colorBlack, (12, 25, 100, 20), colorLightBlue, colorGreen)
-	camera2Button = Button(camConnect, (2), "Camera 2", 20, colorBlack, (12, 55, 100, 20), colorLightBlue, colorGreen)
-	camera3Button = Button(camConnect, (3), "Camera 3", 20, colorBlack, (12, 85, 100, 20), colorLightBlue, colorGreen)
-	camera4Button = Button(camConnect, (4), "Camera 4", 20, colorBlack, (12, 115, 100, 20), colorLightBlue, colorGreen)
+	camera1Button = Button(camConnect, (1), "Front Corner", 20, colorBlack, (12, 25, 100, 20), colorLightBlue, colorGreen)
+	camera2Button = Button(camConnect, (2), "Gripper", 20, colorBlack, (12, 55, 100, 20), colorLightBlue, colorGreen)
+	camera3Button = Button(camConnect, (3), "Antenna Mast", 20, colorBlack, (12, 85, 100, 20), colorLightBlue, colorGreen)
+	camera4Button = Button(camConnect, (4), "Rear Center", 20, colorBlack, (12, 115, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton = Button(camDisconnect, (0), "None", 20, colorBlack, (12, 145, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton.selected = True
 	moveButton = Button(setDriveMode, None, "Drive", 20, colorBlack, (12, 204, 100, 20), colorLightBlue, colorGreen)
 	armButton = Button(setArmMode, None, "Arm", 20, colorBlack, (12, 234, 100, 20), colorLightBlue, colorGreen)
 	moveButton.selected = True
-	stopButton = Button(stopRover, None, "Stop", 22, colorYellow, (12, 294, 100, 20), colorRed, colorRed)
-	pictureButton = Button(takePicture, None, "Picture", 20, colorBlack, (12, 324, 100, 20), colorLightBlue, colorYellow)
+	stopButton = Button(stopRover, None, "Stop", 22, colorRed, (12, 294, 100, 20), colorYellow, colorYellow)
+	pictureButton = Button(takePicture, None, "Take Picture", 20, colorBlack, (12, 324, 100, 20), colorLightBlue, colorYellow)
 	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 354, 100, 20), colorLightBlue, colorYellow)
 	connectButton = Button(connectClients, None, "Connect All", 20, colorBlack, (1107, 180, 100, 20), colorLightBlue, colorYellow)
-	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 415, 100, 20), colorLightBlue, colorYellow)
+	restartButton = Button(restart, None, "Restart", 20, colorBlack, (12, 415, 100, 20), colorLightBlue, colorYellow)
+	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 445, 100, 20), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -72,7 +73,8 @@ def createButtons(): # creates interactive buttons, and places them in a list in
 	buttonList.append(pictureButton)	# 8
 	buttonList.append(runExperimentButton)	# 9
 	buttonList.append(connectButton)	# 10
-	buttonList.append(quitButton)	# 11
+	buttonList.append(restartButton)	# 11
+	buttonList.append(quitButton)	# 12
 
 def createBoxes(): # creates simple graphical elements, and places them in a list
 	global boxList
@@ -80,7 +82,7 @@ def createBoxes(): # creates simple graphical elements, and places them in a lis
 	cameraButtonBox = Box("Camera Feeds", 22, colorWhite, (0, 0, 125, 175), (11, 6), colorGray)
 	controlBox = Box("Control Modes", 22, colorWhite, (0, 180, 125, 83), (9, 185), colorGray)
 	actionBox = Box("Rover Actions", 22, colorWhite, (0, 268, 125, 115), (10, 274), colorGray)
-	uiBox = Box("User Interface", 22, colorWhite, (0, 389, 125, 55), (12, 395), colorGray)
+	uiBox = Box("User Interface", 22, colorWhite, (0, 389, 125, 83), (12, 395), colorGray)
 	connectionsBox = Box("Connections", 22, colorWhite, (1095, 0, 125, 235), (1110, 6), colorGray)
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
@@ -295,9 +297,22 @@ def connectClients(fakeArg): # button-based
 	drawButtons()
 	pygame.display.update()
 
-def quit(fakeArg): # button-based
+def restart(fakeArg): # button-based
 	buttonList[11].selected = True
 	buttonList[11].draw(screen)
+	pygame.display.update()
+	camDisconnect(None)
+	if(os.name == "posix"): # linux machine
+		command = "sudo python GUI.py"
+		subprocess.Popen(str(command), shell=True)
+	else: #windows
+		command = "C:\Python27\python.exe GUI.py" # default install dir
+		subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
+	pygame.quit()
+
+def quit(fakeArg): # button-based
+	buttonList[12].selected = True
+	buttonList[12].draw(screen)
 	pygame.display.update()
 	camDisconnect(None)
 	pygame.quit()
