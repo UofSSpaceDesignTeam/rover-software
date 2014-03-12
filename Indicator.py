@@ -33,7 +33,7 @@ class Indicator:
 	def draw(self, screen): # redraw the button with centered label
 		pygame.draw.rect(screen, (10, 10, 10), (self.position[0] - 2, self.position[1] - 2, 18, 18))
 		pygame.draw.rect(screen, self.getColor(), (self.position[0], self.position[1], 14, 14))
-		screen.blit(self.font.render(self.text, 1, self.fontColor), (self.position[0] + 22, self.position[1] + 1))
+		screen.blit(self.font.render(self.text, 1, self.fontColor), (self.position[0] + 20, self.position[1] + 1))
 
 
 	def refresh(self):	# call boolean function to determine state

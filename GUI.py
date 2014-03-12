@@ -47,11 +47,11 @@ colorYellow = (250, 250, 0)
 def createButtons(): # creates interactive buttons, and places them in a list in a defined order.
 	global buttonList
 	buttonList = []
-	camera1Button = Button(camConnect, (1), "Front Corner", 20, colorBlack, (12, 25, 100, 20), colorLightBlue, colorGreen)
-	camera2Button = Button(camConnect, (2), "Gripper", 20, colorBlack, (12, 55, 100, 20), colorLightBlue, colorGreen)
-	camera3Button = Button(camConnect, (3), "Antenna Mast", 20, colorBlack, (12, 85, 100, 20), colorLightBlue, colorGreen)
-	camera4Button = Button(camConnect, (4), "Rear Center", 20, colorBlack, (12, 115, 100, 20), colorLightBlue, colorGreen)
-	cameraStopButton = Button(camDisconnect, (0), "None", 20, colorBlack, (12, 145, 100, 20), colorLightBlue, colorGreen)
+	camera1Button = Button(camConnect, (1), "Front Camera", 20, colorBlack, (12, 25, 100, 20), colorLightBlue, colorGreen)
+	camera2Button = Button(camConnect, (2), "Arm Camera", 20, colorBlack, (12, 55, 100, 20), colorLightBlue, colorGreen)
+	camera3Button = Button(camConnect, (3), "Mast Camera", 20, colorBlack, (12, 85, 100, 20), colorLightBlue, colorGreen)
+	camera4Button = Button(camConnect, (4), "Rear Camera", 20, colorBlack, (12, 115, 100, 20), colorLightBlue, colorGreen)
+	cameraStopButton = Button(camDisconnect, (0), "Off", 20, colorBlack, (12, 145, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton.selected = True
 	moveButton = Button(setDriveMode, None, "Drive", 20, colorBlack, (12, 204, 100, 20), colorLightBlue, colorGreen)
 	armButton = Button(setArmMode, None, "Arm", 20, colorBlack, (12, 234, 100, 20), colorLightBlue, colorGreen)
@@ -93,13 +93,13 @@ def createBoxes(): # creates simple graphical elements, and places them in a lis
 def createIndicators(): # creates visual status indicators, and places them in a list in a defined order.
 	global indicatorList
 	indicatorList = []
-	camera1Indicator = Indicator(testClient, cameraRaspi1, "Camera 1", colorWhite, (1108, 30), colorRed, colorGreen)
-	camera2Indicator = Indicator(testClient, cameraRaspi2, "Camera 2", colorWhite, (1108, 55), colorRed, colorGreen)
-	camera3Indicator = Indicator(testClient, cameraRaspi3, "Camera 3", colorWhite, (1108, 80), colorRed, colorGreen)
-	camera4Indicator = Indicator(testClient, cameraRaspi4, "Camera 4", colorWhite, (1108, 105), colorRed, colorGreen)
-	driveIndicator = Indicator(testClient, driveControl, "Drive System", colorWhite, (1108, 130), colorRed, colorGreen)
-	armIndicator = Indicator(testClient, armControl, "Arm System", colorWhite, (1108, 155), colorRed, colorGreen)
-	controllerIndicator = Indicator(checkController, None, "Controller", colorWhite, (1108, 210), colorRed, colorGreen)
+	camera1Indicator = Indicator(testClient, cameraRaspi1, "Front Camera", colorWhite, (1106, 30), colorRed, colorGreen)
+	camera2Indicator = Indicator(testClient, cameraRaspi2, "Arm Camera", colorWhite, (1106, 55), colorRed, colorGreen)
+	camera3Indicator = Indicator(testClient, cameraRaspi3, "Mast Camera", colorWhite, (1106, 80), colorRed, colorGreen)
+	camera4Indicator = Indicator(testClient, cameraRaspi4, "Rear Camera", colorWhite, (1106, 105), colorRed, colorGreen)
+	driveIndicator = Indicator(testClient, driveControl, "Drive System", colorWhite, (1106, 130), colorRed, colorGreen)
+	armIndicator = Indicator(testClient, armControl, "Arm System", colorWhite, (1106, 155), colorRed, colorGreen)
+	controllerIndicator = Indicator(checkController, None, "Controller", colorWhite, (1106, 210), colorRed, colorGreen)
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
 	indicatorList.append(camera3Indicator) #2
@@ -277,7 +277,8 @@ def camDisconnect(fakeArg): # button-based
 
 def connectClients(fakeArg): # button-based
 	buttonList[10].selected = True
-	drawButtons()
+	buttonList[10].draw(screen)
+	pygame.display.update()
 	drawIndicators()
 	pygame.display.update()
 	if not indicatorList[0].active:
@@ -302,11 +303,12 @@ def restart(fakeArg): # button-based
 	buttonList[11].draw(screen)
 	pygame.display.update()
 	camDisconnect(None)
+	stopRover(None)
 	if(os.name == "posix"): # linux machine
 		command = "sudo python GUI.py"
 		subprocess.Popen(str(command), shell=True)
 	else: #windows
-		command = "C:\Python27\python.exe GUI.py" # default install dir
+		command = "C:\Python27\python.exe GUI.py" # default install directory
 		subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
 	pygame.quit()
 
@@ -315,6 +317,7 @@ def quit(fakeArg): # button-based
 	buttonList[12].draw(screen)
 	pygame.display.update()
 	camDisconnect(None)
+	stopRover(None)
 	pygame.quit()
 
 # program execution starts here

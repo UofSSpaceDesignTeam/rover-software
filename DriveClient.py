@@ -40,7 +40,7 @@ class DriveClient: # class for drive control
 			self.socket.send(self.commandControlData + chr(steering) + chr(throttle))
 			return True
 		except socket.error as e:
-			#sys.stderr.write(e.strerror)
+			sys.stderr.write(e.strerror)
 			self.stopMotors()
 			return False
 	
@@ -56,7 +56,7 @@ class DriveClient: # class for drive control
 			self.socket.send(self.commandRoverStop)
 			return True
 		except socket.error as e:
-			#sys.stderr.write(e.strerror)
+			sys.stderr.write(e.strerror)
 			return False
 
 	def getGPSData(self):
@@ -70,7 +70,7 @@ class DriveClient: # class for drive control
 			lon = int(GPSList[1])
 			return (True, lat, lon)
 		except exception as e:
-			#sys.stderr.write(e)
+			sys.stderr.write(e.strerror)
 			return (False, 0, 0)
 	
 	def test(self):
