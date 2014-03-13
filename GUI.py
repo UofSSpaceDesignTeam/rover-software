@@ -23,7 +23,7 @@ import subprocess
 
 # global constants
 
-IPraspi1 = "10.64.226.83" #192.168.1.103
+IPraspi1 = "10.64.226.87" #192.168.1.103
 IPraspi2 = "10.64.226.138" #"192.168.1.104"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "192.168.1.106"
@@ -412,15 +412,17 @@ while True: # main execution loop
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					driveControl.sendControlData(throttle, steering)
-			if buttonList[12].selected: # 2 stick drive mode
+			if buttonList[13].selected: # 2 stick drive mode
 				if indicatorList[4].active: # drive mode
-					throttle_l = int(axes[1] * 127) + 127
-					throttle_l = max(throttle, 0)
-					throttle_l = min(throttle, 254)
-					throttle_r = int(axes[3] * 127) + 127
-					throttle_r = max(steering, 0)
-					throttle_r = min(steering, 254)
-					driveControl.sendControlData(throttle_l, throttle_r)
+					left = int(axes[1] * 127) + 127
+					left = max(throttle, 0)
+					left = min(throttle, 254)
+					print left
+					right = int(axes[3] * 127) + 127
+					right = max(steering, 0)
+					right = min(steering, 254)
+					print right
+					driveControl.sendControlData(left, right)
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
 					wristPan = int(axes[2] * 80) + 127
