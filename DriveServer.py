@@ -1,5 +1,4 @@
 # A script continuously run by the drive control Pi.
-# RUN WITH SUDO
 
 # dependency list
 
@@ -195,7 +194,6 @@ except socket.error as e:
 	stopSockets()
 	time.sleep(2)
 	GPIO.cleanup()
-	raise
 	#subprocess.call("sudo reboot", shell = True)
 except socket.timeout as e:
 	print(e.strerror)
@@ -203,7 +201,6 @@ except socket.timeout as e:
 	stopSockets()
 	time.sleep(2)
 	GPIO.cleanup()
-	raise
 	#subprocess.call("sudo reboot", shell = True)
 except:
 	stopSabertooth()
