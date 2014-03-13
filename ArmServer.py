@@ -13,6 +13,7 @@ import RPi.GPIO as GPIO # for hardware reset system
 
 armPort = 3003
 scaleFactor = 0.55
+address= 128
 
 # global variables
 
@@ -20,9 +21,12 @@ emergency = False
 
 # function definitions
 
-def moveActuators(change1, change2): # sends movement data to kangaroo
-	controller.write("1,pi" + str(int(speedActuator1 * scaleFactor)) + "\r\n"
-	controller.write("2,pi" + str(int(speedActuator2 * scaleFactor)) + "\r\n")
+def moveActuators(command,speed): # sends movement data to sabertooth
+	checksum = int(address) + int(command) + int(speed) & 127
+	controller.write(chr(int(address)))
+	controller.write(chr(int(command)))
+	controller.write(chr(int(speed)))
+	controller.write(chr(int(checksum)))
 	
 def getFeedback():
 	controller.write("1,getp\r\n")
@@ -39,12 +43,22 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				if command[2] == "B": # rotate base
 					if emergency == False:
 						pass
-				elif command[2] == "L": # translate wrist joint up/down
+				elif command[2] == "L": # translate wrist joint "up/down"
 					if emergency == False:
-						moveActuators(int(ord(command[3])) - 127, 0)
-				elif command[2] == "M": # translate wrist joint in/out
+						Speed = max(int(ord(command[3])), -127)
+						Speed = min(int(ord(command[3])), 127)
+						if Speed >= 0:
+							moveActuators(4, int(ord(command[3])))
+						else:
+							moveActuators(5, int(ord(command[3])))
+				elif command[2] == "M": # translate wrist joint "in/out"
 					if emergency == False:
-						pass
+						Speed = max(int(ord(command[3])),-127)
+						Speed = min(int(ord(command[3])), 127)
+						if Speed >= 0:
+							moveActuators(0, int(ord(command[3])))
+						else:
+							moveActuators(1, int(ord(command[3])))
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
 						wristTilt.setRelative(int(ord(command[3])))
