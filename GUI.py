@@ -414,15 +414,13 @@ while True: # main execution loop
 					driveControl.sendControlData(throttle, steering)
 			if buttonList[13].selected: # 2 stick drive mode
 				if indicatorList[4].active: # drive mode
-					left = int(axes[1] * 127) + 127
-					left = max(throttle, 0)
-					left = min(throttle, 254)
-					print left
-					right = int(axes[3] * 127) + 127
-					right = max(steering, 0)
-					right = min(steering, 254)
-					print right
-					driveControl.sendControlData(left, right)
+					throttle = int(axes[1] * 127) + 127
+					throttle = max(throttle, 0)
+					throttle = min(throttle, 254)
+					steering = int(axes[3] * 127) + 127
+					steering = max(steering, 0)
+					steering = min(steering, 254)
+					driveControl.sendControlData(throttle, steering)
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
 					wristPan = int(axes[2] * 80) + 127
