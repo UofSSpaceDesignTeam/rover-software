@@ -111,7 +111,7 @@ def parseCommand(command): # parses and executes remote commands
 					if(skidmode == 1):
 						setMotors(Axis1, Axis2)
 					if(skidmode == 2):
-						setmotors2(Axis1, Axis2)
+						setMotors2(Axis1, Axis2)
 					if(emergency == True):
 						if(Axis1 == 127 and Axis2 == 127):
 							emergency = False
@@ -121,6 +121,7 @@ def parseCommand(command): # parses and executes remote commands
 							time.sleep(2)
 				if(command[2] == "M"): # Mode Switch
 					skidmode = int(ord(command[3]))
+					print str(skidmode) + "selected"
 				elif(command[2] == "S"): # Stop
 					stopSabertooth()
 					print("emergency stop")
@@ -194,6 +195,7 @@ except socket.error as e:
 	stopSockets()
 	time.sleep(2)
 	GPIO.cleanup()
+	raise
 	#subprocess.call("sudo reboot", shell = True)
 except socket.timeout as e:
 	print(e.strerror)
@@ -201,6 +203,7 @@ except socket.timeout as e:
 	stopSockets()
 	time.sleep(2)
 	GPIO.cleanup()
+	raise
 	#subprocess.call("sudo reboot", shell = True)
 except:
 	stopSabertooth()
