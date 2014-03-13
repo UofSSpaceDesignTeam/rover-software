@@ -50,6 +50,7 @@ class DriveClient: # class for drive control
 			return True
 		except socket.error as e:
 			return False
+			
 	
 	def stopMotors(self):
 		try:

@@ -78,7 +78,7 @@ def createButtons(): # creates interactive buttons, and places them in a list in
 	buttonList.append(restartButton)	# 11
 	buttonList.append(quitButton)	# 12
 	buttonList.append(moveButton2)	# 13
-	buttonList.append(armButton2)	# 13
+	buttonList.append(armButton2)	# 14
 
 def createBoxes(): # creates simple graphical elements, and places them in a list
 	global boxList
@@ -150,6 +150,8 @@ def setDriveMode1(fakeArg):	# button-based
 	buttonList[14].selected = False
 	buttonList[5].selected = True
 	drawButtons()
+	driveControl.sendSkidSwitch(1) # Is this a good place to put this?
+	
 	
 def setDriveMode2(fakeArg):	# button-based
 	# todo: stop arm movements
@@ -158,6 +160,7 @@ def setDriveMode2(fakeArg):	# button-based
 	buttonList[14].selected = False
 	buttonList[13].selected = True
 	drawButtons()
+	driveControl.sendSkidSwitch(2) # Is this a good place to put this?
 	
 def setArmMode1(fakeArg):	# button-based
 	# todo: stop driving
@@ -409,6 +412,15 @@ while True: # main execution loop
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					driveControl.sendControlData(throttle, steering)
+			if buttonList[12].selected: # 2 stick drive mode
+				if indicatorList[4].active: # drive mode
+					throttle_l = int(axes[1] * 127) + 127
+					throttle_l = max(throttle, 0)
+					throttle_l = min(throttle, 254)
+					throttle_r = int(axes[3] * 127) + 127
+					throttle_r = max(steering, 0)
+					throttle_r = min(steering, 254)
+					driveControl.sendControlData(throttle_l, throttle_r)
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
 					wristPan = int(axes[2] * 80) + 127
