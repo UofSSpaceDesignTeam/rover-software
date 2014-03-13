@@ -53,36 +53,40 @@ def createButtons(): # creates interactive buttons, and places them in a list in
 	camera4Button = Button(camConnect, (4), "Rear Camera", 20, colorBlack, (12, 115, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton = Button(camDisconnect, (0), "Off", 20, colorBlack, (12, 145, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton.selected = True
-	moveButton = Button(setDriveMode, None, "Drive", 20, colorBlack, (12, 204, 100, 20), colorLightBlue, colorGreen)
-	armButton = Button(setArmMode, None, "Arm", 20, colorBlack, (12, 234, 100, 20), colorLightBlue, colorGreen)
-	moveButton.selected = True
-	stopButton = Button(stopRover, None, "Stop", 22, colorRed, (12, 294, 100, 20), colorYellow, colorYellow)
-	pictureButton = Button(takePicture, None, "Take Picture", 20, colorBlack, (12, 324, 100, 20), colorLightBlue, colorYellow)
-	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 354, 100, 20), colorLightBlue, colorYellow)
+	moveButton1 = Button(setDriveMode1, None, "1 Stick Drive", 20, colorBlack, (12, 204, 100, 20), colorLightBlue, colorGreen)
+	moveButton1.selected = True
+	armButton1 = Button(setArmMode1, None, "Arm Base", 20, colorBlack, (12, 264, 100, 20), colorLightBlue, colorGreen)
+	stopButton = Button(stopRover, None, "Stop", 22, colorRed, (12, 354, 100, 20), colorYellow, colorYellow)
+	pictureButton = Button(takePicture, None, "Take Picture", 20, colorBlack, (12, 384, 100, 20), colorLightBlue, colorYellow)
+	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 414, 100, 20), colorLightBlue, colorYellow)
 	connectButton = Button(connectClients, None, "Connect All", 20, colorBlack, (1107, 180, 100, 20), colorLightBlue, colorYellow)
-	restartButton = Button(restart, None, "Restart", 20, colorBlack, (12, 415, 100, 20), colorLightBlue, colorYellow)
-	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 445, 100, 20), colorLightBlue, colorYellow)
+	restartButton = Button(restart, None, "Restart", 20, colorBlack, (12, 475, 100, 20), colorLightBlue, colorYellow)
+	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 505, 100, 20), colorLightBlue, colorYellow)
+	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", 20, colorBlack, (12, 234, 100, 20), colorLightBlue, colorGreen)
+	armButton2 = Button(setArmMode2, None, "Arm End", 20, colorBlack, (12, 294, 100, 20), colorLightBlue, colorGreen)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
 	buttonList.append(camera4Button)	# 3
 	buttonList.append(cameraStopButton)	# 4
-	buttonList.append(moveButton)	# 5
-	buttonList.append(armButton)	# 6
+	buttonList.append(moveButton1)	# 5
+	buttonList.append(armButton1)	# 6
 	buttonList.append(stopButton)	# 7
 	buttonList.append(pictureButton)	# 8
 	buttonList.append(runExperimentButton)	# 9
 	buttonList.append(connectButton)	# 10
 	buttonList.append(restartButton)	# 11
 	buttonList.append(quitButton)	# 12
+	buttonList.append(moveButton2)	# 13
+	buttonList.append(armButton2)	# 13
 
 def createBoxes(): # creates simple graphical elements, and places them in a list
 	global boxList
 	boxList = []
 	cameraButtonBox = Box("Camera Feeds", 22, colorWhite, (0, 0, 125, 175), (11, 6), colorGray)
-	controlBox = Box("Control Modes", 22, colorWhite, (0, 180, 125, 83), (9, 185), colorGray)
-	actionBox = Box("Rover Actions", 22, colorWhite, (0, 268, 125, 115), (10, 274), colorGray)
-	uiBox = Box("User Interface", 22, colorWhite, (0, 389, 125, 83), (12, 395), colorGray)
+	controlBox = Box("Control Modes", 22, colorWhite, (0, 180, 125, 143), (9, 185), colorGray)
+	actionBox = Box("Rover Actions", 22, colorWhite, (0, 328, 125, 115), (10, 334), colorGray)
+	uiBox = Box("User Interface", 22, colorWhite, (0, 449, 125, 83), (12, 455), colorGray)
 	connectionsBox = Box("Connections", 22, colorWhite, (1095, 0, 125, 235), (1110, 6), colorGray)
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
@@ -139,16 +143,36 @@ def drawRobot():
 	# todo: check UI state, set robot status accordingly
 	robot.draw(screen)
 
-def setDriveMode(fakeArg):	# button-based
+def setDriveMode1(fakeArg):	# button-based
 	# todo: stop arm movements
-	buttonList[5].selected = True
 	buttonList[6].selected = False
+	buttonList[13].selected = False
+	buttonList[14].selected = False
+	buttonList[5].selected = True
 	drawButtons()
 	
-def setArmMode(fakeArg):	# button-based
+def setDriveMode2(fakeArg):	# button-based
+	# todo: stop arm movements
+	buttonList[5].selected = False
+	buttonList[6].selected = False
+	buttonList[14].selected = False
+	buttonList[13].selected = True
+	drawButtons()
+	
+def setArmMode1(fakeArg):	# button-based
 	# todo: stop driving
 	buttonList[5].selected = False
+	buttonList[13].selected = False
+	buttonList[14].selected = False
 	buttonList[6].selected = True
+	drawButtons()
+	
+def setArmMode2(fakeArg):	# button-based
+	# todo: stop driving
+	buttonList[5].selected = False
+	buttonList[6].selected = False
+	buttonList[13].selected = False
+	buttonList[14].selected = True
 	drawButtons()
 
 def checkController(fakeArg): # button-based
@@ -359,7 +383,6 @@ drawIndicators()
 drawRobot()
 pygame.display.update()
 mainloop = True
-setDriveMode(None)
 indicatorTimer = 0
 redrawTimer = 0
 controllerSendTimer = 0
@@ -377,7 +400,7 @@ while True: # main execution loop
 		controllerSendTimer = pygame.time.get_ticks()
 		if Controller.isConnected:
 			getInput()
-			if buttonList[5].selected: # drive mode
+			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # drive mode
 					throttle = int(axes[1] * 127) + 127
 					throttle = max(throttle, 0)
