@@ -368,7 +368,7 @@ screen = pygame.display.set_mode((1220, 700), pygame.NOFRAME)
 background = pygame.image.load("./graphics/background.jpg")
 cameraSplash = pygame.image.load("./graphics/camera.jpg")
 screen.blit(background, (130, 0))
-robot = VirtualRobot(1110,500,100,150)
+robot = VirtualRobot(1100,500,100,150)
 
 # check for controller
 try:

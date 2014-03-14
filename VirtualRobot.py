@@ -17,7 +17,6 @@ class VirtualRobot():
 		self.top = top
 		self.width = width
 		self.height = height
-		self.body = (left,top,width,height)
 		self.color = colorGray
 		self.sColor = colorYellow
 		self.armCol = colorBlue
@@ -26,24 +25,27 @@ class VirtualRobot():
 		self.arm = (left+width/2,top-height/4,width/4,height/4)
 		self.armCam = (left+width/2+width/16,top-height/4,width/8,width/8)
 		self.driveCam = (left+width/2-width/16,top +height/2,width/8,width/8)
-		self.driveWheel = pygame.image.load("./graphics/redwheel.png")
+		self.driveWheel = pygame.image.load("./graphics/wheel.png")
 		self.drivecamera = pygame.image.load("./graphics/rcamera.png")
+		self.body = pygame.image.load("./graphics/Chassis.png")
+		self.arm = pygame.image.load("./graphics/Arm.png")
 		self.armObj = None
 		self.armCamObj = None
 		self.bodyObj = None
 		self.driveCamObj = None
 
 	def draw(self,screen):
-		self.bodyObj = pygame.draw.rect(screen,self.color,self.body)
-		self.armObj = pygame.draw.rect(screen, self.armCol, self.arm)
-		screen.blit(self.driveWheel,(self.left,self.top))
-		screen.blit(self.driveWheel,(self.left,self.top + self.height - 30))
-		screen.blit(self.driveWheel,(self.left + self.width - 15, self.top))
-		screen.blit(self.driveWheel,(self.left+self.width -15, self.top + self.height - 30))
-		screen.blit(self.driveWheel, (self.left, self.top + self.height/2))
-		screen.blit(self.driveWheel,(self.left + self.width-15, self.top+self.height/2))
-		screen.blit(self.drivecamera,(self.left+self.width/2-self.width/16,self.top+self.height/2))
-		self.armCamObj = pygame.draw.rect(screen,self.armCamCol, self.armCam)
+		#self.armObj = pygame.draw.rect(screen, self.armCol, self.arm)
+		screen.blit(self.driveWheel,(self.left+2,self.top-10))#top left wheel
+		screen.blit(self.driveWheel,(self.left-2,self.top + self.height-35))#left bottom wheel
+		screen.blit(self.driveWheel,(self.left + self.width-2, self.top-10))#right top wheel
+		screen.blit(self.driveWheel,(self.left+self.width+2, self.top + self.height - 35))#right bottom wheel
+		screen.blit(self.driveWheel, (self.left-2, self.top + self.height/2-15))#left middle wheel
+		screen.blit(self.driveWheel,(self.left + self.width+2, self.top+self.height/2-15))#right middle wheel
+		#screen.blit(self.drivecamera,(self.left+self.width/2-self.width/16,self.top+self.height/2))
+		screen.blit(self.body,(self.left,self.top))
+		screen.blit(self.arm,(self.left+self.width/2-5,self.top-25))
+		#self.armCamObj = pygame.draw.rect(screen,self.armCamCol, self.armCam)
 
 	def turnOnCamera(self, i):
 		if(i == 0):
