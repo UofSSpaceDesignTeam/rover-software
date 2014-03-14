@@ -56,7 +56,7 @@ def createButtons(): # creates interactive buttons, and places them in a list in
 	moveButton1 = Button(setDriveMode1, None, "1 Stick Drive", 20, colorBlack, (12, 204, 100, 20), colorLightBlue, colorGreen)
 	moveButton1.selected = True
 	armButton1 = Button(setArmMode1, None, "Arm Base", 20, colorBlack, (12, 264, 100, 20), colorLightBlue, colorGreen)
-	stopButton = Button(stopRover, None, "Stop", 22, colorRed, (12, 354, 100, 20), colorYellow, colorYellow)
+	stopButton = Button(stopRover, None, "Stop", 22, colorRed, (12, 354, 100, 20), colorLightBlue, colorYellow)
 	pictureButton = Button(takePicture, None, "Take Picture", 20, colorBlack, (12, 384, 100, 20), colorLightBlue, colorYellow)
 	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 414, 100, 20), colorLightBlue, colorYellow)
 	connectButton = Button(connectClients, None, "Connect All", 20, colorBlack, (1107, 180, 100, 20), colorLightBlue, colorYellow)
