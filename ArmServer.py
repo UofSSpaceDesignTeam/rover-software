@@ -43,6 +43,34 @@ def getFeedback():
 	feedback2 = controller.readline()
 	return (feedback1, feedback2)
 	
+def testSetActuators(actuator1, actuator2):
+	throttlel = (actutaor1 - 127) / 127.0  # range is now -1 to 1
+	throttler = (actuator2 - 127) / 127.0
+
+	# Math for SkidSteer
+	leftSpeed = (throttlel) * 127
+	rightSpeed = (throttler) * 127
+	
+	leftSpeed = max(leftSpeed, -127)
+	leftSpeed = min(leftSpeed, 127)
+	rightSpeed = max(rightSpeed, -127)
+	rightSpeed = min(rightSpeed, 127)
+	
+	# send forward / reverse commands to controllers
+	if(leftSpeed >= 0):
+		for address in controllerAddress:
+			sendSabertooth(address, commandLF, leftSpeed)
+	else:
+		for address in controllerAddress:
+			sendSabertooth(address, commandLR, -1 * leftSpeed)
+	
+	if(rightSpeed >= 0):
+		for address in controllerAddress:
+			sendSabertooth(address, commandRF, rightSpeed)
+	else:
+		for address in controllerAddress:
+			sendSabertooth(address, commandRR, -1 * rightSpeed)
+	
 def parseCommand(command): # Parses Socket Data back to Axis positions
 	global emergency
 	if len(command) > 3:
