@@ -325,6 +325,10 @@ def connectClients(fakeArg): # button-based
 		cameraRaspi4.connect(0);
 	if not indicatorList[4].active:
 		driveControl.connect(0);
+		if buttonList[5].selected:
+			driveControl.sendSkidSwitch(1)
+		if buttonList[13].selected:
+			driveControl.sendSkidSwitch(2)
 	if not indicatorList[5].active:
 		armControl.connect(0);
 	buttonList[10].selected = False
@@ -421,6 +425,7 @@ while True: # main execution loop
 					driveControl.sendControlData(throttle, steering)
 			if buttonList[13].selected: # 2 stick drive mode
 				if indicatorList[4].active: # drive mode
+					# for some reason, changing these variable names kills the program.  Fix??
 					throttle = int(axes[1] * 127) + 127
 					throttle = max(throttle, 0)
 					throttle = min(throttle, 254)
