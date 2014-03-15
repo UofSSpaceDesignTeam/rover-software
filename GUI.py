@@ -454,7 +454,15 @@ while True: # main execution loop
 					if wristLift != 127:
 						armControl.liftWrist(wristLift)
 						time.sleep(0.005)
-	
+			if buttonList[14].selected: # temporary test actuator mode
+				if indicatorList[5].active: # arm mode
+					throttle = int(axes[1] * 127) + 127
+					throttle = max(throttle, 0)
+					throttle = min(throttle, 254)
+					steering = int(axes[3] * 127) + 127
+					steering = max(steering, 0)
+					steering = min(steering, 254)
+					armControl.temp_actuator1(throttle, steering)	
 	# update UI state, check events
 	mouse = pygame.mouse.get_pos()
 	Clock.tick(30)
