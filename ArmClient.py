@@ -109,7 +109,7 @@ class ArmClient: # class for arm control
 	# Temporary for testing actuators		
 	def temp_actuator1(self, actuator1, actuator2):
 		try:
-			self.socket.send("#TA" + chr(actuator1) + chr(actuator2))
+			self.socket.send("#AT" + chr(actuator1) + chr(actuator2))
 			return True
 		except socket.error as e:
 			sys.stderr.write(e.strerror)

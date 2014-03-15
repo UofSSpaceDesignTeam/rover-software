@@ -29,12 +29,12 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(speed)))
 	controller.write(chr(int(checksum)))
 
-#def moveActuators(command,speed): # sends movement data to sabertooth
-#	checksum = int(address) + int(command) + int(speed) & 127
-#	controller.write(chr(int(address)))
-#	controller.write(chr(int(command)))
-#	controller.write(chr(int(speed)))
-#	controller.write(chr(int(checksum)))
+def moveActuators(command,speed): # sends movement data to sabertooth
+	checksum = int(address) + int(command) + int(speed) & 127
+	controller.write(chr(int(address)))
+	controller.write(chr(int(command)))
+	controller.write(chr(int(speed)))
+	controller.write(chr(int(checksum)))
 	
 def getFeedback():
 	controller.write("1,getp\r\n")
@@ -47,9 +47,9 @@ def testSetActuators(actuator1, actuator2):
 	throttlel = (actutaor1 - 127) / 127.0  # range is now -1 to 1
 	throttler = (actuator2 - 127) / 127.0
 
-	# Math for SkidSteer
-	leftSpeed = (throttlel) * 127
-	rightSpeed = (throttler) * 127
+	# Math for Actuators
+	leftSpeed = (actuator1) * 127
+	rightSpeed = (actuator2) * 127
 	
 	leftSpeed = max(leftSpeed, -127)
 	leftSpeed = min(leftSpeed, 127)
@@ -58,18 +58,14 @@ def testSetActuators(actuator1, actuator2):
 	
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
-		for address in controllerAddress:
-			sendSabertooth(address, commandLF, leftSpeed)
+		sendSabertooth(address, 0, leftSpeed)
 	else:
-		for address in controllerAddress:
-			sendSabertooth(address, commandLR, -1 * leftSpeed)
+		sendSabertooth(address, 1, -1 * leftSpeed)
 	
 	if(rightSpeed >= 0):
-		for address in controllerAddress:
-			sendSabertooth(address, commandRF, rightSpeed)
+		sendSabertooth(address, 4, rightSpeed)
 	else:
-		for address in controllerAddress:
-			sendSabertooth(address, commandRR, -1 * rightSpeed)
+		sendSabertooth(address, 5, -1 * rightSpeed)
 	
 def parseCommand(command): # Parses Socket Data back to Axis positions
 	global emergency
@@ -96,7 +92,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						if Speed >= 0:
 							moveActuators(0, Speed)
 						else:
-							moveActuators(1, Speed)))
+							moveActuators(1, Speed)
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
 						wristTilt.setRelative(int(ord(command[3])))
@@ -116,6 +112,10 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					emergency = True
 				elif command[2] == "C":
 					emergency = False
+				elif command[2] == "T":
+					actuator1 = int(ord(command[3]))
+					actuator2 = int(ord(command[4]))
+					testSetActuators(actuator1, actuator2)
 					
 def stopSockets(): # Stops sockets on error condition
 	try:
