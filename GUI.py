@@ -144,8 +144,11 @@ def createRobot():
 	robotPieceList = []
 	chassis = RobotPiece(pygame.image.load('./graphics/chassis.png'), None, (1100,500))
 	arm = RobotPiece(pygame.image.load('./graphics/arm.png'),pygame.image.load('./graphics/redArm.png'),(1145,475))
+	wheels = RobotPiece(pygame.image.load('./graphics/twheelarray.png'),None,(1102,495))
+	wheels.active = True
 	arm.active = False
 	chassis.active = True
+	robotPieceList.append(wheels)
 	robotPieceList.append(chassis)
 	robotPieceList.append(arm)
 
