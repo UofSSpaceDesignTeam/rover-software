@@ -14,7 +14,7 @@ from DriveClient import DriveClient
 from CameraClient import CameraClient
 from ArmClient import ArmClient
 from TextOutput import TextOutput
-from VirtualRobot import VirtualRobot
+from RobotPiece import RobotPiece
 import socket
 import os
 import time
@@ -138,10 +138,17 @@ def drawIndicators():
 			if not indicatorList[i].active:
 				camDisconnect(None)
 				drawButtons()
-	
+
+def createRobot():
+	global robotPieceList
+	robotPieceList = []
+	chassis = RobotPiece(pygame.image.load('./graphics/chassis.png'), None, (800,500))
+	chassis.active = True
+	robotPieceList.append(chassis)
+
 def drawRobot():
-	# todo: check UI state, set robot status accordingly
-	robot.draw(screen)
+	for piece in robotPieceList:
+		piece.draw(screen)
 
 def setDriveMode1(fakeArg):	# button-based
 	# todo: stop arm movements
@@ -368,7 +375,6 @@ screen = pygame.display.set_mode((1220, 700), pygame.NOFRAME)
 background = pygame.image.load("./graphics/background.jpg")
 cameraSplash = pygame.image.load("./graphics/camera.jpg")
 screen.blit(background, (130, 0))
-robot = VirtualRobot(1100,500,100,150)
 
 # check for controller
 try:
@@ -383,6 +389,7 @@ createButtons()
 drawButtons()
 createIndicators()
 drawIndicators()
+createRobot()
 drawRobot()
 pygame.display.update()
 mainloop = True

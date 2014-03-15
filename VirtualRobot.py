@@ -22,20 +22,19 @@ class VirtualRobot():
 		self.armCol = colorBlue
 		self.armCamCol = colorRed
 		self.driveCamCol = colorRed
-		self.arm = (left+width/2,top-height/4,width/4,height/4)
+		#self.arm = (left+width/2,top-height/4,width/4,height/4)
 		self.armCam = (left+width/2+width/16,top-height/4,width/8,width/8)
 		self.driveCam = (left+width/2-width/16,top +height/2,width/8,width/8)
 		self.driveWheel = pygame.image.load("./graphics/wheel.png")
-		self.drivecamera = pygame.image.load("./graphics/rcamera.png")
-		self.body = pygame.image.load("./graphics/Chassis.png")
-		self.arm = pygame.image.load("./graphics/Arm.png")
+		self.drivecamera = pygame.image.load("./graphics/redcamera.png")
+		self.chassis = pygame.image.load("./graphics/chassis.png")
+		self.arm = pygame.image.load("./graphics/arm.png")
 		self.armObj = None
 		self.armCamObj = None
 		self.bodyObj = None
 		self.driveCamObj = None
 
-	def draw(self,screen):
-		#self.armObj = pygame.draw.rect(screen, self.armCol, self.arm)
+	def draw(self, screen):
 		screen.blit(self.driveWheel,(self.left+2,self.top-10))#top left wheel
 		screen.blit(self.driveWheel,(self.left-2,self.top + self.height-35))#left bottom wheel
 		screen.blit(self.driveWheel,(self.left + self.width-2, self.top-10))#right top wheel

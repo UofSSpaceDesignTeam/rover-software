@@ -10,7 +10,6 @@ import pygame
 	# class definition
 	
 class Button:
-
 	def __init__(self, function, (args), text, fontSize, fontColor, rect, defaultColor, selectedColor):
 		self.function = function
 		self.args = args
@@ -23,18 +22,15 @@ class Button:
 		self.selected = False
 		self.obj = None
 
-
 	def renderLabel(self):	# returns a Surface with the button label on it
 		font = pygame.font.Font(None, self.fontSize)
 		return font.render(self.text, 1, self.fontColor)
-
 
 	def getColor(self):	# returns the color of the button (3-tuple)
 		if self.selected:
 			return self.selectedColor
 		else:
 			return self.defaultColor
-
 
 	def draw(self, screen): # redraw the button with centered label
 		label = self.renderLabel()
@@ -44,6 +40,6 @@ class Button:
 		self.obj = pygame.draw.rect(screen, self.getColor(), self.rect)
 		screen.blit(label, (labelXPosition, labelYPosition))
 
-
 	def press(self):	# activate the button
 		self.function(self.args)
+
