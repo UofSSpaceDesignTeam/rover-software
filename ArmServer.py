@@ -135,7 +135,7 @@ try:
 	controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
 	controller.baudrate = 9600
 	controller.timeout = 0.2
-	sendSabertooth(address,16,ramping)
+	sendSabertooth(address, 16, ramping)
 
 except:
 	print("motor controller setup failed!")
