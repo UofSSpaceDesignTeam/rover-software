@@ -19,4 +19,7 @@ class RobotPiece:
 			screen.blit(self.activeGraphic, self.position)
 		else:
 			screen.blit(self.inactiveGraphic, self.position)
-
+			
+	def spin(self, angle):
+		rotate(self.activeGraphic,angle)
+		rotate(self.inactiveGraphic,angle)

@@ -142,9 +142,12 @@ def drawIndicators():
 def createRobot():
 	global robotPieceList
 	robotPieceList = []
-	chassis = RobotPiece(pygame.image.load('./graphics/chassis.png'), None, (800,500))
+	chassis = RobotPiece(pygame.image.load('./graphics/chassis.png'), None, (1100,500))
+	arm = RobotPiece(pygame.image.load('./graphics/arm.png'),pygame.image.load('./graphics/redArm.png'),(1145,475))
+	arm.active = False
 	chassis.active = True
 	robotPieceList.append(chassis)
+	robotPieceList.append(arm)
 
 def drawRobot():
 	for piece in robotPieceList:
