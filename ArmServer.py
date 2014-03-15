@@ -49,17 +49,17 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						Speed = max(int(ord(command[3])), -127)
 						Speed = min(int(ord(command[3])), 127)
 						if Speed >= 0:
-							moveActuators(4, int(ord(command[3])))
+							moveActuators(4, Speed)
 						else:
-							moveActuators(5, int(ord(command[3])))
+							moveActuators(5, Speed)
 				elif command[2] == "M": # translate wrist joint "in/out"
 					if emergency == False:
 						Speed = max(int(ord(command[3])),-127)
 						Speed = min(int(ord(command[3])), 127)
 						if Speed >= 0:
-							moveActuators(0, int(ord(command[3])))
+							moveActuators(0, Speed)
 						else:
-							moveActuators(1, int(ord(command[3])))
+							moveActuators(1, Speed)))
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
 						wristTilt.setRelative(int(ord(command[3])))
@@ -93,7 +93,7 @@ def stopSockets(): # Stops sockets on error condition
 
 ### Main Program  ###
 
-# set up kangaroo
+# set up Sabertooth
 try:
 	controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
 	controller.baudrate = 9600
