@@ -29,12 +29,12 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(speed)))
 	controller.write(chr(int(checksum)))
 
-def moveActuators(command,speed): # sends movement data to sabertooth
-	checksum = int(address) + int(command) + int(speed) & 127
-	controller.write(chr(int(address)))
-	controller.write(chr(int(command)))
-	controller.write(chr(int(speed)))
-	controller.write(chr(int(checksum)))
+#def moveActuators(command,speed): # sends movement data to sabertooth
+#	checksum = int(address) + int(command) + int(speed) & 127
+#	controller.write(chr(int(address)))
+#	controller.write(chr(int(command)))
+#	controller.write(chr(int(speed)))
+#	controller.write(chr(int(checksum)))
 	
 def getFeedback():
 	controller.write("1,getp\r\n")
