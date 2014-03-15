@@ -46,16 +46,18 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						pass
 				elif command[2] == "L": # translate wrist joint "up/down"
 					if emergency == False:
-						Speed = max(int(ord(command[3])), -127)
-						Speed = min(int(ord(command[3])), 127)
+						Speed = int(ord(command[3]))*127
+						Speed = max(Speed, -127)
+						Speed = min(Speed, 127)
 						if Speed >= 0:
 							moveActuators(4, Speed)
 						else:
 							moveActuators(5, Speed)
 				elif command[2] == "M": # translate wrist joint "in/out"
 					if emergency == False:
-						Speed = max(int(ord(command[3])),-127)
-						Speed = min(int(ord(command[3])), 127)
+						Speed = int(ord(command[3]))*127
+						Speed = max(Speed, -127)
+						Speed = min(Speed, 127)
 						if Speed >= 0:
 							moveActuators(0, Speed)
 						else:
