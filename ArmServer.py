@@ -12,6 +12,7 @@ import RPi.GPIO as GPIO # for hardware reset system
 # global constants	
 
 armPort = 3003
+ramping = 10
 scaleFactor = 0.55
 address= 128
 
@@ -97,10 +98,10 @@ try:
 	controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
 	controller.baudrate = 9600
 	controller.timeout = 0.2
-	controller.write("1,start\r\n")
-	controller.write("2,start\r\n")
+	sendSabertooth(address,16,ramping)
+
 except:
-	print("kangaroo setup failed!")
+	print("motor controller setup failed!")
 	time.sleep(2)
 	raise
 	#subprocess.call("sudo reboot", shell = True)
