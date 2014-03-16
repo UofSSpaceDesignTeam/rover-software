@@ -16,6 +16,7 @@ Work that needs to be done:
 */
 //gpsRover connects to Serial2
 
+//***    what I used to distinguish my comments from yours. Nicely done :)
 
 TinyGPS gpsBase;
 TinyGPS gpsRover;
@@ -35,11 +36,11 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly: 
   int servoAngle;
-  if (calibrated1 == false){
+  if (calibrated1 == false){                                                 //*** \/ when can this be done?
     calibrationAngle = calibrate(); //Only runs calibrate the first time.  Calibrated1 can be made false to recalibrate later
   }
   bool newData = false;
-  while (Serial2.available()){
+  while (Serial2.available()){                    //*** could be a stand-alone f'n, used more than once: saves changing both at the same time
     char c = Serial2.read();
     if (gpsBase.encode(c)){
       newData = true;
@@ -51,8 +52,8 @@ void loop() {
     unsigned long age;
     float roverAngle;
     //This is used for explicitly feeding coordinates to roverLat and roverLon for testing
-    if (roverMoveDelay < 50){
-      roverLat = 52.12;
+    if (roverMoveDelay < 50){            //*** could save lines with addtoLat = map(roverMoveDelay, 0, 300, 12, 17);
+      roverLat = 52.12;                  //***                         roverLat = 52 + addtoLat/100;
       roverLon = -106.669;
     }
     else if (roverMoveDelay < 100){
@@ -97,7 +98,7 @@ void loop() {
         
         //if the rover goes out of the limits of the servos movement it stops trying to turn that far
         //Perhaps add a message to the user indicating that the rover is beyond the turning range
-        if (servoAngle < 20){
+        if (servoAngle < 20){          //*** there are existing f'n's for this called "constrain" this would simply save lines
           servoAngle = 20;
         }
         if (servoAngle > 160){
@@ -110,14 +111,14 @@ void loop() {
   }
 }
 
-float calculateAngle(double roverLat, double roverLon, double baseLat, double baseLon){
+float calculateAngle(double roverLat, double roverLon, double baseLat, double baseLon){    //*** why use doubles when you only call this f'n using floats as params?
   roverLon = (roverLon * 71)/4068;//conversion to radians
   roverLat = (roverLat * 71)/4068;
   baseLon = (baseLon * 71)/4068;
   baseLat = (baseLat * 71)/4068;
   double dLon = roverLon - baseLon;
   double y = sin(dLon) * cos(roverLat);
-  double x = cos(baseLat) * sin(roverLat) - sin(baseLat) * cos(roverLat) * cos(dLon);
+  double x = cos(baseLat) * sin(roverLat) - sin(baseLat) * cos(roverLat) * cos(dLon);      //*** ah, I see
   float angle = atan2(y, x);
   angle = (angle * 4068)/71;
   return angle;
@@ -136,18 +137,18 @@ int calibrate(){
   while (calibrated1 == false){
     //Serial.println("calibrated1 = false");
     int len = 0;
-    while (Serial.available() > 0) {
+    while (Serial.available() > 0) {            //*** Possible overflow of incomingByte? (i.e. if loop has more than 3 iterations)
       incomingByte[len] = Serial.read();
       len++;
       delay(100);
     }
-    if (incomingByte[0] == 'Y' || incomingByte[0] == 'y'){
+    if (incomingByte[0] == 'Y' || incomingByte[0] == 'y'){    //*** nice catch for both upper and lower cases
       calibrated1 = true;
       Serial.println("calibrated1 = true");
     }
-    else if (incomingByte[0] >= '0' && incomingByte[0] <= '9'){
+    else if (incomingByte[0] >= '0' && incomingByte[0] <= '9'){    //*** what if input chars aren't y or 0->9?
       servoAngle = 0;
-      for (int i = 0; i < len; i++){
+      for (int i = 0; i < len; i++){                               //*** this could be a seperate f'n you call, well done though
         int increment = (int(incomingByte[i]) - 48) * pow(10, len-(1+i)); //converts number entered as characters into usable int value
         servoAngle = servoAngle + increment;
       }
@@ -158,13 +159,13 @@ int calibrate(){
       }
       else{
         Serial.println("Angle outside accepted range (20 - 160)");
-        Serial.println(incomingByte);
+        Serial.println(incomingByte);                            //Both printings of Byte and Angle for debugging I assume?
         Serial.println(servoAngle);
       }
       for (int i = 0; i < 3; i++){
         incomingByte[i] = 'g';
       }
-    }
+    }                                                           //*** everything above dealing with serial comms, could be a (or a few) seperate f'n's to allow more focus on the calibration itself
   }
   int i = 0;
   while(calibrated2 == false){
