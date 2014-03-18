@@ -34,10 +34,10 @@ def TranslateZ(speed)
 	#need actuator positions and constants
 	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
-	#R is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
+	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	theta1=acos(pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta)+thetaL+thetaE
 	theta2=acos(pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B) + alpha - pi/4
-	Rh=-*cos(theta1+theta2)/(L1*cos(theta1)+L2)	
+	Rh=-cos(theta1+theta2)/(L1*cos(theta1)+L2)	#pretty sure I typed this formula wrong, check
 
 def TranslateIO(speed)
 	#need actuator positions and constants
