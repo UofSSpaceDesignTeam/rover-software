@@ -28,21 +28,8 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(command)))
 	controller.write(chr(int(speed)))
 	controller.write(chr(int(checksum)))
-
-def moveActuators(command,speed): # sends movement data to sabertooth
-	checksum = int(address) + int(command) + int(speed) & 127
-	controller.write(chr(int(address)))
-	controller.write(chr(int(command)))
-	controller.write(chr(int(speed)))
-	controller.write(chr(int(checksum)))
 	
-def getFeedback():
-	controller.write("1,getp\r\n")
-	feedback1 = controller.readline()
-	controller.write("2,getp\r\n")
-	feedback2 = controller.readline()
-	return (feedback1, feedback2)
-def TranslateZ()
+def TranslateZ(speed)
 	#angles in radians
 	#need actuator positions and constants
 	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, are constants
@@ -52,7 +39,7 @@ def TranslateZ()
 	theta2=acos(pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B) + alpha - pi/4
 	Rh=-*cos(theta1+theta2)/(L1*cos(theta1)+L2)	
 
-def TranslateIO()
+def TranslateIO(speed)
 	#need actuator positions and constants
 	theta1=acos(pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta)+thetaL+thetaE
 	theta2=acos(pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B) + alpha - pi/4
@@ -94,19 +81,13 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						Speed = int(ord(command[3]))*127
 						Speed = max(Speed, -127)
 						Speed = min(Speed, 127)
-						if Speed >= 0:
-							moveActuators(4, Speed)
-						else:
-							moveActuators(5, Speed)
+						TranslateZ(Speed)
 				elif command[2] == "M": # translate wrist joint "in/out"
 					if emergency == False:
 						Speed = int(ord(command[3]))*127
 						Speed = max(Speed, -127)
 						Speed = min(Speed, 127)
-						if Speed >= 0:
-							moveActuators(0, Speed)
-						else:
-							moveActuators(1, Speed)
+						TranslateIO(Speed)
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
 						wristTilt.setRelative(int(ord(command[3])))
@@ -120,7 +101,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					if emergency == False:
 						pass
 				elif command[2] == "S": # stop all actuators
-					moveActuators(0, 0)
+					sendSabertooth(0, 0)
 					servoDriver.reset()
 					print("emergency stop")
 					emergency = True
@@ -192,26 +173,26 @@ try:
 		while(True):
 			data = armSocket.recv(256)
 			if(data == ""): # socket closing
-				moveActuators(0, 0)
+				sendSabertooth(0, 0)
 				break
 			else:
 				parseCommand(data)
 		print("Connection to " + str(clientAddress[0]) + " was closed")
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
-	moveActuators(0, 0)
+	sendSabertooth(0, 0)
 	stopSockets()
 	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
-	moveActuators(0, 0)
+	sendSabertooth(0, 0)
 	stopSockets()
 	GPIO.cleanup()
 	time.sleep(2)
 	raise
 	#subprocess.call("sudo reboot", shell = True)
 except:
-	moveActuators(0, 0)
+	sendSabertooth(0, 0)
 	stopSockets()
 	GPIO.cleanup()
 	raise
