@@ -22,6 +22,14 @@ emergency = False
 
 # function definitions
 
+def readADC
+
+def getActuatorFeedback
+	ActuatorPos1=readADC()
+	ActuatorPos2=readADC()
+	print "Actuator 1 Position: ", ActuatorPos1
+	print "Actuator 2 Position: ", ActuatorPos2
+	
 def sendSabertooth(address, command, speed):
 	checksum = int(address) + int(command) + int(speed) & 127
 	controller.write(chr(int(address)))
@@ -56,6 +64,8 @@ def testSetActuators(actuator1, actuator2):
 	leftSpeed = min(leftSpeed, 127)
 	rightSpeed = max(rightSpeed, -127)
 	rightSpeed = min(rightSpeed, 127)
+	
+	getActuatorFeedback()
 	
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
@@ -107,7 +117,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					emergency = True
 				elif command[2] == "C":
 					emergency = False
-				elif command[2] == "T":
+				elif command[2] == "T":	
 					actuator1 = int(ord(command[3]))
 					actuator2 = int(ord(command[4]))
 					testSetActuators(actuator1, actuator2)
