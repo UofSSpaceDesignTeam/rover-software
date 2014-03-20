@@ -16,6 +16,10 @@ ramping = 10
 scaleFactor = 0.55
 address= 128
 
+Lalpha = 371	# Lalpha, Lbeta, A, B are in mm, to the closes mm 
+Lbeta = 104		
+A = 121
+B = 363
 # global variables
 
 emergency = False
@@ -47,10 +51,12 @@ def TranslateZ(speed)
 	theta2=acos(pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B) + alpha - pi/4
 	Rh=-cos(theta1+theta2)/(L1*cos(theta1)+L2)	#pretty sure I typed this formula wrong, check
 
+	
 def TranslateIO(speed)
 	#need actuator positions and constants
 	theta1=acos(pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta)+thetaL+thetaE
 	theta2=acos(pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B) + alpha - pi/4
+	
 	
 def testSetActuators(actuator1, actuator2):
 	throttlel = (actutaor1 - 127) / 127.0  # range is now -1 to 1
