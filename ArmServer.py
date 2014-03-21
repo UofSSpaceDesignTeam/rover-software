@@ -48,13 +48,13 @@ def TranslateZ(speed)
 	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
-	theta1=acos(pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta)+thetaL+thetaE
-	theta2=acos(pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B) + alpha - pi/4
-	Rh=-Lgamma*cos(theta1+theta2)/(Lgamma*cos(theta1)+Ldelta*cos(theta1+theta2))
-	theta2_dot=speed/(Ldelta*cos(theta1+theta2)*(Rh+1)+Rh*Lgamma*cos(theta1))
+	theta1=math.acos((pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta))+thetaL+thetaE
+	theta2=math.acos((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)) + alpha + math.pi/2
+	Rh=-Lgamma*math.cos(theta1+theta2)/(Lgamma*math.cos(theta1)+Ldelta*math.cos(theta1+theta2))
+	theta2_dot=speed/(Ldelta*math.cos(theta1+theta2)*(Rh+1)+Rh*Lgamma*math.cos(theta1))
 	theta1_dot=Rh*theta2_dot
-	L1p = (th1_dot*Lgamma*Lbeta)/(L1) * math.sqrt( (1 - pow( ( (pow(Lgamma,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lgamma*Lbeta)),2)))
-	L2p  = (th2_dot*Lgamma*B)/(L2) * math.sqrt( (1 - pow( ((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)),2)))
+	L1p = (theta1_dot*Lgamma*Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lgamma,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lgamma*Lbeta)),2))))
+	L2p  = (theta2_dot*Lgamma*B)/(L2) * math.sqrt( abs((1 - pow( ((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)),2))))
 	if A1Speed<=0:
 		sendSabertooth(address,5,A1Speed)
 	else:
@@ -70,14 +70,14 @@ def TranslateIO(speed)
 	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
 	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
-	theta1=acos(pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta)+thetaL+thetaE
-	theta2=acos(pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B) + alpha - pi/4
-	Rr=-Ldelta*sin(theta1+theta2)/(Ldelta*sin(theta1)+Lgamma*sin(theta1+theta2))
-	theta2_dot=-speed/(Ldelta*sin(theta1+theta2)*(Rr+1)+Rr*Lgamma*sin(theta1))
+	theta1=math.acos((pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta))+thetaL+thetaE
+	theta2=math.acos((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)) + alpha + math.pi/2
+	Rr=-Ldelta*math.sin(theta1+theta2)/(Ldelta*math.sin(theta1)+Lgamma*math.sin(theta1+theta2))
+	theta2_dot=-speed/(Ldelta*math.sin(theta1+theta2)*(Rr+1)+Rr*Lgamma*math.sin(theta1))
 	theta1_dot=Rr*theta2_dot
-	L1p = (th1_dot*Lgamma*Lbeta)/(L1) * math.sqrt( (1 - pow( ( (pow(Lgamma,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lgamma*Lbeta)),2)))
-	L2p  = (th2_dot*Lgamma*B)/(L2) * math.sqrt( (1 - pow( ((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)),2)))
-		if A1Speed<=0:
+	L1p = (theta1_dot*Lgamma*Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lgamma,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lgamma*Lbeta)),2))))
+	L2p  = (theta2_dot*Lgamma*B)/(L2) * math.sqrt( abs((1 - pow( ((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)),2))))
+	if A1Speed<=0:
 		sendSabertooth(address,5,A1Speed)
 	else:
 		sendSabertooth(address,4,A1Speed)
