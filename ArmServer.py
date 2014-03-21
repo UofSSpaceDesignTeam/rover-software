@@ -44,18 +44,46 @@ def sendSabertooth(address, command, speed):
 def TranslateZ(speed)
 	#angles in radians
 	#need actuator positions and constants
-	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, are constants
+	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	theta1=acos(pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta)+thetaL+thetaE
 	theta2=acos(pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B) + alpha - pi/4
-	Rh=-cos(theta1+theta2)/(L1*cos(theta1)+L2)	#pretty sure I typed this formula wrong, check
-
+	Rh=-Lgamma*cos(theta1+theta2)/(Lgamma*cos(theta1)+Ldelta*cos(theta1+theta2))
+	theta2_dot=speed/(Ldelta*cos(theta1+theta2)*(Rh+1)+Rh*Lgamma*cos(theta1))
+	theta1_dot=Rh*theta2_dot
+	L1p = (th1_dot*Lgamma*Lbeta)/(L1) * math.sqrt( (1 - pow( ( (pow(Lgamma,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lgamma*Lbeta)),2)))
+	L2p  = (th2_dot*Lgamma*B)/(L2) * math.sqrt( (1 - pow( ((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)),2)))
+	if A1Speed<=0:
+		sendSabertooth(address,5,A1Speed)
+	else:
+		sendSabertooth(address,4,A1Speed)
+	if A2Speed<=0:
+		sendSabertooth(address,1,A2Speed)
+	else:
+		sendSabertooth(address,0,A2Speed)
 	
 def TranslateIO(speed)
+	#angles in radians
 	#need actuator positions and constants
+	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
+	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
+	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	theta1=acos(pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta)+thetaL+thetaE
 	theta2=acos(pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B) + alpha - pi/4
+	Rr=-Ldelta*sin(theta1+theta2)/(Ldelta*sin(theta1)+Lgamma*sin(theta1+theta2))
+	theta2_dot=-speed/(Ldelta*sin(theta1+theta2)*(Rr+1)+Rr*Lgamma*sin(theta1))
+	theta1_dot=Rr*theta2_dot
+	L1p = (th1_dot*Lgamma*Lbeta)/(L1) * math.sqrt( (1 - pow( ( (pow(Lgamma,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lgamma*Lbeta)),2)))
+	L2p  = (th2_dot*Lgamma*B)/(L2) * math.sqrt( (1 - pow( ((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)),2)))
+		if A1Speed<=0:
+		sendSabertooth(address,5,A1Speed)
+	else:
+		sendSabertooth(address,4,A1Speed)
+	if A2Speed<=0:
+		sendSabertooth(address,1,A2Speed)
+	else:
+		sendSabertooth(address,0,A2Speed)
 	
 	
 def testSetActuators(actuator1, actuator2):
