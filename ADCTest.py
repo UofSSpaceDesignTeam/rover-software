@@ -1,4 +1,4 @@
-from Adafruit_ADS1x15 import ADS1x15
+import ADS1x15
 import time
 #Really basic test for ADS1015 ADC. Reads an analog value on pin A0 and prints it.
 ADS_Current = ADS1115
