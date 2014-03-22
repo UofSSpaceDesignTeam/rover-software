@@ -15,28 +15,36 @@ class Kangaroo:
 		
 	def units(self, motor, units, lines):
 		#accepts motor:1 or 2, units: any integer lines: #encoder lines integer
-		command = (str(int(motor)) + "units " + str(int(units)) + " = " + str(int(lines)) + " lines\r\n")
+		command = (str(motor) + "units " + str(units) + " = " + str(lines) + " lines\r\n")
 		self.serial.write(command)
 	
 	def command(self, motor, val):
 		#accepts motor:1 or 2, val: any integer  Max range unknown..
-		command = (str(int(motor)) + ",s" + str(int(val)) + "\r\n")
+		command = (str(motor) + ",s" + str(val) + "\r\n")
 		self.serial.write(command)
 	
 	def speed(self, motor):
-		command = (str(int(motor)) + ",gets")
-		self.serial.write(command)
-		reply = self.serial.readline()
-		reply = reply.partition("\r\n")[0]
-		reply = reply.partition("s")[2]
-		reply = int(reply)
-		return reply
+		try:
+			command = (str(int(motor)) + ",gets")
+			self.serial.write(command)
+			reply = self.serial.readline()
+			reply = reply.partition("\r\n")[0]
+			reply = reply.partition("s")[2]
+			#reply = int(reply)
+			return reply
+		except:
+			print("Speed read failed")
+			raise
 		
 	def pos(self, motor):
-		command = (str(int(motor)) + ",getp")
-		self.serial.write(command)
-		reply = self.serial.readline()
-		reply = reply.partition("\r\n")[0]
-		reply = reply.partition("p")[2]
-		reply = int(reply)
-		return reply
+		try:
+			command = (str(int(motor)) + ",getp")
+			self.serial.write(command)
+			reply = self.serial.readline()
+			reply = reply.partition("\r\n")[0]
+			reply = reply.partition("p")[2]
+			#reply = int(reply)
+			return reply
+		except:
+			print("Position read failed")
+			raise
