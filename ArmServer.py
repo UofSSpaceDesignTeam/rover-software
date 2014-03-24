@@ -21,19 +21,29 @@ Lalpha = 371	# Lalpha, Lbeta, A, B are in mm, to the closes mm
 Lbeta = 104		
 A = 121
 B = 363
+
+ActuatorFullIn = 292.354	#lengths again in mm
+ActuatorFullOut = 444.754
+ActuatorFullInRaw = 1749
+ActuatorFullOutRaw = 2838
+
+adc = ADS1x15()
+
 # global variables
 
 emergency = False
 
 # function definitions
 
-def readADC
-
-def getActuatorFeedback
-	ActuatorPos1=readADC()
-	ActuatorPos2=readADC()
-	print "Actuator 1 Position: ", ActuatorPos1
-	print "Actuator 2 Position: ", ActuatorPos2
+def readADC(address)
+	#mapping for actuator positions
+	result = adc.readADCSingleEnded(address)
+	#map the result to the range 0->1
+	result = (result - ActuatorFullInRaw) / (ActuatorFullOutRaw - ActuatorFullInRaw)
+	#now map to the range fullIn -> fullOut
+	result=result * (ActuatorFullOut - ActuatorFullIn) + ActuatorFullIn
+	#result is now in mm's
+	return result
 	
 def sendSabertooth(address, command, speed):
 	checksum = int(address) + int(command) + int(speed) & 127
@@ -44,17 +54,18 @@ def sendSabertooth(address, command, speed):
 	
 def TranslateZ(speed)
 	#angles in radians
-	#need actuator positions and constants
 	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
-	theta1=math.acos((pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta))+thetaL+thetaE
-	theta2=math.acos((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)) + alpha + math.pi/2
-	Rh=-Lgamma*math.cos(theta1+theta2)/(Lgamma*math.cos(theta1)+Ldelta*math.cos(theta1+theta2))
-	theta2_dot=speed/(Ldelta*math.cos(theta1+theta2)*(Rh+1)+Rh*Lgamma*math.cos(theta1))
-	theta1_dot=Rh*theta2_dot
-	L1p = (theta1_dot*Lgamma*Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lgamma,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lgamma*Lbeta)),2))))
-	L2p  = (theta2_dot*Lgamma*B)/(L2) * math.sqrt( abs((1 - pow( ((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)),2))))
+	L1 = readADC(0)
+	L2 = readADC(1)
+	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
+	theta2 = math.acos((pow(A,2) + pow(B,2) - pow(L2,2)) / (2 * A * B)) + alpha + math.pi / 2
+	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
+	theta2_dot = speed / (Ldelta* math.cos(theta1 + theta2) * (Rh + 1)+Rh * Lgamma*  math.cos(theta1))
+	theta1_dot = Rh * theta2_dot
+	L1p = (theta1_dot * Lgamma * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lgamma,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lgamma * Lbeta)),2))))
+	L2p  = (theta2_dot * Lgamma * B)/(L2) * math.sqrt( abs((1 - pow( ((pow(A,2) + pow(B,2) - pow(L2,2)) / (2 * A * B)),2))))
 	if A1Speed<=0:
 		sendSabertooth(address,5,A1Speed)
 	else:
@@ -66,17 +77,18 @@ def TranslateZ(speed)
 	
 def TranslateIO(speed)
 	#angles in radians
-	#need actuator positions and constants
 	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
-	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
-	theta1=math.acos((pow(Lalpha,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lalpha*Lbeta))+thetaL+thetaE
-	theta2=math.acos((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)) + alpha + math.pi/2
-	Rr=-Ldelta*math.sin(theta1+theta2)/(Ldelta*math.sin(theta1)+Lgamma*math.sin(theta1+theta2))
-	theta2_dot=-speed/(Ldelta*math.sin(theta1+theta2)*(Rr+1)+Rr*Lgamma*math.sin(theta1))
-	theta1_dot=Rr*theta2_dot
-	L1p = (theta1_dot*Lgamma*Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lgamma,2)+pow(Lbeta,2)-pow(L1,2))/(2*Lgamma*Lbeta)),2))))
-	L2p  = (theta2_dot*Lgamma*B)/(L2) * math.sqrt( abs((1 - pow( ((pow(A,2)+pow(B,2)-pow(L2,2))/(2*A*B)),2))))
+	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2
+	L1 = readADC(0)
+	L2 = readADC(1)
+	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
+	theta2 = math.acos((pow(A,2) + pow(B,2) - pow(L2,2)) / (2 * A * B)) + alpha + math.pi/2
+	Rr = - Ldelta * math.sin(theta1 + theta2) / (Ldelta * math.sin(theta1) + Lgamma * math.sin(theta1 + theta2))
+	theta2_dot = - speed / (Ldelta * math.sin(theta1 + theta2) * (Rr + 1) + Rr * Lgamma * math.sin(theta1))
+	theta1_dot = Rr * theta2_dot
+	L1p = (theta1_dot * Lgamma * Lbeta) / (L1) * math.sqrt( abs((1 - pow( ( (pow(Lgamma,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lgamma * Lbeta)),2))))
+	L2p = (theta2_dot * Lgamma * B) / (L2) * math.sqrt( abs((1 - pow( ((pow(A,2) + pow(B,2) - pow(L2,2)) / (2 * A * B)),2))))
 	if A1Speed<=0:
 		sendSabertooth(address,5,A1Speed)
 	else:
@@ -99,8 +111,6 @@ def testSetActuators(actuator1, actuator2):
 	leftSpeed = min(leftSpeed, 127)
 	rightSpeed = max(rightSpeed, -127)
 	rightSpeed = min(rightSpeed, 127)
-	
-	getActuatorFeedback()
 	
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
