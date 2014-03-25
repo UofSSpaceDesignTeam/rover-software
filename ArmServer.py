@@ -56,6 +56,7 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(checksum)))
 	
 def TranslateZ(speed):
+	#todo: speed is not in the proper units yet
 	#angles in radians
 	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
@@ -79,6 +80,7 @@ def TranslateZ(speed):
 		sendSabertooth(address,0,A2Speed)
 	
 def TranslateIO(speed):
+	#todo: speed is not in the proper units yet
 	#angles in radians
 	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
@@ -231,7 +233,8 @@ try:
 		while(True):
 			data = armSocket.recv(256)
 			if(data == ""): # socket closing
-				sendSabertooth(0, 0)
+				sendSabertooth(address,0, 0)
+				sendSabertooth(address,5, 0)
 				break
 			else:
 				parseCommand(data)
@@ -239,11 +242,13 @@ try:
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	sendSabertooth(address,0, 0)
+	sendSabertooth(address,5, 0)
 	stopSockets()
 	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
 	sendSabertooth(address,0, 0)
+	sendSabertooth(address,5, 0)
 	stopSockets()
 	GPIO.cleanup()
 	time.sleep(2)
@@ -251,6 +256,7 @@ except socket.error as e:
 	#subprocess.call("sudo reboot", shell = True)
 except:
 	sendSabertooth(address,0, 0)
+	sendSabertooth(address,5, 0)
 	stopSockets()
 	GPIO.cleanup()
 	raise
