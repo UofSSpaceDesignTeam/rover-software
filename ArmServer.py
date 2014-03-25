@@ -2,11 +2,14 @@
 
 # dependency list
 
+
 import math
 import socket
 import time
 import subprocess
 import serial
+from ADS1x15 import ADS1x15
+from Adafruit_I2C import Adafruit_I2C
 from ServoDriver import *
 import RPi.GPIO as GPIO # for hardware reset system
 
@@ -35,7 +38,7 @@ emergency = False
 
 # function definitions
 
-def readADC(address)
+def readADC(address):
 	#mapping for actuator positions
 	result = adc.readADCSingleEnded(address)
 	#map the result to the range 0->1
@@ -52,7 +55,7 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(speed)))
 	controller.write(chr(int(checksum)))
 	
-def TranslateZ(speed)
+def TranslateZ(speed):
 	#angles in radians
 	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
@@ -75,7 +78,7 @@ def TranslateZ(speed)
 	else:
 		sendSabertooth(address,0,A2Speed)
 	
-def TranslateIO(speed)
+def TranslateIO(speed):
 	#angles in radians
 	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
@@ -156,7 +159,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					if emergency == False:
 						pass
 				elif command[2] == "S": # stop all actuators
-					sendSabertooth(0, 0)
+					sendSabertooth(address,0, 0)
 					servoDriver.reset()
 					print("emergency stop")
 					emergency = True
@@ -235,19 +238,19 @@ try:
 		print("Connection to " + str(clientAddress[0]) + " was closed")
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
-	sendSabertooth(0, 0)
+	sendSabertooth(address,0, 0)
 	stopSockets()
 	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
-	sendSabertooth(0, 0)
+	sendSabertooth(address,0, 0)
 	stopSockets()
 	GPIO.cleanup()
 	time.sleep(2)
 	raise
 	#subprocess.call("sudo reboot", shell = True)
 except:
-	sendSabertooth(0, 0)
+	sendSabertooth(address,0, 0)
 	stopSockets()
 	GPIO.cleanup()
 	raise
