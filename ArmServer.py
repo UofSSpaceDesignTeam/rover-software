@@ -56,20 +56,30 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(checksum)))
 	
 def TranslateZ(speed):
-	#todo: speed is not in the proper units yet
+	#TODO: speed is not in the proper units yet
+
+	#calculates and sends speeds of linear actuators for end effector to move up or down at input speed
 	#angles in radians
-	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
+	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaA, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
+	#theta1 is arm angle of elevation, theta2 is elbow angle
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
+	#L1p and L2p are speeds of the linear actuators
+
 	L1 = readADC(0)
 	L2 = readADC(1)
+
 	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
-	theta2 = math.acos((pow(A,2) + pow(B,2) - pow(L2,2)) / (2 * A * B)) + alpha + math.pi / 2
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaA + math.pi / 2
+
 	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
-	theta2_dot = speed / (Ldelta* math.cos(theta1 + theta2) * (Rh + 1)+Rh * Lgamma*  math.cos(theta1))
+
+	theta2_dot = speed / (Ldelta * math.cos(theta1 + theta2) * (Rh + 1) + Rh * Lgamma * math.cos(theta1))
 	theta1_dot = Rh * theta2_dot
-	L1p = (theta1_dot * Lgamma * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lgamma,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lgamma * Lbeta)),2))))
-	L2p  = (theta2_dot * Lgamma * B)/(L2) * math.sqrt( abs((1 - pow( ((pow(A,2) + pow(B,2) - pow(L2,2)) / (2 * A * B)),2))))
+
+	L1p = (theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
+	L2p = (theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
+
 	if A1Speed<=0:
 		sendSabertooth(address,5,A1Speed)
 	else:
@@ -80,20 +90,29 @@ def TranslateZ(speed):
 		sendSabertooth(address,0,A2Speed)
 	
 def TranslateIO(speed):
-	#todo: speed is not in the proper units yet
+	#calculates and sends speeds of linear actuators for end effector to move back or forth at speed
 	#angles in radians
-	#Lalpha,Lbeta,thetaL, thetaE, A, B, alpha, Lgamma, Ldelta are constants
+	#need actuator positions and constants based on geometry of arm
+	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaA, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
-	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2
+	#theta1 is arm angle of elevation, theta2 is elbow angle
+	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
+	#L1p and L2p are speeds of the linear actuators
+
 	L1 = readADC(0)
 	L2 = readADC(1)
+
 	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
-	theta2 = math.acos((pow(A,2) + pow(B,2) - pow(L2,2)) / (2 * A * B)) + alpha + math.pi/2
-	Rr = - Ldelta * math.sin(theta1 + theta2) / (Ldelta * math.sin(theta1) + Lgamma * math.sin(theta1 + theta2))
-	theta2_dot = - speed / (Ldelta * math.sin(theta1 + theta2) * (Rr + 1) + Rr * Lgamma * math.sin(theta1))
-	theta1_dot = Rr * theta2_dot
-	L1p = (theta1_dot * Lgamma * Lbeta) / (L1) * math.sqrt( abs((1 - pow( ( (pow(Lgamma,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lgamma * Lbeta)),2))))
-	L2p = (theta2_dot * Lgamma * B) / (L2) * math.sqrt( abs((1 - pow( ((pow(A,2) + pow(B,2) - pow(L2,2)) / (2 * A * B)),2))))
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaA + math.pi / 2
+ 
+	Rr = - Ldelta * math.sin(theta1+theta2) / (Lgamma * math.sin(theta1) + Ldelta * math.sin(theta1+theta2))
+
+	theta2_dot = -speed / (Ldelta * math.sin(theta1+theta2) * (Rr+1) + Rr * Lgamma * math.sin(theta1))
+	theta1_dot = Rr*theta2_dot
+
+	L1p = (theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
+	L2p = (theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
+
 	if A1Speed<=0:
 		sendSabertooth(address,5,A1Speed)
 	else:
