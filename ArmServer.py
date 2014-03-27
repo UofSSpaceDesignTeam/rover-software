@@ -21,10 +21,15 @@ scaleFactor = 0.55
 address= 128
 
 Lalpha = 371	# Lalpha, Lbeta, A, B are in mm, to the closes mm 
-Lbeta = 104		
-A = 121
-B = 363
+Lbeta = 104	
+Lgamma = 
+Ldelta = 	
+LA = 121
+LB = 363
+thetaL = 
+thetaB = 
 
+ 
 ActuatorFullIn = 292.354	#lengths again in mm
 ActuatorFullOut = 444.754
 ActuatorFullInRaw = 1749
@@ -60,7 +65,7 @@ def TranslateZ(speed):
 
 	#calculates and sends speeds of linear actuators for end effector to move up or down at input speed
 	#angles in radians
-	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaA, Lgamma, Ldelta are constants
+	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaL, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
 	#theta1 is arm angle of elevation, theta2 is elbow angle
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
@@ -70,7 +75,7 @@ def TranslateZ(speed):
 	L2 = readADC(1)
 
 	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
-	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaA + math.pi / 2
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
 
 	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
 
@@ -93,7 +98,7 @@ def TranslateIO(speed):
 	#calculates and sends speeds of linear actuators for end effector to move back or forth at speed
 	#angles in radians
 	#need actuator positions and constants based on geometry of arm
-	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaA, Lgamma, Ldelta are constants
+	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaL, Lgamma, Ldelta are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
 	#theta1 is arm angle of elevation, theta2 is elbow angle
 	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
@@ -103,7 +108,7 @@ def TranslateIO(speed):
 	L2 = readADC(1)
 
 	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
-	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaA + math.pi / 2
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
  
 	Rr = - Ldelta * math.sin(theta1+theta2) / (Lgamma * math.sin(theta1) + Ldelta * math.sin(theta1+theta2))
 
