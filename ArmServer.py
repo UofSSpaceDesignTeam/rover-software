@@ -20,14 +20,14 @@ ramping = 10
 scaleFactor = 0.55
 address= 128
 
-Lalpha = 371	# Lalpha, Lbeta, A, B are in mm, to the closes mm 
-Lbeta = 104	
-Lgamma = 
-Ldelta = 	
-LA = 121
+Lalpha = 371.29	# Lalpha, Lbeta, LA, LB, Lnu, Lmu are in mm, to the closes mm 
+Lbeta = 104.88
+Lnu = 	
+Lmu = 	
+LA = 121.12
 LB = 363
-thetaL = 
-thetaB = 
+thetaL = 0.2145 # in radians
+thetaB = 0.8111
 
  
 ActuatorFullIn = 292.354	#lengths again in mm
@@ -65,7 +65,7 @@ def TranslateZ(speed):
 
 	#calculates and sends speeds of linear actuators for end effector to move up or down at input speed
 	#angles in radians
-	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaL, Lgamma, Ldelta are constants
+	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaA, Lnu, Lmu are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
 	#theta1 is arm angle of elevation, theta2 is elbow angle
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
@@ -76,6 +76,9 @@ def TranslateZ(speed):
 
 	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
+
+	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
+	Lgamma = Lnu * math.sqrt(1 + pow(Ldelta-Lmu,2)) + LB
 
 	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
 
@@ -98,7 +101,7 @@ def TranslateIO(speed):
 	#calculates and sends speeds of linear actuators for end effector to move back or forth at speed
 	#angles in radians
 	#need actuator positions and constants based on geometry of arm
-	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaL, Lgamma, Ldelta are constants
+	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaA, Lnu, Lmu are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
 	#theta1 is arm angle of elevation, theta2 is elbow angle
 	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
@@ -109,6 +112,9 @@ def TranslateIO(speed):
 
 	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
+
+	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
+	Lgamma = Lnu * math.sqrt(1 + pow(Ldelta-Lmu,2)) + LB
  
 	Rr = - Ldelta * math.sin(theta1+theta2) / (Lgamma * math.sin(theta1) + Ldelta * math.sin(theta1+theta2))
 
