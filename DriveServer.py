@@ -100,31 +100,34 @@ def setMotors2(yAxisr, yAxisl): # sends motor commands based on joystick1/2 y po
 def parseCommand(command): # parses and executes remote commands
 	global emergency
 	global skidmode
-	if len(command) > 2:
-		if(command[0] == "#"): # is valid
-			if(command[1] == "D"):
-				if(command[2] == "D" and len(command) > 4): # Drive, Data
-					Axis1 = int(ord(command[3]))
-					Axis2 = int(ord(command[4]))
-					print(Axis1, Axis2) #x+y in mode 1 or ry+ly in mode 2
-					if(skidmode == 1):
-						setMotors(Axis1, Axis2)
-					if(skidmode == 2):
-						setMotors2(Axis1, Axis2)
-					if(emergency == True):
-						if(Axis1 == 127 and Axis2 == 127):
-							emergency = False
-						else:
-							print("Check controller connection and release joystick.")
-							stopSabertooth()
-							time.sleep(2)
-				if(command[2] == "M"): # Mode Switch
-					skidmode = int(ord(command[3]))
-					print str(skidmode) + "selected"
-				elif(command[2] == "S"): # Stop
-					stopSabertooth()
-					print("emergency stop")
-					emergency = True
+	if command is not None:
+		if len(command) > 2:
+			if(command[0] == "#"): # is valid
+				if(command[1] == "D"):
+					if(command[2] == "D" and len(command) > 4): # Drive, Data
+						Axis1 = int(ord(command[3]))
+						Axis2 = int(ord(command[4]))
+						print(Axis1, Axis2) #x+y in mode 1 or ry+ly in mode 2
+						if(skidmode == 1):
+							setMotors(Axis1, Axis2)
+						if(skidmode == 2):
+							setMotors2(Axis1, Axis2)
+						if(emergency == True):
+							if(Axis1 == 127 and Axis2 == 127):
+								emergency = False
+							else:
+								print("Check controller connection and release joystick.")
+								stopSabertooth()
+								time.sleep(2)
+					if(command[2] == "M"): # Mode Switch
+						skidmode = int(ord(command[3]))
+						print str(skidmode) + "selected"
+					elif(command[2] == "S"): # Stop
+						stopSabertooth()
+						print("emergency stop")
+						emergency = True
+	else:
+		stopSabertooth()
 					
 
 def stopSockets(): # Stops sockets on error condition
