@@ -22,8 +22,8 @@ address= 128
 
 Lalpha = 371.29	# Lalpha, Lbeta, LA, LB, Lnu, Lmu are in mm, to the closes mm 
 Lbeta = 104.88
-Lnu = 	
-Lmu = 	
+Lnu = 0	
+Lmu = 0	
 LA = 121.12
 LB = 363
 thetaL = 0.2145 # in radians
@@ -57,7 +57,7 @@ def readADC0(address=0):
 	#result is now in mm's
 	return result
 
-def readADC1(address=1)
+def readADC1(address=1):
 	#mapping for actuator positions
 	result = adc.readADCSingleEnded(address)
 	#map the result to the range 0->1
@@ -111,9 +111,9 @@ def TranslateZ(speed):
 	else:
 		sendSabertooth(address,0,A2Speed)
 		#for testing purposes
-	if speed<0
+	if speed<0:
 		print("Move Up")
-	elif speed>0
+	elif speed>0:
 		print("Move Down")
 	
 def TranslateIO(speed):
@@ -152,9 +152,9 @@ def TranslateIO(speed):
 	else:
 		sendSabertooth(address,0,A2Speed)
 	#for testing purposes
-	if speed<0
+	if speed<0:
 		print("Move In")
-	elif speed>0
+	elif speed>0:
 		print("Move Out")
 	
 def testSetActuators(actuator1, actuator2):
