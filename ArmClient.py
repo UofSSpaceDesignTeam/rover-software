@@ -57,6 +57,14 @@ class ArmClient: # class for arm control
 		except socket.error as e:
 			sys.stderr.write(e.strerror)
 			return False
+			
+	def moveWrist(self, speed):
+		try:
+			self.socket.send(self.commandMoveWrist + chr(speed))
+			return True
+		except socket.error as e:
+			sys.stderr.write(e.strerror)
+			return False
 	
 	def tiltWrist(self, speed):
 		try:
