@@ -85,8 +85,8 @@ def TranslateZ(speed):
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
 
-	L1 = readADC(0)
-	L2 = readADC(1)
+	L1 = readADC0()
+	L2 = readADC1()
 
 	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
@@ -121,8 +121,8 @@ def TranslateIO(speed):
 	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
 
-	L1 = readADC(0)
-	L2 = readADC(1)
+	L1 = readADC()
+	L2 = readADC()
 
 	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
