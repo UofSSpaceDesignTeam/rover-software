@@ -32,13 +32,12 @@ thetaB = 0.8111
  
 ActuatorFullIn = 292.354	#lengths again in mm
 ActuatorFullOut = 444.754
-ActuatorFullInRaw = 1749
-ActuatorFullOutRaw = 2838
 
-Actuator2FullIn = 	#lengths again in mm
-Actuator2FullOut = 
-Actuator2FullInRaw = 
-Actuator2FullOutRaw = 
+Actuator1FullInRaw = 1749
+Actuator1FullOutRaw = 2838
+
+Actuator2FullInRaw = 258
+Actuator2FullOutRaw = 4518
 
 adc = ADS1x15()
 
