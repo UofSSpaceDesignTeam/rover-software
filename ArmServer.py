@@ -35,6 +35,11 @@ ActuatorFullOut = 444.754
 ActuatorFullInRaw = 1749
 ActuatorFullOutRaw = 2838
 
+Actuator2FullIn = 	#lengths again in mm
+Actuator2FullOut = 
+Actuator2FullInRaw = 
+Actuator2FullOutRaw = 
+
 adc = ADS1x15()
 
 # global variables
@@ -43,13 +48,23 @@ emergency = False
 
 # function definitions
 
-def readADC(address):
+def readADC0(address=0):
 	#mapping for actuator positions
 	result = adc.readADCSingleEnded(address)
 	#map the result to the range 0->1
-	result = (result - ActuatorFullInRaw) / (ActuatorFullOutRaw - ActuatorFullInRaw)
+	result = (result - Actuator1FullInRaw) / (Actuator1FullOutRaw - Actuator1FullInRaw)
 	#now map to the range fullIn -> fullOut
-	result=result * (ActuatorFullOut - ActuatorFullIn) + ActuatorFullIn
+	result=result * (Actuator1FullOut - Actuator1FullIn) + Actuator1FullIn
+	#result is now in mm's
+	return result
+
+def readADC1(address=1)
+	#mapping for actuator positions
+	result = adc.readADCSingleEnded(address)
+	#map the result to the range 0->1
+	result = (result - Actuator2FullInRaw) / (Actuator2FullOutRaw - Actuator2FullInRaw)
+	#now map to the range fullIn -> fullOut
+	result=result * (Actuator2FullOut - Actuator2FullIn) + Actuator2FullIn
 	#result is now in mm's
 	return result
 	
