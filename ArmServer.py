@@ -110,6 +110,11 @@ def TranslateZ(speed):
 		sendSabertooth(address,1,A2Speed)
 	else:
 		sendSabertooth(address,0,A2Speed)
+		#for testing purposes
+	if speed<0
+		print("Move Up")
+	elif speed>0
+		print("Move Down")
 	
 def TranslateIO(speed):
 	#calculates and sends speeds of linear actuators for end effector to move back or forth at speed
@@ -146,7 +151,11 @@ def TranslateIO(speed):
 		sendSabertooth(address,1,A2Speed)
 	else:
 		sendSabertooth(address,0,A2Speed)
-	
+	#for testing purposes
+	if speed<0
+		print("Move In")
+	elif speed>0
+		print("Move Out")
 	
 def testSetActuators(actuator1, actuator2):
 	throttlel = (actutaor1 - 127) / 127.0  # range is now -1 to 1
