@@ -144,15 +144,14 @@ def TranslateIO(speed):
 	Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
  
 	Rr = - Ldelta * math.sin(theta1+theta2) / (Lgamma * math.sin(theta1) + Ldelta * math.sin(theta1+theta2))
-
-	theta2_dot = -speed / (Ldelta * math.sin(theta1+theta2) * (Rr+1) + Rr * Lgamma * math.sin(theta1))
-	theta1_dot = Rr*theta2_dot
 	print("In translateIO")
 	print("Rr: ",Rr)
 	print("Lgamma:",Lgamma )
 	print("Ldelta: ", Ldelta)
 	print("theta2: ", theta2)
 	print("theta1: ", theta1)
+	theta2_dot = -speed / (Ldelta * math.sin(theta1+theta2) * (Rr+1) + Rr * Lgamma * math.sin(theta1))
+	theta1_dot = Rr*theta2_dot
 	
 	L1p = (theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
 	L2p = (theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
