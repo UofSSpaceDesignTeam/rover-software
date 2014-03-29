@@ -94,7 +94,7 @@ def TranslateZ(speed):
 	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
 	tempAngle=(pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)
 	tempAngle=min(1,tempAngle)
-	tempAngle=max(1,tempAngle)
+	tempAngle=max(-1,tempAngle)
 	theta2 = math.acos(tempAngle) + thetaL + math.pi / 2
 
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
