@@ -94,10 +94,9 @@ def TranslateZ(speed):
 	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
 
-	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
-	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
-	Ldelta=369.36
-	Lgamma=363
+	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
+	Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
+
 	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
 
 	theta2_dot = speed / (Ldelta * math.cos(theta1 + theta2) * (Rh + 1) + Rh * Lgamma * math.cos(theta1))
@@ -114,16 +113,16 @@ def TranslateZ(speed):
 		L1p=-L1p
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
-		sendSabertooth(address,5,L1p)
+		sendSabertooth(address,1,L1p)
 	else:
-		sendSabertooth(address,4,L1p)
+		sendSabertooth(address,0,L1p)
 	if L2p<=0:
 		L2p=-L2p
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
-		sendSabertooth(address,1,L2p)
+		sendSabertooth(address,5,L2p)
 	else:
-		sendSabertooth(address,0,L2p)
+		sendSabertooth(address,4,L2p)
 		#for testing purposes
 	if speed<0:
 		print("Move Up")
@@ -174,16 +173,16 @@ def TranslateIO(speed):
 		L1p=-L1p
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
-		sendSabertooth(address,5,L1p)
+		sendSabertooth(address,1,L1p)
 	else:
-		sendSabertooth(address,4,L1p)
+		sendSabertooth(address,0,L1p)
 	if L2p<=0:
 		L2p=-L2p
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
-		sendSabertooth(address,1,L2p)
+		sendSabertooth(address,5,L2p)
 	else:
-		sendSabertooth(address,0,L2p)
+		sendSabertooth(address,4,L2p)
 	#for testing purposes
 	if speed<0:
 		print("Move In")
