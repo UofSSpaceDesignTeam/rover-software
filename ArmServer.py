@@ -22,8 +22,8 @@ address= 128
 
 Lalpha = 371.29	# Lalpha, Lbeta, LA, LB, Lnu, Lmu are in mm, to the closes mm 
 Lbeta = 104.88
-Lnu = 0	
-Lmu = 0	
+Lnu = 56.83 	
+Lmu = 369.37
 LA = 121.12
 LB = 363
 thetaL = 0.2145 # in radians
@@ -53,7 +53,7 @@ def readADC0(address=0):
 	#map the result to the range 0->1
 	result = (result - Actuator1FullInRaw) / (Actuator1FullOutRaw - Actuator1FullInRaw)
 	#now map to the range fullIn -> fullOut
-	result=result * (Actuator1FullOut - Actuator1FullIn) + Actuator1FullIn
+	result=result * (ActuatorFullOut - ActuatorFullIn) + ActuatorFullIn
 	#result is now in mm's
 	return result
 
@@ -63,7 +63,7 @@ def readADC1(address=1):
 	#map the result to the range 0->1
 	result = (result - Actuator2FullInRaw) / (Actuator2FullOutRaw - Actuator2FullInRaw)
 	#now map to the range fullIn -> fullOut
-	result=result * (Actuator2FullOut - Actuator2FullIn) + Actuator2FullIn
+	result=result * (ActuatorFullOut - ActuatorFullIn) + ActuatorFullIn
 	#result is now in mm's
 	return result
 	
@@ -126,8 +126,8 @@ def TranslateIO(speed):
 	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
 
-	L1 = readADC()
-	L2 = readADC()
+	L1 = readADC0()
+	L2 = readADC1()
 
 	theta1 = math.acos((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)) + thetaL + thetaE
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
