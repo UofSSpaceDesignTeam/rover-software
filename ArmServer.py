@@ -22,8 +22,8 @@ address= 128
 
 Lalpha = 371.29	# Lalpha, Lbeta, LA, LB, Lnu, Lmu are in mm, to the closes mm 
 Lbeta = 104.88
-Lnu = 56.83	
-Lmu = 396.37
+Lnu = 0	
+Lmu = 0	
 LA = 121.12
 LB = 363
 thetaL = 0.2145 # in radians
