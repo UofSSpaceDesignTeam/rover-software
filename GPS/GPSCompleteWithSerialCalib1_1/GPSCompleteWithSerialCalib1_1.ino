@@ -29,7 +29,6 @@ TinyGPS gpsBase;
 TinyGPS gpsRover;  //Probably not necessary if data is transmitted as coordinates
 Servo antennaServo;
 bool calibrated1 = false;// Used for 2 different phases of the initial calibration
-bool calibrated2 = false;
 int calibrationAngle;  // This is the angle that must be added to the angle from north to get the servo angle
 int servoLimitLow = 20;
 int servoLimitHigh = 160;
@@ -117,7 +116,7 @@ int calibrate(){
       DisplayBaseGPS(&baseLat, &baseLon, &age);
     }     
     int len = 0;
-    while ((Serial.available() > 0) && (len < 2)) {            //*** Possible overflow of incomingByte? (i.e. if loop has more than 3 iterations)
+    while ((Serial.available() > 0) && (len < 3)) {            //*** Possible overflow of incomingByte? (i.e. if loop has more than 3 iterations)
       incomingByte[len] = Serial.read();                          // ^Fixed: Added a check for length
       len++;
       delay(100);
