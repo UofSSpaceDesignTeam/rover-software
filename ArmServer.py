@@ -106,13 +106,13 @@ def TranslateZ(speed):
 	L2p = (theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
 
 	if A1Speed<=0:
-		sendSabertooth(address,5,A1Speed)
+		sendSabertooth(address,5,L1p)
 	else:
-		sendSabertooth(address,4,A1Speed)
+		sendSabertooth(address,4,L1p)
 	if A2Speed<=0:
-		sendSabertooth(address,1,A2Speed)
+		sendSabertooth(address,1,L2p)
 	else:
-		sendSabertooth(address,0,A2Speed)
+		sendSabertooth(address,0,L2p)
 		#for testing purposes
 	if speed<0:
 		print("Move Up")
@@ -150,13 +150,13 @@ def TranslateIO(speed):
 	L2p = (theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
 
 	if A1Speed<=0:
-		sendSabertooth(address,5,A1Speed)
+		sendSabertooth(address,5,L1p)
 	else:
-		sendSabertooth(address,4,A1Speed)
+		sendSabertooth(address,4,L1p)
 	if A2Speed<=0:
-		sendSabertooth(address,1,A2Speed)
+		sendSabertooth(address,1,L2p)
 	else:
-		sendSabertooth(address,0,A2Speed)
+		sendSabertooth(address,0,L2p)
 	#for testing purposes
 	if speed<0:
 		print("Move In")
