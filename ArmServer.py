@@ -85,8 +85,8 @@ def TranslateZ(speed):
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
 
-	L1 = readADC0()
-	L2 = readADC1()
+	L2 = readADC0()
+	L1 = readADC1()
 
 	tempAngle = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	tempAngle = max(tempAngle,-1)
@@ -94,7 +94,7 @@ def TranslateZ(speed):
 	theta1 = math.acos(tempAngle) + thetaL + thetaE
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
 
-	Ldelta = Lnu * math.sqrt((math.cos(theta2) / (1 - math.cos(theta2)))) + Lmu 
+	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	Lgamma = Lnu * math.sqrt(1 + pow(Ldelta-Lmu,2)) + LB
 
 	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
@@ -129,16 +129,16 @@ def TranslateIO(speed):
 	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
 
-	L1 = readADC0()
-	L2 = readADC1()
+	L2 = readADC0()
+	L1 = readADC1()
 
 	tempAngle = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	tempAngle = max(tempAngle,-1)
 	tempAngle = min(tempAngle,1)
 	theta1 = math.acos(tempAngle) + thetaL + thetaE
-	theta2 = math.acos(((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB))) + thetaL + math.pi / 2
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
 
-	Ldelta = Lnu * math.sqrt((math.cos(theta2) / (1 - math.cos(theta2)))) + Lmu 
+	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	Lgamma = Lnu * math.sqrt(1 + pow(Ldelta-Lmu,2)) + LB
  
 	Rr = - Ldelta * math.sin(theta1+theta2) / (Lgamma * math.sin(theta1) + Ldelta * math.sin(theta1+theta2))
