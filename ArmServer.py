@@ -94,9 +94,10 @@ def TranslateZ(speed):
 	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
 
-	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
-	Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
-
+	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
+	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
+	Ldelta=369.36
+	Lgamma=363
 	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
 
 	theta2_dot = speed / (Ldelta * math.cos(theta1 + theta2) * (Rh + 1) + Rh * Lgamma * math.cos(theta1))
