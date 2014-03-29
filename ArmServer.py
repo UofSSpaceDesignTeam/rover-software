@@ -95,7 +95,7 @@ def TranslateZ(speed):
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL - math.pi / 2
 
 	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
-	Lgamma = Lnu * math.sqrt(1 + pow(Ldelta-Lmu,2)) + LB
+	Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
 
 	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
 
@@ -141,7 +141,7 @@ def TranslateIO(speed):
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL - math.pi / 2
 	
 	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
-	Lgamma = Lnu * math.sqrt(1 + pow(Ldelta-Lmu,2)) + LB
+	Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
  
 	Rr = - Ldelta * math.sin(theta1+theta2) / (Lgamma * math.sin(theta1) + Ldelta * math.sin(theta1+theta2))
 
