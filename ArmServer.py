@@ -33,11 +33,11 @@ thetaE = 0.8111
 ActuatorFullIn = 292.354	#lengths again in mm
 ActuatorFullOut = 444.754
 
-Actuator1FullInRaw = 1749
-Actuator1FullOutRaw = 2838
+Actuator1FullInRaw = 243
+Actuator1FullOutRaw = 4749
 
-Actuator2FullInRaw = 258
-Actuator2FullOutRaw = 4518
+Actuator2FullInRaw = 1890
+Actuator2FullOutRaw = 3081
 
 adc = ADS1x15()
 
@@ -91,8 +91,8 @@ def TranslateZ(speed):
 	tempAngle = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	tempAngle = max(tempAngle,-1)
 	tempAngle = min(tempAngle,1)
-	theta1 = math.acos(tempAngle) + thetaL + thetaE
-	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
+	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL - math.pi / 2
 	print(theta1)
 	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	Lgamma = Lnu * math.sqrt(1 + pow(Ldelta-Lmu,2)) + LB
@@ -135,8 +135,8 @@ def TranslateIO(speed):
 	tempAngle = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	tempAngle = max(tempAngle,-1)
 	tempAngle = min(tempAngle,1)
-	theta1 = math.acos(tempAngle) + thetaL + thetaE
-	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi / 2
+	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL - math.pi / 2
 	print(theta1)
 	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	Lgamma = Lnu * math.sqrt(1 + pow(Ldelta-Lmu,2)) + LB
