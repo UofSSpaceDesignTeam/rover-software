@@ -152,7 +152,7 @@ def TranslateIO(speed):
 	print("Ldelta: ", Ldelta)
 	print("theta2: ", theta2)
 	print("theta1: ", theta1)
-	print("sin(theta1):" math.sin(theta1))
+	print("sin(theta1):", math.sin(theta1))
 	theta2_dot = -speed / (Ldelta * math.sin(theta1+theta2) * (Rr+1) + Rr * Lgamma * math.sin(theta1))
 	theta1_dot = Rr*theta2_dot
 	
