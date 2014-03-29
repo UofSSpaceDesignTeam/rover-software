@@ -93,7 +93,7 @@ def TranslateZ(speed):
 	tempAngle = min(tempAngle,1)
 	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL - math.pi / 2
-	print(theta1)
+
 	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	Lgamma = Lnu * math.sqrt(1 + pow(Ldelta-Lmu,2)) + LB
 
@@ -137,7 +137,7 @@ def TranslateIO(speed):
 	tempAngle = min(tempAngle,1)
 	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL - math.pi / 2
-	print(theta1)
+	
 	Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	Lgamma = Lnu * math.sqrt(1 + pow(Ldelta-Lmu,2)) + LB
  
@@ -197,15 +197,15 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						pass
 				elif command[2] == "L": # translate wrist joint "up/down"
 					if emergency == False:
-						Speed = int(ord(command[3]))*127
-						Speed = max(Speed, -127)
-						Speed = min(Speed, 127)
+						Speed = int(ord(command[3]))*10
+						Speed = max(Speed, -10)
+						Speed = min(Speed, 10)
 						TranslateZ(Speed)
 				elif command[2] == "M": # translate wrist joint "in/out"
 					if emergency == False:
-						Speed = int(ord(command[3]))*127
-						Speed = max(Speed, -127)
-						Speed = min(Speed, 127)
+						Speed = int(ord(command[3]))*10
+						Speed = max(Speed, -10)
+						Speed = min(Speed, 10)
 						TranslateIO(Speed)
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
