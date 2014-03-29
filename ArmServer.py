@@ -100,7 +100,7 @@ def TranslateZ(speed):
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
 	Ldelta=369.36
-	Lgamma=363
+	Lgamma=363 
 
 	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
 
