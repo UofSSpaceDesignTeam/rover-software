@@ -111,11 +111,17 @@ def TranslateZ(speed):
 	print("L1p; ", L1p)
 	print("L2p: ",L2p)
 	if L1p<=0:
-		sendSabertooth(address,5,-L1p)
+		L1p=-L1p
+		L1p=max(0,L1p)
+		L1p=min(127,L1p)
+		sendSabertooth(address,5,L1p)
 	else:
 		sendSabertooth(address,4,L1p)
 	if L2p<=0:
-		sendSabertooth(address,1,-L2p)
+		L2p=-L2p
+		L2p=max(0,L2p)
+		L2p=min(127,L2p)
+		sendSabertooth(address,1,L2p)
 	else:
 		sendSabertooth(address,0,L2p)
 		#for testing purposes
@@ -165,10 +171,16 @@ def TranslateIO(speed):
 	print("L1p: ", L1p)
 	print("L2p: ", L2p)
 	if L1p<=0:
+		L1p=-L1p
+		L1p=max(0,L1p)
+		L1p=min(127,L1p)
 		sendSabertooth(address,5,L1p)
 	else:
 		sendSabertooth(address,4,L1p)
 	if L2p<=0:
+		L2p=-L2p
+		L2p=max(0,L2p)
+		L2p=min(127,L2p)
 		sendSabertooth(address,1,L2p)
 	else:
 		sendSabertooth(address,0,L2p)
