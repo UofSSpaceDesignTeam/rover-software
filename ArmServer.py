@@ -92,10 +92,7 @@ def TranslateZ(speed):
 	tempAngle = max(tempAngle,-1)
 	tempAngle = min(tempAngle,1)
 	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
-	tempAngle=(pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)
-	tempAngle=min(1,tempAngle)
-	tempAngle=max(-1,tempAngle)
-	theta2 = math.acos(tempAngle) + thetaL + math.pi / 2
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL +math.pi/2 
 
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
@@ -104,12 +101,13 @@ def TranslateZ(speed):
 
 	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
 
-	theta2_dot = speed / (Ldelta * math.cos(theta1 + theta2) * (Rh + 1) + Rh * Lgamma * math.cos(theta1))
+	theta2_dot = speed /float (Ldelta * math.cos(theta1 + theta2) * (Rh + 1) + Rh * Lgamma * math.cos(theta1))
 	theta1_dot = Rh * theta2_dot
 
 	L1p = (theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
 	L2p = (theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
 	print("In translateZ")
+	print("speed: ",speed)
 	print("theta1_dot: ",theta1_dot)
 	print("theta2_dot:",theta2_dot )
 	print("L1p; ", L1p)
@@ -155,10 +153,7 @@ def TranslateIO(speed):
 	tempAngle = max(tempAngle,-1)
 	tempAngle = min(tempAngle,1)
 	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
-	tempAngle=(pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)
-	tempAngle=max(-1,tempAngle)
-	tempAngle=min(1,tempAngle)
-	theta2 = math.acos(tempAngle) + thetaL + math.pi / 2
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi/2 
 	
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
@@ -168,7 +163,7 @@ def TranslateIO(speed):
 	Rr = - Ldelta * math.sin(theta1+theta2) / (Lgamma * math.sin(theta1) + Ldelta * math.sin(theta1+theta2))
 	print("In translateIO")
 	print("Rr: ",Rr)
-	print("Lgamma:",Lgamma )
+	print("speed: ",speed)
 	print("Ldelta: ", Ldelta)
 	print("theta2: ", theta2)
 	print("theta1: ", theta1)
@@ -239,15 +234,11 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						pass
 				elif command[2] == "L": # translate wrist joint "up/down"
 					if emergency == False:
-						Speed = int(ord(command[3]))*20
-						Speed = max(Speed, -20)
-						Speed = min(Speed, 20)
+						Speed = int(ord(command[3]))
 						TranslateZ(Speed)
 				elif command[2] == "M": # translate wrist joint "in/out"
 					if emergency == False:
-						Speed = int(ord(command[3]))*20
-						Speed = max(Speed, -20)
-						Speed = min(Speed, 20)
+						Speed = int(ord(command[3]))
 						TranslateIO(Speed)
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:

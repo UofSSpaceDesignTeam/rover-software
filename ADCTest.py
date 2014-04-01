@@ -14,9 +14,9 @@ fullOutR=2838
 while True:
 	result = adc.readADCSingleEnded(0)
 	#map the result to the range 0->1
-	result=(result-fullInR)/(fullOutR-fullInR)
+	#result=(result-fullInR)/(fullOutR-fullInR)
 	#now map to the range fullIn -> fullOut
-	result=result*(fullOut - fullIn) + fullIn
+	#result=result*(fullOut - fullIn) + fullIn
 	#Scaling factor of 0.003.  12bits=4096 different states at a range of -6.144V to 6.144V gives 0.003V per bit
 	print "Channel 0 = %.3f mm" % (result)
 	time.sleep(0.010)
