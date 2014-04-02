@@ -1,12 +1,15 @@
 import serial
+import socket
 import struct
 import os
+import sys
 
-gps = serial.Serial("/dev/ttyAMA0")
-gps.baudrate = 9600
-gps.timeout = 0.2
 fmt = "6s5s1s6s1s5s3s" #time,lat,latdir,lon,londir,alt,prec
-encoder = struct.Struct(fmt)
+commandPort = 3004
+GPSPort = 3005
+serialPort = "COM8" #/dev/ttyAMA0
+GPSIP = "127.0.0.1"
+header = "#GD" #GPS Data
 
 def encodeGPS(data, verbose=0, clear=0):
 	try:
@@ -44,14 +47,112 @@ def encodeGPS(data, verbose=0, clear=0):
 				
 	except:
 		print("Invalid Response")
-		raise
+		return None
+		
+def parseCommand(command):
+	if(len(command) > 2 and command[0] == "#"): # is valid
+		if(command[1] == "G"):
+			if(command[2] == "S"): #GS
+				print("starting GPS data")
+				startGPS()
+			elif(command[2] == "E"): #GE
+				print("stopping GPS data")
+				stopGPS()
+			elif(command[2]== "P"): #GL
+				print("logging GPS data")
+				logGPS()
+
+def sendData():
+	position = encodeGPS(gps.readline())	
+	if position is not None:
+		if logfile.closed() == False:
+			try:
+				new_data = position
+				logfile.write(new_data[2])
+			except:
+				print "Could not write to file!"
+		try:
+			serverSocket.send(header + position)
+			return True
+		except:
+			stopGPS()
+			
+def stopSockets():
+	try:
+		commandSocket.close()
+	except:
+		pass
+	try:
+		serverSocket.close()
+	except:
+		pass
+		
+def startGPS():
+	gps.open()
+	rawSerial = gps.readline()
+
+def stopGPS():
+	gps.close()
+	
+def logGPS(data): #Saves GPS data to a local file
+	try:
+		logfile.open()
+	except:
+		print("Could not create gps.log file!")
+	
+## Test Functions
 def refreshScreen():
 	os.system("clear")
 
 def testResponse(packet):
 	if packet is not None:
 		print encoder.unpack(packet)
+## End Test		
+		
+### Main Program ###
+serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+logfile = file("gps.log","w+b")
+encoder = struct.Struct(fmt)
 
-while True:
-	position = encodeGPS(gps.readline(),1,1)
-	testResponse(position)
+try:
+	gps = serial.Serial(serialPort, bytesize = 8, parity = 'N', stopbits = 1)
+	gps.baudrate = 9600
+	gps.timeout = 0.2
+	
+except:
+	print("GPS serial setup failed!")
+	raise
+	#subprocess.call("sudo reboot", shell = True)
+
+try:
+	serverSocket.bind(("", commandPort))
+	serverSocket.listen(0)
+	print("GPSServer port: " + str(commandPort))
+	print("GPSData port: " + str(GPSPort))
+	while(True):
+		(commandSocket, clientAddress) = serverSocket.accept()
+		print("Connected to: " + str(clientAddress[0]))
+		while(True):
+			data = commandSocket.recv(256)
+			if(data == ""): # socket closing
+				stopGPS()
+				break
+			else:
+				parseCommand(data)
+				sendData()
+		print("Connection to: " + str(clientAddress[0]) + " closed")
+
+except KeyboardInterrupt:
+	print("\nmanual shutdown...")
+	stopGPS()
+	stopSockets()
+except socket.error as e:
+	print(e.strerror)
+	stopGPS()
+	stopSockets()
+	#subprocess.call("sudo reboot", shell = True)
+except:
+	stopGPS()
+	stopSockets()
+	#subprocess.call("sudo reboot", shell = True)
+	raise
