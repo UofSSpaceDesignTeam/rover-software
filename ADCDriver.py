@@ -183,7 +183,7 @@ class I2C:
 	def readList(self, reg, length):
 		try:
 			results = self.bus.read_i2c_block_data(0x48, reg, length)
-		return results
+			return results
     except IOError, err:
 		return self.errMsg()
 
