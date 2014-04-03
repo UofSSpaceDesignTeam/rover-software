@@ -66,6 +66,29 @@ def getAxes():  # returns a tuple of all axis data (-1.0 to 1.0)
 	rightJoystickY *= rightJoystickYScale
 	trigger *= triggerScale
 	
+	if leftJoystickX > 1.0:
+		leftJoystickX = 1.0
+	if leftJoystickX < -1.0:
+		leftJoystickX = -1.0
+	if leftJoystickY > 1.0:
+		leftJoystickY = 1.0
+	if leftJoystickY < -1.0:
+		leftJoystickY = -1.0
+	
+	if rightJoystickX > 1.0:
+		rightJoystickX = 1.0
+	if rightJoystickY > 1.0:
+		rightJoystickY = 1.0
+	if rightJoystickX < -1.0:
+		rightJoystickX = -1.0
+	if rightJoystickY < -1.0:
+		rightJoystickY = -1.0
+		
+	if trigger > 1.0:
+		trigger = 1.0
+	if trigger < -1.0:
+		trigger = -1.0
+	
 	return (leftJoystickX, leftJoystickY, rightJoystickX,
 	rightJoystickY, trigger)
 
