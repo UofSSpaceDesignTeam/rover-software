@@ -4,10 +4,10 @@ import struct
 import os
 import sys
 
-fmt = "6s5s1s6s1s5s3s" #time,lat,latdir,lon,londir,alt,prec
+fmt = "6s8s9s5s3s" #time,lat,latdir,lon,londir,alt,prec
 commandPort = 3004
 GPSPort = 3005
-serialPort = "COM8" #/dev/ttyAMA0
+serialPort = "/dev/ttyAMA0" #/dev/ttyAMA0
 GPSIP = "127.0.0.1"
 header = "#GD" #GPS Data
 
@@ -20,16 +20,16 @@ def encodeGPS(data, verbose=0, clear=0):
 			
 				time = data[7:13]
 				time = time
-				lat = data[18:20] + "." + data[20:22] # + " " + data[22:27] #18-27
+				lat = str(round(float(data[18:20]) + float(data[20:27])/60,5)) #18-27
 				latdir = data[28]
-				lon = data [30:33] + "." + data[33:35] #30-40
+				lon = str(round(float(data[30:33]) + float(data[33:40])/60,5)) #30-40
 				londir = data[41]
 				quality = data[43]
 				numSat = data[45:47]
 				prec = data[48:51]
 				alt = data[52:57]
 				
-				packet = encoder.pack(time,lat,latdir,lon,londir,alt,prec)
+				packet = encoder.pack(time,lat,lon,alt,prec)
 				
 				if verbose != 0:
 					print "Time taken at " + time + " UTC"
@@ -141,6 +141,10 @@ try:
 				parseCommand(data)
 				sendData()
 		print("Connection to: " + str(clientAddress[0]) + " closed")
+		#encode = encodeGPS(gps.readline(),1,1)
+		#decode = testResponse(encode)
+		#if decode is not None:
+		#	print decode
 
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
