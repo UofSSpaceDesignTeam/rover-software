@@ -8,7 +8,6 @@ class ADCDriver:
 
 	# IC Identifiers
 	__IC_ADS1015 = 0x00
-	__IC_ADS1115 = 0x01
 
 	# Pointer Register
 	__ADS1015_REG_POINTER_MASK = 0x03
@@ -54,15 +53,6 @@ class ADCDriver:
 	__ADS1015_REG_CONFIG_DR_2400SPS  = 0x00A0 # 2400 samples per second
 	__ADS1015_REG_CONFIG_DR_3300SPS  = 0x00C0 # 3300 samples per second (also 0x00E0)
 
-	__ADS1115_REG_CONFIG_DR_8SPS = 0x0000 # 8 samples per second
-	__ADS1115_REG_CONFIG_DR_16SPS  = 0x0020 # 16 samples per second
-	__ADS1115_REG_CONFIG_DR_32SPS  = 0x0040 # 32 samples per second
-	__ADS1115_REG_CONFIG_DR_64SPS  = 0x0060 # 64 samples per second
-	__ADS1115_REG_CONFIG_DR_128SPS = 0x0080 # 128 samples per second
-	__ADS1115_REG_CONFIG_DR_250SPS = 0x00A0 # 250 samples per second (default)
-	__ADS1115_REG_CONFIG_DR_475SPS = 0x00C0 # 475 samples per second
-	__ADS1115_REG_CONFIG_DR_860SPS = 0x00E0 # 860 samples per second
-
 	__ADS1015_REG_CONFIG_CMODE_MASK  = 0x0010
 	__ADS1015_REG_CONFIG_CMODE_TRAD  = 0x0000 # Traditional comparator with hysteresis (default)
 	__ADS1015_REG_CONFIG_CMODE_WINDOW = 0x0010 # Window comparator
@@ -80,20 +70,7 @@ class ADCDriver:
 	__ADS1015_REG_CONFIG_CQUE_2CONV  = 0x0001 # Assert ALERT/RDY after two conversions
 	__ADS1015_REG_CONFIG_CQUE_4CONV  = 0x0002 # Assert ALERT/RDY after four conversions
 	__ADS1015_REG_CONFIG_CQUE_NONE = 0x0003 # Disable the comparator and put ALERT/RDY in high state (default)
-	
-	
-	# Dictionaries with the sampling speed values
-	# These simplify and clean the code (avoid the abuse of if/elif/else clauses)
-	spsADS1115 = {
-	8:__ADS1115_REG_CONFIG_DR_8SPS,
-	16:__ADS1115_REG_CONFIG_DR_16SPS,
-	32:__ADS1115_REG_CONFIG_DR_32SPS,
-	64:__ADS1115_REG_CONFIG_DR_64SPS,
-	128:__ADS1115_REG_CONFIG_DR_128SPS,
-	250:__ADS1115_REG_CONFIG_DR_250SPS,
-	475:__ADS1115_REG_CONFIG_DR_475SPS,
-	860:__ADS1115_REG_CONFIG_DR_860SPS
-	}	
+		
 	spsADS1015 = {
 	128:__ADS1015_REG_CONFIG_DR_128SPS,
 	250:__ADS1015_REG_CONFIG_DR_250SPS,
@@ -133,10 +110,7 @@ class ADCDriver:
 		 self.__ADS1015_REG_CONFIG_CMODE_TRAD  | \
 		 self.__ADS1015_REG_CONFIG_MODE_SINGLE 
 
-		# Set sample per seconds, defaults to 250sps
-		# If sps is in the dictionary (defined in init) it returns the value of the constant
-		# othewise it returns the value for 250sps. This saves a lot of if/elif/else code!
-		config |= self.spsADS1015.setdefault(sps, self.__ADS1015_REG_CONFIG_DR_1600SPS)
+		config |= self.spsADS1015.setdefault(sps, self.__ADS1015_REG_CONFIG_DR_250SPS)
 		config |= self.pgaADS1x15.setdefault(pga, self.__ADS1015_REG_CONFIG_PGA_6_144V)
 		self.pga = pga
 		
