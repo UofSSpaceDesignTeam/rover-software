@@ -50,7 +50,7 @@ emergency = False
 
 def readActuator1():
 	#mapping for actuator positions
-	result = adc.readADCSingleEnded(0)
+	result = adc.readADC(0)
 	#map the result to the range 0->1
 	result = (result - Actuator1FullInRaw) / (Actuator1FullOutRaw - Actuator1FullInRaw)
 	#now map to the range fullIn -> fullOut
@@ -60,7 +60,7 @@ def readActuator1():
 
 def readActuator2():
 	#mapping for actuator positions
-	result = adc.readADCSingleEnded(1)
+	result = adc.readADC(1)
 	#map the result to the range 0->1
 	result = (result - Actuator2FullInRaw) / (Actuator2FullOutRaw - Actuator2FullInRaw)
 	#now map to the range fullIn -> fullOut
