@@ -175,15 +175,15 @@ class I2C:
 		self.bus = smbus.SMBus(1)
 		
 	def writeList(self, reg, list):
-    try:
-      self.bus.write_i2c_block_data(0x48, reg, list)
-    except IOError, err:
-      return self.errMsg()
+		try:
+			self.bus.write_i2c_block_data(0x48, reg, list)
+		except IOError, err:
+			return self.errMsg()
 
-  def readList(self, reg, length):
-    try:
-      results = self.bus.read_i2c_block_data(0x48, reg, length)
-      return results
+	def readList(self, reg, length):
+		try:
+			results = self.bus.read_i2c_block_data(0x48, reg, length)
+		return results
     except IOError, err:
-      return self.errMsg()
+		return self.errMsg()
 
