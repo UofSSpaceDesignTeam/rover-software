@@ -28,6 +28,8 @@ LA = 121.12
 LB = 363
 thetaL = 0.2145 # in radians
 thetaE = 0.8111
+Ldelta = 108.16
+Lgamma = 407.4 
 
  
 ActuatorFullIn = 292.354	#lengths again in mm
@@ -89,15 +91,15 @@ def TranslateZ(speed):
 	L1 = readADC1()
 
 	tempAngle = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
+	#to avoid math domain errors
 	tempAngle = max(tempAngle,-1)
 	tempAngle = min(tempAngle,1)
+	
 	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
-	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL +math.pi/2 
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL 
 
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
-	Ldelta=369.36
-	Lgamma=363 
 
 	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
 
@@ -150,15 +152,16 @@ def TranslateIO(speed):
 	L1 = readADC1()
 
 	tempAngle = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
+	#to avoid math domain errors
 	tempAngle = max(tempAngle,-1)
 	tempAngle = min(tempAngle,1)
+	
 	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
-	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL + math.pi/2 
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL  
 	
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
-	Ldelta = 363
-	Lgamma=369.36 
+
  
 	Rr = - Ldelta * math.sin(theta1+theta2) / (Lgamma * math.sin(theta1) + Ldelta * math.sin(theta1+theta2))
 	print("In translateIO")
