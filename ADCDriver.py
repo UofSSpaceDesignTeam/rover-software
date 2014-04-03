@@ -182,6 +182,6 @@ class I2C:
 		try:
 			results = self.bus.read_i2c_block_data(0x48, reg, length)
 			return results
-    except IOError, err:
-		return self.errMsg()
+		except IOError, err:
+			return self.errMsg()
 

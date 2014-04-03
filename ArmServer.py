@@ -8,9 +8,8 @@ import socket
 import time
 import subprocess
 import serial
-from ADS1x15 import ADS1x15
-from Adafruit_I2C import Adafruit_I2C
 from ServoDriver import *
+from ADCDriver import *
 import RPi.GPIO as GPIO # for hardware reset system
 
 # global constants	
@@ -41,7 +40,7 @@ Actuator1FullOutRaw = 4749
 Actuator2FullInRaw = 1890
 Actuator2FullOutRaw = 3081
 
-adc = ADS1x15()
+adc = ADCDriver()
 
 # global variables
 
@@ -49,9 +48,9 @@ emergency = False
 
 # function definitions
 
-def readADC0(address=0):
+def readActuator1():
 	#mapping for actuator positions
-	result = adc.readADCSingleEnded(address)
+	result = adc.readADCSingleEnded(0)
 	#map the result to the range 0->1
 	result = (result - Actuator1FullInRaw) / (Actuator1FullOutRaw - Actuator1FullInRaw)
 	#now map to the range fullIn -> fullOut
@@ -59,9 +58,9 @@ def readADC0(address=0):
 	#result is now in mm's
 	return result
 
-def readADC1(address=1):
+def readActuator2():
 	#mapping for actuator positions
-	result = adc.readADCSingleEnded(address)
+	result = adc.readADCSingleEnded(1)
 	#map the result to the range 0->1
 	result = (result - Actuator2FullInRaw) / (Actuator2FullOutRaw - Actuator2FullInRaw)
 	#now map to the range fullIn -> fullOut
@@ -87,8 +86,8 @@ def TranslateZ(speed):
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
 
-	L2 = readADC0()
-	L1 = readADC1()
+	L2 = readActuator1()
+	L1 = readActuator2()
 
 	tempAngle = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	#to avoid math domain errors
@@ -148,8 +147,8 @@ def TranslateIO(speed):
 	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
 
-	L2 = readADC0()
-	L1 = readADC1()
+	L2 = readActuator1()
+	L1 = readActuator2()
 
 	tempAngle = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	#to avoid math domain errors
