@@ -115,9 +115,7 @@ class ADCDriver:
 
 	# Constructor
 	def __init__(self):
-		self.i2c = I2C(address)
-		self.address = 0x48
-		self.ic = __IC_ADS1015
+		self.i2c = I2C()
 	
 	def readADCSingleEnded(self, channel = 0):
 		pga = 6144
