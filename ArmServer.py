@@ -19,6 +19,7 @@ ramping = 10
 scaleFactor = 0.55
 address= 128
 
+#arm constants
 Lalpha = 371.29	# Lalpha, Lbeta, LA, LB, Lnu, Lmu are in mm, to the closes mm 
 Lbeta = 104.88
 Lnu = 56.83 	
@@ -30,7 +31,7 @@ thetaE = 0.8111
 Ldelta = 108.16
 Lgamma = 407.4 
 
- 
+#actuator parameters
 ActuatorFullIn = 292.354	#lengths again in mm
 ActuatorFullOut = 444.754
 
@@ -96,7 +97,7 @@ def TranslateZ(speed):
 	
 	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL 
-
+	
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
 
@@ -107,27 +108,42 @@ def TranslateZ(speed):
 
 	L1p = (theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
 	L2p = (theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
+	#for debugging/testing
 	print("In translateZ")
 	print("speed: ",speed)
 	print("theta1_dot: ",theta1_dot)
 	print("theta2_dot:",theta2_dot )
 	print("L1p; ", L1p)
 	print("L2p: ",L2p)
+	#deadband
+	if abs(speed) <= 0.2:
+		L1p=0;
+		L2p=0;
 	if L1p<=0:
+		#constrain the range of data sent to sabertooth
 		L1p=-L1p
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
+		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
+		if L1p < 20 && speed > 0.2:
+			L1p = L1p + 20
 		sendSabertooth(address,1,L1p)
 	else:
+		#constrain the range of data sent to sabertooth
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
+		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
+		if L1p < 20 && speed > 0.2:
+			L1p = L1p + 20
 		sendSabertooth(address,0,L1p)
 	if L2p<=0:
+		#constrain the range of data sent to sabertooth
 		L2p=-L2p
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
 		sendSabertooth(address,5,L2p)
 	else:
+		#constrain the range of data sent to sabertooth
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
 		sendSabertooth(address,4,L2p)
@@ -179,20 +195,24 @@ def TranslateIO(speed):
 	print("L1p: ", L1p)
 	print("L2p: ", L2p)
 	if L1p<=0:
+		#constrain the range of data sent to sabertooth
 		L1p=-L1p
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
 		sendSabertooth(address,1,L1p)
 	else:
+		#constrain the range of data sent to sabertooth
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
 		sendSabertooth(address,0,L1p)
 	if L2p<=0:
+		#constrain the range of data sent to sabertooth
 		L2p=-L2p
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
 		sendSabertooth(address,5,L2p)
 	else:
+		#constrain the range of data sent to sabertooth
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
 		sendSabertooth(address,4,L2p)
