@@ -119,6 +119,7 @@ def TranslateZ(speed):
 	if abs(speed) <= 0.2:
 		L1p=0;
 		L2p=0;
+	#send the values to the actuators
 	if L1p<=0:
 		#constrain the range of data sent to sabertooth
 		L1p=-L1p
@@ -156,7 +157,6 @@ def TranslateZ(speed):
 def TranslateIO(speed):
 	#calculates and sends speeds of linear actuators for end effector to move back or forth at speed
 	#angles in radians
-	#need actuator positions and constants based on geometry of arm
 	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaA, Lnu, Lmu are constants
 	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
 	#theta1 is arm angle of elevation, theta2 is elbow angle
@@ -258,13 +258,13 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					if emergency == False:
 						Speed = int(ord(command[3]))
 						Speed = (Speed - 127)/127	#range is now -1 to 1
-						#Speed=Speed*someNumber
+						Speed = Speed*100		#adjust as necessary
 						TranslateZ(Speed)
 				elif command[2] == "M": # translate wrist joint "in/out"
 					if emergency == False:
 						Speed = int(ord(command[3]))
 						Speed = (Speed - 127)/127	#range is now -1 to 1
-						#Speed=Speed*someNumber
+						Speed = Speed*100		#adjust as necessary
 						TranslateIO(Speed)
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
