@@ -454,13 +454,13 @@ while True: # main execution loop
 						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
 					wristLift = int(axes[0]*127)+127 
-					if wristLift != 127:
-						armControl.liftWrist(wristLift)
-						time.sleep(0.005)
+					#if wristLift != 127:
+					armControl.liftWrist(wristLift)
+					time.sleep(0.005)
 					wristMove = int(axes[1]*127)+127 
-					if wristMove != 127:
-						armControl.moveWrist(wristMove)
-						time.sleep(0.005)
+					#if wristMove != 127:
+					armControl.moveWrist(wristMove)
+					time.sleep(0.005)
 			if buttonList[14].selected: # temporary test actuator mode
 				if indicatorList[5].active: # arm mode
 					throttle = int(axes[1] * 127) + 127
