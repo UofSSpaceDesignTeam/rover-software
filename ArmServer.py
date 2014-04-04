@@ -50,7 +50,7 @@ emergency = False
 # function definitions
 
 def readActuator1():
-	#mapping for actuator positions
+	#reads adc and maps the result to the current physical length of the actuator
 	result = adc.readADC(0)
 	#map the result to the range 0->1
 	result = (result - Actuator1FullInRaw) / (Actuator1FullOutRaw - Actuator1FullInRaw)
@@ -60,7 +60,7 @@ def readActuator1():
 	return result
 
 def readActuator2():
-	#mapping for actuator positions
+	#reads the adc and maps the result to the current physical length of the actuator
 	result = adc.readADC(1)
 	#map the result to the range 0->1
 	result = (result - Actuator2FullInRaw) / (Actuator2FullOutRaw - Actuator2FullInRaw)
@@ -345,6 +345,7 @@ try:
 	serverSocket.listen(0)
 	print("using serial port " + controller.name)
 	print("ArmServer listening on port " + str(armPort))
+	#main execution loop
 	while(True):
 		(armSocket, clientAddress) = serverSocket.accept()
 		print("Connected to " + str(clientAddress[0]))
