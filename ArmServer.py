@@ -90,12 +90,12 @@ def TranslateZ(speed):
 	L2 = readActuator1()
 	L1 = readActuator2()
 
-	tempAngle = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
+	temp = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	#to avoid math domain errors
-	tempAngle = max(tempAngle,-1)
-	tempAngle = min(tempAngle,1)
+	temp = max(temp,-1)
+	temp = min(temp,1)
 	
-	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
+	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL 
 	
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
@@ -166,12 +166,12 @@ def TranslateIO(speed):
 	L2 = readActuator1()
 	L1 = readActuator2()
 
-	tempAngle = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
+	temp = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	#to avoid math domain errors
-	tempAngle = max(tempAngle,-1)
-	tempAngle = min(tempAngle,1)
+	temp = max(temp,-1)
+	temp = min(temp,1)
 	
-	theta1 = math.acos(tempAngle) + thetaL + thetaE - math.pi/2
+	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL  
 	
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 

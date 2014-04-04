@@ -119,7 +119,7 @@ def connectConsole(): # set up the info / error message boxes
 	error = TextOutput(15, colorRed, (348, 542, 350, 158), 13, colorGray)
 	#connect stderr and stdout
 	sys.stdout = output
-	sys.stderr = error
+#	sys.stderr = error
 
 def drawButtons():
 	for i in buttonList:
@@ -453,11 +453,11 @@ while True: # main execution loop
 					if wristTilt != 127:
 						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
-					wristLift = int(axes[0]*127)+127 
+					wristLift = int(axes[0]*127)+127
 					#if wristLift != 127:
 					armControl.liftWrist(wristLift)
 					time.sleep(0.005)
-					wristMove = int(axes[1]*127)+127 
+					wristMove = int(axes[1]*127) +127
 					#if wristMove != 127:
 					armControl.moveWrist(wristMove)
 					time.sleep(0.005)
