@@ -9,7 +9,7 @@ import time
 import subprocess
 import serial
 from ServoDriver import *
-from ADCDriver import *
+from ADS1x15 import ADS1x15
 import RPi.GPIO as GPIO # for hardware reset system
 
 # global constants	
@@ -19,8 +19,8 @@ ramping = 10
 scaleFactor = 0.55
 address= 128
 
-L1 = 0
-L2 = 0
+L1 = 300
+L2 = 300
 
 #arm constants
 Lalpha = 371.29	# Lalpha, Lbeta, LA, LB, Lnu, Lmu are in mm, to the closes mm 
@@ -46,7 +46,7 @@ Actuator1FullOutRaw = 4749
 Actuator2FullInRaw = 1890
 Actuator2FullOutRaw = 3081
 
-adc = ADCDriver()
+adc = ADS1x15()
 
 # global variables
 
@@ -56,7 +56,10 @@ emergency = False
 
 def readActuator1():
 	#reads adc and maps the result to the current physical length of the actuator
-	result = adc.readADC(1)
+	try:	
+		result = adc.readADCSingleEnded(1)
+	except:
+		pass
 	#map the result to the range 0->1
 	result = (result - Actuator1FullInRaw) / (Actuator1FullOutRaw - Actuator1FullInRaw)
 	#now map to the range fullIn -> fullOut
@@ -66,7 +69,10 @@ def readActuator1():
 
 def readActuator2():
 	#reads the adc and maps the result to the current physical length of the actuator
-	result = adc.readADC(2)
+	try:
+		result = adc.readADCSingleEnded(2)
+	except:
+		pass
 	#map the result to the range 0->1
 	result = (result - Actuator2FullInRaw) / (Actuator2FullOutRaw - Actuator2FullInRaw)
 	#now map to the range fullIn -> fullOut
@@ -93,11 +99,11 @@ def TranslateZ(speed):
 	#L1p and L2p are speeds of the linear actuators
 	global L1
 	global L2
-	try:
-		L2 = readActuator2()
-		L1 = readActuator1()
-	except:
-		pass
+	#try:
+	L2 = readActuator2()
+	L1 = readActuator1()
+	#except Exception as e:
+	#	pass
 	print(L1)
 	print(L2)
 	temp = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
