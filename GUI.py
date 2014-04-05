@@ -23,7 +23,7 @@ import subprocess
 
 # global constants
 
-IPraspi1 = "10.64.226.87" #192.168.1.103
+IPraspi1 = "192.168.1.103" #192.168.1.103
 IPraspi2 = "10.64.226.138" #"192.168.1.104"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "192.168.1.106"
@@ -432,10 +432,10 @@ while True: # main execution loop
 			if buttonList[13].selected: # 2 stick drive mode
 				if indicatorList[4].active: # drive mode
 					# for some reason, changing these variable names kills the program.  Fix??
-					throttle = int(axes[1] * 127) + 127
+					throttle = int(-1 * .5 * axes[1] * 127) + 127
 					throttle = max(throttle, 0)
 					throttle = min(throttle, 254)
-					steering = int(axes[3] * 127) + 127
+					steering = int(-1 * .5 * axes[3] * 127) + 127
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					driveControl.sendControlData(throttle, steering)
