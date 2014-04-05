@@ -52,7 +52,7 @@ emergency = False
 
 def readActuator1():
 	#reads adc and maps the result to the current physical length of the actuator
-	result = adc.readADC(0)
+	result = adc.readADC(1)
 	#map the result to the range 0->1
 	result = (result - Actuator1FullInRaw) / (Actuator1FullOutRaw - Actuator1FullInRaw)
 	#now map to the range fullIn -> fullOut
@@ -62,7 +62,7 @@ def readActuator1():
 
 def readActuator2():
 	#reads the adc and maps the result to the current physical length of the actuator
-	result = adc.readADC(1)
+	result = adc.readADC(2)
 	#map the result to the range 0->1
 	result = (result - Actuator2FullInRaw) / (Actuator2FullOutRaw - Actuator2FullInRaw)
 	#now map to the range fullIn -> fullOut
@@ -88,8 +88,8 @@ def TranslateZ(speed):
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
 
-	L2 = readActuator1()
-	L1 = readActuator2()
+	L2 = readActuator2()
+	L1 = readActuator1()
 
 	temp = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	#to avoid math domain errors
@@ -164,8 +164,8 @@ def TranslateIO(speed):
 	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
 
-	L2 = readActuator1()
-	L1 = readActuator2()
+	L2 = readActuator2()
+	L1 = readActuator1()
 
 	temp = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	#to avoid math domain errors
