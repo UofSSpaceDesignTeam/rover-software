@@ -94,7 +94,7 @@ class ADCDriver:
 	def __init__(self):
 		self.i2c = I2C()
 	
-	def readADCSingleEnded(self, channel = 0):
+	def readADC(self, channel): # throws things!
 		pga = 6144
 		sps = 250
 		
@@ -147,15 +147,8 @@ class I2C:
 		self.bus = smbus.SMBus(1)
 		
 	def writeList(self, reg, list):
-		try:
-			self.bus.write_i2c_block_data(0x48, reg, list)
-		except IOError, err:
-			return self.errMsg()
+		self.bus.write_i2c_block_data(0x48, reg, list)
 
 	def readList(self, reg, length):
-		try:
-			results = self.bus.read_i2c_block_data(0x48, reg, length)
-			return results
-		except IOError, err:
-			return self.errMsg()
+		results = self.bus.read_i2c_block_data(0x48, reg, length)
 

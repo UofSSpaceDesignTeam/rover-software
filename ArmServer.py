@@ -19,6 +19,9 @@ ramping = 10
 scaleFactor = 0.55
 address= 128
 
+L1 = 0
+L2 = 0
+
 #arm constants
 Lalpha = 371.29	# Lalpha, Lbeta, LA, LB, Lnu, Lmu are in mm, to the closes mm 
 Lbeta = 104.88
@@ -88,10 +91,15 @@ def TranslateZ(speed):
 	#theta1 is arm angle of elevation, theta2 is elbow angle
 	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
-
-	L2 = readActuator2()
-	L1 = readActuator1()
-
+	global L1
+	global L2
+	try:
+		L2 = readActuator2()
+		L1 = readActuator1()
+	except:
+		pass
+	print(L1)
+	print(L2)
 	temp = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	#to avoid math domain errors
 	temp = max(temp,-1)
@@ -128,7 +136,7 @@ def TranslateZ(speed):
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
 		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
-		if L1p < 20 && speed > 0.2:
+		if L1p < 20 and speed > 0.2:
 			L1p = L1p + 20
 		sendSabertooth(address,1,L1p)
 	else:
@@ -136,7 +144,7 @@ def TranslateZ(speed):
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
 		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
-		if L1p < 20 && speed > 0.2:
+		if L1p < 20 and speed > 0.2:
 			L1p = L1p + 20
 		sendSabertooth(address,0,L1p)
 	if L2p<=0:
@@ -255,7 +263,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 			if command[1] == "A":
 				if command[2] == "B": # rotate base
 					if emergency == False:
-						pass
+						basePan.setRelative(int(ord(command[3])))
+						#print(str(basePan.currentPosition))
 				elif command[2] == "L": # translate wrist joint "up/down"
 					if emergency == False:
 						Speed = int(ord(command[3]))
@@ -267,7 +276,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						Speed = int(ord(command[3]))
 						Speed = (Speed - 127)/127	#range is now -1 to 1
 						Speed = Speed*50		#adjust as necessary
-						TranslateIO(Speed)
+						#TranslateIO(Speed)
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
 						wristTilt.setRelative(int(ord(command[3])))
@@ -331,6 +340,7 @@ except:
 # set up servo driver
 try:
 	servoDriver = ServoDriver()
+	basePan = Servo(servoDriver, 8, 1000, 2200, 1600)
 	wristPan = Servo(servoDriver, 11, 830, 2350, 1600)
 	wristTilt = Servo(servoDriver, 10, 1000, 1700, 1370)
 	wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)
