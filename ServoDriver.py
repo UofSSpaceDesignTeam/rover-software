@@ -18,6 +18,7 @@ class Servo:
 
 	def setRelative(self, change):
 		self.currentPosition += (change - 127)
+		print(self.currentPosition)
 		self.currentPosition = max(self.currentPosition, self.minimum)
 		self.currentPosition = min(self.currentPosition, self.maximum)
 		self.driver.setServo(self.channel, int(self.currentPosition))
