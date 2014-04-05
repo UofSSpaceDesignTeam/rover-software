@@ -294,6 +294,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
+						print(int(ord(command[3])))
 						wristTilt.setRelative(int(ord(command[3])))
 						print("wristTilt")
 				elif command[2] == "P": # pan gripper left/right
