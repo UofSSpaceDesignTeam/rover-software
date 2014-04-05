@@ -10,6 +10,7 @@ import subprocess
 import serial
 from ServoDriver import *
 from ADS1x15 import ADS1x15
+from Adafruit_I2C import Adafruit_I2C
 import RPi.GPIO as GPIO # for hardware reset system
 
 # global constants	
@@ -32,9 +33,10 @@ LB = 363
 thetaL = 0.2145 # in radians
 thetaE = 0.8111
 thetaA = 1.073
+#thetaA=thetaL
 Ldelta = 108.16
 Lgamma = 407.4 
-ArmDeadband = 0.2
+ArmDeadband = 0
 
 #actuator parameters
 ActuatorFullIn = 292.354	#lengths again in mm
@@ -46,7 +48,7 @@ Actuator1FullOutRaw = 4749
 Actuator2FullInRaw = 1890
 Actuator2FullOutRaw = 3081
 
-adc = ADS1x15()
+adc = ADS1x15(0x48)
 
 # global variables
 
@@ -55,11 +57,8 @@ emergency = False
 # function definitions
 
 def readActuator1():
-	#reads adc and maps the result to the current physical length of the actuator
-	try:	
-		result = adc.readADCSingleEnded(1)
-	except:
-		pass
+	#reads adc and maps the result to the current physical length of the actuator	
+	result = adc.readADCSingleEnded(1)
 	#map the result to the range 0->1
 	result = (result - Actuator1FullInRaw) / (Actuator1FullOutRaw - Actuator1FullInRaw)
 	#now map to the range fullIn -> fullOut
@@ -69,10 +68,7 @@ def readActuator1():
 
 def readActuator2():
 	#reads the adc and maps the result to the current physical length of the actuator
-	try:
-		result = adc.readADCSingleEnded(2)
-	except:
-		pass
+	result = adc.readADCSingleEnded(2)
 	#map the result to the range 0->1
 	result = (result - Actuator2FullInRaw) / (Actuator2FullOutRaw - Actuator2FullInRaw)
 	#now map to the range fullIn -> fullOut
@@ -99,11 +95,12 @@ def TranslateZ(speed):
 	#L1p and L2p are speeds of the linear actuators
 	global L1
 	global L2
-	#try:
-	L2 = readActuator2()
-	L1 = readActuator1()
-	#except Exception as e:
-	#	pass
+	try:
+		L2 = readActuator2()
+		time.sleep(0.01)
+		L1 = readActuator1()
+	except:
+		pass
 	print(L1)
 	print(L2)
 	temp = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
@@ -127,8 +124,7 @@ def TranslateZ(speed):
 	#for debugging/testing
 	print("In translateZ")
 	print("speed: ",speed)
-	print("theta1_dot: ",theta1_dot)
-	print("theta2_dot:",theta2_dot )
+	print("theta2: ", theta2)
 	print("L1p; ", L1p)
 	print("L2p: ",L2p)
 	#deadband
@@ -139,35 +135,39 @@ def TranslateZ(speed):
 	if L1p<=0:
 		#constrain the range of data sent to sabertooth
 		L1p=-L1p
+		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
+		if abs(speed) > 0.2:
+			L1p = L1p + 10
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
-		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
-		if L1p < 20 and speed > 0.2:
-			L1p = L1p + 20
 		sendSabertooth(address,1,L1p)
 	else:
 		#constrain the range of data sent to sabertooth
+		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
+		if abs(speed) > 0.2:
+			L1p = L1p + 10
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
-		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
-		if L1p < 20 and speed > 0.2:
-			L1p = L1p + 20
 		sendSabertooth(address,0,L1p)
 	if L2p<=0:
 		#constrain the range of data sent to sabertooth
 		L2p=-L2p
+		if abs(speed)>0.2:
+			L2p=L2p+10
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
 		sendSabertooth(address,5,L2p)
 	else:
 		#constrain the range of data sent to sabertooth
+		if abs(speed)>0.2:
+			L2p=L2p+10
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
 		sendSabertooth(address,4,L2p)
 		#for testing purposes
-	if speed<0:
+	if speed>0:
 		print("Move Up")
-	elif speed>0:
+	elif speed<0:
 		print("Move Down")
 	
 def TranslateIO(speed):
@@ -237,7 +237,8 @@ def TranslateIO(speed):
 		print("Move In")
 	elif speed>0:
 		print("Move Out")
-	
+def WristCorrection(theta1,theta2):
+	pass		
 def testSetActuators(actuator1, actuator2):
 	throttlel = (actutaor1 - 127) / 127.0  # range is now -1 to 1
 	throttler = (actuator2 - 127) / 127.0
@@ -274,15 +275,23 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				elif command[2] == "L": # translate wrist joint "up/down"
 					if emergency == False:
 						Speed = int(ord(command[3]))
-						Speed = float(Speed - 127)/127	#range is now -1 to 1
-						Speed = Speed*100		#adjust as necessary
-						TranslateZ(Speed)
+						if Speed != 127:
+							Speed = float(Speed - 127)/127	#range is now -1 to 1
+							Speed = Speed*50		#adjust as necessary
+							TranslateZ(Speed)
+						else:
+							sendSabertooth(address,4,0)
+							sendSabertooth(address,5,0)
+							sendSabertooth(address,1,0)
+							sendSabertooth(address,0,0)
 				elif command[2] == "M": # translate wrist joint "in/out"
 					if emergency == False:
 						Speed = int(ord(command[3]))
-						Speed = float(Speed - 127)/127	#range is now -1 to 1
-						Speed = Speed*100		#adjust as necessary
-						#TranslateIO(Speed)
+						if Speed != 127:
+							Speed = float(Speed - 127)/127	#range is now -1 to 1
+							Speed = Speed*20		#adjust as necessary
+							#TranslateIO(Speed)
+						
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
 						wristTilt.setRelative(int(ord(command[3])))

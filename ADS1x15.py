@@ -127,7 +127,7 @@ class ADS1x15:
   
 
   # Constructor
-  def __init__(self, address=0x48, ic=__IC_ADS1015, debug=False):
+  def __init__(self, address=0x48, ic=__IC_ADS1015, debug=True):
     # Depending on if you have an old or a new Raspberry Pi, you
     # may need to change the I2C bus.  Older Pis use SMBus 0,
     # whereas new Pis use SMBus 1.  If you see an error like:
