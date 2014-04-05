@@ -314,7 +314,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				elif command[2] == "T":	
 					actuator1 = int(ord(command[3]))
 					actuator2 = int(ord(command[4]))
-					testSetActuators(actuator1, actuator2)
+					#testSetActuators(actuator1, actuator2)
 					
 def stopSockets(): # Stops sockets on error condition
 	try:
