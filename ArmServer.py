@@ -31,6 +31,7 @@ thetaE = 0.8111
 thetaA = 1.073
 Ldelta = 108.16
 Lgamma = 407.4 
+ArmDeadband = 0.2
 
 #actuator parameters
 ActuatorFullIn = 292.354	#lengths again in mm
@@ -117,7 +118,7 @@ def TranslateZ(speed):
 	print("L1p; ", L1p)
 	print("L2p: ",L2p)
 	#deadband
-	if abs(speed) <= 0.2:
+	if abs(speed) <= ArmDeadband:
 		L1p=0;
 		L2p=0;
 	#send the values to the actuators
