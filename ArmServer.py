@@ -28,6 +28,7 @@ LA = 121.12
 LB = 363
 thetaL = 0.2145 # in radians
 thetaE = 0.8111
+thetaA = 1.073
 Ldelta = 108.16
 Lgamma = 407.4 
 
@@ -96,7 +97,7 @@ def TranslateZ(speed):
 	temp = min(temp,1)
 	
 	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
-	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL 
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaA
 	
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
@@ -172,7 +173,7 @@ def TranslateIO(speed):
 	temp = min(temp,1)
 	
 	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
-	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaL  
+	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaA  
 	
 	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
 	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
