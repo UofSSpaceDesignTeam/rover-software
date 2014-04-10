@@ -60,8 +60,7 @@ def createButtons(): # creates interactive buttons, and places them in a list in
 	pictureButton = Button(takePicture, None, "Take Picture", 20, colorBlack, (12, 384, 100, 20), colorLightBlue, colorYellow)
 	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 414, 100, 20), colorLightBlue, colorYellow)
 	connectButton = Button(connectClients, None, "Connect All", 20, colorBlack, (1107, 180, 100, 20), colorLightBlue, colorYellow)
-	restartButton = Button(restart, None, "Restart", 20, colorBlack, (12, 475, 100, 20), colorLightBlue, colorYellow)
-	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 505, 100, 20), colorLightBlue, colorYellow)
+	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 475, 100, 20), colorLightBlue, colorYellow)
 	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", 20, colorBlack, (12, 234, 100, 20), colorLightBlue, colorGreen)
 	armButton2 = Button(setArmMode2, None, "Arm End", 20, colorBlack, (12, 294, 100, 20), colorLightBlue, colorGreen)
 	buttonList.append(camera1Button)	# 0
@@ -75,10 +74,9 @@ def createButtons(): # creates interactive buttons, and places them in a list in
 	buttonList.append(pictureButton)	# 8
 	buttonList.append(runExperimentButton)	# 9
 	buttonList.append(connectButton)	# 10
-	buttonList.append(restartButton)	# 11
-	buttonList.append(quitButton)	# 12
-	buttonList.append(moveButton2)	# 13
-	buttonList.append(armButton2)	# 14
+	buttonList.append(quitButton)	# 11
+	buttonList.append(moveButton2)	# 12
+	buttonList.append(armButton2)	# 13
 
 def createBoxes(): # creates simple graphical elements, and places them in a list
 	global boxList
@@ -86,7 +84,7 @@ def createBoxes(): # creates simple graphical elements, and places them in a lis
 	cameraButtonBox = Box("Camera Feeds", 22, colorWhite, (0, 0, 125, 175), (11, 6), colorGray)
 	controlBox = Box("Control Modes", 22, colorWhite, (0, 180, 125, 143), (9, 185), colorGray)
 	actionBox = Box("Rover Actions", 22, colorWhite, (0, 328, 125, 115), (10, 334), colorGray)
-	uiBox = Box("User Interface", 22, colorWhite, (0, 449, 125, 83), (12, 455), colorGray)
+	uiBox = Box("User Interface", 22, colorWhite, (0, 449, 125, 53), (12, 455), colorGray)
 	connectionsBox = Box("Connections", 22, colorWhite, (1095, 0, 125, 235), (1110, 6), colorGray)
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
@@ -159,8 +157,8 @@ def drawRobot():
 def setDriveMode1(fakeArg):	# button-based
 	# todo: stop arm movements
 	buttonList[6].selected = False
+	buttonList[12].selected = False
 	buttonList[13].selected = False
-	buttonList[14].selected = False
 	buttonList[5].selected = True
 	drawButtons()
 	driveControl.sendSkidSwitch(1) # Is this a good place to put this?
@@ -170,16 +168,16 @@ def setDriveMode2(fakeArg):	# button-based
 	# todo: stop arm movements
 	buttonList[5].selected = False
 	buttonList[6].selected = False
-	buttonList[14].selected = False
-	buttonList[13].selected = True
+	buttonList[13].selected = False
+	buttonList[12].selected = True
 	drawButtons()
 	driveControl.sendSkidSwitch(2) # Is this a good place to put this?
 	
 def setArmMode1(fakeArg):	# button-based
 	# todo: stop driving
 	buttonList[5].selected = False
+	buttonList[12].selected = False
 	buttonList[13].selected = False
-	buttonList[14].selected = False
 	buttonList[6].selected = True
 	drawButtons()
 	
@@ -187,8 +185,8 @@ def setArmMode2(fakeArg):	# button-based
 	# todo: stop driving
 	buttonList[5].selected = False
 	buttonList[6].selected = False
-	buttonList[13].selected = False
-	buttonList[14].selected = True
+	buttonList[12].selected = False
+	buttonList[13].selected = True
 	drawButtons()
 
 def checkController(fakeArg): # button-based
@@ -333,7 +331,7 @@ def connectClients(fakeArg): # button-based
 		driveControl.connect(0);
 		if buttonList[5].selected:
 			driveControl.sendSkidSwitch(1)
-		if buttonList[13].selected:
+		if buttonList[12].selected:
 			driveControl.sendSkidSwitch(2)
 	if not indicatorList[5].active:
 		armControl.connect(0);
@@ -342,27 +340,14 @@ def connectClients(fakeArg): # button-based
 	drawButtons()
 	pygame.display.update()
 
-def restart(fakeArg): # button-based
+def quit(fakeArg): # button-based
 	buttonList[11].selected = True
 	buttonList[11].draw(screen)
 	pygame.display.update()
 	camDisconnect(None)
 	stopRover(None)
-	if(os.name == "posix"): # linux machine
-		command = "sudo python GUI.py"
-		subprocess.Popen(str(command), shell=True)
-	else: #windows
-		command = "C:\Python27\python.exe GUI.py" # default install directory
-		subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
 	pygame.quit()
-
-def quit(fakeArg): # button-based
-	buttonList[12].selected = True
-	buttonList[12].draw(screen)
-	pygame.display.update()
-	camDisconnect(None)
-	stopRover(None)
-	pygame.quit()
+	sys.exit(0)
 
 # program execution starts here
 
@@ -422,14 +407,14 @@ while True: # main execution loop
 			getInput()
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # drive mode
-					throttle = int(axes[1] * 127) + 127
+					throttle = int(axes[1] * 0.5 * 127) + 127
 					throttle = max(throttle, 0)
 					throttle = min(throttle, 254)
-					steering = int(axes[0] * 127) + 127
+					steering = int(axes[0] * -0.5 * 127) + 127
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					driveControl.sendControlData(throttle, steering)
-			if buttonList[13].selected: # 2 stick drive mode
+			if buttonList[12].selected: # 2 stick drive mode
 				if indicatorList[4].active: # drive mode
 					# for some reason, changing these variable names kills the program.  Fix??
 					throttle = int(-1 * .5 * axes[1] * 127) + 127
@@ -463,7 +448,7 @@ while True: # main execution loop
 					basePan = int(axes[2]*127) + 127
 					armControl.panBase(basePan)
 					time.sleep(0.005)
-			if buttonList[14].selected: # temporary test actuator mode
+			if buttonList[13].selected: # temporary test actuator mode
 				if indicatorList[5].active: # arm mode
 					throttle = int(axes[1] * 127) + 127
 					throttle = max(throttle, 0)
@@ -478,12 +463,12 @@ while True: # main execution loop
 	output.draw(screen)
 	error.draw(screen)
 	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			quit(None)
-		elif event.type == pygame.KEYDOWN:
+		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
 				quit(None)
-		elif event.type == pygame.MOUSEBUTTONDOWN:
+		elif event.type == pygame.QUIT:
+			quit(None)
+		if event.type == pygame.MOUSEBUTTONDOWN:
 			mouse = pygame.mouse.get_pos()
 			for button in buttonList:
 				if(button.obj.collidepoint(mouse)):

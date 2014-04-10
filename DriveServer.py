@@ -12,13 +12,11 @@ import RPi.GPIO as GPIO # for hardware reset system
 
 drivePort = 3002
 scaleFactor = 0.55
-deadband = 0
-ramping = 20
+ramping = 10
 commandRF = 4
 commandRR = 5
 commandLF = 0
 commandLR = 1
-controllerAddress = [128, 129, 130]
 steermult = .88
 skidmode = 1
 
@@ -36,37 +34,32 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(checksum)))
 	
 def stopSabertooth():
-	for address in controllerAddress:
-		sendSabertooth(address,commandRF,0)
-		sendSabertooth(address,commandLF,0)
+	sendSabertooth(129,commandRF,0)
+	sendSabertooth(129,commandLF,0)
 
 def setMotors(xAxis, yAxis): # sends motor commands based on joystick position
-	throttle = (yAxis - 127) / 127.0  # range is now -1 to 1
-	steering = (xAxis - 127) / 127.0
+	throttle = (xAxis - 127) / 200.0  # range is now -1 to 1
+	steering = (yAxis - 127) / 127.0
 	
 	# Math for SkidSteer
 	leftSpeed = (throttle - (steering * steermult)) * 127
 	rightSpeed = (throttle + (steering * steermult)) * -127
 
-	leftSpeed = max(leftSpeed, -127)
-	leftSpeed = min(leftSpeed, 127)
-	rightSpeed = max(rightSpeed, -127)
-	rightSpeed = min(rightSpeed, 127)
+	leftSpeed = max(leftSpeed, -90)
+	leftSpeed = min(leftSpeed, 90)
+	rightSpeed = max(rightSpeed, -90)
+	rightSpeed = min(rightSpeed, 90)
 	
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
-		for address in controllerAddress:
-			sendSabertooth(address, commandLF, leftSpeed)
+		sendSabertooth(129, commandLF, leftSpeed)
 	else:
-		for address in controllerAddress:
-			sendSabertooth(address, commandLR, -1 * leftSpeed)
+		sendSabertooth(129, commandLR, -1 * leftSpeed)
 			
 	if(rightSpeed >= 0):
-		for address in controllerAddress:
-			sendSabertooth(address, commandRF, rightSpeed)
+		sendSabertooth(129, commandRF, rightSpeed)
 	else:
-		for address in controllerAddress:
-			sendSabertooth(address, commandRR, -1 * rightSpeed)
+		sendSabertooth(129, commandRR, -1 * rightSpeed)
 
 def setMotors2(yAxisr, yAxisl): # sends motor commands based on joystick1/2 y position
 	#NOTE: xAxis is now read as yAxisr.  Make sure to change this in GUI.
@@ -84,18 +77,14 @@ def setMotors2(yAxisr, yAxisl): # sends motor commands based on joystick1/2 y po
 	
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
-		for address in controllerAddress:
-			sendSabertooth(address, commandLF, leftSpeed)
+		sendSabertooth(129, commandLF, leftSpeed)
 	else:
-		for address in controllerAddress:
-			sendSabertooth(address, commandLR, -1 * leftSpeed)
+		sendSabertooth(129, commandLR, -1 * leftSpeed)
 			
 	if(rightSpeed >= 0):
-		for address in controllerAddress:
-			sendSabertooth(address, commandRF, rightSpeed)
+		sendSabertooth(129, commandRF, rightSpeed)
 	else:
-		for address in controllerAddress:
-			sendSabertooth(address, commandRR, -1 * rightSpeed)
+		sendSabertooth(129, commandRR, -1 * rightSpeed)
 			
 def parseCommand(command): # parses and executes remote commands
 	global emergency
@@ -107,7 +96,7 @@ def parseCommand(command): # parses and executes remote commands
 					if(command[2] == "D" and len(command) > 4): # Drive, Data
 						Axis1 = int(ord(command[3]))
 						Axis2 = int(ord(command[4]))
-						print(Axis1, Axis2) #x+y in mode 1 or ry+ly in mode 2
+						#print(Axis1, Axis2) #x+y in mode 1 or ry+ly in mode 2
 						if(skidmode == 1):
 							setMotors(Axis1, Axis2)
 						if(skidmode == 2):
@@ -148,9 +137,7 @@ try:
 	controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
 	controller.baudrate = 9600
 	controller.timeout = 0.2
-	for address in controllerAddress:
-		sendSabertooth(address, 16, ramping)
-		sendSabertooth(address, 17, deadband)
+	sendSabertooth(129, 16, ramping)
 except:
 	print("motor controller setup failed!")
 	time.sleep(2)
