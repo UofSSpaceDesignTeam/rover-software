@@ -23,7 +23,7 @@ import subprocess
 
 # global constants
 
-IPraspi1 = "192.168.1.103" #192.168.1.103
+IPraspi1 = "192.168.1.103"
 IPraspi2 = "10.64.226.138" #"192.168.1.104"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "192.168.1.106"
@@ -42,27 +42,29 @@ colorLightBlue = (100, 100, 250)
 colorDarkBlue = (0, 0, 120)
 colorYellow = (250, 250, 0)
 
+speedScale = 0.5
+
 # function definitions
 
 def createButtons(): # creates interactive buttons, and places them in a list in a defined order.
 	global buttonList
 	buttonList = []
-	camera1Button = Button(camConnect, (1), "Front Camera", 20, colorBlack, (12, 25, 100, 20), colorLightBlue, colorGreen)
-	camera2Button = Button(camConnect, (2), "Arm Camera", 20, colorBlack, (12, 55, 100, 20), colorLightBlue, colorGreen)
-	camera3Button = Button(camConnect, (3), "Mast Camera", 20, colorBlack, (12, 85, 100, 20), colorLightBlue, colorGreen)
-	camera4Button = Button(camConnect, (4), "Rear Camera", 20, colorBlack, (12, 115, 100, 20), colorLightBlue, colorGreen)
-	cameraStopButton = Button(camDisconnect, (0), "Off", 20, colorBlack, (12, 145, 100, 20), colorLightBlue, colorGreen)
+	camera1Button = Button(camConnect, (1), "Front Camera", (12, 25, 100, 20), colorLightBlue, colorGreen)
+	camera2Button = Button(camConnect, (2), "Arm Camera", (12, 55, 100, 20), colorLightBlue, colorGreen)
+	camera3Button = Button(camConnect, (3), "Mast Camera", (12, 85, 100, 20), colorLightBlue, colorGreen)
+	camera4Button = Button(camConnect, (4), "Rear Camera", (12, 115, 100, 20), colorLightBlue, colorGreen)
+	cameraStopButton = Button(camDisconnect, (0), "Off", (12, 145, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton.selected = True
-	moveButton1 = Button(setDriveMode1, None, "1 Stick Drive", 20, colorBlack, (12, 204, 100, 20), colorLightBlue, colorGreen)
+	moveButton1 = Button(setDriveMode1, None, "1 Stick Drive", (12, 204, 100, 20), colorLightBlue, colorGreen)
 	moveButton1.selected = True
-	armButton1 = Button(setArmMode1, None, "Arm Base", 20, colorBlack, (12, 264, 100, 20), colorLightBlue, colorGreen)
-	stopButton = Button(stopRover, None, "Stop", 22, colorRed, (12, 354, 100, 20), colorLightBlue, colorYellow)
-	pictureButton = Button(takePicture, None, "Take Picture", 20, colorBlack, (12, 384, 100, 20), colorLightBlue, colorYellow)
-	runExperimentButton = Button(runExperiment, None, "Science!", 20, colorBlack, (12, 414, 100, 20), colorLightBlue, colorYellow)
-	connectButton = Button(connectClients, None, "Connect All", 20, colorBlack, (1107, 180, 100, 20), colorLightBlue, colorYellow)
-	quitButton = Button(quit, None, "Quit", 20, colorBlack, (12, 475, 100, 20), colorLightBlue, colorYellow)
-	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", 20, colorBlack, (12, 234, 100, 20), colorLightBlue, colorGreen)
-	armButton2 = Button(setArmMode2, None, "Arm End", 20, colorBlack, (12, 294, 100, 20), colorLightBlue, colorGreen)
+	armButton1 = Button(setArmMode1, None, "Arm Base", (12, 264, 100, 20), colorLightBlue, colorGreen)
+	stopButton = Button(stopRover, None, "Stop", (12, 354, 100, 20), colorLightBlue, colorYellow)
+	pictureButton = Button(takePicture, None, "Take Picture", (12, 384, 100, 20), colorLightBlue, colorYellow)
+	runExperimentButton = Button(runExperiment, None, "Science!", (12, 414, 100, 20), colorLightBlue, colorYellow)
+	connectButton = Button(connectClients, None, "Connect All", (1107, 180, 100, 20), colorLightBlue, colorYellow)
+	quitButton = Button(quit, None, "Quit", (12, 475, 100, 20), colorLightBlue, colorYellow)
+	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", (12, 234, 100, 20), colorLightBlue, colorGreen)
+	armButton2 = Button(setArmMode2, None, "Arm End", (12, 294, 100, 20), colorLightBlue, colorGreen)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -81,11 +83,11 @@ def createButtons(): # creates interactive buttons, and places them in a list in
 def createBoxes(): # creates simple graphical elements, and places them in a list
 	global boxList
 	boxList = []
-	cameraButtonBox = Box("Camera Feeds", 22, colorWhite, (0, 0, 125, 175), (11, 6), colorGray)
-	controlBox = Box("Control Modes", 22, colorWhite, (0, 180, 125, 143), (9, 185), colorGray)
-	actionBox = Box("Rover Actions", 22, colorWhite, (0, 328, 125, 115), (10, 334), colorGray)
-	uiBox = Box("User Interface", 22, colorWhite, (0, 449, 125, 53), (12, 455), colorGray)
-	connectionsBox = Box("Connections", 22, colorWhite, (1095, 0, 125, 235), (1110, 6), colorGray)
+	cameraButtonBox = Box("Camera Feeds", (0, 0, 125, 175), (11, 6))
+	controlBox = Box("Control Modes", (0, 180, 125, 143), (9, 185))
+	actionBox = Box("Rover Actions", (0, 328, 125, 115), (10, 334))
+	uiBox = Box("User Interface", (0, 449, 125, 53), (12, 455))
+	connectionsBox = Box("Connections", (1095, 0, 125, 235), (1110, 6))
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
 	boxList.append(actionBox)
@@ -95,13 +97,13 @@ def createBoxes(): # creates simple graphical elements, and places them in a lis
 def createIndicators(): # creates visual status indicators, and places them in a list in a defined order.
 	global indicatorList
 	indicatorList = []
-	camera1Indicator = Indicator(testClient, cameraRaspi1, "Front Camera", colorWhite, (1106, 30), colorRed, colorGreen)
-	camera2Indicator = Indicator(testClient, cameraRaspi2, "Arm Camera", colorWhite, (1106, 55), colorRed, colorGreen)
-	camera3Indicator = Indicator(testClient, cameraRaspi3, "Mast Camera", colorWhite, (1106, 80), colorRed, colorGreen)
-	camera4Indicator = Indicator(testClient, cameraRaspi4, "Rear Camera", colorWhite, (1106, 105), colorRed, colorGreen)
-	driveIndicator = Indicator(testClient, driveControl, "Drive System", colorWhite, (1106, 130), colorRed, colorGreen)
-	armIndicator = Indicator(testClient, armControl, "Arm System", colorWhite, (1106, 155), colorRed, colorGreen)
-	controllerIndicator = Indicator(checkController, None, "Controller", colorWhite, (1106, 210), colorRed, colorGreen)
+	camera1Indicator = Indicator(testClient, cameraRaspi1, "Front Camera", (1106, 30))
+	camera2Indicator = Indicator(testClient, cameraRaspi2, "Arm Camera", (1106, 55))
+	camera3Indicator = Indicator(testClient, cameraRaspi3, "Mast Camera", (1106, 80))
+	camera4Indicator = Indicator(testClient, cameraRaspi4, "Rear Camera", (1106, 105))
+	driveIndicator = Indicator(testClient, driveControl, "Drive System", (1106, 130))
+	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 155))
+	controllerIndicator = Indicator(checkController, None, "Controller", (1106, 210))
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
 	indicatorList.append(camera3Indicator) #2
@@ -110,14 +112,10 @@ def createIndicators(): # creates visual status indicators, and places them in a
 	indicatorList.append(armIndicator) #5
 	indicatorList.append(controllerIndicator) #6
 
-def connectConsole(): # set up the info / error message boxes
+def startConsole(): # set up the info box
 	global output
-	global error
-	output = TextOutput(15, colorGreen, (4, 542, 350, 158), 13, colorGray)
-	error = TextOutput(15, colorRed, (348, 542, 350, 158), 13, colorGray)
-	#connect stderr and stdout
+	output = TextOutput("Messages", colorGreen, (130, 542, 350, 156), 11)
 	sys.stdout = output
-#	sys.stderr = error
 
 def drawButtons():
 	for i in buttonList:
@@ -136,7 +134,7 @@ def drawIndicators():
 			if not indicatorList[i].active:
 				camDisconnect(None)
 				drawButtons()
-
+	
 def createRobot():
 	global robotPieceList
 	robotPieceList = []
@@ -244,13 +242,8 @@ def takePicture(fakeArg):	# button-based
 
 def stopRover(fakeArg):	# button-based
 	try:
-		if indicatorList[4].active:
-			driveControl.stopMotors()
-	except:
-		pass
-	try:
-		if indicatorList[5].active:
-			armControl.stopMotors()
+		driveControl.stopMotors()
+		armControl.stopMotors()
 	except:
 		pass
 
@@ -386,41 +379,44 @@ createIndicators()
 drawIndicators()
 createRobot()
 drawRobot()
+startConsole()
 pygame.display.update()
 mainloop = True
 indicatorTimer = 0
 redrawTimer = 0
 controllerSendTimer = 0
-connectConsole()
+
 
 while True: # main execution loop
 	# check scheduled tasks
-	if pygame.time.get_ticks() - redrawTimer > 10000: # whole display redraw timer
+	if pygame.time.get_ticks() - redrawTimer > 5000: # whole display redraw timer
 		redrawTimer = pygame.time.get_ticks()
-		drawBoxes()
 		screen.blit(background, (130, 0))
+		drawBoxes()
 		drawButtons()
 		drawIndicators()
+	
 	if pygame.time.get_ticks() - controllerSendTimer > 120: # control data send timer
+		output.draw(screen) # also refresh the console
 		controllerSendTimer = pygame.time.get_ticks()
 		if Controller.isConnected:
 			getInput()
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # drive mode
-					throttle = int(axes[1] * 0.5 * 127) + 127
+					throttle = int(axes[1] * speedScale * 127) + 127
 					throttle = max(throttle, 0)
 					throttle = min(throttle, 254)
-					steering = int(axes[0] * -0.5 * 127) + 127
+					steering = int(axes[0] * -speedScale * 127) + 127
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					driveControl.sendControlData(throttle, steering)
 			if buttonList[12].selected: # 2 stick drive mode
 				if indicatorList[4].active: # drive mode
 					# for some reason, changing these variable names kills the program.  Fix??
-					throttle = int(-1 * .5 * axes[1] * 127) + 127
+					throttle = int(-speedScale * axes[1] * 127) + 127
 					throttle = max(throttle, 0)
 					throttle = min(throttle, 254)
-					steering = int(-1 * .5 * axes[3] * 127) + 127
+					steering = int(-speedScale * axes[3] * 127) + 127
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					driveControl.sendControlData(throttle, steering)
@@ -456,12 +452,11 @@ while True: # main execution loop
 					steering = int(axes[3] * 127) + 127
 					steering = max(steering, 0)
 					steering = min(steering, 254)
-					armControl.temp_actuator1(throttle, steering)	
+					armControl.temp_actuator1(throttle, steering)
+	
 	# update UI state, check events
 	mouse = pygame.mouse.get_pos()
 	Clock.tick(30)
-	output.draw(screen)
-	error.draw(screen)
 	for event in pygame.event.get():
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
