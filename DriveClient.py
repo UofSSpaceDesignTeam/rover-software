@@ -9,14 +9,15 @@ import sys
 # class definition
 	
 class DriveClient: # class for drive control
+
 	def __init__(self, IP, port):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.IP = IP
 		self.port = port
-		self.commandControlData = "#DD"
+		self.commandOneStickData = "#D1"
+		self.commandTwoStickData = "#D2"
 		self.commandRoverStop = "#DS"
 		self.commandGPSData = "#GD"
-		self.commandSkidSwitch = "#DM"
 
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -35,29 +36,34 @@ class DriveClient: # class for drive control
 				pass
 		return False
 
-	def sendControlData(self, throttle, steering):
+	def sendOneStickData(self, xAxis, yAxis):
+		xChar = xAxis * 127 + 127
+		yChar = yAxis * 127 + 127
 		try:
-			self.socket.send(self.commandControlData + chr(steering) + chr(throttle))
+			self.socket.send(self.commandOneStickData + chr(xChar) + chr(yChar))
 			return True
 		except socket.error as e:
-			sys.stderr.write(e.strerror)
+			print(e.strerror)
 			self.stopMotors()
 			return False
 	
-	def sendSkidSwitch(self, skidmode):
+	def sendTwoStickData(self, leftAxis, rightAxis):
+		leftChar = axis1 * 127 + 127
+		rightChar = axis2 * 127 + 127
 		try:
-			self.socket.send(self.commandSkidSwitch + chr(skidmode))
+			self.socket.send(self.commandTwoStickData + chr(leftChar) + chr(rightChar))
 			return True
 		except socket.error as e:
-			return False
-			
+			print(e.strerror)
+			self.stopMotors()
+			return False	
 	
 	def stopMotors(self):
 		try:
 			self.socket.send(self.commandRoverStop)
 			return True
 		except socket.error as e:
-			sys.stderr.write(e.strerror)
+			print(e.strerror)
 			return False
 
 	def getGPSData(self):
@@ -65,13 +71,13 @@ class DriveClient: # class for drive control
 			self.socket.settimeout(0.3)
 			self.socket.send(self.commandGPSData)
 			GPSData = self.socket.recv(256)
-			sys.stderr.write(GPSData)
+			print(GPSData)
 			GPSList = GPSData.split(" ")
 			lat = int(GPSList[0])
 			lon = int(GPSList[1])
 			return (True, lat, lon)
 		except exception as e:
-			sys.stderr.write(e.strerror)
+			print(e.strerror)
 			return (False, 0, 0)
 	
 	def test(self):

@@ -2,16 +2,17 @@ import pygame
 
 class TextOutput():
 	
-	def __init__(self, label, fontcolor, rect, maxLines):
+	def __init__(self, label, fontSize, fontcolor, rect, maxLines):
 		self.label = label
+		self.fontSize = fontSize
 		self.fontcolor = fontcolor
 		self.rect = rect
 		self.maxLines = maxLines
 		self.innerRect = (rect[0] + 2, rect[1] + 18, rect[2] - 4, rect[3] - 20)
 		self.hOffset = self.innerRect[0] + 5
-		self.vOffset = self.innerRect[1] + 2
+		self.vOffset = self.innerRect[1] + self.fontSize / 5
 		self.labelFont = pygame.font.Font(None, 22)
-		self.consoleFont = pygame.font.Font(None, 15)
+		self.consoleFont = pygame.font.Font(None, self.fontSize)
 		self.list = []
 		self.lastMessage = None
 	
@@ -37,6 +38,6 @@ class TextOutput():
 		lineIndex = 0
 		for msg in self.list:
 			msg = self.consoleFont.render(msg, 1, self.fontcolor)
-			screen.blit(msg, (self.hOffset, self.vOffset + (lineIndex * 12)))
+			screen.blit(msg, (self.hOffset, self.vOffset + (lineIndex * self.fontSize * 0.7)))
 			lineIndex = lineIndex + 1
 

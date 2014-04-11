@@ -6,7 +6,7 @@ import sys
 sys.dont_write_bytecode = True # stops .pyc generation in subsequent imports
 	
 import pygame
-import Controller
+from Controller import Controller
 from Button import Button
 from Box import Box
 from Indicator import Indicator
@@ -32,17 +32,17 @@ driveClientPort = 3002
 armClientPort = 3003
 cameraClientPort = 3000
 colorWhite = (255, 255, 255)
-colorGray = (100, 100, 100)
-colorBlack = (0, 0, 0)
-colorRed = (240, 0, 0)
 colorGreen = (0, 240, 0)
-colorDarkGreen = (0, 100, 0)
 colorBlue = (0, 0, 240)
 colorLightBlue = (100, 100, 250)
-colorDarkBlue = (0, 0, 120)
 colorYellow = (250, 250, 0)
 
 speedScale = 0.5
+steeringTrim = 0.0
+
+lastFix = 0
+baseLocation = (0, 0)
+roverLocation = (0, 0)
 
 # function definitions
 
@@ -65,6 +65,7 @@ def createButtons(): # creates interactive buttons, and places them in a list in
 	quitButton = Button(quit, None, "Quit", (12, 475, 100, 20), colorLightBlue, colorYellow)
 	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", (12, 234, 100, 20), colorLightBlue, colorGreen)
 	armButton2 = Button(setArmMode2, None, "Arm End", (12, 294, 100, 20), colorLightBlue, colorGreen)
+	waypointButton = Button(setWaypoint, None, "Set Waypoint", (1107, 452, 100, 20), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -79,20 +80,25 @@ def createButtons(): # creates interactive buttons, and places them in a list in
 	buttonList.append(quitButton)	# 11
 	buttonList.append(moveButton2)	# 12
 	buttonList.append(armButton2)	# 13
+	buttonList.append(waypointButton) # 14
 
 def createBoxes(): # creates simple graphical elements, and places them in a list
 	global boxList
 	boxList = []
-	cameraButtonBox = Box("Camera Feeds", (0, 0, 125, 175), (11, 6))
-	controlBox = Box("Control Modes", (0, 180, 125, 143), (9, 185))
-	actionBox = Box("Rover Actions", (0, 328, 125, 115), (10, 334))
-	uiBox = Box("User Interface", (0, 449, 125, 53), (12, 455))
-	connectionsBox = Box("Connections", (1095, 0, 125, 235), (1110, 6))
+	cameraButtonBox = Box("Camera Feeds", (0, 0, 125, 175))
+	controlBox = Box("Control Modes", (0, 180, 125, 143))
+	actionBox = Box("Rover Actions", (0, 328, 125, 115))
+	uiBox = Box("User Interface", (0, 449, 125, 53))
+	connectionsBox = Box("Connections", (1095, 0, 125, 209))
+	gpsBox = Box("GPS", (1095, 339, 125, 143))
+	controllerBox = Box("Controller", (1095, 214, 125, 120))
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
 	boxList.append(actionBox)
 	boxList.append(uiBox)
 	boxList.append(connectionsBox)
+	boxList.append(gpsBox)
+	boxList.append(controllerBox)
 
 def createIndicators(): # creates visual status indicators, and places them in a list in a defined order.
 	global indicatorList
@@ -103,7 +109,8 @@ def createIndicators(): # creates visual status indicators, and places them in a
 	camera4Indicator = Indicator(testClient, cameraRaspi4, "Rear Camera", (1106, 105))
 	driveIndicator = Indicator(testClient, driveControl, "Drive System", (1106, 130))
 	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 155))
-	controllerIndicator = Indicator(checkController, None, "Controller", (1106, 210))
+	controllerIndicator = Indicator(checkController, None, "Detected", (1114, 238))
+	gpsIndicator = Indicator(checkGPS, None, "Active", (1118, 360))
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
 	indicatorList.append(camera3Indicator) #2
@@ -111,11 +118,22 @@ def createIndicators(): # creates visual status indicators, and places them in a
 	indicatorList.append(driveIndicator) #4
 	indicatorList.append(armIndicator) #5
 	indicatorList.append(controllerIndicator) #6
+	indicatorList.append(gpsIndicator) #7
 
-def startConsole(): # set up the info box
+def createConsoles(): # set up the info boxes
 	global output
-	output = TextOutput("Messages", colorGreen, (130, 542, 350, 156), 11)
+	output = TextOutput("Messages", 17, colorWhite, (740, 544, 350, 156), 11)
 	sys.stdout = output
+	print("Welcome to the USST rover control system.")
+	global gpsDisplay
+	gpsDisplay = TextOutput("", 17, colorWhite, (1095, 361, 125, 85), 5)
+	gpsDisplay.write("Mode: Absolute")
+	gpsDisplay.write("Lat: Unknown")
+	gpsDisplay.write("Lon: Unknown")
+	gpsDisplay.write("Wpt Lat:")
+	gpsDisplay.write("Wpt Lon:")
+	global controllerDisplay
+	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 240, 88, 88), 5)
 
 def drawButtons():
 	for i in buttonList:
@@ -138,9 +156,9 @@ def drawIndicators():
 def createRobot():
 	global robotPieceList
 	robotPieceList = []
-	chassis = RobotPiece(pygame.image.load('./graphics/chassis.png'), None, (1100,500))
-	arm = RobotPiece(pygame.image.load('./graphics/arm.png'),pygame.image.load('./graphics/redArm.png'),(1145,475))
-	wheels = RobotPiece(pygame.image.load('./graphics/twheelarray.png'),None,(1100,500))
+	chassis = RobotPiece(pygame.image.load('./graphics/chassis.png'), None, (1100,540))
+	arm = RobotPiece(pygame.image.load('./graphics/arm.png'),pygame.image.load('./graphics/redArm.png'),(1145,515))
+	wheels = RobotPiece(pygame.image.load('./graphics/twheelarray.png'),None,(1100,540))
 	wheels.active = True
 	arm.active = False
 	chassis.active = True
@@ -159,8 +177,6 @@ def setDriveMode1(fakeArg):	# button-based
 	buttonList[13].selected = False
 	buttonList[5].selected = True
 	drawButtons()
-	driveControl.sendSkidSwitch(1) # Is this a good place to put this?
-	
 	
 def setDriveMode2(fakeArg):	# button-based
 	# todo: stop arm movements
@@ -169,7 +185,6 @@ def setDriveMode2(fakeArg):	# button-based
 	buttonList[13].selected = False
 	buttonList[12].selected = True
 	drawButtons()
-	driveControl.sendSkidSwitch(2) # Is this a good place to put this?
 	
 def setArmMode1(fakeArg):	# button-based
 	# todo: stop driving
@@ -187,16 +202,27 @@ def setArmMode2(fakeArg):	# button-based
 	buttonList[13].selected = True
 	drawButtons()
 
-def checkController(fakeArg): # button-based
-	return Controller.isConnected
+def checkController(fakeArg):
+	return controller.isConnected
 
-def getInput():
-	global axes, buttons, dPad
-	axes = Controller.getAxes()
-	buttons = Controller.getButtons()
-	dPad = Controller.getDPad()
+def checkGPS(fakeArg):
+	if indicatorList[4].active and pygame.time.get_ticks() - lastFix < 3000:
+		return True
+	else:
+		return False
 
-def takePicture(fakeArg):	# button-based
+def setWaypoint(fakeArg):
+	if indicatorList[7].active:
+		buttonList[14].selected = True
+		buttonList[14].draw(screen)
+		pygame.display.update()
+		# replace with actual things
+		time.sleep(0.2)
+		#
+		buttonList[14].selected = False
+		buttonList[14].draw(screen)
+
+def takePicture(fakeArg):
 	cameraNumber = 0
 	for i in range(0, 4):
 		if buttonList[i].selected:
@@ -264,7 +290,7 @@ def camConnect(cameraNumber): # button-based
 	drawButtons()
 	screen.blit(cameraSplash, (130, 0))
 	pygame.display.update()
-	if(os.name == "posix"): # linux machine
+	if isLinux:
 		command = ("nc -l -p 3001 | mplayer -really-quiet -xy 0.5 -nosound -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 150:48 -demuxer h264es -nocache -")
 		subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
 	else: # windows
@@ -298,7 +324,7 @@ def camDisconnect(fakeArg): # button-based
 	for cameraButton in buttonList[0:4]:
 		cameraButton.selected = False
 	buttonList[4].selected = True
-	if(os.name == "posix"): # linux machine
+	if isLinux: # linux machine
 		command = "sudo killall nc; sudo killall mplayer"
 		subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
 	else: #windows
@@ -322,10 +348,6 @@ def connectClients(fakeArg): # button-based
 		cameraRaspi4.connect(0);
 	if not indicatorList[4].active:
 		driveControl.connect(0);
-		if buttonList[5].selected:
-			driveControl.sendSkidSwitch(1)
-		if buttonList[12].selected:
-			driveControl.sendSkidSwitch(2)
 	if not indicatorList[5].active:
 		armControl.connect(0);
 	buttonList[10].selected = False
@@ -343,6 +365,11 @@ def quit(fakeArg): # button-based
 	sys.exit(0)
 
 # program execution starts here
+
+if(os.name == "posix"): # linux machine
+	isLinux = True
+else:
+	isLinux = False
 
 # create communication clients
 cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
@@ -364,63 +391,72 @@ background = pygame.image.load("./graphics/background.jpg")
 cameraSplash = pygame.image.load("./graphics/camera.jpg")
 screen.blit(background, (130, 0))
 
-# check for controller
-try:
-	Controller.init()
-except:
-	pass
-
-# initialize all the UI elements
+# initialize everything
+controller = Controller(0)
 createBoxes()
-drawBoxes()
 createButtons()
-drawButtons()
 createIndicators()
-drawIndicators()
 createRobot()
+createConsoles()
+drawBoxes()
+drawButtons()
+gpsDisplay.draw(screen)
+drawIndicators()
 drawRobot()
-startConsole()
+output.draw(screen)
 pygame.display.update()
-mainloop = True
-indicatorTimer = 0
 redrawTimer = 0
 controllerSendTimer = 0
 
+if controller.isConnected:
+	print("Controller is connected.")
+else:
+	print("Controller is not connected.")
 
 while True: # main execution loop
+
 	# check scheduled tasks
 	if pygame.time.get_ticks() - redrawTimer > 5000: # whole display redraw timer
 		redrawTimer = pygame.time.get_ticks()
 		screen.blit(background, (130, 0))
 		drawBoxes()
 		drawButtons()
+		gpsDisplay.draw(screen)
 		drawIndicators()
-	
-	if pygame.time.get_ticks() - controllerSendTimer > 120: # control data send timer
-		output.draw(screen) # also refresh the console
+	if pygame.time.get_ticks() - controllerSendTimer > 200: # control data send timer
 		controllerSendTimer = pygame.time.get_ticks()
-		if Controller.isConnected:
-			getInput()
+		output.draw(screen) # also refresh the message display
+		if controller.isConnected:
+			axes = controller.getAxes()
+			#buttons = controller.getButtons()
+			#dPad = controller.getDPad()
+			if isLinux:
+				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
+				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
+				controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
+				controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
+				controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
+			else:
+				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
+				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
+				controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
+				controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
+				controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
+			controllerDisplay.draw(screen)
+			indicatorList[6].draw(screen)
 			if buttonList[5].selected: # 1 stick drive mode
-				if indicatorList[4].active: # drive mode
-					throttle = int(axes[1] * speedScale * 127) + 127
-					throttle = max(throttle, 0)
-					throttle = min(throttle, 254)
-					steering = int(axes[0] * -speedScale * 127) + 127
-					steering = max(steering, 0)
-					steering = min(steering, 254)
-					driveControl.sendControlData(throttle, steering)
-			if buttonList[12].selected: # 2 stick drive mode
-				if indicatorList[4].active: # drive mode
-					# for some reason, changing these variable names kills the program.  Fix??
-					throttle = int(-speedScale * axes[1] * 127) + 127
-					throttle = max(throttle, 0)
-					throttle = min(throttle, 254)
-					steering = int(-speedScale * axes[3] * 127) + 127
-					steering = max(steering, 0)
-					steering = min(steering, 254)
-					driveControl.sendControlData(throttle, steering)
-			elif buttonList[6].selected: # arm mode
+				if indicatorList[4].active: # connected
+					if isLinux:
+						driveControl.sendOneStickData(axes[0] * speedScale, axes[1] * speedScale)
+					else: # wandows
+						driveControl.sendOneStickData(axes[0] * speedScale, axes[1] * speedScale)
+			elif buttonList[12].selected: # 2 stick drive mode
+				if indicatorList[4].active: # connected
+					if isLinux:
+						driveControl.sendTwoStickData(axes[1] * speedScale, axes[3] * speedScale)
+					else:
+						driveControl.sendTwoStickData(axes[1] * speedScale, axes[3] * speedScale)
+			elif buttonList[6].selected: # arm mode 1
 				if indicatorList[5].active:
 					wristPan = int(axes[2] * 80) + 127
 					if wristPan != 127:
@@ -444,7 +480,7 @@ while True: # main execution loop
 					basePan = int(axes[2]*127) + 127
 					armControl.panBase(basePan)
 					time.sleep(0.005)
-			if buttonList[13].selected: # temporary test actuator mode
+			if buttonList[13].selected: # temporary test actuator mode (2)
 				if indicatorList[5].active: # arm mode
 					throttle = int(axes[1] * 127) + 127
 					throttle = max(throttle, 0)
@@ -465,6 +501,7 @@ while True: # main execution loop
 			quit(None)
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			mouse = pygame.mouse.get_pos()
+			#print(str(mouse))
 			for button in buttonList:
 				if(button.obj.collidepoint(mouse)):
 					button.press()

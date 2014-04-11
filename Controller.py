@@ -1,114 +1,96 @@
 
-# A library providing the interface to an XBox 360 Controller.
-# Added by Jordan
-
-	# dependency list
-
 from pygame import joystick
 
-
-	# global constants
-
-leftJoystickXScale = 1.0
-leftJoystickYScale = 1.0
-rightJoystickXScale = 1.0
-rightJoystickYScale = 1.0
-triggerScale = 1.0
-
-leftJoystickXDeadzone = 0.2
-leftJoystickYDeadzone = 0.2
-rightJoystickXDeadzone = 0.2
-rightJoystickYDeadzone = 0.2
-triggerDeadzone = 0.1
-
-isConnected = False
-
-	# function definitions
-
-def init():    # connect to xbox controller if one exists
-	joystick.init()
-	try:
-		global controller
-		global isConnected
-		controller = joystick.Joystick(0)
-		controller.init();
-		isConnected = True
-	except:
-		raise Exception("Error: Controller not detected")
-
-
-def getAxes():  # returns a tuple of all axis data (-1.0 to 1.0)
-	leftJoystickX = controller.get_axis(0)
-	leftJoystickY = -controller.get_axis(1)
-	rightJoystickX = controller.get_axis(4)
-	rightJoystickY = -controller.get_axis(3)
-	trigger = -controller.get_axis(2)
+class Controller:
 	
-	if(leftJoystickX < leftJoystickXDeadzone
-	and leftJoystickX > -leftJoystickXDeadzone):
-		leftJoystickX = 0
-	if(leftJoystickY < leftJoystickYDeadzone
-	and leftJoystickY > -leftJoystickYDeadzone):
-		leftJoystickY = 0
-	if(rightJoystickX < rightJoystickXDeadzone
-	and rightJoystickX > -rightJoystickXDeadzone):
-		rightJoystickX = 0
-	if(rightJoystickY < rightJoystickYDeadzone
-	and rightJoystickY > -rightJoystickYDeadzone):
-		rightJoystickY = 0
-	if(trigger < triggerDeadzone
-	and trigger > -triggerDeadzone):
-		trigger = 0
-	
-	leftJoystickX *= leftJoystickXScale
-	leftJoystickY *= leftJoystickYScale
-	rightJoystickX *= rightJoystickXScale
-	rightJoystickY *= rightJoystickYScale
-	trigger *= triggerScale
-	
-	if leftJoystickX > 1.0:
-		leftJoystickX = 1.0
-	if leftJoystickX < -1.0:
-		leftJoystickX = -1.0
-	if leftJoystickY > 1.0:
-		leftJoystickY = 1.0
-	if leftJoystickY < -1.0:
-		leftJoystickY = -1.0
-	
-	if rightJoystickX > 1.0:
-		rightJoystickX = 1.0
-	if rightJoystickY > 1.0:
-		rightJoystickY = 1.0
-	if rightJoystickX < -1.0:
-		rightJoystickX = -1.0
-	if rightJoystickY < -1.0:
-		rightJoystickY = -1.0
+	def __init__(self, controllerIndex): # connect to xbox controller
+		self.leftJoystickXDeadzone = 0.2
+		self.leftJoystickYDeadzone = 0.2
+		self.rightJoystickXDeadzone = 0.2
+		self.rightJoystickYDeadzone = 0.2
+		self.triggerDeadzone = 0.1
+		joystick.init()
+		self.controller = None
+		self.isConnected = False
+		try:
+			self.controller = joystick.Joystick(controllerIndex)
+			self.controller.init()
+			self.isConnected = True
+		except:
+			pass
+
+
+	def getAxes(self):  # returns a tuple of all axis data (-1.0 to 1.0)
+		if not self.isConnected:
+			return None
+		leftJoystickX = self.controller.get_axis(0)
+		leftJoystickY = -self.controller.get_axis(1)
+		rightJoystickX = self.controller.get_axis(4)
+		rightJoystickY = -self.controller.get_axis(3)
+		trigger = -self.controller.get_axis(2)
 		
-	if trigger > 1.0:
-		trigger = 1.0
-	if trigger < -1.0:
-		trigger = -1.0
-	
-	return (leftJoystickX, leftJoystickY, rightJoystickX,
-	rightJoystickY, trigger)
+		if(leftJoystickX < self.leftJoystickXDeadzone
+		and leftJoystickX > -self.leftJoystickXDeadzone):
+			leftJoystickX = 0
+		if(leftJoystickY < self.leftJoystickYDeadzone
+		and leftJoystickY > -self.leftJoystickYDeadzone):
+			leftJoystickY = 0
+		if(rightJoystickX < self.rightJoystickXDeadzone
+		and rightJoystickX > -self.rightJoystickXDeadzone):
+			rightJoystickX = 0
+		if(rightJoystickY < self.rightJoystickYDeadzone
+		and rightJoystickY > -self.rightJoystickYDeadzone):
+			rightJoystickY = 0
+		if(trigger < self.triggerDeadzone
+		and trigger > -self.triggerDeadzone):
+			trigger = 0
+		
+		if leftJoystickX > 1.0:
+			leftJoystickX = 1.0
+		if leftJoystickX < -1.0:
+			leftJoystickX = -1.0
+		if leftJoystickY > 1.0:
+			leftJoystickY = 1.0
+		if leftJoystickY < -1.0:
+			leftJoystickY = -1.0
+		
+		if rightJoystickX > 1.0:
+			rightJoystickX = 1.0
+		if rightJoystickY > 1.0:
+			rightJoystickY = 1.0
+		if rightJoystickX < -1.0:
+			rightJoystickX = -1.0
+		if rightJoystickY < -1.0:
+			rightJoystickY = -1.0
+			
+		if trigger > 1.0:
+			trigger = 1.0
+		if trigger < -1.0:
+			trigger = -1.0
+		
+		return (leftJoystickX, leftJoystickY, rightJoystickX, rightJoystickY, trigger)
 
 
-def getButtons():	# returns the boolean state of all buttons
-	buttonA = controller.get_button(0)
-	buttonB = controller.get_button(1)
-	buttonX = controller.get_button(2)
-	buttonY = controller.get_button(3)
-	buttonLB = controller.get_button(4)
-	buttonRB = controller.get_button(5)
-	buttonBack = controller.get_button(6)
-	buttonStart = controller.get_button(7)
-	buttonLeftJoystick = controller.get_button(8)
-	buttonRightJoystick = controller.get_button(9)
-	
-	return (buttonA, buttonB, buttonX, buttonY, buttonLB, buttonRB,
-	buttonBack, buttonStart, buttonLeftJoystick, buttonRightJoystick)
+	def getButtons(self):	# returns the boolean state of all buttons
+		if not self.isConnected:
+			return None
+		buttonA = self.controller.get_button(0)
+		buttonB = self.controller.get_button(1)
+		buttonX = self.controller.get_button(2)
+		buttonY = self.controller.get_button(3)
+		buttonLB = self.controller.get_button(4)
+		buttonRB = self.controller.get_button(5)
+		buttonBack = self.controller.get_button(6)
+		buttonStart = self.controller.get_button(7)
+		buttonLeftJoystick = self.controller.get_button(8)
+		buttonRightJoystick = self.controller.get_button(9)
+		
+		return (buttonA, buttonB, buttonX, buttonY, buttonLB, buttonRB, buttonBack,
+		buttonStart, buttonLeftJoystick, buttonRightJoystick)
 
 
-def getDPad():	# returns the x and y states of the D Pad buttons
-	return controller.get_hat(0)	# format is (x, y): -1, 0, or 1
+	def getDPad(self):	# returns the x and y states of the D Pad buttons
+		if not self.isConnected:
+			return None
+		return self.controller.get_hat(0)	# format is (x, y): -1, 0, or 1
 
