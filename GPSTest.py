@@ -4,8 +4,7 @@ import struct
 import os
 import sys
 
-fmt = "6s8s9s5s3s" #time,lat,latdir,lon,londir,alt,prec
-commandPort = 3004
+fmt = "6s8s9s5s3s" #time,lat,lon,alt,prec
 GPSPort = 3005
 serialPort = "/dev/ttyAMA0" #/dev/ttyAMA0
 GPSIP = "127.0.0.1"
