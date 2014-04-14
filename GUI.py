@@ -37,8 +37,12 @@ colorBlue = (0, 0, 240)
 colorLightBlue = (100, 100, 250)
 colorYellow = (250, 250, 0)
 
-speedScale = 0.5
-steeringTrim = 0.0
+speedScale1 = 0.3
+steerScale1 = 0.7
+steeringTrim1 = 0.0
+
+speedScale2 = 0.4
+steeringTrim2 = 0.0
 
 lastFix = 0
 baseLocation = (0, 0)
@@ -425,37 +429,23 @@ while True: # main execution loop
 		drawIndicators()
 	if pygame.time.get_ticks() - controllerSendTimer > 200: # control data send timer
 		controllerSendTimer = pygame.time.get_ticks()
-		output.draw(screen) # also refresh the message display
 		if controller.isConnected:
 			axes = controller.getAxes()
 			#buttons = controller.getButtons()
 			#dPad = controller.getDPad()
-			if isLinux:
-				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
-				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
-				controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
-				controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
-				controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
-			else:
-				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
-				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
-				controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
-				controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
-				controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
-			controllerDisplay.draw(screen)
-			indicatorList[6].draw(screen)
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # connected
+					limit = int(127 * speedScale1)
 					if isLinux:
-						driveControl.sendOneStickData(axes[0] * speedScale, axes[1] * speedScale)
+						driveControl.sendOneStickData(-axes[0] * speedScale1 * steerScale1, -axes[1] * speedScale1, limit)
 					else: # wandows
-						driveControl.sendOneStickData(axes[0] * speedScale, axes[1] * speedScale)
+						driveControl.sendOneStickData(-axes[0] * speedScale1 * steerScale1, -axes[1] * speedScale1, limit)
 			elif buttonList[12].selected: # 2 stick drive mode
 				if indicatorList[4].active: # connected
 					if isLinux:
-						driveControl.sendTwoStickData(axes[1] * speedScale, axes[3] * speedScale)
+						driveControl.sendTwoStickData(-axes[1] * speedScale2, -axes[3] * speedScale2)
 					else:
-						driveControl.sendTwoStickData(axes[1] * speedScale, axes[3] * speedScale)
+						driveControl.sendTwoStickData(-axes[1] * speedScale2, -axes[3] * speedScale2)
 			elif buttonList[6].selected: # arm mode 1
 				if indicatorList[5].active:
 					wristPan = int(axes[2] * 80) + 127
@@ -489,6 +479,22 @@ while True: # main execution loop
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					armControl.temp_actuator1(throttle, steering)
+			
+			output.draw(screen) # also refresh the message displays
+			if isLinux:
+				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
+				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
+				controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
+				controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
+				controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
+			else:
+				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
+				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
+				controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
+				controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
+				controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
+			controllerDisplay.draw(screen)
+			indicatorList[6].draw(screen)
 	
 	# update UI state, check events
 	mouse = pygame.mouse.get_pos()

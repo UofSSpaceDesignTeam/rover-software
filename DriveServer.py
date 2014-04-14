@@ -55,9 +55,10 @@ def parseCommand(command): # parses and executes remote commands
 		if len(command) > 2:
 			if command[0] == "#": # is valid
 				if command[1] == "D":
-					if command[2] == "1" and len(command) > 4: # one stick drive
+					if command[2] == "1" and len(command) > 5: # one stick drive
 						xChar = int(ord(command[3]))
 						yChar = int(ord(command[4]))
+						limit = int(ord(command[5]))
 						if emergency: # e-stop activated
 							if xChar == 127 and yChar == 127:
 								emergency = False
@@ -68,8 +69,8 @@ def parseCommand(command): # parses and executes remote commands
 						else: # not e-stopped
 							leftSpeed = yChar + xChar - 254
 							rightSpeed = yChar - xChar
-							if max(abs(leftSpeed), abs(rightSpeed)) > 127:
-								scaleFactor = 126.5 / max(abs(leftSpeed), abs(rightSpeed))
+							if max(abs(leftSpeed), abs(rightSpeed)) > limit:
+								scaleFactor = float(limit) / max(abs(leftSpeed), abs(rightSpeed))
 							else:
 								scaleFactor = 1
 							leftSpeed *= scaleFactor

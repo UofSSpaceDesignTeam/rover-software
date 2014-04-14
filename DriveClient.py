@@ -36,11 +36,11 @@ class DriveClient: # class for drive control
 				pass
 		return False
 
-	def sendOneStickData(self, xAxis, yAxis):
-		xChar = xAxis * 127 + 127
-		yChar = yAxis * 127 + 127
+	def sendOneStickData(self, xAxis, yAxis, limit):
+		xInt = int(xAxis * 127) + 127
+		yInt = int(yAxis * 127) + 127
 		try:
-			self.socket.send(self.commandOneStickData + chr(xChar) + chr(yChar))
+			self.socket.send(self.commandOneStickData + chr(xInt) + chr(yInt) + chr(limit))
 			return True
 		except socket.error as e:
 			print(e.strerror)
@@ -48,10 +48,10 @@ class DriveClient: # class for drive control
 			return False
 	
 	def sendTwoStickData(self, leftAxis, rightAxis):
-		leftChar = axis1 * 127 + 127
-		rightChar = axis2 * 127 + 127
+		leftInt = int(leftAxis * 127) + 127
+		rightInt = int(rightAxis * 127) + 127
 		try:
-			self.socket.send(self.commandTwoStickData + chr(leftChar) + chr(rightChar))
+			self.socket.send(self.commandTwoStickData + chr(leftInt) + chr(rightInt))
 			return True
 		except socket.error as e:
 			print(e.strerror)
