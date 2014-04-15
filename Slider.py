@@ -3,13 +3,13 @@ import pygame
 	
 class Slider:
 
-	def __init__(self, function, label, (xMin, xMax, xStart, yPos)):
+	def __init__(self, function, label, default, (xMin, xMax, yPos)):
 		self.function = function
 		self.label = label
 		self.xMin = xMin
 		self.xMax = xMax
 		self.yPos = yPos
-		self.xPos = xStart
+		self.set(default)
 		self.font = pygame.font.Font(None, 20)
 		self.label = self.font.render(self.label, 1, (255, 255, 255))
 		labelSize = self.label.get_size()

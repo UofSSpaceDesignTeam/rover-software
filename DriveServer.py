@@ -11,7 +11,8 @@ import RPi.GPIO as GPIO # for hardware reset system
 # global constants	
 
 drivePort = 3002
-ramping = 15
+ramping = 35 # 0.7 second
+timeout = 10 # 1 second
 commandRF = 4
 commandRR = 5
 commandLF = 0
@@ -19,22 +20,26 @@ commandLR = 1
 
 # Function Definitions
 
-def sendSabertooth(address, command, speed):
-	checksum = int(address) + int(command) + int(speed) & 127
-	controller.write(chr(int(address)))
-	controller.write(chr(int(command)))
-	controller.write(chr(int(speed)))
-	controller.write(chr(int(checksum)))
+def sendSabertooth(address, command, data):
+	checksum = chr(address) + chr(command) + chr(data) & chr(127)
+	controller.write(chr(address))
+	controller.write(chr(command))
+	controller.write(chr(data))
+	controller.write(chr(checksum))
 	
 def stopSabertooth():
 	sendSabertooth(129, commandRF, 0)
 	sendSabertooth(129, commandLF, 0)
 
 def setMotors(leftSpeed, rightSpeed):
-	if abs(leftSpeed) > 127 or abs(rightSpeed) > 127:
-		print("Motor value out of range.")
-		stopSabertooth()
-		return
+	if leftSpeed > 127:
+		leftSpeed = 127
+	if leftSpeed < -127:
+		leftSpeed = - 127
+	if rightSpeed > 127:
+		rightSpeed = 127
+	if rightSpeed < -127:
+		rightSpeed = -127
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
 		sendSabertooth(129, commandLF, leftSpeed)
@@ -93,22 +98,33 @@ try:
 	controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
 	controller.baudrate = 9600
 	controller.timeout = 0.2
-	sendSabertooth(129, 16, ramping)
 except:
 	print("motor controller setup failed!")
-	time.sleep(2)
 	raise
 	#subprocess.call("sudo reboot", shell = True)
 
-# set up GPIOs
-# try:
-	# GPIO.setmode(GPIO.BOARD)
-	# GPIO.setup(12, GPIO.OUT)
-# except:
-	# print("GPIO setup failed!")
-	# time.sleep(2)
-	# raise
-	# subprocess.call("sudo reboot", shell = True)
+# set up GPIOs. Weirdness is required so all controllers are responsive.
+try:
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setup(12, GPIO.OUT) # actually #18 on board
+	GPIO.output(12, False) # turn off motor controllers to start
+	time.sleep(1.0)
+	GPIO.output(12, True) # turn on motor controllers first time
+	time.sleep(0.5)
+	sendSabertooth(129, 16, ramping)
+	sendSabertooth(129, 14, timeout)
+	time.sleep(0.5)
+	GPIO.output(12, False) # turn off motor controllers again
+	time.sleep(1.0)
+	GPIO.output(12, True) # turn on motor controllers for realsies
+	time.sleep(0.5)
+	sendSabertooth(129, 16, ramping)
+	sendSabertooth(129, 14, timeout)
+	time.sleep(0.5)
+except:
+	print("GPIO setup failed!")
+	raise
+	#subprocess.call("sudo reboot", shell = True)
 
 # begin server connection
 try:

@@ -48,24 +48,23 @@ def createButtons():
 	camera1Button = Button(camConnect, (1), "Front Camera", (12, 25, 100, 20), colorLightBlue, colorGreen)
 	camera2Button = Button(camConnect, (2), "Arm Camera", (12, 55, 100, 20), colorLightBlue, colorGreen)
 	camera3Button = Button(camConnect, (3), "Mast Camera", (12, 85, 100, 20), colorLightBlue, colorGreen)
-	camera4Button = Button(camConnect, (4), "Rear Camera", (12, 115, 100, 20), colorLightBlue, colorGreen)
-	cameraStopButton = Button(camDisconnect, (0), "Off", (12, 145, 100, 20), colorLightBlue, colorGreen)
+	cameraStopButton = Button(camDisconnect, (0), "Off", (12, 115, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton.selected = True
-	moveButton1 = Button(setDriveMode1, None, "1 Stick Drive", (12, 204, 100, 20), colorLightBlue, colorGreen)
+	moveButton1 = Button(setDriveMode1, None, "1 Stick Drive", (12, 174, 100, 20), colorLightBlue, colorGreen)
 	moveButton1.selected = True
-	armButton1 = Button(setArmMode1, None, "Arm Base", (12, 264, 100, 20), colorLightBlue, colorGreen)
-	stopButton = Button(stopRover, None, "Stop", (12, 354, 100, 20), colorLightBlue, colorYellow)
-	pictureButton = Button(takePicture, None, "Take Picture", (12, 414, 100, 20), colorLightBlue, colorYellow)
-	runExperimentButton = Button(runExperiment, None, "Science!", (12, 444, 100, 20), colorLightBlue, colorYellow)
+	armButton1 = Button(setArmMode1, None, "Arm Base", (12, 234, 100, 20), colorLightBlue, colorGreen)
+	stopButton = Button(stopRover, None, "Stop", (12, 324, 100, 20), colorLightBlue, colorYellow)
+	pictureButton = Button(takePicture, None, "Take Picture", (12, 384, 100, 20), colorLightBlue, colorYellow)
+	runExperimentButton = Button(runExperiment, None, "Science!", (12, 414, 100, 20), colorLightBlue, colorYellow)
 	connectButton = Button(connectClients, None, "Connect All", (1107, 205, 100, 20), colorLightBlue, colorYellow)
-	quitButton = Button(quit, None, "Quit", (12, 503, 100, 20), colorLightBlue, colorYellow)
-	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", (12, 234, 100, 20), colorLightBlue, colorGreen)
-	armButton2 = Button(setArmMode2, None, "Arm End", (12, 294, 100, 20), colorLightBlue, colorGreen)
-	waypointButton = Button(setWaypoint, None, "Set Waypoint", (12, 384, 100, 20), colorLightBlue, colorYellow)
+	quitButton = Button(quit, None, "Quit", (12, 473, 100, 20), colorLightBlue, colorYellow)
+	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", (12, 204, 100, 20), colorLightBlue, colorGreen)
+	armButton2 = Button(setArmMode2, None, "Arm End", (12, 264, 100, 20), colorLightBlue, colorGreen)
+	waypointButton = Button(setWaypoint, None, "Set Waypoint", (12, 354, 100, 20), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
-	buttonList.append(camera4Button)	# 3
+	buttonList.append(waypointButton) # 3
 	buttonList.append(cameraStopButton)	# 4
 	buttonList.append(moveButton1)	# 5
 	buttonList.append(armButton1)	# 6
@@ -76,14 +75,13 @@ def createButtons():
 	buttonList.append(quitButton)	# 11
 	buttonList.append(moveButton2)	# 12
 	buttonList.append(armButton2)	# 13
-	buttonList.append(waypointButton) # 14
 
 def createSliders():
 	global sliderList
 	sliderList = []
-	speedSlider = Slider(setSpeedScale, "Drive Power", (150, 285, 185, 595))
-	trimSlider = Slider(setSteerTrim, "Steering Trim", (150, 285, 218, 635))
-	steerSlider = Slider(setSteerScale, "Steer Rate", (150, 285, 240, 675))
+	speedSlider = Slider(setSpeedScale, "Drive Power", 0.35, (150, 285, 595))
+	trimSlider = Slider(setSteerTrim, "Steering Trim", 0.5, (150, 285, 635))
+	steerSlider = Slider(setSteerScale, "Steer Rate", 0.75, (150, 285, 675))
 	sliderList.append(speedSlider) #0
 	sliderList.append(trimSlider) #1
 	sliderList.append(steerSlider) #2
@@ -91,10 +89,10 @@ def createSliders():
 def createBoxes():
 	global boxList
 	boxList = []
-	cameraButtonBox = Box("Camera Feeds", (0, 0, 125, 175))
-	controlBox = Box("Control Modes", (0, 180, 125, 143))
-	actionBox = Box("Rover Actions", (0, 328, 125, 145))
-	uiBox = Box("User Interface", (0, 478, 125, 53))
+	cameraButtonBox = Box("Camera Feeds", (0, 0, 125, 145))
+	controlBox = Box("Control Modes", (0, 150, 125, 143))
+	actionBox = Box("Rover Actions", (0, 298, 125, 145))
+	uiBox = Box("User Interface", (0, 448, 125, 53))
 	connectionsBox = Box("Connections", (1095, 0, 125, 235))
 	controllerBox = Box("Controller", (1095, 239, 125, 120))
 	global settingsBox
@@ -113,19 +111,17 @@ def createIndicators():
 	camera1Indicator = Indicator(testClient, cameraRaspi1, "Front Camera", (1106, 30))
 	camera2Indicator = Indicator(testClient, cameraRaspi2, "Arm Camera", (1106, 55))
 	camera3Indicator = Indicator(testClient, cameraRaspi3, "Mast Camera", (1106, 80))
-	camera4Indicator = Indicator(testClient, cameraRaspi4, "Rear Camera", (1106, 105))
-	driveIndicator = Indicator(testClient, driveControl, "Drive System", (1106, 130))
-	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 180))
+	driveIndicator = Indicator(testClient, driveControl, "Drive System", (1106, 105))
+	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 155))
 	controllerIndicator = Indicator(checkController, None, "Detected", (1114, 263))
-	gpsIndicator = Indicator(testClient, gpsClient, "GPS System", (1106, 155))
+	gpsIndicator = Indicator(testClient, gpsClient, "GPS System", (1106, 130))
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
 	indicatorList.append(camera3Indicator) #2
-	indicatorList.append(camera4Indicator) #3
+	indicatorList.append(gpsIndicator) #3
 	indicatorList.append(driveIndicator) #4
 	indicatorList.append(armIndicator) #5
 	indicatorList.append(controllerIndicator) #6
-	indicatorList.append(gpsIndicator) #7
 
 def createConsoles(): # set up the info boxes
 	global output, gpsDisplay, controllerDisplay
@@ -157,7 +153,7 @@ def drawIndicators():
 	for i in indicatorList:
 		i.refresh()
 		i.draw(screen)
-	for i in range(0, 4):
+	for i in range(0, 3):
 		if buttonList[i].selected:
 			if not indicatorList[i].active:
 				camDisconnect(None)
@@ -241,7 +237,7 @@ def checkController(fakeArg):
 
 def updateGPS():
 	global roverLocation, baseLocation, waypointLocation, lastFix
-	if indicatorList[7].active:
+	if indicatorList[3].active:
 		roverLocation = gpsClient.getPosition()
 		if roverLocation != None:
 			lastFix = pygame.time.get_ticks()
@@ -315,12 +311,6 @@ def takePicture(fakeArg):
 		cameraRaspi3.getPicture()
 		time.sleep(2.5)
 		camConnect(3)
-	elif cameraNumber == 4:
-		cameraRaspi4.takePicture()
-		time.sleep(2.5)
-		cameraRaspi4.getPicture()
-		time.sleep(2.5)
-		camConnect(4)
 	time.sleep(0.75)
 	buttonList[8].selected = False
 	global redrawTimer
@@ -370,9 +360,6 @@ def camConnect(cameraNumber): # button-based
 	elif(cameraNumber == 3):
 		buttonList[2].selected = True
 		cameraRaspi3.startCamera()
-	elif(cameraNumber == 4):
-		buttonList[3].selected = True
-		cameraRaspi4.startCamera()
 	redrawTimer = pygame.time.get_ticks()
 	drawButtons()
 
@@ -383,9 +370,7 @@ def camDisconnect(fakeArg): # button-based
 		cameraRaspi2.stopCamera()
 	elif(buttonList[2].selected):
 		cameraRaspi3.stopCamera()
-	elif(buttonList[3].selected):
-		cameraRaspi4.stopCamera()
-	for cameraButton in buttonList[0:4]:
+	for cameraButton in buttonList[0:3]:
 		cameraButton.selected = False
 	buttonList[4].selected = True
 	if isLinux: # linux machine
@@ -408,13 +393,11 @@ def connectClients(fakeArg): # button-based
 		cameraRaspi2.connect(0)
 	if not indicatorList[2].active:
 		cameraRaspi3.connect(0)
-	if not indicatorList[3].active:
-		cameraRaspi4.connect(0)
 	if not indicatorList[4].active:
 		driveControl.connect(0)
 	if not indicatorList[5].active:
 		armControl.connect(0)
-	if not indicatorList[7].active:
+	if not indicatorList[3].active:
 		gpsClient.connect(0)
 	buttonList[10].selected = False
 	drawIndicators()
@@ -441,7 +424,6 @@ else:
 cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
 cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
 cameraRaspi3 = CameraClient(IPraspi3, cameraClientPort)
-cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
 driveControl = DriveClient(IPraspi1, driveClientPort)
 gpsClient = GPSClient(IPraspi1, gpsClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
@@ -459,8 +441,8 @@ cameraSplash = pygame.image.load("./graphics/camera.jpg")
 screen.blit(background, (130, 0))
 
 # initialize everything
-speedScale = 0.3
-steerScale = 0.7
+speedScale = 0.0
+steerScale = 0.0
 steerTrim = 0.0
 roverLocation = None
 baseLocation = None

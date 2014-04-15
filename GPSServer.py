@@ -26,10 +26,10 @@ def readGPS():
 			values = data.split(",")
 			latitude = float(values[2][0:1]) + float(values[2][2:7]) / 60.0
 			if values[3] == "S":
-				latitude = -latitude
+				latitude *= -1.0
 			longitude = float(values[4][0:1]) + float(values[4][2:7]) / 60.0
 			if values[5] == "E":
-				longitude = -longitude
+				longitude *= -1.0
 
 def sendData():
 	global latitude, longitude, serverSocket, logfile
@@ -67,7 +67,7 @@ def stopLog():
 
 # set up logging
 try:
-	logfile = file("gpsLog" + time.strftime("%m%d%H%M%S", time.localtime()),"w")
+	logfile = file("/home/pi/gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log","w")
 	time.sleep(0.2)
 	logfile.open()
 except:
