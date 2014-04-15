@@ -105,6 +105,7 @@ except:
 
 # set up GPIOs. Weirdness is required so all controllers are responsive.
 try:
+	GPIO.setwarnings(False)
 	GPIO.setmode(GPIO.BOARD)
 	GPIO.setup(12, GPIO.OUT) # actually #18 on board, driving Nfet driving Pfet driving controller power
 	GPIO.output(12, False) # turn off motor controllers to start
@@ -132,10 +133,9 @@ try:
 	serverSocket.bind(("", drivePort))
 	serverSocket.listen(0)
 	print("Drive Server listening on port " + str(drivePort))
-	print("using serial port " + controller.name)
 	while(True):
 		(driveSocket, clientAddress) = serverSocket.accept()
-		print("Connected to " + str(clientAddress[0]))
+		print("Drive Server connected.")
 		while(True):
 			data = driveSocket.recv(256)
 			if(data == ""): # socket closing
@@ -143,7 +143,8 @@ try:
 				break
 			else:
 				parseCommand(data)
-		print("Connection to " + str(clientAddress[0]) + " was closed")
+		print("Drive Server disconnected.")
+	
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	stopSabertooth()

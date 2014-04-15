@@ -240,9 +240,8 @@ def checkController(fakeArg):
 	return controller.isConnected
 
 def updateGPS():
-	global roverLocation, lastLocation, baseLocation, waypointLocation, lastFix
+	global roverLocation, baseLocation, waypointLocation, lastFix
 	if indicatorList[3].active:
-		lastLocation = roverLocation
 		roverLocation = gpsClient.getPosition()
 		if roverLocation != None:
 			lastFix = pygame.time.get_ticks()
@@ -260,14 +259,14 @@ def updateGPS():
 		gpsDisplay.write("Lon: " + str(round(roverLocation[1], 5)))
 		gpsDisplay.write("Alt: " + str(int(round(roverLocation[2]))))
 		gpsDisplay.write("CEP: " + str(round(roverLocation[3], 1)))
-	if lastLocation == None or roverLocation == None:
+	if True: # todo: add compass
 		gpsDisplay.write("Course:")
 	else:
-		gpsDisplay.write("Course: " + str(int(round(math.degrees(math.atan2((roverLocation[1] - lastLocation[1]), (roverLocation[0] - lastLocation[0])))))))
+		gpsDisplay.write("Course:")
 	if baseLocation == None or roverLocation == None:
-		gpsDisplay.write("Course Home:")
+		gpsDisplay.write("Range to Base:")
 	else:
-		gpsDisplay.write("Course Home: " + str(int(round(math.degrees(math.atan2((baseLocation[1] - roverLocation[1]), (baseLocation[0] - roverLocation[0])))))))
+		gpsDisplay.write("Range to Base: " + str(int(((((roverLocation[0] - baseLocation[0])*111000)**2) + (((roverLocation[1] - baseLocation[1])*85000) ** 2)) ** 0.5)))
 	gpsDisplay.draw(screen)
 
 def setWaypoint(fakeArg):

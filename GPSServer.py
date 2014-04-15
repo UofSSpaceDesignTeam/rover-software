@@ -43,9 +43,9 @@ def readGPS():
 def sendData():
 	global latitude, longitude, altitude, cep, dataSocket, logfile
 	if latitude != None and longitude != None and altitude != None and cep != None:
+		dataSocket.send(struct.pack("!ffff", latitude, longitude, altitude, cep))
 		try:
 			global logfile
-			dataSocket.send(struct.pack("!ffff", latitude, longitude, altitude, cep))
 			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) + "\n")
 		except:
 			pass
@@ -76,8 +76,7 @@ def stopLog():
 
 # set up logging
 try:
-	logfile = open("./gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log", "w")
-	time.sleep(0.2)
+	logfile = open("gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log", "w")
 except:
 	print("Could not set up log file.")
 
@@ -96,24 +95,18 @@ try:
 	serverSocket.bind(("", GPSPort))
 	serverSocket.listen(0)
 	print("GPS Server listening on port " + str(GPSPort))
-	print("using serial port " + gps.name)
 	while(True):
 		(dataSocket, clientAddress) = serverSocket.accept()
-		print("Connected to: " + str(clientAddress[0]))
+		print("GPS Server connected.")
 		while(True):
 			time.sleep(2.0)
 			readGPS()
 			try:
 				sendData()
 			except:
-				raise
 				break	
-		print("Connection to: " + str(clientAddress[0]) + " closed")
-		#encode = encodeGPS(gps.readline(),1,1)
-		#decode = testResponse(encode)
-		#if decode is not None:
-		#	print decode
-
+		print("GPS Server disconnected.")
+	
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	stopGPS()

@@ -62,11 +62,11 @@ serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
 	serverSocket.bind(("", commandPort))
 	serverSocket.listen(0)
-	print("CameraServer port: " + str(commandPort))
-	print("Video port: " + str(videoPort))
+	print("Camera Server listening on port " + str(commandPort))
+	print("\tVideo port: " + str(videoPort))
 	while(True):
 		(commandSocket, clientAddress) = serverSocket.accept()
-		print("Connected to: " + str(clientAddress[0]))
+		print("Camera Server connected.")
 		while(True):
 			data = commandSocket.recv(256)
 			if(data == ""): # socket closing
@@ -74,7 +74,8 @@ try:
 				break
 			else:
 				parseCommand(data)
-		print("Connection to: " + str(clientAddress[0]) + " closed")
+		print("Camera Server disconnected.")
+	
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	stopCamera()
