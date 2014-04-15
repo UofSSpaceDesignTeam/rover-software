@@ -39,14 +39,6 @@ colorBlue = (0, 0, 240)
 colorLightBlue = (100, 100, 250)
 colorYellow = (250, 250, 0)
 
-speedScale = 0.3
-steerScale = 0.7
-steerTrim = 0.0
-
-lastFix = -1
-baseLocation = None
-roverLocation = None
-
 # function definitions
 
 def createButtons():
@@ -105,7 +97,7 @@ def createBoxes():
 	connectionsBox = Box("Connections", (1095, 0, 125, 235))
 	controllerBox = Box("Controller", (1095, 239, 125, 120))
 	global settingsBox
-	settingsBox = Box("Rover Settings", (130, 544, 475, 156))
+	settingsBox = Box("Rover Settings", (130, 544, 480, 156))
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
 	boxList.append(actionBox)
@@ -138,16 +130,14 @@ def createConsoles(): # set up the info boxes
 	global output, gpsDisplay, controllerDisplay
 	output = TextOutput("Messages", 17, colorWhite, (740, 544, 350, 156), 11)
 	sys.stdout = output
-	gpsDisplay = TextOutput("GPS", 17, colorWhite, (610, 544, 125, 156), 9)
+	gpsDisplay = TextOutput("GPS", 17, colorWhite, (615, 544, 120, 156), 7)
 	gpsDisplay.write("Fix Age:")
 	gpsDisplay.write("Lat:")
 	gpsDisplay.write("Lon:")
-	gpsDisplay.write("Alt:")
 	gpsDisplay.write("Range:")
 	gpsDisplay.write("Bearing:")
 	gpsDisplay.write("Wpt Lat:")
 	gpsDisplay.write("Wpt Lon:")
-	gpsDisplay.write("Wpt Alt:")
 	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 265, 88, 88), 5)
 
 def drawButtons():
@@ -248,12 +238,44 @@ def setSteerTrim(newValue):
 def checkController(fakeArg):
 	return controller.isConnected
 
+def updateGPS():
+	global roverLocation, baseLocation, waypointLocation, lastFix
+	if indicatorList[7].active:
+		roverLocation = gpsClient.getPosition()
+		if roverLocation != None:
+			lastFix = pygame.time.get_ticks()
+	if lastFix == -1:
+		gpsDisplay.write("Fix Age:")
+	else:
+		gpsDisplay.write("Fix Age: " + str((pygame.time.get_ticks() - lastFix) / 1000))
+	if roverLocation == None:
+		gpsDisplay.write("Lat:")
+		gpsDisplay.write("Lon:")
+	else:
+		gpsDisplay.write("Lat: " + str(roverLocation[0]))
+		gpsDisplay.write("Lon: " + str(roverLocation[1]))
+	if baseLocation == None or roverLocation == None:
+		gpsDisplay.write("Range:")
+		gpsDisplay.write("Bearing:")
+	else:
+		gpsDisplay.write("Range: " + str((((roverLocation[0] - baseLocation[0]) ** 2) + ((roverLocation[1] - baseLocation[1]) ** 2)) ** 0.5))
+		gpsDisplay.write("Bearing: " + str(degrees(atan2((roverLocation[0] - baseLocation[0]), (roverLocation[1] - baseLocation[1])))))
+	if waypointLocation == None:
+		gpsDisplay.write("Wpt Lat:")
+		gpsDisplay.write("Wpt Lon:")
+	else:
+		gpsDisplay.write("Wpt Lat: " + str(waypointLocation[0]))
+		gpsDisplay.write("Wpt Lon: " + str(waypointLocation[1]))
+	gpsDisplay.draw(screen)
+
 def setWaypoint(fakeArg):
+	global waypointLocation, roverLocation
 	if indicatorList[7].active:
 		buttonList[14].selected = True
 		buttonList[14].draw(screen)
 		pygame.display.update()
-		# replace with actual things
+		waypointLocation = roverLocation
+		# todo: send to rover through drive client
 		time.sleep(0.2)
 		#
 		buttonList[14].selected = False
@@ -434,6 +456,17 @@ cameraSplash = pygame.image.load("./graphics/camera.jpg")
 screen.blit(background, (130, 0))
 
 # initialize everything
+speedScale = 0.3
+steerScale = 0.7
+steerTrim = 0.0
+roverLocation = None
+baseLocation = None
+waypointLocation = None
+redrawTimer = 0
+controllerSendTimer = 0
+gpsTimer = 0
+lastFix = -1
+
 controller = Controller(0)
 createBoxes()
 createButtons()
@@ -448,10 +481,6 @@ gpsDisplay.draw(screen)
 drawIndicators()
 drawRobot()
 readBaseLocation()
-
-redrawTimer = 0
-controllerSendTimer = 0
-gpsTimer = 0
 
 if not controller.isConnected:
 	print("Controller is not detected.")
@@ -478,8 +507,7 @@ while True: # main execution loop
 	
 	if pygame.time.get_ticks() - gpsTimer > 2000:
 		gpsTimer = pygame.time.get_ticks()
-		if indicatorList[7].active:
-			roverLocation = gpsClient.
+		updateGPS()
 	
 	if pygame.time.get_ticks() - controllerSendTimer > 200: # control data send timer
 		controllerSendTimer = pygame.time.get_ticks()
