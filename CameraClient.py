@@ -38,30 +38,22 @@ class CameraClient: # class to handle camera feeds
 		try:
 			self.socket.send(self.commandCameraStart)
 			return True
-		except socket.error as e:
-			#sys.stderr.write(e.strerror)
+		except:
 			return False
 	
 	def stopCamera(self):
 		try:
 			self.socket.send(self.commandCameraEnd)
 			return True
-		except socket.error as e:
-			#sys.stderr.write(e.strerror)
+		except:
 			return False
 
 	def takePicture(self):
 		try:
 			self.socket.send(self.commandCameraPicture)
 			return True
-		except socket.error as e:
-			#sys.stderr.write(e.strerror)
+		except:
 			return False
-
-	def getPicture(self): #todo: windows version
-		cmd = ("scp " + str(self.IP) + ": /home/pi/pictures/* ./robotPictures/" )
-		print(cmd)
-		subprocess.call(cmd, shell = True)
 
 	def test(self):
 		try:

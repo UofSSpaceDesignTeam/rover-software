@@ -76,9 +76,9 @@ def stopLog():
 
 # set up logging
 try:
-	logfile = open("gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log", "w")
+	logfile = open("/home/pi/gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log", "w")
 except:
-	print("Could not set up log file.")
+	print("GPS logging failed.")
 
 # set up serial connection
 try:

@@ -17,7 +17,7 @@ videoPort = 3001
 def startCamera():
 	command = "raspivid -b 500000 -n -ex fixedfps -fps 20 -t 0 -rot 180 -o - | nc " + clientAddress[0] + " " + str(videoPort)
 	#print(command)
-	subprocess.Popen(command, shell = True)
+	subprocess.Popen(command, shell = True, stderr = open("/dev/null", "w"))
 
 def stopCamera():
 	command = "sudo killall nc; sudo killall raspivid"
@@ -63,7 +63,6 @@ try:
 	serverSocket.bind(("", commandPort))
 	serverSocket.listen(0)
 	print("Camera Server listening on port " + str(commandPort))
-	print("\tVideo port: " + str(videoPort))
 	while(True):
 		(commandSocket, clientAddress) = serverSocket.accept()
 		print("Camera Server connected.")

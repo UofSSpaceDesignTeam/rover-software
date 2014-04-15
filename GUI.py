@@ -293,7 +293,7 @@ def savePosition(fakeArg):
 
 def takePicture(fakeArg):
 	cameraNumber = 0
-	for i in range(0, 4):
+	for i in range(0, 3):
 		if buttonList[i].selected:
 			cameraNumber = i + 1
 	if cameraNumber == 0:
@@ -307,19 +307,13 @@ def takePicture(fakeArg):
 	if cameraNumber == 1:
 		cameraRaspi1.takePicture()
 		time.sleep(2.5)
-		cameraRaspi1.getPicture()
-		time.sleep(2.5)
 		camConnect(1)
 	elif cameraNumber == 2:
 		cameraRaspi2.takePicture()
 		time.sleep(2.5)
-		cameraRaspi2.getPicture()
-		time.sleep(2.5)
 		camConnect(2)
 	elif cameraNumber == 3:
 		cameraRaspi3.takePicture()
-		time.sleep(2.5)
-		cameraRaspi3.getPicture()
 		time.sleep(2.5)
 		camConnect(3)
 	time.sleep(0.75)
