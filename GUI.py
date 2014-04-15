@@ -245,9 +245,6 @@ def updateGPS():
 		roverLocation = gpsClient.getPosition()
 		if roverLocation != None:
 			lastFix = pygame.time.get_ticks()
-	
-	roverLocation = (51.132644, -106.627730)
-	
 	if lastFix == -1:
 		gpsDisplay.write("Fix Age:")
 	else:
