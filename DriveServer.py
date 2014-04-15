@@ -131,8 +131,8 @@ try:
 	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	serverSocket.bind(("", drivePort))
 	serverSocket.listen(0)
+	print("Drive Server listening on port " + str(drivePort))
 	print("using serial port " + controller.name)
-	print("DriveServer listening on port " + str(drivePort))
 	while(True):
 		(driveSocket, clientAddress) = serverSocket.accept()
 		print("Connected to " + str(clientAddress[0]))

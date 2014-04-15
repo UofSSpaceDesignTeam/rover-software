@@ -95,8 +95,8 @@ serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
 	serverSocket.bind(("", GPSPort))
 	serverSocket.listen(0)
-	print("using serial port " + gps.name)
 	print("GPS Server listening on port " + str(GPSPort))
+	print("using serial port " + gps.name)
 	while(True):
 		(dataSocket, clientAddress) = serverSocket.accept()
 		print("Connected to: " + str(clientAddress[0]))
