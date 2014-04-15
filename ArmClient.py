@@ -102,10 +102,8 @@ class ArmClient: # class for arm control
 	def stopMotors(self):
 		try:
 			self.socket.send(self.commandArmStop)
-			return True
-		except socket.error as e:
-			sys.stderr.write(e.strerror)
-			return False
+		except socket.error:
+			pass
 
 	def test(self):
 		try:

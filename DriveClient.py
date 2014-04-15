@@ -56,10 +56,8 @@ class DriveClient: # class for drive control
 	def stopMotors(self):
 		try:
 			self.socket.send(self.commandRoverStop)
-			return True
-		except socket.error as e:
-			print(e.strerror)
-			return False
+		except:
+			pass
 	
 	def test(self):
 		try:
