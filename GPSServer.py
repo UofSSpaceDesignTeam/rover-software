@@ -19,29 +19,34 @@ cep = None
 def readGPS():
 	global gps, latitude, longitude, altitude, cep
 	rawData = gps.read(gps.inWaiting())
+	#print(rawData)
 	dataStart = rawData.find("GGA")
 	if dataStart != -1:	# found start of valid sentence
-		dataEnd = rawData.find("*", dataStart)
-		if dataEnd != -1 and dataEnd - dataStart < 70:
-			data = rawData[dataStart:dataEnd]
-			print(data)
-			values = data.split(",")
-			latitude = float(values[2][0:1]) + float(values[2][2:7]) / 60.0
+		dataEnd = min(dataStart + 70, len(rawData) - dataStart - 2)
+		data = rawData[dataStart:dataEnd]
+		#print(data)
+		values = data.split(",")
+		if len(values) > 9:
+			latitude = float(values[2][0:2]) + float(values[2][2:7]) / 60.0
 			if values[3] == "S":
 				latitude *= -1.0
-			longitude = float(values[4][0:1]) + float(values[4][2:7]) / 60.0
-			if values[5] == "E":
+			longitude = float(values[4][0:3]) + float(values[4][2:7]) / 60.0
+			if values[5] == "W":
 				longitude *= -1.0
 			cep = float(values[8]) * 2.5 # 50% confidence error circle
 			altitude = float(values[9])
+			#print(latitude)
+			#print(longitude)
+			#print(altitude)
+			#print(cep)
 
 def sendData():
-	global latitude, longitude, altitude, cep, serverSocket, logfile
-	if latitude != None and longitude != None:
-		serverSocket.send(struct.pack("!ffff", latitude, longitude, altitude, cep)) 
+	global latitude, longitude, altitude, cep, dataSocket, logfile
+	if latitude != None and longitude != None and altitude != None and cep != None:
 		try:
 			global logfile
-			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) "\n")
+			dataSocket.send(struct.pack("!ffff", latitude, longitude, altitude, cep))
+			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) + "\n")
 		except:
 			pass
 			
@@ -71,7 +76,7 @@ def stopLog():
 
 # set up logging
 try:
-	logfile = open("/home/pi/gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log", "w")
+	logfile = open("./gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log", "w")
 	time.sleep(0.2)
 except:
 	print("Could not set up log file.")
@@ -91,7 +96,7 @@ try:
 	serverSocket.bind(("", GPSPort))
 	serverSocket.listen(0)
 	print("using serial port " + gps.name)
-	print("DriveServer listening on port " + str(GPSPort))
+	print("GPS Server listening on port " + str(GPSPort))
 	while(True):
 		(dataSocket, clientAddress) = serverSocket.accept()
 		print("Connected to: " + str(clientAddress[0]))

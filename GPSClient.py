@@ -33,10 +33,10 @@ class GPSClient: # class for drive control
 			self.socket.settimeout(0.3)
 			packet = self.socket.recv(256)
 			data = struct.unpack("!ffff", packet)
-			#print(str(data))
+			print(str(data))
 			return data
-		except exception as e:
-			print(e.strerror)
+		except:
+			pass
 			return None
 	
 	def test(self):

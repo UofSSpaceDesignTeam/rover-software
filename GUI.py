@@ -285,7 +285,7 @@ def savePosition(fakeArg):
 			savefile.write("Latitude: " + str(roverLocation[0]) + " degrees\n")
 			savefile.write("Longitude: " + str(roverLocation[1]) + " degrees\n")
 			savefile.write("Altitude: " + str(roverLocation[2]) + " m ASL\n")
-			savefile.write("Circular Error Probable (50%): " + str(roverLocation[2]) + " m")
+			savefile.write("Circular Error Probable (50%): " + str(roverLocation[3]) + " m")
 			savefile.close()
 			print("Position information saved.")
 		except:
