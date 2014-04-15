@@ -27,10 +27,10 @@ def readGPS():
 		#print(data)
 		values = data.split(",")
 		if len(values) > 9:
-			latitude = float(values[2][0:2]) + float(values[2][2:7]) / 60.0
+			latitude = float(values[2][:2]) + float(values[2][2:]) / 60.0
 			if values[3] == "S":
 				latitude *= -1.0
-			longitude = float(values[4][0:3]) + float(values[4][2:7]) / 60.0
+			longitude = float(values[4][:3]) + float(values[4][3:]) / 60.0
 			if values[5] == "W":
 				longitude *= -1.0
 			cep = float(values[8]) * 2.5 # 50% confidence error circle
