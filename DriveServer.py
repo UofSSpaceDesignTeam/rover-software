@@ -106,7 +106,7 @@ except:
 # set up GPIOs. Weirdness is required so all controllers are responsive.
 try:
 	GPIO.setmode(GPIO.BOARD)
-	GPIO.setup(12, GPIO.OUT) # actually #18 on board
+	GPIO.setup(12, GPIO.OUT) # actually #18 on board, driving Nfet driving Pfet driving controller power
 	GPIO.output(12, False) # turn off motor controllers to start
 	time.sleep(1.0)
 	GPIO.output(12, True) # turn on motor controllers first time
