@@ -11,29 +11,35 @@ lastSendTime = 0.0
 gps = None
 logfile = None
 
-latitude = 0 # degrees * 10^-3
-longitude = 0
+latitude = None
+longitude = None
 
-def readGPS()
+def readGPS():
 	global gps, latitude, longitude
 	data = gps.read(gps.inWaiting())
 	dataStart = data.find("GGA")
-	if dataStart != -1	# found start of valid sentence
+	if dataStart != -1:	# found start of valid sentence
 		dataEnd = data.find("*", dataStart)
-			if dataEnd != -1 and dataEnd - dataStart < 70
-				data = data[dataStart + 13:dataEnd - 27]
-				print(data)
-				values = data.split(",")
-				latitude = float(values[0][0:1]) + float(values[0][2:7]) / 60.0
-				longitude = float(values[0][0:1]) + float(values[0][2:7]) / 60.0
+		if dataEnd != -1 and dataEnd - dataStart < 70:
+			data = data[dataStart:dataEnd]
+			print(data)
+			values = data.split(",")
+			latitude = float(values[2][0:1]) + float(values[2][2:7]) / 60.0
+			if values[3] == "S":
+				latitude = -latitude
+			longitude = float(values[4][0:1]) + float(values[4][2:7]) / 60.0
+			if values[5] == "E":
+				longitude = -longitude
 
 def sendData():
-	try:
-		global logfile
-		print(str(latitude) + "," + str(longitude) + "," + str(altitude), file = logfile)
-	except:
-		pass
-	serverSocket.send(!i,struct.pack 
+	global latitude, longitude, serverSocket, logfile
+	if latitude != None and longitude != None:
+		serverSocket.send(struct.pack("!ff", latitude, longitude)) 
+		try:
+			global logfile
+			logfile.write(str(latitude) + "," + str(longitude) + "\n")
+		except:
+			pass
 			
 def stopSockets():
 	try:
@@ -87,11 +93,12 @@ try:
 		(dataSocket, clientAddress) = serverSocket.accept()
 		print("Connected to: " + str(clientAddress[0]))
 		while(True):
-			time.sleep(1.0)
+			time.sleep(2.0)
 			readGPS()
 			try:
 				sendData()
 			except:
+				raise
 				break	
 		print("Connection to: " + str(clientAddress[0]) + " closed")
 		#encode = encodeGPS(gps.readline(),1,1)

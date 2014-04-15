@@ -20,6 +20,7 @@ from RobotPiece import RobotPiece
 import socket
 import os
 import time
+import math
 import subprocess
 
 # global constants
@@ -244,6 +245,9 @@ def updateGPS():
 		roverLocation = gpsClient.getPosition()
 		if roverLocation != None:
 			lastFix = pygame.time.get_ticks()
+	
+	roverLocation = (51.132644, -106.627730)
+	
 	if lastFix == -1:
 		gpsDisplay.write("Fix Age:")
 	else:
@@ -252,30 +256,32 @@ def updateGPS():
 		gpsDisplay.write("Lat:")
 		gpsDisplay.write("Lon:")
 	else:
-		gpsDisplay.write("Lat: " + str(roverLocation[0]))
-		gpsDisplay.write("Lon: " + str(roverLocation[1]))
+		gpsDisplay.write("Lat: " + str(round(roverLocation[0], 4)))
+		gpsDisplay.write("Lon: " + str(round(roverLocation[1], 4)))
 	if baseLocation == None or roverLocation == None:
 		gpsDisplay.write("Range:")
 		gpsDisplay.write("Bearing:")
 	else:
-		gpsDisplay.write("Range: " + str((((roverLocation[0] - baseLocation[0]) ** 2) + ((roverLocation[1] - baseLocation[1]) ** 2)) ** 0.5))
-		gpsDisplay.write("Bearing: " + str(degrees(atan2((roverLocation[0] - baseLocation[0]), (roverLocation[1] - baseLocation[1])))))
+		gpsDisplay.write("Range: " + str(int(round((((111000 * (roverLocation[0] - baseLocation[0])) ** 2) + ((85000 * (roverLocation[1] - baseLocation[1])) ** 2)) ** 0.5))))
+		gpsDisplay.write("Bearing: " + str(int(round(math.degrees(math.atan2((roverLocation[1] - baseLocation[1]), (roverLocation[0] - baseLocation[0])))))))
 	if waypointLocation == None:
 		gpsDisplay.write("Wpt Lat:")
 		gpsDisplay.write("Wpt Lon:")
 	else:
-		gpsDisplay.write("Wpt Lat: " + str(waypointLocation[0]))
-		gpsDisplay.write("Wpt Lon: " + str(waypointLocation[1]))
+		gpsDisplay.write("Wpt Lat: " + str(round(waypointLocation[0], 4)))
+		gpsDisplay.write("Wpt Lon: " + str(round(waypointLocation[1], 4)))
 	gpsDisplay.draw(screen)
 
 def setWaypoint(fakeArg):
 	global waypointLocation, roverLocation
-	if indicatorList[7].active:
+	if indicatorList[4].active: # drive client
 		buttonList[14].selected = True
 		buttonList[14].draw(screen)
 		pygame.display.update()
 		waypointLocation = roverLocation
-		# todo: send to rover through drive client
+		if waypointLocation != None:
+			pass # todo: send to rover through drive client
+		updateGPS()
 		time.sleep(0.2)
 		#
 		buttonList[14].selected = False
@@ -488,7 +494,7 @@ if not controller.isConnected:
 if baseLocation == None:
 	print("Could not read base station position from 'location.txt.'")
 else:
-	print("Base station location: " + str(baseLocation))
+	print("Base station location read as (" + str(round(baseLocation[0], 4)) + ", " + str(round(baseLocation[1], 4)) + ").")
 	
 output.draw(screen)
 pygame.display.update()
