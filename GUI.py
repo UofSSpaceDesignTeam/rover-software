@@ -12,6 +12,7 @@ from Slider import Slider
 from Box import Box
 from Indicator import Indicator
 from DriveClient import DriveClient
+from GPSClient import GPSClient
 from CameraClient import CameraClient
 from ArmClient import ArmClient
 from TextOutput import TextOutput
@@ -19,19 +20,19 @@ from RobotPiece import RobotPiece
 import socket
 import os
 import time
-from datetime import date
 import subprocess
 
 # global constants
 
 IPraspi1 = "192.168.1.103"
-IPraspi2 = "10.64.226.138" #"192.168.1.104"
+IPraspi2 = "192.168.1.104"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "192.168.1.106"
 # netcat-ed video on port 3001
 driveClientPort = 3002
 armClientPort = 3003
 cameraClientPort = 3000
+gpsClientPort = 3005
 colorWhite = (255, 255, 255)
 colorGreen = (0, 240, 0)
 colorBlue = (0, 0, 240)
@@ -61,13 +62,13 @@ def createButtons():
 	moveButton1.selected = True
 	armButton1 = Button(setArmMode1, None, "Arm Base", (12, 264, 100, 20), colorLightBlue, colorGreen)
 	stopButton = Button(stopRover, None, "Stop", (12, 354, 100, 20), colorLightBlue, colorYellow)
-	pictureButton = Button(takePicture, None, "Take Picture", (12, 384, 100, 20), colorLightBlue, colorYellow)
-	runExperimentButton = Button(runExperiment, None, "Science!", (12, 414, 100, 20), colorLightBlue, colorYellow)
-	connectButton = Button(connectClients, None, "Connect All", (1107, 180, 100, 20), colorLightBlue, colorYellow)
-	quitButton = Button(quit, None, "Quit", (12, 475, 100, 20), colorLightBlue, colorYellow)
+	pictureButton = Button(takePicture, None, "Take Picture", (12, 414, 100, 20), colorLightBlue, colorYellow)
+	runExperimentButton = Button(runExperiment, None, "Science!", (12, 444, 100, 20), colorLightBlue, colorYellow)
+	connectButton = Button(connectClients, None, "Connect All", (1107, 205, 100, 20), colorLightBlue, colorYellow)
+	quitButton = Button(quit, None, "Quit", (12, 503, 100, 20), colorLightBlue, colorYellow)
 	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", (12, 234, 100, 20), colorLightBlue, colorGreen)
 	armButton2 = Button(setArmMode2, None, "Arm End", (12, 294, 100, 20), colorLightBlue, colorGreen)
-	waypointButton = Button(setWaypoint, None, "Set Waypoint", (1107, 452, 100, 20), colorLightBlue, colorYellow)
+	waypointButton = Button(setWaypoint, None, "Set Waypoint", (12, 384, 100, 20), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -99,11 +100,10 @@ def createBoxes():
 	boxList = []
 	cameraButtonBox = Box("Camera Feeds", (0, 0, 125, 175))
 	controlBox = Box("Control Modes", (0, 180, 125, 143))
-	actionBox = Box("Rover Actions", (0, 328, 125, 115))
-	uiBox = Box("User Interface", (0, 449, 125, 53))
-	connectionsBox = Box("Connections", (1095, 0, 125, 209))
-	gpsBox = Box("GPS", (1095, 339, 125, 143))
-	controllerBox = Box("Controller", (1095, 214, 125, 120))
+	actionBox = Box("Rover Actions", (0, 328, 125, 145))
+	uiBox = Box("User Interface", (0, 478, 125, 53))
+	connectionsBox = Box("Connections", (1095, 0, 125, 235))
+	controllerBox = Box("Controller", (1095, 239, 125, 120))
 	global settingsBox
 	settingsBox = Box("Rover Settings", (130, 544, 350, 156))
 	boxList.append(cameraButtonBox)
@@ -111,7 +111,6 @@ def createBoxes():
 	boxList.append(actionBox)
 	boxList.append(uiBox)
 	boxList.append(connectionsBox)
-	boxList.append(gpsBox)
 	boxList.append(controllerBox)
 	boxList.append(settingsBox)
 
@@ -123,9 +122,9 @@ def createIndicators():
 	camera3Indicator = Indicator(testClient, cameraRaspi3, "Mast Camera", (1106, 80))
 	camera4Indicator = Indicator(testClient, cameraRaspi4, "Rear Camera", (1106, 105))
 	driveIndicator = Indicator(testClient, driveControl, "Drive System", (1106, 130))
-	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 155))
-	controllerIndicator = Indicator(checkController, None, "Detected", (1114, 238))
-	gpsIndicator = Indicator(checkGPS, None, "Active", (1118, 360))
+	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 180))
+	controllerIndicator = Indicator(checkController, None, "Detected", (1114, 263))
+	gpsIndicator = Indicator(testClient, gpsClient, "GPS System", (1106, 155))
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
 	indicatorList.append(camera3Indicator) #2
@@ -141,14 +140,14 @@ def createConsoles(): # set up the info boxes
 	sys.stdout = output
 	print("Welcome to the USST rover control system.")
 	global gpsDisplay
-	gpsDisplay = TextOutput("", 17, colorWhite, (1095, 361, 125, 85), 5)
+	gpsDisplay = TextOutput("GPS", 17, colorWhite, (1095, 364, 125, 85), 5)
 	gpsDisplay.write("Mode: Absolute")
 	gpsDisplay.write("Lat: Unknown")
 	gpsDisplay.write("Lon: Unknown")
 	gpsDisplay.write("Wpt Lat:")
 	gpsDisplay.write("Wpt Lon:")
 	global controllerDisplay
-	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 240, 88, 88), 5)
+	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 265, 88, 88), 5)
 
 def drawButtons():
 	for i in buttonList:
@@ -235,12 +234,6 @@ def setSteerTrim(newValue):
 
 def checkController(fakeArg):
 	return controller.isConnected
-
-def checkGPS(fakeArg):
-	if indicatorList[4].active and pygame.time.get_ticks() - lastFix < 3000:
-		return True
-	else:
-		return False
 
 def setWaypoint(fakeArg):
 	if indicatorList[7].active:
@@ -372,17 +365,19 @@ def connectClients(fakeArg): # button-based
 	drawIndicators()
 	pygame.display.update()
 	if not indicatorList[0].active:
-		cameraRaspi1.connect(0);
+		cameraRaspi1.connect(0)
 	if not indicatorList[1].active:
-		cameraRaspi2.connect(0);
+		cameraRaspi2.connect(0)
 	if not indicatorList[2].active:
-		cameraRaspi3.connect(0);
+		cameraRaspi3.connect(0)
 	if not indicatorList[3].active:
-		cameraRaspi4.connect(0);
+		cameraRaspi4.connect(0)
 	if not indicatorList[4].active:
-		driveControl.connect(0);
+		driveControl.connect(0)
 	if not indicatorList[5].active:
-		armControl.connect(0);
+		armControl.connect(0)
+	if not indicatorList[7].active:
+		gpsClient.connect(0)
 	buttonList[10].selected = False
 	drawIndicators()
 	drawButtons()
@@ -410,6 +405,7 @@ cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
 cameraRaspi3 = CameraClient(IPraspi3, cameraClientPort)
 cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
 driveControl = DriveClient(IPraspi1, driveClientPort)
+gpsClient = GPSClient(IPraspi1, gpsClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
 
 # set up pygame resources

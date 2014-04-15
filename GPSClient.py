@@ -2,22 +2,17 @@
 
 # dependency list
 
-import serial
 import socket
 import time
 
 # class definition
 	
-class DriveClient: # class for drive control
+class GPSClient: # class for drive control
 
 	def __init__(self, IP, port):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.IP = IP
 		self.port = port
-		self.commandOneStickData = "#D1"
-		self.commandTwoStickData = "#D2"
-		self.commandRoverStop = "#DS"
-		self.commandGPSData = "#GD"
 
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -36,37 +31,7 @@ class DriveClient: # class for drive control
 				pass
 		return False
 
-	def sendOneStickData(self, xAxis, yAxis, limit):
-		xInt = int(xAxis * 127) + 127
-		yInt = int(yAxis * 127) + 127
-		try:
-			self.socket.send(self.commandOneStickData + chr(xInt) + chr(yInt) + chr(limit))
-			return True
-		except socket.error as e:
-			print(e.strerror)
-			self.stopMotors()
-			return False
-	
-	def sendTwoStickData(self, leftAxis, rightAxis):
-		leftInt = int(leftAxis * 127) + 127
-		rightInt = int(rightAxis * 127) + 127
-		try:
-			self.socket.send(self.commandTwoStickData + chr(leftInt) + chr(rightInt))
-			return True
-		except socket.error as e:
-			print(e.strerror)
-			self.stopMotors()
-			return False	
-	
-	def stopMotors(self):
-		try:
-			self.socket.send(self.commandRoverStop)
-			return True
-		except socket.error as e:
-			print(e.strerror)
-			return False
-
-	def getGPSData(self):
+	def getPosition(self):
 		try:
 			self.socket.settimeout(0.3)
 			GPSData = self.socket.recv(256)

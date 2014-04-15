@@ -2,7 +2,6 @@
 
 # dependency list
 
-import serial
 import socket
 import time
 

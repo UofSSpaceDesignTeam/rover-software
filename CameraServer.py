@@ -7,12 +7,10 @@ import subprocess
 import socket
 import time
 
-
 	# constants
 
 commandPort = 3000
 videoPort = 3001
-
 
 	# functions
 

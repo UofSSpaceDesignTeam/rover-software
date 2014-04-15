@@ -1,22 +1,18 @@
+# Sends location information periodically to connected clients.
+
 import serial
 import socket
 import struct
-import os
-import sys
+import time
 
 fmt = "6s8s9s5s3s" #time,lat,lon,alt,prec
 GPSPort = 3005
-serialPort = "/dev/ttyAMA0" #/dev/ttyAMA0
-GPSIP = "127.0.0.1"
 header = "#GD" #GPS Data
 
 def encodeGPS(data, verbose=0, clear=0):
 	try:
 		if len(data) > 50:
-			if data[4] == "G":
-				if clear != 0:
-					refreshScreen()
-			
+			if data[4] == "G":			
 				time = data[7:13]
 				time = time
 				lat = str(round(float(data[18:20]) + float(data[20:27])/60,5)) #18-27
@@ -27,39 +23,21 @@ def encodeGPS(data, verbose=0, clear=0):
 				numSat = data[45:47]
 				prec = data[48:51]
 				alt = data[52:57]
-				
 				packet = encoder.pack(time,lat,lon,alt,prec)
-				
-				if verbose != 0:
+				if verbose:
 					print "Time taken at " + time + " UTC"
-					print "Lattidude:    " + lat,latdir
+					print "Latitude:    " + lat,latdir
 					print "Longitude:    " + lon,londir
 					print "Status:       " + quality
-					print numSat + " Sattelites Connected"
+					print numSat + " Satellites Connected"
 					print "Precision:    " + prec + "m"
 					print "Altitude:     " + alt + "m"
 					print "\r"
 					print "Encoded Data: " + packet + "\r\n"
-
-
-				return packet
-				
+				return packet	
 	except:
-		print("Invalid Response")
-		return None
-		
-def parseCommand(command):
-	if(len(command) > 2 and command[0] == "#"): # is valid
-		if(command[1] == "G"):
-			if(command[2] == "S"): #GS
-				print("starting GPS data")
-				startGPS()
-			elif(command[2] == "E"): #GE
-				print("stopping GPS data")
-				stopGPS()
-			elif(command[2]== "P"): #GL
-				print("logging GPS data")
-				logGPS()
+		print("Invalid GPS data")
+	return None
 
 def sendData():
 	position = encodeGPS(gps.readline())	
@@ -98,47 +76,47 @@ def logGPS(data): #Saves GPS data to a local file
 		logfile.open()
 	except:
 		print("Could not create gps.log file!")
-	
-## Test Functions
-def refreshScreen():
-	os.system("clear")
 
 def testResponse(packet):
 	if packet is not None:
 		print encoder.unpack(packet)
-## End Test		
+		
 		
 ### Main Program ###
+
+logfile = file("gpsLog" + time.strftime("%m%d%H%M%S", time.localtime()),"w+b")
+time.sleep(0.2)
+try:
+	logfile.open()
+except:
+	print("Could not open log file.")
+
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-logfile = file("gps.log","w+b")
-encoder = struct.Struct(fmt)
 
 try:
-	gps = serial.Serial(serialPort, bytesize = 8, parity = 'N', stopbits = 1)
+	gps = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
 	gps.baudrate = 9600
 	gps.timeout = 0.2
-	
+	encoder = struct.Struct(fmt)
 except:
-	print("GPS serial setup failed!")
+	print("GPS setup failed!")
 	raise
 	#subprocess.call("sudo reboot", shell = True)
 
 try:
-	serverSocket.bind(("", commandPort))
+	serverSocket.bind(("", GPSPort))
 	serverSocket.listen(0)
-	print("GPSServer port: " + str(commandPort))
-	print("GPSData port: " + str(GPSPort))
+	print("using serial port " + gps.name)
+	print("DriveServer listening on port " + str(GPSPort))
 	while(True):
-		(commandSocket, clientAddress) = serverSocket.accept()
+		(dataSocket, clientAddress) = serverSocket.accept()
 		print("Connected to: " + str(clientAddress[0]))
 		while(True):
-			data = commandSocket.recv(256)
-			if(data == ""): # socket closing
-				stopGPS()
-				break
-			else:
-				parseCommand(data)
+			time.sleep(2.0)
+			try:
 				sendData()
+			except:
+				break	
 		print("Connection to: " + str(clientAddress[0]) + " closed")
 		#encode = encodeGPS(gps.readline(),1,1)
 		#decode = testResponse(encode)
