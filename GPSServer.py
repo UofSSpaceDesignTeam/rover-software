@@ -13,15 +13,17 @@ logfile = None
 
 latitude = None
 longitude = None
+altitude = None
+cep = None
 
 def readGPS():
-	global gps, latitude, longitude
-	data = gps.read(gps.inWaiting())
-	dataStart = data.find("GGA")
+	global gps, latitude, longitude, altitude, cep
+	rawData = gps.read(gps.inWaiting())
+	dataStart = rawData.find("GGA")
 	if dataStart != -1:	# found start of valid sentence
-		dataEnd = data.find("*", dataStart)
+		dataEnd = rawData.find("*", dataStart)
 		if dataEnd != -1 and dataEnd - dataStart < 70:
-			data = data[dataStart:dataEnd]
+			data = rawData[dataStart:dataEnd]
 			print(data)
 			values = data.split(",")
 			latitude = float(values[2][0:1]) + float(values[2][2:7]) / 60.0
@@ -30,14 +32,16 @@ def readGPS():
 			longitude = float(values[4][0:1]) + float(values[4][2:7]) / 60.0
 			if values[5] == "E":
 				longitude *= -1.0
+			cep = float(values[8]) * 2.5 # 50% confidence error circle
+			altitude = float(values[9])
 
 def sendData():
-	global latitude, longitude, serverSocket, logfile
+	global latitude, longitude, altitude, cep, serverSocket, logfile
 	if latitude != None and longitude != None:
-		serverSocket.send(struct.pack("!ff", latitude, longitude)) 
+		serverSocket.send(struct.pack("!ffff", latitude, longitude, altitude, cep)) 
 		try:
 			global logfile
-			logfile.write(str(latitude) + "," + str(longitude) + "\n")
+			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) "\n")
 		except:
 			pass
 			
@@ -67,9 +71,8 @@ def stopLog():
 
 # set up logging
 try:
-	logfile = file("/home/pi/gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log","w")
+	logfile = open("/home/pi/gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log", "w")
 	time.sleep(0.2)
-	logfile.open()
 except:
 	print("Could not set up log file.")
 

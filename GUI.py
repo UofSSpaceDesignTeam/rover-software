@@ -61,6 +61,7 @@ def createButtons():
 	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", (12, 204, 100, 20), colorLightBlue, colorGreen)
 	armButton2 = Button(setArmMode2, None, "Arm End", (12, 264, 100, 20), colorLightBlue, colorGreen)
 	waypointButton = Button(setWaypoint, None, "Set Waypoint", (12, 354, 100, 20), colorLightBlue, colorYellow)
+	saveButton = Button(savePosition, None, "Save", (620, 660, 100, 20), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -75,6 +76,7 @@ def createButtons():
 	buttonList.append(quitButton)	# 11
 	buttonList.append(moveButton2)	# 12
 	buttonList.append(armButton2)	# 13
+	buttonList.append(saveButton)	# 14
 
 def createSliders():
 	global sliderList
@@ -95,6 +97,7 @@ def createBoxes():
 	uiBox = Box("User Interface", (0, 448, 125, 53))
 	connectionsBox = Box("Connections", (1095, 0, 125, 235))
 	controllerBox = Box("Controller", (1095, 239, 125, 120))
+	saveBox = Box("", (615, 650, 120, 50))
 	global settingsBox
 	settingsBox = Box("Rover Settings", (130, 544, 480, 156))
 	boxList.append(cameraButtonBox)
@@ -104,6 +107,7 @@ def createBoxes():
 	boxList.append(connectionsBox)
 	boxList.append(controllerBox)
 	boxList.append(settingsBox)
+	boxList.append(saveBox)
 
 def createIndicators():
 	global indicatorList
@@ -127,14 +131,14 @@ def createConsoles(): # set up the info boxes
 	global output, gpsDisplay, controllerDisplay
 	output = TextOutput("Messages", 17, colorWhite, (740, 544, 350, 156), 11)
 	sys.stdout = output
-	gpsDisplay = TextOutput("GPS", 17, colorWhite, (615, 544, 120, 156), 7)
+	gpsDisplay = TextOutput("GPS", 17, colorWhite, (615, 544, 120, 107), 7)
 	gpsDisplay.write("Fix Age:")
 	gpsDisplay.write("Lat:")
 	gpsDisplay.write("Lon:")
-	gpsDisplay.write("Range:")
-	gpsDisplay.write("Bearing:")
-	gpsDisplay.write("Wpt Lat:")
-	gpsDisplay.write("Wpt Lon:")
+	gpsDisplay.write("Alt:")
+	gpsDisplay.write("CEP:")
+	gpsDisplay.write("Course:")
+	gpsDisplay.write("Course Home:")
 	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 265, 88, 88), 5)
 
 def drawButtons():
@@ -236,11 +240,16 @@ def checkController(fakeArg):
 	return controller.isConnected
 
 def updateGPS():
-	global roverLocation, baseLocation, waypointLocation, lastFix
+	global roverLocation, lastLocation, baseLocation, waypointLocation, lastFix
 	if indicatorList[3].active:
+		lastLocation = roverLocation
 		roverLocation = gpsClient.getPosition()
 		if roverLocation != None:
 			lastFix = pygame.time.get_ticks()
+			
+	roverLocation = (53.132642, -106.627730, 405.778, 3.67)
+	lastLocation = (51.132642, -106.627730, 405.778, 3.67)
+	
 	if lastFix == -1:
 		gpsDisplay.write("Fix Age:")
 	else:
@@ -248,37 +257,41 @@ def updateGPS():
 	if roverLocation == None:
 		gpsDisplay.write("Lat:")
 		gpsDisplay.write("Lon:")
+		gpsDisplay.write("Alt:")
+		gpsDisplay.write("CEP:")
 	else:
-		gpsDisplay.write("Lat: " + str(round(roverLocation[0], 4)))
-		gpsDisplay.write("Lon: " + str(round(roverLocation[1], 4)))
+		gpsDisplay.write("Lat: " + str(round(roverLocation[0], 5)))
+		gpsDisplay.write("Lon: " + str(round(roverLocation[1], 5)))
+		gpsDisplay.write("Alt: " + str(int(round(roverLocation[2]))))
+		gpsDisplay.write("CEP: " + str(round(roverLocation[3], 1)))
+	if lastLocation == None:
+		gpsDisplay.write("Course:")
+	else:
+		gpsDisplay.write("Course: " + str(int(round(math.degrees(math.atan2((roverLocation[1] - lastLocation[1]), (roverLocation[0] - lastLocation[0])))))))
 	if baseLocation == None or roverLocation == None:
-		gpsDisplay.write("Range:")
-		gpsDisplay.write("Bearing:")
+		gpsDisplay.write("Course Home:")
 	else:
-		gpsDisplay.write("Range: " + str(int(round((((111000 * (roverLocation[0] - baseLocation[0])) ** 2) + ((85000 * (roverLocation[1] - baseLocation[1])) ** 2)) ** 0.5))))
-		gpsDisplay.write("Bearing: " + str(int(round(math.degrees(math.atan2((roverLocation[1] - baseLocation[1]), (roverLocation[0] - baseLocation[0])))))))
-	if waypointLocation == None:
-		gpsDisplay.write("Wpt Lat:")
-		gpsDisplay.write("Wpt Lon:")
-	else:
-		gpsDisplay.write("Wpt Lat: " + str(round(waypointLocation[0], 4)))
-		gpsDisplay.write("Wpt Lon: " + str(round(waypointLocation[1], 4)))
+		gpsDisplay.write("Course Home: " + str(int(round(math.degrees(math.atan2((baseLocation[1] - roverLocation[1]), (baseLocation[0] - roverLocation[0])))))))
 	gpsDisplay.draw(screen)
 
 def setWaypoint(fakeArg):
-	global waypointLocation, roverLocation
-	if indicatorList[4].active: # drive client
-		buttonList[14].selected = True
-		buttonList[14].draw(screen)
-		pygame.display.update()
-		waypointLocation = roverLocation
-		if waypointLocation != None:
-			pass # todo: send to rover through drive client
-		updateGPS()
-		time.sleep(0.2)
-		#
-		buttonList[14].selected = False
-		buttonList[14].draw(screen)
+	global roverLocation
+	if indicatorList[4].active and roverLocation != None: # drive client
+		# todo: send to rover through drive client
+		print("Waypoint set to: (" + str(round(roverLocation[0], 5)) + ", " + str(round(roverLocation[1], 5)) + ").")
+
+def savePosition(fakeArg):
+	global roverLocation
+	if roverLocation != None:
+		savefile = open("./savedPoints/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".txt", "w")
+		savefile.write("Saved Location Data from " + time.strftime("%m%d%H%M%S", time.localtime()) + "\n")
+		savefile.write("Latitude: " + str(roverLocation[0]) + " degrees\n")
+		savefile.write("Longitude: " + str(roverLocation[1]) + " degrees\n")
+		savefile.write("Altitude: " + str(roverLocation[2]) + " m ASL\n")
+		savefile.write("Circular Error Probable (50%): " + str(roverLocation[2]) + " m")
+		savefile.close()
+		print("Position information saved.")
+		
 
 def takePicture(fakeArg):
 	cameraNumber = 0
@@ -445,6 +458,7 @@ speedScale = 0.0
 steerScale = 0.0
 steerTrim = 0.0
 roverLocation = None
+lastLocation = None
 baseLocation = None
 waypointLocation = None
 redrawTimer = 0
@@ -473,7 +487,7 @@ if not controller.isConnected:
 if baseLocation == None:
 	print("Could not read base station position from 'location.txt.'")
 else:
-	print("Base station location read as (" + str(round(baseLocation[0], 4)) + ", " + str(round(baseLocation[1], 4)) + ").")
+	print("Base station location read as (" + str(round(baseLocation[0], 5)) + ", " + str(round(baseLocation[1], 5)) + ").")
 	
 output.draw(screen)
 pygame.display.update()
@@ -546,7 +560,6 @@ while True: # main execution loop
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					armControl.temp_actuator1(throttle, steering)
-			output.draw(screen) # also refresh the message displays
 			if isLinux:
 				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
 				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
@@ -561,6 +574,7 @@ while True: # main execution loop
 				controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
 			controllerDisplay.draw(screen)
 			indicatorList[6].draw(screen)
+		output.draw(screen) # also refresh the message displays
 	
 	# update UI state, check events
 	mouse = pygame.mouse.get_pos()

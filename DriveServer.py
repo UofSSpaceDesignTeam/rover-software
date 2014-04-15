@@ -13,15 +13,15 @@ import RPi.GPIO as GPIO # for hardware reset system
 drivePort = 3002
 ramping = 35 # 0.7 second
 timeout = 10 # 1 second
-commandRF = 4
-commandRR = 5
 commandLF = 0
 commandLR = 1
+commandRF = 4
+commandRR = 5
 
 # Function Definitions
 
 def sendSabertooth(address, command, data):
-	checksum = chr(address) + chr(command) + chr(data) & chr(127)
+	checksum = (chr(address) + chr(command) + chr(data)) & chr(127)
 	controller.write(chr(address))
 	controller.write(chr(command))
 	controller.write(chr(data))
