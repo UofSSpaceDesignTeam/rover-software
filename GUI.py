@@ -43,9 +43,9 @@ speedScale = 0.3
 steerScale = 0.7
 steerTrim = 0.0
 
-lastFix = 0
-baseLocation = (0, 0)
-roverLocation = (0, 0)
+lastFix = -1
+baseLocation = None
+roverLocation = None
 
 # function definitions
 
@@ -105,7 +105,7 @@ def createBoxes():
 	connectionsBox = Box("Connections", (1095, 0, 125, 235))
 	controllerBox = Box("Controller", (1095, 239, 125, 120))
 	global settingsBox
-	settingsBox = Box("Rover Settings", (130, 544, 350, 156))
+	settingsBox = Box("Rover Settings", (130, 544, 475, 156))
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
 	boxList.append(actionBox)
@@ -135,18 +135,19 @@ def createIndicators():
 	indicatorList.append(gpsIndicator) #7
 
 def createConsoles(): # set up the info boxes
-	global output
+	global output, gpsDisplay, controllerDisplay
 	output = TextOutput("Messages", 17, colorWhite, (740, 544, 350, 156), 11)
 	sys.stdout = output
-	print("Welcome to the USST rover control system.")
-	global gpsDisplay
-	gpsDisplay = TextOutput("GPS", 17, colorWhite, (1095, 364, 125, 85), 5)
-	gpsDisplay.write("Mode: Absolute")
-	gpsDisplay.write("Lat: Unknown")
-	gpsDisplay.write("Lon: Unknown")
+	gpsDisplay = TextOutput("GPS", 17, colorWhite, (610, 544, 125, 156), 9)
+	gpsDisplay.write("Fix Age:")
+	gpsDisplay.write("Lat:")
+	gpsDisplay.write("Lon:")
+	gpsDisplay.write("Alt:")
+	gpsDisplay.write("Range:")
+	gpsDisplay.write("Bearing:")
 	gpsDisplay.write("Wpt Lat:")
 	gpsDisplay.write("Wpt Lon:")
-	global controllerDisplay
+	gpsDisplay.write("Wpt Alt:")
 	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 265, 88, 88), 5)
 
 def drawButtons():
@@ -187,6 +188,18 @@ def createRobot():
 def drawRobot():
 	for piece in robotPieceList:
 		piece.draw(screen)
+
+def readBaseLocation():
+	global baseLocation
+	try:
+		locationFile = open("location.txt")
+		location = locationFile.read()
+		location = location.split(",")
+		baseLat = float(location[0])
+		baseLon = float(location[1])
+		baseLocation = (baseLat, baseLon)
+	except:
+		pass
 
 def setDriveMode1(fakeArg): # fakeArg needed for button activated functions
 	# todo: stop arm movements
@@ -433,16 +446,23 @@ drawButtons()
 drawSliders()
 gpsDisplay.draw(screen)
 drawIndicators()
-#drawRobot()
-output.draw(screen)
-pygame.display.update()
+drawRobot()
+readBaseLocation()
+
 redrawTimer = 0
 controllerSendTimer = 0
+gpsTimer = 0
 
-if controller.isConnected:
-	print("Controller is connected.")
+if not controller.isConnected:
+	print("Controller is not detected.")
+	
+if baseLocation == None:
+	print("Could not read base station position from 'location.txt.'")
 else:
-	print("Controller is not connected.")
+	print("Base station location: " + str(baseLocation))
+	
+output.draw(screen)
+pygame.display.update()
 
 while True: # main execution loop
 
@@ -453,9 +473,13 @@ while True: # main execution loop
 		drawBoxes()
 		drawButtons()
 		drawSliders()
-		#drawRobot()
-		gpsDisplay.draw(screen)
+		drawRobot()
 		drawIndicators()
+	
+	if pygame.time.get_ticks() - gpsTimer > 2000:
+		gpsTimer = pygame.time.get_ticks()
+		if indicatorList[7].active:
+			roverLocation = gpsClient.
 	
 	if pygame.time.get_ticks() - controllerSendTimer > 200: # control data send timer
 		controllerSendTimer = pygame.time.get_ticks()

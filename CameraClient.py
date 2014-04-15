@@ -19,7 +19,7 @@ class CameraClient: # class to handle camera feeds
 
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.socket.settimeout(1.0)
+		self.socket.settimeout(0.7)
 		try:
 			self.socket.connect((self.IP, self.port))
 			return True

@@ -1,11 +1,7 @@
-# A library to communicate with the rover's movement system and GPS.
-
-# dependency list
+# A library to communicate with the rover's movement system.
 
 import socket
 import time
-
-# class definition
 	
 class DriveClient: # class for drive control
 
@@ -20,7 +16,7 @@ class DriveClient: # class for drive control
 
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.socket.settimeout(1.0)
+		self.socket.settimeout(0.7)
 		try:
 			self.socket.connect((self.IP, self.port))
 			return True

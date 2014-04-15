@@ -2,57 +2,38 @@
 
 import serial
 import socket
-import struct
 import time
+import struct
 
-fmt = "6s8s9s5s3s" #time,lat,lon,alt,prec
 GPSPort = 3005
 header = "#GD" #GPS Data
+lastSendTime = 0.0
+gps = None
+logfile = None
 
-def encodeGPS(data, verbose=0, clear=0):
-	try:
-		if len(data) > 50:
-			if data[4] == "G":			
-				time = data[7:13]
-				time = time
-				lat = str(round(float(data[18:20]) + float(data[20:27])/60,5)) #18-27
-				latdir = data[28]
-				lon = str(round(float(data[30:33]) + float(data[33:40])/60,5)) #30-40
-				londir = data[41]
-				quality = data[43]
-				numSat = data[45:47]
-				prec = data[48:51]
-				alt = data[52:57]
-				packet = encoder.pack(time,lat,lon,alt,prec)
-				if verbose:
-					print "Time taken at " + time + " UTC"
-					print "Latitude:    " + lat,latdir
-					print "Longitude:    " + lon,londir
-					print "Status:       " + quality
-					print numSat + " Satellites Connected"
-					print "Precision:    " + prec + "m"
-					print "Altitude:     " + alt + "m"
-					print "\r"
-					print "Encoded Data: " + packet + "\r\n"
-				return packet	
-	except:
-		print("Invalid GPS data")
-	return None
+latitude = 0 # degrees * 10^-3
+longitude = 0
+
+def readGPS()
+	global gps, latitude, longitude
+	data = gps.read(gps.inWaiting())
+	dataStart = data.find("GGA")
+	if dataStart != -1	# found start of valid sentence
+		dataEnd = data.find("*", dataStart)
+			if dataEnd != -1 and dataEnd - dataStart < 70
+				data = data[dataStart + 13:dataEnd - 27]
+				print(data)
+				values = data.split(",")
+				latitude = float(values[0][0:1]) + float(values[0][2:7]) / 60.0
+				longitude = float(values[0][0:1]) + float(values[0][2:7]) / 60.0
 
 def sendData():
-	position = encodeGPS(gps.readline())	
-	if position is not None:
-		if logfile.closed() == False:
-			try:
-				new_data = position
-				logfile.write(new_data[2])
-			except:
-				print "Could not write to file!"
-		try:
-			serverSocket.send(header + position)
-			return True
-		except:
-			stopGPS()
+	try:
+		global logfile
+		print(str(latitude) + "," + str(longitude) + "," + str(altitude), file = logfile)
+	except:
+		pass
+	serverSocket.send(!i,struct.pack 
 			
 def stopSockets():
 	try:
@@ -63,46 +44,40 @@ def stopSockets():
 		serverSocket.close()
 	except:
 		pass
-		
-def startGPS():
-	gps.open()
-	rawSerial = gps.readline()
 
 def stopGPS():
-	gps.close()
-	
-def logGPS(data): #Saves GPS data to a local file
 	try:
-		logfile.open()
+		gps.close()
 	except:
-		print("Could not create gps.log file!")
+		pass
 
-def testResponse(packet):
-	if packet is not None:
-		print encoder.unpack(packet)
-		
-		
+def stopLog():
+	try:
+		logfile.close()
+	except:
+		pass
+
 ### Main Program ###
 
-logfile = file("gpsLog" + time.strftime("%m%d%H%M%S", time.localtime()),"w+b")
-time.sleep(0.2)
+# set up logging
 try:
+	logfile = file("gpsLog" + time.strftime("%m%d%H%M%S", time.localtime()),"w")
+	time.sleep(0.2)
 	logfile.open()
 except:
-	print("Could not open log file.")
+	print("Could not set up log file.")
 
-serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+# set up serial connection
 try:
 	gps = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
 	gps.baudrate = 9600
 	gps.timeout = 0.2
-	encoder = struct.Struct(fmt)
 except:
 	print("GPS setup failed!")
 	raise
-	#subprocess.call("sudo reboot", shell = True)
 
+# start socket
+serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
 	serverSocket.bind(("", GPSPort))
 	serverSocket.listen(0)
@@ -112,7 +87,8 @@ try:
 		(dataSocket, clientAddress) = serverSocket.accept()
 		print("Connected to: " + str(clientAddress[0]))
 		while(True):
-			time.sleep(2.0)
+			time.sleep(1.0)
+			readGPS()
 			try:
 				sendData()
 			except:
@@ -126,14 +102,15 @@ try:
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	stopGPS()
+	stopLog()
 	stopSockets()
 except socket.error as e:
 	print(e.strerror)
 	stopGPS()
+	stopLog()
 	stopSockets()
-	#subprocess.call("sudo reboot", shell = True)
 except:
 	stopGPS()
+	stopLog()
 	stopSockets()
-	#subprocess.call("sudo reboot", shell = True)
 	raise
