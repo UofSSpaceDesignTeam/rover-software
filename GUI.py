@@ -260,7 +260,7 @@ def updateGPS():
 		gpsDisplay.write("Lon: " + str(round(roverLocation[1], 5)))
 		gpsDisplay.write("Alt: " + str(int(round(roverLocation[2]))))
 		gpsDisplay.write("CEP: " + str(round(roverLocation[3], 1)))
-	if lastLocation == None:
+	if lastLocation == None or roverLocation == None:
 		gpsDisplay.write("Course:")
 	else:
 		gpsDisplay.write("Course: " + str(int(round(math.degrees(math.atan2((roverLocation[1] - lastLocation[1]), (roverLocation[0] - lastLocation[0])))))))
