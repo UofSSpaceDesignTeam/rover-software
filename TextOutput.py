@@ -17,7 +17,7 @@ class TextOutput():
 		self.lastMessage = None
 	
 	def write(self, text):
-		if text == "\n" or text == self.lastMessage or text == None:
+		if text == "\n" or text == self.lastMessage or text == None or text == "None":
 			return
 		elif(len(text) > 60): # split long messages
 			self.write(text[:60])
