@@ -23,7 +23,7 @@ def stopCamera():
 	command = "sudo killall nc; sudo killall raspivid"
 	#print(command)
 	try:
-		subprocess.call(command, shell = True)
+		subprocess.call(command, shell = True, stdout = open("/dev/null", "w"), stderr = open("/dev/null", "w"))
 	except:
 		pass
 
@@ -42,7 +42,7 @@ def parseCommand(command):
 
 def takePicture():
 	command = "raspistill -t 1000 -rot 180 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg"
-	print(command)
+	#print(command)
 	subprocess.call(command, shell = True)
 
 def stopSockets():
