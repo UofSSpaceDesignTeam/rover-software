@@ -61,7 +61,7 @@ def createButtons():
 	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", (12, 204, 100, 20), colorLightBlue, colorGreen)
 	armButton2 = Button(setArmMode2, None, "Arm End", (12, 264, 100, 20), colorLightBlue, colorGreen)
 	waypointButton = Button(setWaypoint, None, "Set Waypoint", (12, 354, 100, 20), colorLightBlue, colorYellow)
-	saveButton = Button(savePosition, None, "Save", (620, 660, 100, 20), colorLightBlue, colorYellow)
+	saveButton = Button(savePosition, None, "Save", (625, 660, 100, 30), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -246,10 +246,6 @@ def updateGPS():
 		roverLocation = gpsClient.getPosition()
 		if roverLocation != None:
 			lastFix = pygame.time.get_ticks()
-			
-	roverLocation = (53.132642, -106.627730, 405.778, 3.67)
-	lastLocation = (51.132642, -106.627730, 405.778, 3.67)
-	
 	if lastFix == -1:
 		gpsDisplay.write("Fix Age:")
 	else:
@@ -283,14 +279,17 @@ def setWaypoint(fakeArg):
 def savePosition(fakeArg):
 	global roverLocation
 	if roverLocation != None:
-		savefile = open("./savedPoints/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".txt", "w")
-		savefile.write("Saved Location Data from " + time.strftime("%m%d%H%M%S", time.localtime()) + "\n")
-		savefile.write("Latitude: " + str(roverLocation[0]) + " degrees\n")
-		savefile.write("Longitude: " + str(roverLocation[1]) + " degrees\n")
-		savefile.write("Altitude: " + str(roverLocation[2]) + " m ASL\n")
-		savefile.write("Circular Error Probable (50%): " + str(roverLocation[2]) + " m")
-		savefile.close()
-		print("Position information saved.")
+		try:
+			savefile = open("./savedPoints/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".txt", "w")
+			savefile.write("Saved Location Data from " + time.strftime("%m%d%H%M%S", time.localtime()) + "\n")
+			savefile.write("Latitude: " + str(roverLocation[0]) + " degrees\n")
+			savefile.write("Longitude: " + str(roverLocation[1]) + " degrees\n")
+			savefile.write("Altitude: " + str(roverLocation[2]) + " m ASL\n")
+			savefile.write("Circular Error Probable (50%): " + str(roverLocation[2]) + " m")
+			savefile.close()
+			print("Position information saved.")
+		except:
+			print("Could not save position information.")
 		
 
 def takePicture(fakeArg):
