@@ -17,10 +17,6 @@ commandRR = 5
 commandLF = 0
 commandLR = 1
 
-# global variables
-
-emergency = False
-
 # Function Definitions
 
 def sendSabertooth(address, command, speed):
@@ -59,39 +55,22 @@ def parseCommand(command): # parses and executes remote commands
 						xChar = int(ord(command[3]))
 						yChar = int(ord(command[4]))
 						limit = int(ord(command[5]))
-						if emergency: # e-stop activated
-							if xChar == 127 and yChar == 127:
-								emergency = False
-							else:
-								print("Check controller connection and release joystick.")
-								stopSabertooth()
-								time.sleep(2)
-						else: # not e-stopped
-							leftSpeed = yChar + xChar - 254
-							rightSpeed = yChar - xChar
-							if max(abs(leftSpeed), abs(rightSpeed)) > limit:
-								scaleFactor = float(limit) / max(abs(leftSpeed), abs(rightSpeed))
-							else:
-								scaleFactor = 1
-							leftSpeed *= scaleFactor
-							rightSpeed *= scaleFactor
-							setMotors(leftSpeed, rightSpeed)
+						leftSpeed = yChar + xChar - 254
+						rightSpeed = yChar - xChar
+						if max(abs(leftSpeed), abs(rightSpeed)) > limit:
+							scaleFactor = float(limit) / max(abs(leftSpeed), abs(rightSpeed))
+						else:
+							scaleFactor = 1
+						leftSpeed *= scaleFactor
+						rightSpeed *= scaleFactor
+						setMotors(leftSpeed, rightSpeed)
 					elif command[2] == "2" and len(command) > 4: # two stick drive
 						leftSpeed = int(ord(command[3])) - 127
 						rightSpeed = int(ord(command[4])) - 127
-						if emergency: # e-stop activated
-							if(leftSpeed == 0 and rightSpeed == 0):
-								emergency = False
-							else:
-								print("Check controller connection and release joystick.")
-								stopSabertooth()
-								time.sleep(2)
-						else: # not e-stopped
-							setMotors(leftSpeed, rightSpeed)
+						setMotors(leftSpeed, rightSpeed)
 					elif command[2] == "S": # Stop
 						stopSabertooth()
-						print("emergency stop")
-						emergency = True
+						print("motors stopped.")
 	else: # command == none
 		stopSabertooth()
 					

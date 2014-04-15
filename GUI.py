@@ -8,6 +8,7 @@ sys.dont_write_bytecode = True # stops .pyc generation in subsequent imports
 import pygame
 from Controller import Controller
 from Button import Button
+from Slider import Slider
 from Box import Box
 from Indicator import Indicator
 from DriveClient import DriveClient
@@ -37,12 +38,9 @@ colorBlue = (0, 0, 240)
 colorLightBlue = (100, 100, 250)
 colorYellow = (250, 250, 0)
 
-speedScale1 = 0.3
-steerScale1 = 0.7
-steeringTrim1 = 0.0
-
-speedScale2 = 0.4
-steeringTrim2 = 0.0
+speedScale = 0.3
+steerScale = 0.7
+steerTrim = 0.0
 
 lastFix = 0
 baseLocation = (0, 0)
@@ -50,7 +48,7 @@ roverLocation = (0, 0)
 
 # function definitions
 
-def createButtons(): # creates interactive buttons, and places them in a list in a defined order.
+def createButtons():
 	global buttonList
 	buttonList = []
 	camera1Button = Button(camConnect, (1), "Front Camera", (12, 25, 100, 20), colorLightBlue, colorGreen)
@@ -86,7 +84,17 @@ def createButtons(): # creates interactive buttons, and places them in a list in
 	buttonList.append(armButton2)	# 13
 	buttonList.append(waypointButton) # 14
 
-def createBoxes(): # creates simple graphical elements, and places them in a list
+def createSliders():
+	global sliderList
+	sliderList = []
+	speedSlider = Slider(setSpeedScale, "Drive Power", (150, 285, 185, 595))
+	trimSlider = Slider(setSteerTrim, "Steering Trim", (150, 285, 218, 635))
+	steerSlider = Slider(setSteerScale, "Steer Rate", (150, 285, 240, 675))
+	sliderList.append(speedSlider) #0
+	sliderList.append(trimSlider) #1
+	sliderList.append(steerSlider) #2
+
+def createBoxes():
 	global boxList
 	boxList = []
 	cameraButtonBox = Box("Camera Feeds", (0, 0, 125, 175))
@@ -96,6 +104,8 @@ def createBoxes(): # creates simple graphical elements, and places them in a lis
 	connectionsBox = Box("Connections", (1095, 0, 125, 209))
 	gpsBox = Box("GPS", (1095, 339, 125, 143))
 	controllerBox = Box("Controller", (1095, 214, 125, 120))
+	global settingsBox
+	settingsBox = Box("Rover Settings", (130, 544, 350, 156))
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
 	boxList.append(actionBox)
@@ -103,8 +113,9 @@ def createBoxes(): # creates simple graphical elements, and places them in a lis
 	boxList.append(connectionsBox)
 	boxList.append(gpsBox)
 	boxList.append(controllerBox)
+	boxList.append(settingsBox)
 
-def createIndicators(): # creates visual status indicators, and places them in a list in a defined order.
+def createIndicators():
 	global indicatorList
 	indicatorList = []
 	camera1Indicator = Indicator(testClient, cameraRaspi1, "Front Camera", (1106, 30))
@@ -143,6 +154,10 @@ def drawButtons():
 	for i in buttonList:
 		i.draw(screen)
 
+def drawSliders():
+	for i in sliderList:
+		i.draw(screen)
+
 def drawBoxes():
 	for i in boxList:
 		i.draw(screen)
@@ -174,7 +189,7 @@ def drawRobot():
 	for piece in robotPieceList:
 		piece.draw(screen)
 
-def setDriveMode1(fakeArg):	# button-based
+def setDriveMode1(fakeArg): # fakeArg needed for button activated functions
 	# todo: stop arm movements
 	buttonList[6].selected = False
 	buttonList[12].selected = False
@@ -182,7 +197,7 @@ def setDriveMode1(fakeArg):	# button-based
 	buttonList[5].selected = True
 	drawButtons()
 	
-def setDriveMode2(fakeArg):	# button-based
+def setDriveMode2(fakeArg):
 	# todo: stop arm movements
 	buttonList[5].selected = False
 	buttonList[6].selected = False
@@ -190,7 +205,7 @@ def setDriveMode2(fakeArg):	# button-based
 	buttonList[12].selected = True
 	drawButtons()
 	
-def setArmMode1(fakeArg):	# button-based
+def setArmMode1(fakeArg):
 	# todo: stop driving
 	buttonList[5].selected = False
 	buttonList[12].selected = False
@@ -198,13 +213,25 @@ def setArmMode1(fakeArg):	# button-based
 	buttonList[6].selected = True
 	drawButtons()
 	
-def setArmMode2(fakeArg):	# button-based
+def setArmMode2(fakeArg):
 	# todo: stop driving
 	buttonList[5].selected = False
 	buttonList[6].selected = False
 	buttonList[12].selected = False
 	buttonList[13].selected = True
 	drawButtons()
+
+def setSpeedScale(newValue):
+	global speedScale
+	speedScale = newValue
+
+def setSteerScale(newValue):
+	global steerScale
+	steerScale = newValue
+
+def setSteerTrim(newValue):
+	global steerTrim
+	steerTrim = newValue - 0.5
 
 def checkController(fakeArg):
 	return controller.isConnected
@@ -272,6 +299,8 @@ def takePicture(fakeArg):
 
 def stopRover(fakeArg):	# button-based
 	try:
+		sliderList[0].set(0.0)
+		sliderList[0].draw(screen)
 		driveControl.stopMotors()
 		armControl.stopMotors()
 	except:
@@ -399,14 +428,16 @@ screen.blit(background, (130, 0))
 controller = Controller(0)
 createBoxes()
 createButtons()
+createSliders()
 createIndicators()
 createRobot()
 createConsoles()
 drawBoxes()
 drawButtons()
+drawSliders()
 gpsDisplay.draw(screen)
 drawIndicators()
-drawRobot()
+#drawRobot()
 output.draw(screen)
 pygame.display.update()
 redrawTimer = 0
@@ -425,8 +456,11 @@ while True: # main execution loop
 		screen.blit(background, (130, 0))
 		drawBoxes()
 		drawButtons()
+		drawSliders()
+		#drawRobot()
 		gpsDisplay.draw(screen)
 		drawIndicators()
+	
 	if pygame.time.get_ticks() - controllerSendTimer > 200: # control data send timer
 		controllerSendTimer = pygame.time.get_ticks()
 		if controller.isConnected:
@@ -435,17 +469,17 @@ while True: # main execution loop
 			#dPad = controller.getDPad()
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # connected
-					limit = int(127 * speedScale1)
+					limit = int(speedScale * 127)
 					if isLinux:
-						driveControl.sendOneStickData(-axes[0] * speedScale1 * steerScale1, -axes[1] * speedScale1, limit)
+						driveControl.sendOneStickData(-axes[0] * speedScale * steerScale, -axes[1] * speedScale, limit)
 					else: # wandows
-						driveControl.sendOneStickData(-axes[0] * speedScale1 * steerScale1, -axes[1] * speedScale1, limit)
+						driveControl.sendOneStickData(-axes[0] * speedScale * steerScale, -axes[1] * speedScale, limit)
 			elif buttonList[12].selected: # 2 stick drive mode
 				if indicatorList[4].active: # connected
 					if isLinux:
-						driveControl.sendTwoStickData(-axes[1] * speedScale2, -axes[3] * speedScale2)
+						driveControl.sendTwoStickData(-axes[1] * speedScale, -axes[3] * speedScale)
 					else:
-						driveControl.sendTwoStickData(-axes[1] * speedScale2, -axes[3] * speedScale2)
+						driveControl.sendTwoStickData(-axes[1] * speedScale, -axes[3] * speedScale)
 			elif buttonList[6].selected: # arm mode 1
 				if indicatorList[5].active:
 					wristPan = int(axes[2] * 80) + 127
@@ -479,7 +513,6 @@ while True: # main execution loop
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					armControl.temp_actuator1(throttle, steering)
-			
 			output.draw(screen) # also refresh the message displays
 			if isLinux:
 				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
@@ -507,9 +540,19 @@ while True: # main execution loop
 			quit(None)
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			mouse = pygame.mouse.get_pos()
-			#print(str(mouse))
 			for button in buttonList:
 				if(button.obj.collidepoint(mouse)):
 					button.press()
+			for slider in sliderList:
+				if(slider.obj.collidepoint(mouse)):
+					slider.dragging = True
+		if event.type == pygame.MOUSEBUTTONUP:
+			for slider in sliderList:
+				slider.dragging = False
+	
+	for slider in sliderList:
+		if slider.dragging:
+			slider.draw(screen)
+	
 	pygame.display.update()
 

@@ -65,6 +65,19 @@ class DriveClient: # class for drive control
 		except socket.error as e:
 			print(e.strerror)
 			return False
+
+	def getGPSData(self):
+		try:
+			self.socket.settimeout(0.3)
+			GPSData = self.socket.recv(256)
+			print(GPSData)
+			GPSList = GPSData.split(" ")
+			lat = int(GPSList[0])
+			lon = int(GPSList[1])
+			return (True, lat, lon)
+		except exception as e:
+			print(e.strerror)
+			return (False, 0, 0)
 	
 	def test(self):
 		try:
