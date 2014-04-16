@@ -149,12 +149,12 @@ except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	stopSabertooth()
 	stopSockets()
-	#GPIO.cleanup()
+	GPIO.output(12, False)
+	GPIO.cleanup()
 except:
 	stopSabertooth()
 	stopSockets()
-	#GPIO.cleanup()
-	time.sleep(2)
+	GPIO.output(12, False)
+	GPIO.cleanup()
 	raise
-	#subprocess.call("sudo reboot", shell = True)
 

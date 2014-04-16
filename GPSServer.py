@@ -14,10 +14,10 @@ logfile = None
 latitude = None
 longitude = None
 altitude = None
-cep = None
+hdop = None
 
 def readGPS():
-	global gps, latitude, longitude, altitude, cep
+	global gps, latitude, longitude, altitude, hdop
 	rawData = gps.read(gps.inWaiting())
 	#print(rawData)
 	dataStart = rawData.find("GGA")
@@ -33,20 +33,20 @@ def readGPS():
 			longitude = float(values[4][:3]) + float(values[4][3:]) / 60.0
 			if values[5] == "W":
 				longitude *= -1.0
-			cep = float(values[8]) * 2.5 # 50% confidence error circle
+			hdop = float(values[8])
 			altitude = float(values[9])
 			#print(latitude)
 			#print(longitude)
 			#print(altitude)
-			#print(cep)
+			#print(hdop)
 
 def sendData():
-	global latitude, longitude, altitude, cep, dataSocket, logfile
-	if latitude != None and longitude != None and altitude != None and cep != None:
-		dataSocket.send(struct.pack("!ffff", latitude, longitude, altitude, cep))
+	global latitude, longitude, altitude, hdop, dataSocket, logfile
+	if latitude != None and longitude != None and altitude != None and hdop != None:
+		dataSocket.send(struct.pack("!ffff", latitude, longitude, altitude, hdop))
 		try:
 			global logfile
-			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) + "\n")
+			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) + "," + str(hdop) + "\n")
 		except:
 			pass
 			

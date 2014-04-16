@@ -136,7 +136,7 @@ def createConsoles(): # set up the info boxes
 	gpsDisplay.write("Lat:")
 	gpsDisplay.write("Lon:")
 	gpsDisplay.write("Alt:")
-	gpsDisplay.write("CEP:")
+	gpsDisplay.write("HDOP:")
 	gpsDisplay.write("Course:")
 	gpsDisplay.write("Course Home:")
 	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 265, 88, 88), 5)
@@ -244,6 +244,9 @@ def updateGPS():
 	if indicatorList[3].active:
 		roverLocation = gpsClient.getPosition()
 		if roverLocation != None:
+			if int(roverLocation[0]) == 0 and int(roverLocation[1]) == 0: # no fix
+				roverLocation = None
+		if roverLocation != None:
 			lastFix = pygame.time.get_ticks()
 	if lastFix == -1:
 		gpsDisplay.write("Fix Age:")
@@ -253,12 +256,12 @@ def updateGPS():
 		gpsDisplay.write("Lat:")
 		gpsDisplay.write("Lon:")
 		gpsDisplay.write("Alt:")
-		gpsDisplay.write("CEP:")
+		gpsDisplay.write("HDOP:")
 	else:
 		gpsDisplay.write("Lat: " + str(round(roverLocation[0], 5)))
 		gpsDisplay.write("Lon: " + str(round(roverLocation[1], 5)))
 		gpsDisplay.write("Alt: " + str(int(round(roverLocation[2]))))
-		gpsDisplay.write("CEP: " + str(round(roverLocation[3], 1)))
+		gpsDisplay.write("HDOP: " + str(round(roverLocation[3], 1)))
 	if True: # todo: add compass
 		gpsDisplay.write("Course:")
 	else:
@@ -266,7 +269,11 @@ def updateGPS():
 	if baseLocation == None or roverLocation == None:
 		gpsDisplay.write("Range to Base:")
 	else:
-		gpsDisplay.write("Range to Base: " + str(int(((((roverLocation[0] - baseLocation[0])*111000)**2) + (((roverLocation[1] - baseLocation[1])*85000) ** 2)) ** 0.5)))
+		distance = int(((((roverLocation[0] - baseLocation[0])*111000)**2) + (((roverLocation[1] - baseLocation[1])*85000) ** 2)) ** 0.5)
+		if distance < 10000:
+			gpsDisplay.write("Range to Base: " + str(distance))
+		else:
+			gpsDisplay.write("Range to Base: 10k+")
 	gpsDisplay.draw(screen)
 
 def setWaypoint(fakeArg):
