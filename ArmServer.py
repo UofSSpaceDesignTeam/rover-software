@@ -271,7 +271,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				if command[2] == "B": # rotate base
 					if emergency == False:
 						basePan.setRelative(int(ord(command[3])))
-						#print(str(basePan.currentPosition))
+						print(str(basePan.currentPosition))
 				elif command[2] == "L": # translate wrist joint "up/down"
 					if emergency == False:
 						Speed = int(ord(command[3]))
