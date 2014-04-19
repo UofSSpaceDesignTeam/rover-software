@@ -362,7 +362,7 @@ try:
 	wristPan = Servo(servoDriver, 11, 830, 2350, 1600)
 	wristTilt = Servo(servoDriver, 10, 1000, 1700, 1370)
 	wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)
-	GPIO.output(12,False)
+	GPIO.output(12,True)
 except:
 	print("Servo setup failed!")
 	time.sleep(2)
