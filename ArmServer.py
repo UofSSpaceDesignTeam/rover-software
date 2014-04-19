@@ -348,6 +348,7 @@ except:
 try:
 	GPIO.setmode(GPIO.BOARD)
 	#GPIO.setup(7, GPIO.OUT)
+	GPIO.setup(12,GPIO.OUT)
 except:
 	print("GPIO setup failed!")
 	time.sleep(2)
