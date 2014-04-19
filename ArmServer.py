@@ -357,10 +357,11 @@ except:
 # set up servo driver
 try:
 	servoDriver = ServoDriver()
-	basePan = Servo(servoDriver, 8, 1000, 2200, 1600)
+	basePan = Servo(servoDriver, 8, 1000, 2200, 1596)
 	wristPan = Servo(servoDriver, 11, 830, 2350, 1600)
 	wristTilt = Servo(servoDriver, 10, 1000, 1700, 1370)
 	wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)
+	GPIO.output(12,False)
 except:
 	print("Servo setup failed!")
 	time.sleep(2)

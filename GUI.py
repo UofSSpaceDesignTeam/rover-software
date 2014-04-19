@@ -26,7 +26,7 @@ import subprocess
 # global constants
 
 IPraspi1 = "192.168.1.103"
-IPraspi2 = "192.168.1.104"
+IPraspi2 = "10.64.226.138"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "192.168.1.106"
 # netcat-ed video on port 3001
@@ -528,10 +528,10 @@ while True: # main execution loop
 						driveControl.sendTwoStickData(-axes[1] * speedScale, -axes[3] * speedScale)
 			elif buttonList[6].selected: # arm mode 1
 				if indicatorList[5].active:
-					wristPan = int(axes[2] * 80) + 127
-					if wristPan != 127:
-						armControl.panHand(wristPan)
-						time.sleep(0.005)
+					#wristPan = int(axes[2] * 80) + 127
+					#if wristPan != 127:
+					#	armControl.panHand(wristPan)
+					#	time.sleep(0.005)
 					wristTwist = 127 - int(axes[4] * 120)
 					if wristTwist != 127:
 						armControl.twistHand(wristTwist)
@@ -547,7 +547,7 @@ while True: # main execution loop
 					#if wristMove != 127:
 					armControl.moveWrist(wristMove)
 					time.sleep(0.005)
-					basePan = int(axes[2]*127) + 127
+					basePan = int(axes[2]*4) + 127
 					armControl.panBase(basePan)
 					time.sleep(0.005)
 			if buttonList[13].selected: # temporary test actuator mode (2)
