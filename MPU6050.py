@@ -33,10 +33,10 @@ class I2C:
 		while True:
 			try:
 				self.bus.write_byte_data(self.address, reg, value)
-				logger.debug('I2C: Wrote 0x%02X to register 0x%02X', value, reg)
+				print('I2C: Wrote 0x%02X to register 0x%02X', value, reg)
 				break
 			except IOError, err:
-				logger.exception('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
+				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
 				time.sleep(0.001)
 
 
@@ -47,7 +47,7 @@ class I2C:
 				self.bus.write_i2c_block_data(self.address, reg, list)
 				break
 			except IOError, err:
-				logger.exception('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
+				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
 				time.sleep(0.001)
 
 
@@ -56,10 +56,10 @@ class I2C:
 		while True:
 			try:
 				result = self.bus.read_byte_data(self.address, reg)
-				logger.debug('I2C: Device 0x%02X returned 0x%02X from reg 0x%02X', self.address, result & 0xFF, reg)
+				print('I2C: Device 0x%02X returned 0x%02X from reg 0x%02X', self.address, result & 0xFF, reg)
 				return result
 			except IOError, err:
-				logger.exception('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
+				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
 				time.sleep(0.001)
 
 
@@ -68,13 +68,13 @@ class I2C:
 		while True:
 			try:
 				result = self.bus.read_byte_data(self.address, reg)
-				logger.debug('I2C: Device 0x%02X returned 0x%02X from reg 0x%02X', self.address, result & 0xFF, reg)
+				print('I2C: Device 0x%02X returned 0x%02X from reg 0x%02X', self.address, result & 0xFF, reg)
 				if (result > 127):
 					return result - 256
 				else:
 					return result
 			except IOError, err:
-				logger.exception('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
+				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
 				time.sleep(0.001)
 
 
@@ -84,14 +84,14 @@ class I2C:
 			try:
 				hibyte = self.bus.read_byte_data(self.address, reg)
 				result = (hibyte << 8) + self.bus.read_byte_data(self.address, reg+1)
-				logger.debug('I2C: Device 0x%02X returned 0x%04X from reg 0x%02X', self.address, result & 0xFFFF, reg)
+				print('I2C: Device 0x%02X returned 0x%04X from reg 0x%02X', self.address, result & 0xFFFF, reg)
 				if result == 0x7FFF or result == 0x8000:
-					logger.critical('I2C read max value')
+					print('I2C read max value')
 					time.sleep(0.001)
 				else:
 					return result
 			except IOError, err:
-				logger.exception('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
+				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
 				time.sleep(0.001)
 
 
@@ -103,14 +103,14 @@ class I2C:
 				if (hibyte > 127):
 					hibyte -= 256
 				result = (hibyte << 8) + self.bus.read_byte_data(self.address, reg+1)
-				logger.debug('I2C: Device 0x%02X returned 0x%04X from reg 0x%02X', self.address, result & 0xFFFF, reg)
+				print('I2C: Device 0x%02X returned 0x%04X from reg 0x%02X', self.address, result & 0xFFFF, reg)
 				if result == 0x7FFF or result == 0x8000:
-					logger.critical('I2C read max value')
+					print('I2C read max value')
 					time.sleep(0.001)
 				else:
 					return result
 			except IOError, err:
-				logger.exception('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
+				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
 				time.sleep(0.001)
 
 
@@ -119,10 +119,10 @@ class I2C:
 		while True:
 			try:
 				result = self.bus.read_i2c_block_data(self.address, reg, length)
-				logger.debug('I2C: Device 0x%02X from reg 0x%02X', self.address, reg)
+				print('I2C: Device 0x%02X from reg 0x%02X', self.address, reg)
 				return result
 			except IOError, err:
-				logger.exception('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
+				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
 				time.sleep(0.001)
 				
 #	The Meat and Potatoes
@@ -429,7 +429,7 @@ class MPU6050 :
 
 
 		except IOError, err:
-			logger.critical('Could not open offset config file: %s for writing', file_name)
+			print('Could not open offset config file: %s for writing', file_name)
 			cfg_rc = False
 
 
@@ -456,7 +456,7 @@ class MPU6050 :
 
 
 		except IOError, err:
-			logger.critical('Could not open offset config file: %s for reading', file_name)
+			print('Could not open offset config file: %s for reading', file_name)
 			cfg_rc = False
 
 
