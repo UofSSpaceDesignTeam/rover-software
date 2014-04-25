@@ -480,3 +480,5 @@ class MPU6050 :
 		temp = (float(temp) / 340) + 36.53
 		print('temp = %s oC', temp)
 		return temp
+
+print ("MPU Driver Loaded")
