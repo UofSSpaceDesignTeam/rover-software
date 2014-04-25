@@ -4,6 +4,7 @@
 
 import smbus
 import time
+from array import *
 
 #  Adafruit i2c interface plus performance / error handling changes as required by the MPU6050
 class I2C:
