@@ -246,9 +246,9 @@ class MPU6050 :
 	__CALIBRATION_ITERATIONS = 100
 
 
-	def __init__(self, address=0x68, dlpf=6):
-		# address is configured by grounding AD0 (pull-down 0x68)
-		# or pull-up to +3.3V (0x69)
+	def __init__(self, address=0x69, dlpf=6):
+		# grounding AD0 pull-down: 0x68
+		# or pull-up to +3.3V: 0x69
 		self.i2c = I2C(address)
 		self.address = address
 		self.grav_x_offset = 0.0
