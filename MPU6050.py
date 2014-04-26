@@ -2,130 +2,10 @@
 # Adapted from project https://github.com/PiStuffing/Quadcopter
 # Changes applied **should** work on the Rover
 
-import smbus
 import time
 from array import *
+from Adafruit_I2C import *
 
-#  Adafruit i2c interface plus performance / error handling changes as required by the MPU6050
-class I2C:
-
-
-	def __init__(self, address, bus=smbus.SMBus(1)):
-		self.address = address
-		self.bus = bus
-
-
-	def reverseByteOrder(self, data):
-		"Reverses the byte order of an int (16-bit) or long (32-bit) value"
-		# Courtesy Vishal Sapre
-		dstr = hex(data)[2:].replace('L','')
-		byteCount = len(dstr[::2])
-		val = 0
-		for i, n in enumerate(range(byteCount)):
-			d = data & 0xFF
-			val |= (d << (8 * (byteCount - i - 1)))
-			data >>= 8
-		return val
-
-
-	def write8(self, reg, value):
-		"Writes an 8-bit value to the specified register/address"
-		while True:
-			try:
-				self.bus.write_byte_data(self.address, reg, value)
-				print('I2C: Wrote 0x%02X to register 0x%02X', value, reg)
-				break
-			except IOError, err:
-				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
-				time.sleep(0.001)
-
-
-	def writeList(self, reg, list):
-		"Writes an array of bytes using I2C format"
-		while True:
-			try:
-				self.bus.write_i2c_block_data(self.address, reg, list)
-				break
-			except IOError, err:
-				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
-				time.sleep(0.001)
-
-
-	def readU8(self, reg):
-		"Read an unsigned byte from the I2C device"
-		while True:
-			try:
-				result = self.bus.read_byte_data(self.address, reg)
-				print('I2C: Device 0x%02X returned 0x%02X from reg 0x%02X', self.address, result & 0xFF, reg)
-				return result
-			except IOError, err:
-				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
-				time.sleep(0.001)
-
-
-	def readS8(self, reg):
-		"Reads a signed byte from the I2C device"
-		while True:
-			try:
-				result = self.bus.read_byte_data(self.address, reg)
-				print('I2C: Device 0x%02X returned 0x%02X from reg 0x%02X', self.address, result & 0xFF, reg)
-				if (result > 127):
-					return result - 256
-				else:
-					return result
-			except IOError, err:
-				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
-				time.sleep(0.001)
-
-
-	def readU16(self, reg):
-		"Reads an unsigned 16-bit value from the I2C device"
-		while True:
-			try:
-				hibyte = self.bus.read_byte_data(self.address, reg)
-				result = (hibyte << 8) + self.bus.read_byte_data(self.address, reg+1)
-				print('I2C: Device 0x%02X returned 0x%04X from reg 0x%02X', self.address, result & 0xFFFF, reg)
-				if result == 0x7FFF or result == 0x8000:
-					print('I2C read max value')
-					time.sleep(0.001)
-				else:
-					return result
-			except IOError, err:
-				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
-				time.sleep(0.001)
-
-
-	def readS16(self, reg):
-		"Reads a signed 16-bit value from the I2C device"
-		while True:
-			try:
-				hibyte = self.bus.read_byte_data(self.address, reg)
-				if (hibyte > 127):
-					hibyte -= 256
-				result = (hibyte << 8) + self.bus.read_byte_data(self.address, reg+1)
-				print('I2C: Device 0x%02X returned 0x%04X from reg 0x%02X', self.address, result & 0xFFFF, reg)
-				if result == 0x7FFF or result == 0x8000:
-					print('I2C read max value')
-					time.sleep(0.001)
-				else:
-					return result
-			except IOError, err:
-				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
-				time.sleep(0.001)
-
-
-	def readList(self, reg, length):
-		"Reads a a byte array value from the I2C device"
-		while True:
-			try:
-				result = self.bus.read_i2c_block_data(self.address, reg, length)
-				print('I2C: Device 0x%02X from reg 0x%02X', self.address, reg)
-				return result
-			except IOError, err:
-				print('Error %d, %s accessing 0x%02X: Check your I2C address', err.errno, err.strerror, self.address)
-				time.sleep(0.001)
-				
-#	The Meat and Potatoes
 class MPU6050 :
 	i2c = None
 
@@ -247,8 +127,7 @@ class MPU6050 :
 
 
 	def __init__(self, address=0x69, dlpf=6):
-		# grounding AD0 pull-down: 0x68
-		# or pull-up to +3.3V: 0x69
+		# just VIO to 3.3v: 0x69
 		self.i2c = I2C(address)
 		self.address = address
 		self.grav_x_offset = 0.0
