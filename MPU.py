@@ -4,6 +4,7 @@
 
 import smbus
 import math
+import os
 
 # Power management registers
 power_mgmt_1 = 0x6b
@@ -43,6 +44,7 @@ address = 0x68       # Connect VIO to 3.3v on the RPi
 bus.write_byte_data(address, power_mgmt_1, 0)
 
 while True:
+	os.system('clear')
 	print "gyro data"
 	print "---------"
 
