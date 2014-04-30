@@ -1,16 +1,19 @@
 #!/bin/bash
-#Twitter status update bot by http://360percents.com
-#Author: Luka Pusic <pusic93@gmail.com>
- 
-#REQUIRED PARAMS
+
+# Original Author: Luka Pusic <pusic93@gmail.com>
+# Modified for the rover 
+
+#Login and Tweet Info
 username="usstpi"
 password="usstrover"
 data=$(ifconfig)
-tweet=${data:0:139} #must be less than 140 chars
+IP=${data:32:81} #must be less than 140 chars
+host=$(hostname)
+tweet="$host $data"
  
 #EXTRA OPTIONS
-uagent="Mozilla/5.0" #user agent (fake a browser)
-sleeptime=0 #add pause between requests
+uagent="Mozilla/5.0" #user agent
+sleeptime=0 #no pause between requests
  
 if [ $(echo "$tweet" | wc -c) -gt 140 ]; then
     echo "[FAIL] Tweet must not be longer than 140 chars!" && exit 1
@@ -47,4 +50,3 @@ logouttoken=$(echo "$logoutpage" | grep "authenticity_token" | sed -e 's/.*value
 logout=$(curl -s -b "cookie.txt" -c "cookie.txt" -L --sslv3 -A "$uagent" -d "authenticity_token=$logouttoken" "https://mobile.twitter.com/session/destroy")
  
 rm "cookie.txt"
-
