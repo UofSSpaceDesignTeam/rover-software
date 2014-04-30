@@ -21,7 +21,7 @@ class Servo:
 		self.currentPosition = max(self.currentPosition, self.minimum)
 		self.currentPosition = min(self.currentPosition, self.maximum)
 		self.driver.setServo(self.channel, int(self.currentPosition))
-		#print("(r)ch" + str(self.channel) + ": " + str(self.currentPosition))
+		print("(r)ch" + str(self.channel) + ": " + str(self.currentPosition))
 		
 	def setAbsolute(self, position):
 		pulse = position - 127
