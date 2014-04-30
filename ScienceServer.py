@@ -18,8 +18,12 @@ sciencePort = 3006
 # function definitions
 
 def runExperiment():
+	scienceData = []
 	calibrateStepper()
-	
+	for i in range(1440)
+		scienceData.append(readVoltage)
+		advanceStepper()
+		time.sleep(0.2)
 
 def readVoltage(): # reads adc and returns voltage in volts
 	voltage = adc.readADCSingleEnded(1)
