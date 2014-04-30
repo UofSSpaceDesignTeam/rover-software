@@ -519,7 +519,7 @@ while True: # main execution loop
 		if controller.isConnected:
 			axes = controller.getAxes()
 			#buttons = controller.getButtons()
-			#dPad = controller.getDPad()
+			dPad = controller.getDPad()
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # connected
 					limit = int(speedScale * 127)
@@ -566,6 +566,10 @@ while True: # main execution loop
 					steering = max(steering, 0)
 					steering = min(steering, 254)
 					armControl.temp_actuator1(throttle, steering)
+			if indicatorList[7].active: # Mast camera control
+				xDpad = int(dPad[1] + 2)
+				yDpad = int(dPad[0] + 2)
+				mastControl.sendData(xDpad,yDpad)
 			if isLinux:
 				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
 				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
