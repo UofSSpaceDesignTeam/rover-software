@@ -49,9 +49,8 @@ def setMotors(leftSpeed, rightSpeed):
 		sendSabertooth(129, commandRF, rightSpeed)
 	else:
 		sendSabertooth(129, commandRR, -1 * rightSpeed)
-			
+	
 def parseCommand(command): # parses and executes remote commands
-	global emergency
 	if command != None:
 		if len(command) > 2:
 			if command[0] == "#": # is valid
@@ -73,6 +72,7 @@ def parseCommand(command): # parses and executes remote commands
 						leftSpeed = int(ord(command[3])) - 127
 						rightSpeed = int(ord(command[4])) - 127
 						setMotors(leftSpeed, rightSpeed)
+						watchdog = pygame.time.get_ticks()
 					elif command[2] == "S": # Stop
 						stopSabertooth()
 						print("motors stopped.")
@@ -136,13 +136,19 @@ try:
 	while(True):
 		(driveSocket, clientAddress) = serverSocket.accept()
 		print("Drive Server connected.")
+		driveSocket.settimeout(1.0)
 		while(True):
-			data = driveSocket.recv(256)
-			if(data == ""): # socket closing
+			try:
+				data = driveSocket.recv(256)
+				if(data == ""): # socket closing
+					stopSabertooth()
+					break
+				else:
+					parseCommand(data)
+			except socket.timeout:
 				stopSabertooth()
+				print("Drive Server timeout.")
 				break
-			else:
-				parseCommand(data)
 		print("Drive Server disconnected.")
 	
 except KeyboardInterrupt:
