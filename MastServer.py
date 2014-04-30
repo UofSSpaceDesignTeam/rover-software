@@ -10,12 +10,14 @@ def setPitch(yButton):
 	global currentPitch
 	if yButton == -1:
 		if currentPitch > 1400:
-			currentPitch = currentPitch - 50
-			servoDriver.setServo(3, currentPitch)
+			for x in range (0, 50):
+				currentPitch = currentPitch - x
+				servoDriver.setServo(3, currentPitch)
 	elif yButton == 1:
 		if currentPitch < 2300:
-			currentPitch = currentPitch + 50
-			servoDriver.setServo(3, currentPitch)
+			for x in range (0, 50):
+				currentPitch = currentPitch + x
+				servoDriver.setServo(3, currentPitch)
 	
 	
 def setYaw(xButton):
