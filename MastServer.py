@@ -68,7 +68,7 @@ try:
 except:
 	print("Servo setup failed!")
 
-# Test Code
+## Test Code
 #while True:
 #	pos = raw_input('Pulse Length Position?')
 #	try:
@@ -82,10 +82,10 @@ try:
 	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	serverSocket.bind(("", mastPort))
 	serverSocket.listen(0)
-	print("Drive Server listening on port " + str(mastPort))
+	print("Mast Server listening on port " + str(mastPort))
 	while(True):
 		(mastSocket, clientAddress) = serverSocket.accept()
-		print("Drive Server connected.")
+		print("Mast Server connected.")
 		while(True):
 			data = mastSocket.recv(256)
 			if(data == ""): # socket closing
