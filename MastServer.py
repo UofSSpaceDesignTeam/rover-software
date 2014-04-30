@@ -11,12 +11,12 @@ def setPitch(yButton):
 	if yButton == -1:
 		if currentPitch > 1400:
 			for x in range (0, 50):
-				currentPitch = currentPitch - x
+				currentPitch = currentPitch - 1
 				servoDriver.setServo(3, currentPitch)
 	elif yButton == 1:
 		if currentPitch < 2300:
 			for x in range (0, 50):
-				currentPitch = currentPitch + x
+				currentPitch = currentPitch + 1
 				servoDriver.setServo(3, currentPitch)
 	
 	
