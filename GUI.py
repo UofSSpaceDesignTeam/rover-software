@@ -15,6 +15,7 @@ from DriveClient import DriveClient
 from GPSClient import GPSClient
 from CameraClient import CameraClient
 from ArmClient import ArmClient
+from MastClient import MastClient
 from TextOutput import TextOutput
 from RobotPiece import RobotPiece
 import socket
@@ -28,12 +29,13 @@ import subprocess
 IPraspi1 = "192.168.1.103"
 IPraspi2 = "10.64.226.138"
 IPraspi3 = "192.168.1.105"
-IPraspi4 = "192.168.1.106"
+IPraspi4 = "10.64.226.4"
 # netcat-ed video on port 3001
 driveClientPort = 3002
 armClientPort = 3003
 cameraClientPort = 3000
 gpsClientPort = 3005
+mastClientPort = 3004
 colorWhite = (255, 255, 255)
 colorGreen = (0, 240, 0)
 colorBlue = (0, 0, 240)
@@ -115,10 +117,11 @@ def createIndicators():
 	camera1Indicator = Indicator(testClient, cameraRaspi1, "Front Camera", (1106, 30))
 	camera2Indicator = Indicator(testClient, cameraRaspi2, "Arm Camera", (1106, 55))
 	camera3Indicator = Indicator(testClient, cameraRaspi3, "Mast Camera", (1106, 80))
-	driveIndicator = Indicator(testClient, driveControl, "Drive System", (1106, 105))
-	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 155))
+	mastIndicator = Indicator(testClient, mastControl, "Mast System", (1106, 105))
+	driveIndicator = Indicator(testClient, driveControl, "Drive System", (1106, 155))
+	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 130))
 	controllerIndicator = Indicator(checkController, None, "Detected", (1114, 263))
-	gpsIndicator = Indicator(testClient, gpsClient, "GPS System", (1106, 130))
+	gpsIndicator = Indicator(testClient, gpsClient, "GPS System", (1106, 180))
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
 	indicatorList.append(camera3Indicator) #2
@@ -126,6 +129,7 @@ def createIndicators():
 	indicatorList.append(driveIndicator) #4
 	indicatorList.append(armIndicator) #5
 	indicatorList.append(controllerIndicator) #6
+	indicatorList.append(mastIndicator) #7
 
 def createConsoles(): # set up the info boxes
 	global output, gpsDisplay, controllerDisplay
@@ -411,6 +415,8 @@ def connectClients(fakeArg): # button-based
 		armControl.connect(0)
 	if not indicatorList[3].active:
 		gpsClient.connect(0)
+	if not indicatorList[7].active:
+		mastControl.connect(0)
 	buttonList[10].selected = False
 	drawIndicators()
 	drawButtons()
@@ -439,6 +445,7 @@ cameraRaspi3 = CameraClient(IPraspi3, cameraClientPort)
 driveControl = DriveClient(IPraspi1, driveClientPort)
 gpsClient = GPSClient(IPraspi1, gpsClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
+mastControl = MastClient(IPraspi4, mastClientPort)
 
 # set up pygame resources
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (20, 20)
