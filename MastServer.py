@@ -3,9 +3,19 @@ import socket
 import time
 
 mastPort = 3004
+startPitch = 1800
+currentPitch = 1800
 
 def setPitch(yButton):
-	Pitch.setRelative(yButton*100)
+	if yButton == -1:
+		if currentPitch > 1400:
+			currentPitch = currentPitch - 100
+			servoDriver.setServo(3, currentPitch)
+	elif yButton == 1:
+		if currentPitch < 2300:
+			currentPitch = currentPitch + 100
+			servoDriver.setServo(3, currentPitch)
+	
 	
 def setYaw(xButton):
 	if xButton == -1:
@@ -50,8 +60,8 @@ def stopSockets():
 ## Start Servos
 try:
 	servoDriver = ServoDriver()
-	Pitch = Servo(servoDriver, 3, 1400, 2300, 1800)
-	Yaw = Servo(servoDriver, 1, 1050, 1950, 1500)
+	#Pitch = Servo(servoDriver, 3, 1400, 2300, 1800)
+	#Yaw = Servo(servoDriver, 1, 1050, 1950, 1500)
 except:
 	print("Servo setup failed!")
 
