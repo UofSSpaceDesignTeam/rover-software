@@ -7,13 +7,14 @@ startPitch = 1800
 currentPitch = 1800
 
 def setPitch(yButton):
+	global currentPitch
 	if yButton == -1:
 		if currentPitch > 1400:
-			currentPitch = currentPitch - 100
+			currentPitch = currentPitch - 50
 			servoDriver.setServo(3, currentPitch)
 	elif yButton == 1:
 		if currentPitch < 2300:
-			currentPitch = currentPitch + 100
+			currentPitch = currentPitch + 50
 			servoDriver.setServo(3, currentPitch)
 	
 	
