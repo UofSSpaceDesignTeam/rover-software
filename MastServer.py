@@ -5,13 +5,13 @@ import time
 mastPort = 3004
 
 def setPitch(yButton):
-	Pitch.setRelative(yButton*100)
+	Pitch.setRelative(yButton*1000)
 	
 def setYaw(xButton):
 	if xButton == -1:
-		servoDriver.setServo(1, 1050)
+		servoDriver.setServo(1, 1400)
 	elif xButton == 1:
-		servoDriver.setServo(1, 1950)
+		servoDriver.setServo(1, 1600)
 	else: # Zero or some invalid value got through...	
 		servoDriver.setServo(1, 1500)
 
