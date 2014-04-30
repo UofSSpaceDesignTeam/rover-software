@@ -7,9 +7,9 @@
 username="usstpi"
 password="usstrover"
 data=$(ifconfig)
-IP=${data:32:81} #must be less than 140 chars
+IP=${data:31:60}
 host=$(hostname)
-tweet="$host $data"
+tweet="$host $IP"
  
 #EXTRA OPTIONS
 uagent="Mozilla/5.0" #user agent
