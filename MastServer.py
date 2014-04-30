@@ -1,4 +1,6 @@
 from ServoDriver import *
+import socket
+import time
 
 mastPort = 3004
 
@@ -19,7 +21,7 @@ def parseCommand(command): # parses and executes remote commands
 		if len(command) > 2:
 			if command[0] == "#": # is valid
 				if command[1] == "M":
-					if command[2] == "C" # Camera look
+					if command[2] == "C": # Camera look
 						yButton = int(ord(command[3]))
 						setPitch(yButton)
 						xButton = int(ord(command[4]))
@@ -51,7 +53,7 @@ try:
 	Pitch = Servo(servoDriver, 0, 800, 2200, 1500)
 	Yaw = Servo(servoDriver, 1, 1050, 1950, 1500)
 except:
-	print("Servo setup failed!)
+	print("Servo setup failed!")
 
 # Test Code
 #while True:
