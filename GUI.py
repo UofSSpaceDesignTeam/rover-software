@@ -106,6 +106,7 @@ def createBoxes():
 	boxList.append(controlBox)
 	boxList.append(actionBox)
 	boxList.append(uiBox)
+	boxList.append(uiBox)
 	boxList.append(connectionsBox)
 	boxList.append(controllerBox)
 	boxList.append(settingsBox)
@@ -116,7 +117,7 @@ def createIndicators():
 	indicatorList = []
 	camera1Indicator = Indicator(testClient, cameraRaspi1, "Front Camera", (1106, 30))
 	camera2Indicator = Indicator(testClient, cameraRaspi2, "Arm Camera", (1106, 55))
-	camera3Indicator = Indicator(testClient, cameraRaspi3, "Mast Camera", (1106, 80))
+	camera3Indicator = Indicator(testClient, cameraRaspi4, "Mast Camera", (1106, 80))
 	mastIndicator = Indicator(testClient, mastControl, "Mast System", (1106, 105))
 	driveIndicator = Indicator(testClient, driveControl, "Drive System", (1106, 155))
 	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 130))
@@ -324,7 +325,7 @@ def takePicture(fakeArg):
 		time.sleep(2.5)
 		camConnect(2)
 	elif cameraNumber == 3:
-		cameraRaspi3.takePicture()
+		cameraRaspi4.takePicture()
 		time.sleep(2.5)
 		camConnect(3)
 	time.sleep(0.75)
@@ -375,7 +376,7 @@ def camConnect(cameraNumber): # button-based
 		cameraRaspi2.startCamera()
 	elif(cameraNumber == 3):
 		buttonList[2].selected = True
-		cameraRaspi3.startCamera()
+		cameraRaspi4.startCamera()
 	redrawTimer = pygame.time.get_ticks()
 	drawButtons()
 
@@ -385,7 +386,7 @@ def camDisconnect(fakeArg): # button-based
 	elif(buttonList[1].selected):
 		cameraRaspi2.stopCamera()
 	elif(buttonList[2].selected):
-		cameraRaspi3.stopCamera()
+		cameraRaspi4.stopCamera()
 	for cameraButton in buttonList[0:3]:
 		cameraButton.selected = False
 	buttonList[4].selected = True
@@ -408,7 +409,7 @@ def connectClients(fakeArg): # button-based
 	if not indicatorList[1].active:
 		cameraRaspi2.connect(0)
 	if not indicatorList[2].active:
-		cameraRaspi3.connect(0)
+		cameraRaspi4.connect(0)
 	if not indicatorList[4].active:
 		driveControl.connect(0)
 	if not indicatorList[5].active:
@@ -441,7 +442,7 @@ else:
 # create communication clients
 cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
 cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
-cameraRaspi3 = CameraClient(IPraspi3, cameraClientPort)
+cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
 driveControl = DriveClient(IPraspi1, driveClientPort)
 gpsClient = GPSClient(IPraspi1, gpsClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
