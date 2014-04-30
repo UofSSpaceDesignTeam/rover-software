@@ -6,17 +6,18 @@ mastPort = 3004
 
 def setPitch(yButton):
 	if yButton == -1:
-		servoDriver.setServo(1, 1300)
+		servoDriver.setServo(3, 1400)
 	elif yButton == 1:
-		servoDriver.setServo(1, 1700)
+		servoDriver.setServo(3, 2300)
 	else: # Zero or some invalid value got through...	
-		servoDriver.setServo(1, 1500)
+		servoDriver.setServo(3, 1800)
+	return
 	
 def setYaw(xButton):
 	if xButton == -1:
-		servoDriver.setServo(1, 1400)
+		servoDriver.setServo(1, 1480)
 	elif xButton == 1:
-		servoDriver.setServo(1, 1600)
+		servoDriver.setServo(1, 1520)
 	else: # Zero or some invalid value got through...	
 		servoDriver.setServo(1, 1500)
 
