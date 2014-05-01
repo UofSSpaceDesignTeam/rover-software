@@ -49,7 +49,7 @@ class IMU:
 		return self.get_y_rotation(self.accel_xout_scaled, self.accel_yout_scaled, self.accel_zout_scaled)
 	
 	def roll(self):
-		self.accel_xout_scaled = read_word_2c(0x3b)/self.scale
-		self.accel_yout_scaled = read_word_2c(0x3d)/self.scale
-		self.accel_zout_scaled = read_word_2c(0x3f)/self.scale
+		self.accel_xout_scaled = self.read_word_2c(0x3b)/self.scale
+		self.accel_yout_scaled = self.read_word_2c(0x3d)/self.scale
+		self.accel_zout_scaled = self.read_word_2c(0x3f)/self.scale
 		return self.get_x_rotation(self.accel_xout_scaled, self.accel_yout_scaled, self.accel_zout_scaled)
