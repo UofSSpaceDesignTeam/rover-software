@@ -25,7 +25,7 @@ class IMU:
 		return val
 
 	def read_word_2c(self,adr):
-		val = read_word(adr)
+		val = self.read_word(adr)
 		if (val >= 0x8000):
 			return -((65535 - val) + 1)
 		else:
@@ -35,21 +35,21 @@ class IMU:
 		return math.sqrt((a*a)+(b*b))
 
 	def get_y_rotation(self,x,y,z):
-		radians = math.atan2(x, dist(y,z))
+		radians = math.atan2(x, self.dist(y,z))
 		return -math.degrees(radians)
 
 	def get_x_rotation(self,x,y,z):
-		radians = math.atan2(y, dist(x,z))
+		radians = math.atan2(y, self.dist(x,z))
 		return math.degrees(radians)
 		
 	def pitch(self):
-		self.accel_xout_scaled = read_word_2c(0x3b)/self.scale
-		self.accel_yout_scaled = read_word_2c(0x3d)/self.scale
-		self.accel_zout_scaled = read_word_2c(0x3f)/self.scale
-		return get_y_rotation(self.accel_xout_scaled, self.accel_yout_scaled, self.accel_zout_scaled)
+		self.accel_xout_scaled = self.read_word_2c(0x3b)/self.scale
+		self.accel_yout_scaled = self.read_word_2c(0x3d)/self.scale
+		self.accel_zout_scaled = self.read_word_2c(0x3f)/self.scale
+		return self.get_y_rotation(self.accel_xout_scaled, self.accel_yout_scaled, self.accel_zout_scaled)
 	
 	def roll(self):
 		self.accel_xout_scaled = read_word_2c(0x3b)/self.scale
 		self.accel_yout_scaled = read_word_2c(0x3d)/self.scale
 		self.accel_zout_scaled = read_word_2c(0x3f)/self.scale
-		return get_x_rotation(self.accel_xout_scaled, self.accel_yout_scaled, self.accel_zout_scaled)
+		return self.get_x_rotation(self.accel_xout_scaled, self.accel_yout_scaled, self.accel_zout_scaled)
