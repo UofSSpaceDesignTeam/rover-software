@@ -16,11 +16,11 @@ class IMU:
 		self.bus.write_byte_data(self.address, self.power_mgmt_1, 0)
 	
 	def read_byte(self,adr):
-		return bus.read_byte_data(address, adr)
+		return self.bus.read_byte_data(address, adr)
 
 	def read_word(self,adr):
-		high = bus.read_byte_data(address, adr)
-		low = bus.read_byte_data(address, adr+1)
+		high = self.bus.read_byte_data(address, adr)
+		low = self.bus.read_byte_data(address, adr+1)
 		val = (high << 8) + low
 		return val
 
