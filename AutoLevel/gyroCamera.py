@@ -14,7 +14,7 @@ class gyroCamera:
 #	imuOldPitch = 0
 #	imuOldRoll = 0
 
-	def __init__(self):
+	def __init__(self, servos):
 		self.currentPitch = 1300
 		self.currentPitchAngle = 0.0
 		self.newPitchAngle = 0.0
@@ -24,7 +24,8 @@ class gyroCamera:
 		imu = IMU()
 		self.imuOldPitch = int(imu.pitch())
 		self.imuOldRoll = int(imu.roll())
-		servoDriver.setServo(3, self.currentPitch)
+		self.sevoDriver = servos
+		self.servoDriver.setServo(3, self.currentPitch)
 		time.sleep(2)	#wait for the camera to set
 	
 #converts pitch angle to microSeconds for servo...
@@ -40,13 +41,13 @@ class gyroCamera:
 				trav = self.angle2micros(-1*diff)
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch - 1
-					servoDriver.setServo(3, self.currentPitch)
+					self.servoDriver.setServo(3, self.currentPitch)
 		elif diff > 0:
 			if self.currentPitch < 2300:
 				trav = self.angle2micros(diff)
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch + 1
-					servoDriver.setServo(3, self.currentPitch)
+					self.servoDriver.setServo(3, self.currentPitch)
 
 		self.currentPitchAngle = newPhi
 	
@@ -60,12 +61,12 @@ class gyroCamera:
 			waitTime = self.angle2time(-1*diff)
 			servoDriver.setServo(1, 1480)
 			time.sleep(waitTime)
-			servoDriver.setServo(1, 1500)
+			self.servoDriver.setServo(1, 1500)
 		elif diff > 0:
 			waitTime = self.angle2time(diff)
 			servoDriver.setServo(1, 1520)
 			time.sleep(waitTime)
-			servoDriver.setServo(1, 1500)
+			self.servoDriver.setServo(1, 1500)
 
 		self.currentYawAngle = newTheta
 
