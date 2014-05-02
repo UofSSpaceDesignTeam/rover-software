@@ -3,13 +3,13 @@ import socket
 import time
 
 mastPort = 3004
-startPitch = 1800
-currentPitch = 1800
+startPitch = 100
+currentPitch = 1300
 
 def setPitch(yButton):
 	global currentPitch
 	if yButton == -1:
-		if currentPitch > 1400:
+		if currentPitch > 800:
 			for x in range (0, 50):
 				currentPitch = currentPitch - 1
 				servoDriver.setServo(3, currentPitch)
@@ -46,7 +46,7 @@ def parseCommand(command): # parses and executes remote commands
 		stopServos()
 
 def stopServos():
-	servoDriver.setServo(0, 1500)
+	servoDriver.setServo(3, 1300)
 	servoDriver.setServo(1, 1500)
 		
 def stopSockets():
@@ -63,7 +63,7 @@ def stopSockets():
 ## Start Servos
 try:
 	servoDriver = ServoDriver()
-	#Pitch = Servo(servoDriver, 3, 1400, 2300, 1800)
+	#Pitch = Servo(servoDriver, 3, 800, 2300, 1400)
 	#Yaw = Servo(servoDriver, 1, 1050, 1950, 1500)
 except:
 	print("Servo setup failed!")
@@ -72,7 +72,7 @@ except:
 #while True:
 #	pos = raw_input('Pulse Length Position?')
 #	try:
-#		servoDriver.setServo(0, int(pos))
+#		servoDriver.setServo(3, int(pos))
 #	except:
 #		print("NaN!")		
 		
