@@ -19,7 +19,7 @@ class gyroCamera:
 		self.currentPitch = 1300
 		self.currentPitchAngle = 45.0
 		self.newPitchAngle = 0.0
-		self.currentYawAngle = 90.0
+		self.currentYawAngle = -90.0
 		self.newYawAngle = 0.0
 
 		print("Starting IMU and servos...")
@@ -124,11 +124,11 @@ class gyroCamera:
 			self.newPitchAngle = self.currentPitchAngle
 			self.newYawAngle = self.currentYawAngle
 		#debugging prints
-		print("Setting cam pitch to/from: %d / %d" % (self.newPitchAngle + yButton*5, self.currentPitchAngle))
+		print("Setting cam pitch to/from: %d / %d" % (self.newPitchAngle - yButton*5, self.currentPitchAngle))
 		print("Setting cam yaw to/from:   %d / %d" % (self.newYawAngle + xButton*4, self.currentYawAngle))
 		
 		self.setPitch(self.newPitchAngle - yButton)	# -ve b/c of how phi is set up relative to servo time layout
 		self.setYaw(self.newYawAngle + xButton)
 		#update the current angles with the new ones
-		self.currentPitchAngle = self.newPitchAngle + yButton*5
+		self.currentPitchAngle = self.newPitchAngle - yButton*5
 		self.currentYawAngle = self.newYawAngle + xButton*4
