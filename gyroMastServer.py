@@ -38,7 +38,7 @@ def parseCommand(command): # parses and executes remote commands
 					if command[2] == "C": # Camera look
 						yButton = int(ord(command[3])) - 2
 						xButton = int(ord(command[4])) - 2
-						gyroCam.singleAdjust(True, yButton, xButton)
+						gyroCam.singleAdjust(False, yButton, xButton)
 						#time.sleep(0.1)
 					elif command[2] == "S": # Stop
 						stopServos()
