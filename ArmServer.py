@@ -240,8 +240,8 @@ def TranslateIO(speed):
 def WristCorrection(theta1,theta2):
 	pass		
 def testSetActuators(actuator1, actuator2):
-	throttlel = (actutaor1 - 127) / 127.0  # range is now -1 to 1
-	throttler = (actuator2 - 127) / 127.0
+	actuator1 = (actuator1 - 127) / 127.0  # range is now -1 to 1
+	actuator2 = (actuator2 - 127) / 127.0
 
 	# Math for Actuators
 	leftSpeed = (actuator1) * 127
