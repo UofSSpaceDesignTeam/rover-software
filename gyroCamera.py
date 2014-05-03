@@ -45,12 +45,14 @@ class gyroCamera:
 
 		diff = newPhi - self.currentPitchAngle
 		if diff < 0:	#was <
+			print("Higher...")
 			if self.currentPitch > 800:
 				trav = self.angle2micros(-1*diff)
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch + 1
 					self.servoDriver.setServo(3, self.currentPitch)
 		elif diff > 0:	#was >
+			print("Lower...")
 			if self.currentPitch < 2300:
 				trav = self.angle2micros(diff)
 				for x in range (0, trav):
