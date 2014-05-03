@@ -571,7 +571,7 @@ while True: # main execution loop
 					if wristTilt != 127:
 						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
-					basePan = int(axes[2]*4) + 127
+					basePan = int(axes[2]*10) + 127
 					armControl.panBase(basePan)
 					time.sleep(0.005)
 			if buttonList[13].selected: # temporary test actuator mode (2)
