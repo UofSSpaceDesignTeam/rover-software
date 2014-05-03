@@ -102,7 +102,10 @@ class gyroCamera:
 		#calculate, and convert to degrees, the new pitch and yaw angles
 		thetaPrime = math.atan2(yprime, xprime)
 		phiPrime = math.atan2( self.dist(xprime, yprime), zprime)
-	
+		#UPDATE IMU VALUES
+		self.imuOldRoll = self.imuNewRoll
+		self.imuOldPitch = self.imuNewPitch
+		#set "output" angle varibles to be in degrees
 		self.newYawAngle = math.degrees(thetaPrime)
 		self.newPitchAngle = math.degrees(phiPrime)
 
@@ -114,6 +117,7 @@ class gyroCamera:
 			pTest = abs(self.imuNewPitch - self.imuOldPitch)
 			rTest = abs(self.imuNewRoll - self.imuOldRoll)
 			if pTest > 0 or rTest > 0:
+				print("Change is in the IMU...")
 				self.axisTransform( self.imuNewRoll - self.imuOldRoll, self.imuNewPitch - self.imuOldPitch)
 			else:
 				self.newPitchAngle = self.currentPitchAngle
@@ -122,8 +126,8 @@ class gyroCamera:
 			self.newPitchAngle = self.currentPitchAngle
 			self.newYawAngle = self.currentYawAngle
 		#debugging prints
-		print("Setting pitch to/from: %d / %d" % (self.newPitchAngle - yButton, self.currentPitchAngle))
-		print("Setting yaw to/from:   %d / %d" % (self.newYawAngle + xButton, self.currentYawAngle))
+		print("Setting cam pitch to/from: %d / %d" % (self.newPitchAngle - yButton, self.currentPitchAngle))
+		print("Setting cam yaw to/from:   %d / %d" % (self.newYawAngle + xButton, self.currentYawAngle))
 		
 		self.setPitch(self.newPitchAngle - yButton)	# -ve b/c of how phi is set up relative to servo time layout
 		self.setYaw(self.newYawAngle + xButton)
