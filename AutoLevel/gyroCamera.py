@@ -99,7 +99,7 @@ class gyroCamera:
 		self.newPitchAngle = math.degrees(phiPrime)
 
 	def singleAdjust(self, gyroEnable, yButton, xButton):
-		gyroEnable = False
+
 		if gyroEnable == True:
 			self.imuNewPitch = int(imu.pitch())
 			self.imuNewRoll = int(imu.roll())
