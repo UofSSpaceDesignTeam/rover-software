@@ -120,8 +120,8 @@ class gyroCamera:
 			self.newPitchAngle = self.currentPitchAngle
 			self.newYawAngle = self.currentYawAngle
 		#debugging prints
-		print("Setting pitch to/from: %d, / %d" % (self.newPitchAngle - yButton, self.currentPitchAngle))
-		print("Setting yaw to/from:   %d, / %d" % (self.newYawAngle + xButton, self.currentYawAngle))
+		print("Setting pitch to/from: %d / %d" % (self.newPitchAngle - yButton, self.currentPitchAngle))
+		print("Setting yaw to/from:   %d / %d" % (self.newYawAngle + xButton, self.currentYawAngle))
 		
 		self.setPitch(self.newPitchAngle - yButton)	# -ve b/c of how phi is set up relative to servo time layout
 		self.setYaw(self.newYawAngle + xButton)
