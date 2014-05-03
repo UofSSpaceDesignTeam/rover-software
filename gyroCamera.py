@@ -51,6 +51,7 @@ class gyroCamera:
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch + 1
 					self.servoDriver.setServo(3, self.currentPitch)
+				self.currentPitchAngle = newPhi
 		elif diff > 0:	#was >
 			print("Lower...")
 			trav = self.angle2micros(diff)
@@ -58,8 +59,7 @@ class gyroCamera:
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch - 1
 					self.servoDriver.setServo(3, self.currentPitch)
-
-		self.currentPitchAngle = newPhi
+				self.currentPitchAngle = newPhi
 	
 	def angle2time(self, angle):
 		return angle * 0.075	#yet to be determined coefficient
@@ -72,13 +72,13 @@ class gyroCamera:
 			self.servoDriver.setServo(1, 1480)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
+			self.currentYawAngle = newTheta
 		elif diff > 0:
 			waitTime = self.angle2time(diff)
 			self.servoDriver.setServo(1, 1520)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
-
-		self.currentYawAngle = newTheta
+			self.currentYawAngle = newTheta
 
 
 	def dist(self, a, b):
