@@ -126,7 +126,7 @@ class ArmClient: # class for arm control
 			
 	def actuators(self, actuator1, actuator2):
 		try:
-			self.socket.send(self.Actuators + chr(actuator1) + chr(actuator2))
+			self.socket.send(self.commandActuators + chr(actuator1) + chr(actuator2))
 			return True
 		except socket.error as e:
 			sys.stderr.write(e.strerror)
