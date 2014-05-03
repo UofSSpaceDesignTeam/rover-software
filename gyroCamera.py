@@ -24,11 +24,11 @@ class gyroCamera:
 
 		print("Starting IMU and servos...")
 		try:
-			imu = IMU()
+			self.imu = IMU()
 		except:
 			print("IMU setup failed!")
-		self.imuOldPitch = int(imu.pitch())
-		self.imuOldRoll = int(imu.roll())
+		self.imuOldPitch = int(self.imu.pitch())
+		self.imuOldRoll = int(self.imu.roll())
 		print(self.imuOldPitch)
 		print(self.imuOldRoll)
 		self.servoDriver = servoObject
@@ -107,8 +107,8 @@ class gyroCamera:
 	def singleAdjust(self, gyroEnable, yButton, xButton):
 
 		if gyroEnable == True:
-			self.imuNewPitch = int(imu.pitch())
-			self.imuNewRoll = int(imu.roll())
+			self.imuNewPitch = int(self.imu.pitch())
+			self.imuNewRoll = int(self.imu.roll())
 			pTest = abs(self.imuNewPitch - self.imuOldPitch)
 			rTest = abs(self.imuNewRoll - self.imuOldRoll)
 			if pTest > 0 or rTest > 0:
