@@ -17,7 +17,7 @@ class gyroCamera:
 
 	def __init__(self, servoObject):
 		self.currentPitch = 1300
-		self.currentPitchAngle = 45.0
+		self.currentPitchAngle = 90.0
 		self.newPitchAngle = 0.0
 		self.currentYawAngle = -90.0
 		self.newYawAngle = 0.0
