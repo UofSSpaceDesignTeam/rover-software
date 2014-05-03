@@ -99,7 +99,7 @@ class gyroCamera:
 		zprime = y*sinPhi - x*cosPhi*sinBeta + z*cosPhi*cosBeta
 		#calculate, and convert to degrees, the new pitch and yaw angles
 		thetaPrime = math.atan2(yprime, xprime)
-		phiPrime = math.atan2( dist(xprime, yprime), zprime)
+		phiPrime = math.atan2( self.dist(xprime, yprime), zprime)
 	
 		self.newYawAngle = math.degrees(thetaPrime)
 		self.newPitchAngle = math.degrees(phiPrime)
