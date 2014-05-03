@@ -33,13 +33,13 @@ class gyroCamera:
 		print(self.imuOldRoll)
 		self.servoDriver = servoObject
 		self.servoDriver.setServo(3, self.currentPitch)
-		time.sleep(2)	#wait for the camera to set
+		time.sleep(0.5)	#wait for the camera to set
 		print("done")
 	
 #converts pitch angle to microSeconds for servo...
 #	based on 90deg servo
 	def angle2micros(self, angle):
-		return int( 11.1 * angle )
+		return int( 30 * angle )	#was 11.1 us/degrees
 
 	def setPitch(self, newPhi):
 
@@ -60,7 +60,7 @@ class gyroCamera:
 		self.currentPitchAngle = newPhi
 	
 	def angle2time(self, angle):
-		return angle * 0.05	#yet to be determined coefficient
+		return angle * 0.025	#yet to be determined coefficient
 
 	def setYaw(self, newTheta):
 
