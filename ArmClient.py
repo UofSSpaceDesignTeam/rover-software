@@ -24,6 +24,8 @@ class ArmClient: # class for arm control
 		self.commandGripper = "#AG" # open or close gripper
 		self.commandArmStop = "#AS" # stop all actuators
 		self.commandArmResume = "#AC" # cancel emergency stop
+		self.commandActuators = "#AT" # controls actuator 1 directly 
+		self.commandActuator_2 = "#A2" # controls actuator 2 directly
 	
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -121,4 +123,14 @@ class ArmClient: # class for arm control
 			sys.stderr.write(e.strerror)
 			self.stopMotors()
 			return False
+			
+	def actuators(self, actuator1, actuator2):
+		try:
+			self.socket.send("#AT" + chr(actuator1) + chr(actuator2))
+			return True
+		except socket.error as e:
+			sys.stderr.write(e.strerror)
+			self.stopMotors()
+			return False		
+	
 

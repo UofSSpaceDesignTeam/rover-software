@@ -519,7 +519,7 @@ while True: # main execution loop
 		controllerSendTimer = pygame.time.get_ticks()
 		if controller.isConnected:
 			axes = controller.getAxes()
-			#buttons = controller.getButtons()
+			buttons = controller.getButtons()
 			dPad = controller.getDPad()
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # connected
@@ -536,6 +536,29 @@ while True: # main execution loop
 						driveControl.sendTwoStickData(-axes[1] * speedScale, -axes[3] * speedScale)
 			elif buttonList[6].selected: # arm mode 1
 				if indicatorList[5].active:
+					toggle = 0 # use start to toggle 
+					if (toggle == 0):
+						wristMove = int(axes[1]*127) +127
+						#if wristMove != 127:
+						armControl.moveWrist(wristMove)
+						time.sleep(0.005)
+						wristLift = int(axes[0]*127)+127
+						armControl.liftWrist(wristLift)
+						time.sleep(0.005)
+						if button[7]:
+							toggle = 1
+							time.sleep(0.005)
+					if (toggle == 1):
+						speed1 = int(axes[0] * 127) + 127
+						speed1 = max(speed1, 0)
+						speed1 = min(speed1, 254)
+						speed2 = int(axes[1] * 127) + 127
+						speed2 = max(speed2, 0)
+						speed2 = min(speed2, 254)
+						armControl.actuators(speed1, speed2)
+						if button[7]:
+							toggle = 0
+							time.sleep(0.005)
 					#wristPan = int(axes[2] * 80) + 127
 					#if wristPan != 127:
 					#	armControl.panHand(wristPan)
@@ -548,13 +571,6 @@ while True: # main execution loop
 					if wristTilt != 127:
 						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
-					wristLift = int(axes[0]*127)+127
-					armControl.liftWrist(wristLift)
-					time.sleep(0.005)
-					wristMove = int(axes[1]*127) +127
-					#if wristMove != 127:
-					armControl.moveWrist(wristMove)
-					time.sleep(0.005)
 					basePan = int(axes[2]*4) + 127
 					armControl.panBase(basePan)
 					time.sleep(0.005)
@@ -566,7 +582,7 @@ while True: # main execution loop
 					steering = int(axes[3] * 127) + 127
 					steering = max(steering, 0)
 					steering = min(steering, 254)
-					armControl.temp_actuator1(throttle, steering)
+					#armControl.temp_actuator1(throttle, steering)
 			if indicatorList[7].active: # Mast camera control
 				xDpad = int(dPad[1] + 2)
 				yDpad = int(dPad[0] + 2)
