@@ -22,7 +22,7 @@ def runExperiment():
 	calibrateStepper()
 	for i in range(1440)
 		scienceData.append(readVoltage)
-		advanceStepper()
+		rotateStepper(1)
 		time.sleep(0.2)
 
 def readVoltage(): # reads adc and returns voltage in volts
@@ -30,6 +30,17 @@ def readVoltage(): # reads adc and returns voltage in volts
 	voltage = voltage * 3.3 / 4096.0
 	return voltage
 
+def rotateStepper(amount): # +ve is cw
+	if amount > 0:
+		GPIO.output(11, False)
+	else:
+		GPIO.output(11, True)
+	for i in range(0, amount):
+		GPIO.output(12, True)
+		time.sleep(0.1)
+		GPIO.output(12, False)
+		time.sleep(0.1)
+	
 def parseCommand(command):
 	if command == "#RE":
 		runExperiment()
@@ -57,7 +68,8 @@ except:
 try:
 	GPIO.setwarnings(False)
 	GPIO.setmode(GPIO.BOARD)
-	#GPIO.setup(7, GPIO.OUT)
+	GPIO.setup(11, GPIO.OUT) # stepper direction
+	GPIO.setup(13, GPIO.OUT) # stepper step
 except:
 	print("GPIO setup failed!")
 	raise
