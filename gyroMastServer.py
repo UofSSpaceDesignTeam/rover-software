@@ -1,5 +1,5 @@
 from ServoDriver import *
-from gyroCamera import gyroCamera
+from gyroCamera import *
 import socket
 import time
 
@@ -68,7 +68,8 @@ try:
 	try:
 		gyroCam = gyroCamera(servoDriver)
 	except:
-		print("Gyro-Cameral setup failed!")
+		print("Gyro-Camera setup failed!")
+		raise
 	#Pitch = Servo(servoDriver, 3, 800, 2300, 1400)
 	#Yaw = Servo(servoDriver, 1, 1050, 1950, 1500)
 except:
