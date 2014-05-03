@@ -60,7 +60,7 @@ class gyroCamera:
 		self.currentPitchAngle = newPhi
 	
 	def angle2time(self, angle):
-		return angle * 0.1	#yet to be determined coefficient
+		return angle * 0.05	#yet to be determined coefficient
 
 	def setYaw(self, newTheta):
 
