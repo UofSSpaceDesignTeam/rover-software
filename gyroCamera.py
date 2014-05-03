@@ -118,7 +118,7 @@ class gyroCamera:
 			rTest = abs(self.imuNewRoll - self.imuOldRoll)
 			print("New/diff in Pitch: %d %d" % (self.imuNewPitch, pTest))
 			print("New/diff in Roll: %d %d" % (self.imuNewRoll, rTest))
-			if False:			#pTest > 0 or rTest > 0:
+			if pTest > 5 or rTest > 5:
 				print("Change is in the IMU...")
 				self.axisTransform( self.imuNewRoll - self.imuOldRoll, self.imuNewPitch - self.imuOldPitch)
 			else:
