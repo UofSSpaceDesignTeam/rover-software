@@ -15,7 +15,7 @@ class gyroCamera:
 #	imuOldPitch = 0
 #	imuOldRoll = 0
 
-	def __init__(self, servos):
+	def __init__(self, servoObject):
 		self.currentPitch = 1300
 		self.currentPitchAngle = 0.0
 		self.newPitchAngle = 0.0
@@ -29,7 +29,7 @@ class gyroCamera:
 			print("IMU setup failed!")
 		self.imuOldPitch = int(imu.pitch())
 		self.imuOldRoll = int(imu.roll())
-		self.sevoDriver = servos
+		self.servoDriver = servoObject
 		self.servoDriver.setServo(3, self.currentPitch)
 		time.sleep(2)	#wait for the camera to set
 		print("done")
