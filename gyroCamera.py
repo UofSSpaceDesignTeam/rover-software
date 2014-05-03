@@ -111,6 +111,7 @@ class gyroCamera:
 
 	def singleAdjust(self, gyroEnable, yButton, xButton):
 
+		folly = False
 		if gyroEnable == True:
 			self.imuNewPitch = int(self.imu.pitch())
 			self.imuNewRoll = int(self.imu.roll())
@@ -118,7 +119,7 @@ class gyroCamera:
 			rTest = abs(self.imuNewRoll - self.imuOldRoll)
 			print("New/diff in Pitch: %d %d" % (self.imuNewPitch, pTest))
 			print("New/diff in Roll: %d %d" % (self.imuNewRoll, rTest))
-			if False			#pTest > 0 or rTest > 0:
+			if folly == False			#pTest > 0 or rTest > 0:
 				print("Change is in the IMU...")
 				self.axisTransform( self.imuNewRoll - self.imuOldRoll, self.imuNewPitch - self.imuOldPitch)
 			else:
