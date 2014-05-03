@@ -60,7 +60,7 @@ class gyroCamera:
 		self.currentPitchAngle = newPhi
 	
 	def angle2time(self, angle):
-		return angle * 0.001	#yet to be determined coefficient
+		return angle * 0.1	#yet to be determined coefficient
 
 	def setYaw(self, newTheta):
 
@@ -72,7 +72,7 @@ class gyroCamera:
 			self.servoDriver.setServo(1, 1500)
 		elif diff > 0:
 			waitTime = self.angle2time(diff)
-			servoDriver.setServo(1, 1520)
+			self.servoDriver.setServo(1, 1520)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
 
