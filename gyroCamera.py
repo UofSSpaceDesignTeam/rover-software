@@ -22,7 +22,10 @@ class gyroCamera:
 		self.newYawAngle = 0.0
 
 		print("Starting IMU and servos...")
-		imu = IMU()
+		try:
+			imu = IMU()
+		except:
+			print("IMU setup failed!")
 		self.imuOldPitch = int(imu.pitch())
 		self.imuOldRoll = int(imu.roll())
 		self.sevoDriver = servos
