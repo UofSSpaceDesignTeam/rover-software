@@ -51,7 +51,6 @@ class gyroCamera:
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch + 1
 					self.servoDriver.setServo(3, self.currentPitch)
-				self.currentPitchAngle = newPhi
 		elif diff > 0:	#was >
 			print("Lower...")
 			trav = self.angle2micros(diff)
@@ -59,7 +58,6 @@ class gyroCamera:
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch - 1
 					self.servoDriver.setServo(3, self.currentPitch)
-				self.currentPitchAngle = newPhi
 	
 	def angle2time(self, angle):
 		return angle * 0.075	#yet to be determined coefficient
@@ -72,13 +70,11 @@ class gyroCamera:
 			self.servoDriver.setServo(1, 1480)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
-			self.currentYawAngle = newTheta
 		elif diff > 0:
 			waitTime = self.angle2time(diff)
 			self.servoDriver.setServo(1, 1520)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
-			self.currentYawAngle = newTheta
 
 
 	def dist(self, a, b):
@@ -128,11 +124,11 @@ class gyroCamera:
 			self.newPitchAngle = self.currentPitchAngle
 			self.newYawAngle = self.currentYawAngle
 		#debugging prints
-		print("Setting cam pitch to/from: %d / %d" % (self.newPitchAngle - yButton*5, self.currentPitchAngle))
+		print("Setting cam pitch to/from: %d / %d" % (self.newPitchAngle + yButton*5, self.currentPitchAngle))
 		print("Setting cam yaw to/from:   %d / %d" % (self.newYawAngle + xButton*4, self.currentYawAngle))
 		
 		self.setPitch(self.newPitchAngle - yButton)	# -ve b/c of how phi is set up relative to servo time layout
 		self.setYaw(self.newYawAngle + xButton)
 		#update the current angles with the new ones
-		self.currentPitchAngle = self.newPitchAngle - yButton*5
+		self.currentPitchAngle = self.newPitchAngle + yButton*5
 		self.currentYawAngle = self.newYawAngle + xButton*4
