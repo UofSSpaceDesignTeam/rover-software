@@ -33,7 +33,6 @@ LB = 363
 thetaL = 0.2145 # in radians
 thetaE = 0.8111
 thetaA = 1.073
-#thetaA=thetaL
 Ldelta = 108.16
 Lgamma = 407.4 
 ArmDeadband = 0
@@ -107,18 +106,19 @@ def TranslateZ(speed):
 	#to avoid math domain errors
 	temp = max(temp,-1)
 	temp = min(temp,1)
-	
+
+	#angles calculated from linear actuator lengths
 	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaA
-	
-	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
-	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
 
-	Rh = - Lgamma * math.cos(theta1 + theta2) / (Lgamma * math.cos(theta1) + Ldelta * math.cos(theta1 + theta2))
+        #ratio to keep radius of extension constant
+	Rr = (Lgamma*math.sin(theta1) - Ldelta*math.sin(theta1+theta2)) / (Ldelta*math.sin(theta1+theta2))
 
-	theta2_dot = speed /float (Ldelta * math.cos(theta1 + theta2) * (Rh + 1) + Rh * Lgamma * math.cos(theta1))
-	theta1_dot = Rh * theta2_dot
+        #angular velocities to keep height velocity constant
+	theta1_dot = speed /float (Lgamma*math.cos(theta1) - Ldelta*(Rh + 1)*math.cos(theta1+theta2))
+	theta2_dot = Rr * theta1_dot
 
+        #velocities of actuators to acheive angular velocities
 	L1p = (theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
 	L2p = (theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
 	#for debugging/testing
@@ -186,24 +186,23 @@ def TranslateIO(speed):
 	#to avoid math domain errors
 	temp = max(temp,-1)
 	temp = min(temp,1)
-	
+
+	#angles calculated from linear actuator lengths
 	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
 	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaA  
-	
-	#Ldelta = Lnu * math.sqrt(math.cos(theta2) / (1 - math.cos(theta2))) + Lmu 
-	#Lgamma = math.sqrt(pow(Ldelta,2) + pow(Lnu,2)) + LB
 
- 
-	Rr = - Ldelta * math.sin(theta1+theta2) / (Lgamma * math.sin(theta1) + Ldelta * math.sin(theta1+theta2))
+	#ratio to keep height constant  
+	Rh = (Lgamma*math.cos(theta1) - Ldelta*math.cos(theta1+theta2)) / (Ldelta*math.cos(theta1+theta2))
 	print("In translateIO")
-	print("Rr: ",Rr)
+	print("Rh: ",Rh)
 	print("speed: ",speed)
 	print("Ldelta: ", Ldelta)
 	print("theta2: ", theta2)
 	print("theta1: ", theta1)
 
-	theta2_dot = -speed / (Ldelta * math.sin(theta1+theta2) * (Rr+1) + Rr * Lgamma * math.sin(theta1))
-	theta1_dot = Rr*theta2_dot
+        #angular velocities to keep radius velocity constant
+	theta1_dot = -speed / (-Lgamma*math.sin(theta1) + Ldelta*(1+Rh)*math.sin(theta1+theta2)
+	theta2_dot = Rh*theta1_dot
 	print("theta1_dot: ", theta1_dot)
 	print("theta2_dot: ",theta2_dot)
 	L1p = (theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),29))))
