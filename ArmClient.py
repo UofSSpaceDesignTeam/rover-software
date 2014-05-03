@@ -25,7 +25,7 @@ class ArmClient: # class for arm control
 		self.commandArmStop = "#AS" # stop all actuators
 		self.commandArmResume = "#AC" # cancel emergency stop
 		self.commandActuators = "#AT" # controls actuator 1 directly 
-		self.commandActuator_2 = "#A2" # controls actuator 2 directly
+		
 	
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

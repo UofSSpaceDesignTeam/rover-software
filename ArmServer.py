@@ -319,9 +319,9 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					servoDriver.reset()
 					print("emergency stop")
 					emergency = True
-				elif command[2] == "C":
+				elif command[2] == "C": # cancel stop
 					emergency = False
-				elif command[2] == "T":	
+				elif command[2] == "T":	# controls both actuators individually 
 					GPIO.output(12,False)
 					actuator1 = int(ord(command[3]))
 					actuator2 = int(ord(command[4]))
