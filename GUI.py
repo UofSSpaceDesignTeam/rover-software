@@ -574,7 +574,7 @@ while True: # main execution loop
 					if wristTilt != 127:
 						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
-			if buttonList[13].selected: # temporary test actuator mode (2)
+			if buttonList[13].selected: # arm mode 2
 				if indicatorList[5].active: # arm mode
 					gripperControl = int(buttons[0]);
 					if gripper:

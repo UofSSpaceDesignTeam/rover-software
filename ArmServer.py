@@ -100,8 +100,6 @@ def TranslateZ(speed):
 		L1 = readActuator1()
 	except:
 		pass
-	print(L1)
-	print(L2)
 	temp = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
 	#to avoid math domain errors
 	temp = max(temp,-1)
@@ -109,20 +107,24 @@ def TranslateZ(speed):
 
 	#angles calculated from linear actuator lengths
 	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
-	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaA
+	
+	temp = (pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)
+	temp = max(temp,-1)
+	temp = min(temp,1)
+	theta2 = math.acos(temp) + thetaA
 
-        #ratio to keep radius of extension constant
+    #ratio to keep radius of extension constant
 	Rr = (Lgamma*math.sin(theta1) - Ldelta*math.sin(theta1+theta2)) / (Ldelta*math.sin(theta1+theta2))
 
-        #angular velocities to keep height velocity constant
+    #angular velocities to keep height velocity constant
 	theta1_dot = speed /float (Lgamma*math.cos(theta1) - Ldelta*(Rh + 1)*math.cos(theta1+theta2))
 	theta2_dot = Rr * theta1_dot
 
-        #velocities of actuators to acheive angular velocities
+    #velocities of actuators to acheive angular velocities
 	L1p = (theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
 	L2p = (theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
 	#for debugging/testing
-	print("In translateZ")
+	print("In translateZ:")
 	print("speed: ",speed)
 	print("theta2: ", theta2)
 	print("L1p; ", L1p)
@@ -189,7 +191,10 @@ def TranslateIO(speed):
 
 	#angles calculated from linear actuator lengths
 	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
-	theta2 = math.acos((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)) + thetaA  
+	temp = (pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)
+	temp = max(temp,-1)
+	temp = min(temp,1)
+	theta2 = math.acos(temp) + thetaA  
 
 	#ratio to keep height constant  
 	Rh = (Lgamma*math.cos(theta1) - Ldelta*math.cos(theta1+theta2)) / (Ldelta*math.cos(theta1+theta2))
@@ -200,13 +205,13 @@ def TranslateIO(speed):
 	print("theta2: ", theta2)
 	print("theta1: ", theta1)
 
-        #angular velocities to keep radius velocity constant
+    #angular velocities to keep radius velocity constant
 	theta1_dot = (-speed) / (-Lgamma*math.sin(theta1) + Ldelta*(1+Rh)*math.sin(theta1+theta2))
 	theta2_dot = Rh*theta1_dot
 
 	print("theta1_dot: ", theta1_dot)
 	print("theta2_dot: ",theta2_dot)
-	L1p = (theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),29))))
+	L1p = (theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
 	L2p = (theta2_dot * LA * LB)/ L2 * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
 	print("L1p: ", L1p)
 	print("L2p: ", L2p)
@@ -237,8 +242,7 @@ def TranslateIO(speed):
 		print("Move In")
 	elif speed>0:
 		print("Move Out")
-def WristCorrection(theta1,theta2):
-	pass		
+		
 def testSetActuators(actuator1, actuator2):
 	actuator1 = (actuator1 - 127) / 127.0  # range is now -1 to 1
 	actuator2 = (actuator2 - 127) / 127.0
@@ -272,12 +276,11 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					if emergency == False:
 						basePan.setAbsolute(int(ord(command[3])))
 						if int(ord(command[3])) != 127: # stick not centered
-						#	GPIO.output(12,False) # on
+							GPIO.output(12,False) # on
 						else:
 							GPIO.output(12,True) # off
 						print(str(basePan.currentPosition))
 				elif command[2] == "L": # translate wrist joint "up/down"
-					#GPIO.output(12,True)
 					if emergency == False:
 						Speed = int(ord(command[3]))
 						if Speed != 127:
@@ -290,35 +293,29 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 							sendSabertooth(address,1,0)
 							sendSabertooth(address,0,0)
 				elif command[2] == "M": # translate wrist joint "in/out"
-					#GPIO.output(12,True)
 					if emergency == False:
 						Speed = int(ord(command[3]))
 						if Speed != 127:
 							Speed = float(Speed - 127)/127	#range is now -1 to 1
 							Speed = Speed*20		#adjust as necessary
-							#TranslateIO(Speed)
+							TranslateIO(Speed)
 						
 				elif command[2] == "W": # rotate wrist joint up/down
-					#GPIO.output(12,True)
 					if emergency == False:
 						print(int(ord(command[3])))
 						wristTilt.setRelative(int(ord(command[3])))
 						print("wristTilt")
 				elif command[2] == "P": # pan gripper left/right
-					#GPIO.output(12,True)
 					if emergency == False:	
 						wristPan.setRelative(int(ord(command[3])))
 				elif command[2] == "H": # twist gripper cw/ccw
-					#GPIO.output(12,True)
 					if emergency == False:
 						wristTwist.setRelative(int(ord(command[3])))
 				elif command[2] == "G": # open or close gripper
-					#GPIO.output(12,True)
 					if emergency == False:
 						pass
 						#gripperControl.setAbsolute(someNumber)
 				elif command[2] == "S": # stop all actuators
-					#GPIO.output(12,True)
 					sendSabertooth(address,0, 0)
 					servoDriver.reset()
 					print("emergency stop")
@@ -326,7 +323,6 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				elif command[2] == "C": # cancel stop
 					emergency = False
 				elif command[2] == "T":	# controls both actuators individually 
-					#GPIO.output(12,True)
 					actuator1 = int(ord(command[3]))
 					actuator2 = int(ord(command[4]))
 					testSetActuators(actuator1, actuator2)
