@@ -94,8 +94,7 @@ class ArmClient: # class for arm control
 	
 	def gripper(self, speed):
 		try:
-			self.socket.send(self.commandGripper)
-			self.socket.send(chr(speed))
+			self.socket.send(self.commandGripper + chr(speed))
 			return True
 		except socket.error as e:
 			sys.stderr.write(e.strerror)

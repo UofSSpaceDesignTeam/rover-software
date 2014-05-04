@@ -536,6 +536,9 @@ while True: # main execution loop
 						driveControl.sendTwoStickData(-axes[1] * speedScale, -axes[3] * speedScale)
 			elif buttonList[6].selected: # arm mode 1
 				if indicatorList[5].active:
+					basePan = int(axes[2]*10) + 127
+					armControl.panBase(basePan)
+					time.sleep(0.005)
 					#toggle = 0 # use start button to toggle 
 					#if (toggle == 0): # using translate Z and IO
 					wristMove = int(axes[1]*127) +127
@@ -559,10 +562,10 @@ while True: # main execution loop
 					#	if button[7]:
 					#		toggle = 0
 					#		time.sleep(0.005)
-					#wristPan = int(axes[2] * 80) + 127
-					#if wristPan != 127:
-					#	armControl.panHand(wristPan)
-					#	time.sleep(0.005)
+					wristPan = int(axes[2] * 80) + 127
+					if wristPan != 127:
+						armControl.panHand(wristPan)
+						time.sleep(0.005)
 					wristTwist = 127 - int(axes[4] * 120)
 					if wristTwist != 127:
 						armControl.twistHand(wristTwist)
@@ -571,11 +574,11 @@ while True: # main execution loop
 					if wristTilt != 127:
 						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
-					basePan = int(axes[2]*10) + 127
-					armControl.panBase(basePan)
-					time.sleep(0.005)
 			if buttonList[13].selected: # temporary test actuator mode (2)
 				if indicatorList[5].active: # arm mode
+					gripperControl = int(buttons[0]);
+					if gripper:
+						armControl.gripper(gripperControl)
 					throttle = int(axes[1] * 127) + 127
 					throttle = max(throttle, 0)
 					throttle = min(throttle, 254)

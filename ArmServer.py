@@ -316,6 +316,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					#GPIO.output(12,True)
 					if emergency == False:
 						pass
+						#gripperControl.setAbsolute(someNumber)
 				elif command[2] == "S": # stop all actuators
 					#GPIO.output(12,True)
 					sendSabertooth(address,0, 0)
