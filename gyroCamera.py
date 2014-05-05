@@ -57,7 +57,7 @@ class GyroCamera:
 				self.adjustCameraPitchAngle(deltaPhi)
 	
 	def angle2time(self, angle):
-		return angle * 0.010	#yet to be determined coefficient
+		return angle * 0.030	#yet to be determined coefficient
 	
 	def adjustCameraYawAngle(self, delta):
 		if self.currentYawAngle + delta > 360:
@@ -70,17 +70,17 @@ class GyroCamera:
 	#deltaTheta -> degrees
 	def setYaw(self, deltaTheta):
 
-		if deltaTheta < 0:
+		if deltaTheta > 0:
 			print("Counter-Clockwise")
-			waitTime = self.angle2time(-1*deltaTheta)
+			waitTime = self.angle2time(deltaTheta)
 			self.servoDriver.setServo(1, 1480)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
 			self.adjustCameraYawAngle(deltaTheta)
 			
-		elif deltaTheta > 0:
+		elif deltaTheta < 0:
 			print("Clockwise")
-			waitTime = self.angle2time(deltaTheta)
+			waitTime = self.angle2time(-1*deltaTheta)
 			self.servoDriver.setServo(1, 1520)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
@@ -124,7 +124,7 @@ class GyroCamera:
 			
 		# both are in DEGREES ( each d-Pad button push corresponds to 5 degrees )
 		dCamPitch = deltaCamPitch + p_dPad * 5
-		dCamYaw = y_dPad * 10
+		dCamYaw = y_dPad * -10
 		
 		#debugging prints
 		print("Old Pitch / Yaw Angles: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))
