@@ -57,7 +57,7 @@ class GyroCamera:
 				self.adjustCameraPitchAngle(deltaPhi)
 	
 	def angle2time(self, angle):
-		return angle * 0.005	#yet to be determined coefficient
+		return angle * 0.010	#yet to be determined coefficient
 	
 	def adjustCameraYawAngle(self, delta):
 		if self.currentYawAngle + delta > 360:
@@ -124,7 +124,7 @@ class GyroCamera:
 			
 		# both are in DEGREES ( each d-Pad button push corresponds to 5 degrees )
 		dCamPitch = deltaCamPitch + p_dPad * 5
-		dCamYaw = y_dPad * 5
+		dCamYaw = y_dPad * 10
 		
 		#debugging prints
 		print("Old Pitch / Yaw Angles: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))
