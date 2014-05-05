@@ -315,7 +315,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
 						temp = int(ord(command[3]))
-						if temp > 0
+						if temp > 0:
 							temp = float(temp*800/127)
 							gripperRight = 2000 - int(temp)
 							gripperLeft = int(temp) + 1200
