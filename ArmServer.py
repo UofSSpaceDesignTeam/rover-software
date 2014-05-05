@@ -314,7 +314,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						wristTwist.setRelative(int(ord(command[3])))
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
-						if !gripperOpen:
+						if gripperOpen == True:
 							servoDriver.setServo(6,1500)
 							servoDriver.setServo(7,1700)
 							gripperOpen = False
