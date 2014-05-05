@@ -19,7 +19,6 @@ armPort = 3003
 ramping = 10
 scaleFactor = 0.55
 address= 128
-gripperOpen = False
 
 L1 = 300
 L2 = 300
@@ -53,6 +52,7 @@ adc = ADS1x15(0x48)
 # global variables
 
 emergency = False
+gripperOpen = False
 
 # function definitions
 
