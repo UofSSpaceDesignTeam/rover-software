@@ -270,6 +270,7 @@ def testSetActuators(actuator1, actuator2):
 	
 def parseCommand(command): # Parses Socket Data back to Axis positions
 	global emergency
+	global gripperOpen
 	if len(command) > 3:
 		if command[0] == "#": # is valid
 			if command[1] == "A":
