@@ -315,7 +315,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
 						temp = int(ord(command[3]))
-						temp = float(temp*/127)
+						temp = float(temp*800/127)
 						gripperRight = 2000 - temp
 						gripperLeft = int(temp) + 1200
 						servoDriver.setServo(6,gripperLeft)
