@@ -1,5 +1,5 @@
 from ServoDriver import *
-from GyroCamera import *
+from gyroCamera import *
 import socket
 import time
 
