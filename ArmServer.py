@@ -319,12 +319,10 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 							servoDriver.setServo(6,1500)
 							servoDriver.setServo(7,1700)
 							gripperOpen = False
-							print("gripper closed")
 						else:
 							servoDriver.setServo(6,1200)
 							servoDriver.setServo(7,2000)
 							gripperOpen = True
-							print("gripper open")
 				elif command[2] == "S": # stop all actuators
 					sendSabertooth(address,0, 0)
 					servoDriver.reset()
