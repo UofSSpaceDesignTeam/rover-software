@@ -5,22 +5,13 @@ import math
 import time
 
 
-class gyroCamera:
-
-#	currentPitch = 1800
-#	currentPitchAngle = 0.0
-#	newPitchAngle = 0.0
-#	currentYawAngle = 0.0
-#	newYawAngle = 0.0
-#	imuOldPitch = 0
-#	imuOldRoll = 0
+class GyroCamera:
 
 	def __init__(self, servoObject):
 		self.currentPitch = 1300
-		self.currentPitchAngle = 90.0
-		self.newPitchAngle = 0.0
-		self.currentYawAngle = -90.0
-		self.newYawAngle = 0.0
+		
+		self.currentPitchAngle = 0.0
+		self.currentYawAngle = 90.0
 
 		print("Starting IMU and servos...")
 		try:
@@ -30,105 +21,119 @@ class gyroCamera:
 		self.imuOldPitch = int(self.imu.pitch())
 		self.imuOldRoll = int(self.imu.roll())
 		print("Starting pitch is: %d" % self.imuOldPitch)
-		print("Starting roll is: %d" % self.imuOldRoll)
+		print("Starting roll is : %d" % self.imuOldRoll)
 		self.servoDriver = servoObject
 		self.servoDriver.setServo(3, self.currentPitch)
-		time.sleep(0.5)	#wait for the camera to set
-		print("done")
+		time.sleep(0.25)	#wait for the camera to set
+		print("Setup complete")
 	
 #converts pitch angle to microSeconds for servo...
 #	based on 90deg servo
 	def angle2micros(self, angle):
-		return int( 40 * angle )	#was 11.1 us/degrees
+		return int( 20 * angle )	#was 11.1 us/degrees
+	
+	def adjustCameraPitchAngle(self, delta):
+		self.currentPitchAngle = self.currentPitchAngle + delta
 
-	def setPitch(self, newPhi):
+	#deltaPhi -> degrees
+	def setPitch(self, deltaPhi):
 
-		diff = newPhi - self.currentPitchAngle
-		if diff < 0:	#was <
+		if deltaPhi > 0:	#was <
 			print("Higher...")
-			trav = self.angle2micros(-1*diff)
+			trav = self.angle2micros(deltaPhi)
 			if self.currentPitch + trav < 2300:
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch + 1
 					self.servoDriver.setServo(3, self.currentPitch)
-		elif diff > 0:	#was >
+				self.adjustCameraPitchAngle(deltaPhi)
+				
+		elif deltaPhi < 0:	#was >
 			print("Lower...")
-			trav = self.angle2micros(diff)
+			trav = self.angle2micros(-1*deltaPhi)
 			if self.currentPitch - trav > 500:
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch - 1
 					self.servoDriver.setServo(3, self.currentPitch)
+				self.adjustCameraPitchAngle(deltaPhi)
 	
 	def angle2time(self, angle):
 		return angle * 0.075	#yet to be determined coefficient
+	
+	def adjustCameraYawAngle(self, delta):
+		if self.currentYawAngle + delta > 360:
+			self.currentYawAngle = (self.currentYawAngle + delta) % 360
+		elif self.currentYawAngle + delta < 0:
+			self.currentYawAngle = 360 - abs( self.currentYawAngle + delta )
+		else:
+			self.currentYawAngle = self.currentYawAngle + delta
 
-	def setYaw(self, newTheta):
+	#deltaTheta -> degrees
+	def setYaw(self, deltaTheta):
 
-		diff = newTheta - self.currentYawAngle
-		if diff < 0:
-			waitTime = self.angle2time(-1*diff)
+		if deltaTheta < 0:
+			print("Counter-Clockwise")
+			waitTime = self.angle2time(-1*deltaTheta)
 			self.servoDriver.setServo(1, 1480)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
-		elif diff > 0:
-			waitTime = self.angle2time(diff)
+			self.adjustCameraYawAngle(deltaTheta)
+			
+		elif deltaTheta > 0:
+			print("Clockwise")
+			waitTime = self.angle2time(deltaTheta)
 			self.servoDriver.setServo(1, 1520)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
+			self.adjustCameraYawAngle(deltaTheta)
 
+	def calculateCamAdjust(self, dPitchIMU, dYawIMU):	#arguments and returns are in DEGREES!!!
 
-	def dist(self, a, b):
-		return math.sqrt((a*a)+(b*b))
+		caseTest = int(self.currentYawAngle / 90)
+		if caseTest == 0 or caseTest == 2:
+			yWeight = (self.currentYawAngle % 90) / 90
+			pWeight = 1  - yWeight
+			return pWeight * dPitchIMU + yWeight * dYawIMU
+			
+		elif caseTest == 1 or caseTest == 3:
+			pWeight = (self.currentYawAngle % 90) / 90
+			yWeight = 1 - pWeight
+			return pWeight * dPitchIMU + yWeight * dYawIMU
+			
+		else:
+			print ("Failed to determine a case!!!")
+			return 0
 
-	def axisTransform(self, deltaPhi, deltaBeta):	#arguments are in DEGREES!!!
-
-		#first calculate the previous vector (using RADIANS!!!)
-		x = math.sin( math.radians(self.currentPitchAngle)) * math.cos( math.radians(self.currentYawAngle))
-		y = math.sin( math.radians(self.currentPitchAngle)) * math.sin( math.radians(self.currentYawAngle))
-		z = math.cos( math.radians(self.currentPitchAngle))
-		#now for the various trig calc's to shorten upcoming step
-		cosBeta = math.cos( math.radians(deltaBeta))
-		sinBeta = math.sin( math.radians(deltaBeta))
-		cosPhi = math.cos( math.radians(deltaPhi))
-		sinPhi = math.sin( math.radians(deltaPhi))
-		#now to calculate the new vector
-		xprime = x*cosBeta + z*sinBeta
-		yprime = x*sinBeta*sinPhi + y*cosPhi - z*sinPhi*cosBeta
-		zprime = y*sinPhi - x*cosPhi*sinBeta + z*cosPhi*cosBeta
-		#calculate, and convert to degrees, the new pitch and yaw angles
-		thetaPrime = math.atan2(yprime, xprime)
-		phiPrime = math.atan2( self.dist(xprime, yprime), zprime)
-		#UPDATE IMU VALUES
-		self.imuOldRoll = self.imuNewRoll
-		self.imuOldPitch = self.imuNewPitch
-		#set "output" angle varibles to be in degrees
-		self.newYawAngle = math.degrees(thetaPrime)
-		self.newPitchAngle = math.degrees(phiPrime)
-
-	def singleAdjust(self, gyroEnable, yButton, xButton):
+	def singleAdjust(self, gyroEnable, p_dPad, y_dPad):
 
 		if gyroEnable == True:
-			self.imuNewPitch = int(self.imu.pitch())
-			self.imuNewRoll = int(self.imu.roll())
-			pTest = abs(self.imuNewPitch - self.imuOldPitch)
-			rTest = abs(self.imuNewRoll - self.imuOldRoll)
-			print("New/diff in Pitch: %d %d" % (self.imuNewPitch, pTest))
-			print("New/diff in Roll: %d %d" % (self.imuNewRoll, rTest))
-			if pTest > 5 or rTest > 5:
+			imuNewPitch = int(self.imu.pitch())
+			imuNewRoll = int(self.imu.roll())
+			pTest = imuNewPitch - self.imuOldPitch
+			rTest = imuNewRoll - self.imuOldRoll
+			#print("New/diff in Pitch: %d %d" % (self.imuNewPitch, pTest))
+			#print("New/diff in Roll: %d %d" % (self.imuNewRoll, rTest))
+			
+			if abs(pTest) > 2 or abs(rTest) > 2:
 				print("Change is in the IMU...")
-				self.axisTransform( self.imuNewRoll - self.imuOldRoll, self.imuNewPitch - self.imuOldPitch)
+				deltaCamPitch = self.calculateCamAdjust( pTest, rTest)
 			else:
-				self.newPitchAngle = self.currentPitchAngle
-				self.newYawAngle = self.currentYawAngle
+				deltaCamPitch = 0
 		else:
-			self.newPitchAngle = self.currentPitchAngle
-			self.newYawAngle = self.currentYawAngle
-		#debugging prints
-		print("Setting cam pitch to/from: %d / %d" % (self.newPitchAngle - yButton*5, self.currentPitchAngle))
-		print("Setting cam yaw to/from:   %d / %d" % (self.newYawAngle + xButton*4, self.currentYawAngle))
+			deltaCamPitch = 0
+			
+			
+		# both are in DEGREES ( each d-Pad button push corresponds to 5 degrees )
+		dCamPitch = deltaCamPitch + p_dPad * 5
+		dCamYaw = y_dPad * -5
 		
-		self.setPitch(self.newPitchAngle - yButton)	# -ve b/c of how phi is set up relative to servo time layout
-		self.setYaw(self.newYawAngle + xButton)
-		#update the current angles with the new ones
-		self.currentPitchAngle = self.newPitchAngle - yButton*5
-		self.currentYawAngle = self.newYawAngle + xButton*4
+		#debugging prints
+		print("Old Pitch / Yaw Angles: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))
+		print("Pitch / Yaw Changes   : %d / %d" % (dCamPitch, dCamYaw))
+		
+		# call f'ns to adjust physical camera pitch and yaw
+		self.setPitch(dCamPitch)
+		self.setYaw(dCamYaw)
+		
+		# print adjusted angles to verify correctness of operations
+		print("New Pitch / New Yaw: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))
+		print("   ")
