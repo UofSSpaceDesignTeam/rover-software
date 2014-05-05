@@ -66,7 +66,7 @@ try:
 	servoDriver = ServoDriver()
 	# Start the gyrocamera with the servoDriver
 	try:
-		gyroCam = gyroCamera(servoDriver)
+		gyroCam = GyroCamera(servoDriver)
 	except:
 		print("Gyro-Camera setup failed!")
 		raise
