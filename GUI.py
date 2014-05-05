@@ -576,7 +576,7 @@ while True: # main execution loop
 						time.sleep(0.005)
 			if buttonList[13].selected: # arm mode 2
 				if indicatorList[5].active: 
-					gripperControl = int(buttons[0])
+					gripperControl = int(axes[4]*127)
 					if gripperControl == 1:
 						armControl.gripper(gripperControl)
 					throttle = int(axes[1] * 127) + 127

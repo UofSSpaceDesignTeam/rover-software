@@ -52,7 +52,7 @@ adc = ADS1x15(0x48)
 # global variables
 
 emergency = False
-gripperOpen = False
+
 
 # function definitions
 
@@ -270,7 +270,6 @@ def testSetActuators(actuator1, actuator2):
 	
 def parseCommand(command): # Parses Socket Data back to Axis positions
 	global emergency
-	global gripperOpen
 	if len(command) > 3:
 		if command[0] == "#": # is valid
 			if command[1] == "A":
@@ -315,14 +314,12 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						wristTwist.setRelative(int(ord(command[3])))
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
-						if gripperOpen == True:
-							servoDriver.setServo(6,1500)
-							servoDriver.setServo(7,1700)
-							gripperOpen = False
-						else:
-							servoDriver.setServo(6,1200)
-							servoDriver.setServo(7,2000)
-							gripperOpen = True
+						temp = int(ord(command[3]))
+						temp = float(temp*/127)
+						gripperRight = 2000 - temp
+						gripperLeft = int(temp) + 1200
+						servoDriver.setServo(6,gripperLeft)
+						servoDriver.setServo(7,gripperRight)
 				elif command[2] == "S": # stop all actuators
 					sendSabertooth(address,0, 0)
 					servoDriver.reset()
