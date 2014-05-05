@@ -19,6 +19,7 @@ armPort = 3003
 ramping = 10
 scaleFactor = 0.55
 address= 128
+gripperOpen = False
 
 L1 = 300
 L2 = 300
@@ -313,8 +314,16 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						wristTwist.setRelative(int(ord(command[3])))
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
-						pass
-						#gripperControl.setAbsolute(someNumber)
+						if !gripperOpen:
+							servoDriver.setServo(6,1500)
+							servoDriver.setServo(7,1700)
+							gripperOpen = False
+							print("gripper closed")
+						else:
+							servoDriver.setServo(6,1200)
+							servoDriver.setServo(7,2000)
+							gripperOpen = True
+							print("gripper open")
 				elif command[2] == "S": # stop all actuators
 					sendSabertooth(address,0, 0)
 					servoDriver.reset()
@@ -371,7 +380,9 @@ try:
 	wristPan = Servo(servoDriver, 11, 830, 2350, 1600)
 	wristTilt = Servo(servoDriver, 10, 1000, 1700, 1370)
 	wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)
-	#disconnect servo power 
+	servoDriver.setServo(6,1200)
+	servoDriver.setServo(7,2000)
+	#disconnect base servo power 
 	GPIO.output(12,True)
 except:
 	print("Servo setup failed!")
