@@ -30,7 +30,7 @@ class GyroCamera:
 #converts pitch angle to microSeconds for servo...
 #	based on 90deg servo
 	def angle2micros(self, angle):
-		return int( 20 * angle )	#was 11.1 us/degrees
+		return int( 10 * angle )	#was 11.1 us/degrees
 	
 	def adjustCameraPitchAngle(self, delta):
 		self.currentPitchAngle = self.currentPitchAngle + delta
@@ -57,7 +57,7 @@ class GyroCamera:
 				self.adjustCameraPitchAngle(deltaPhi)
 	
 	def angle2time(self, angle):
-		return angle * 0.075	#yet to be determined coefficient
+		return angle * 0.025	#yet to be determined coefficient
 	
 	def adjustCameraYawAngle(self, delta):
 		if self.currentYawAngle + delta > 360:
@@ -124,7 +124,7 @@ class GyroCamera:
 			
 		# both are in DEGREES ( each d-Pad button push corresponds to 5 degrees )
 		dCamPitch = deltaCamPitch + p_dPad * 5
-		dCamYaw = y_dPad * -5
+		dCamYaw = y_dPad * 5
 		
 		#debugging prints
 		print("Old Pitch / Yaw Angles: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))

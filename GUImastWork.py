@@ -29,7 +29,7 @@ import subprocess
 IPraspi1 = "192.168.1.103"
 IPraspi2 = "10.64.226.138"
 IPraspi3 = "192.168.1.105"
-IPraspi4 = "10.64.226.59"
+IPraspi4 = "10.64.226.94"
 # netcat-ed video on port 3001
 driveClientPort = 3002
 armClientPort = 3003
