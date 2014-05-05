@@ -57,7 +57,7 @@ class GyroCamera:
 				self.adjustCameraPitchAngle(deltaPhi)
 	
 	def angle2time(self, angle):
-		return angle * 0.013	#yet to be determined coefficient
+		return angle * 0.0135	#yet to be determined coefficient
 	
 	def adjustCameraYawAngle(self, delta):
 		if self.currentYawAngle + delta > 360:
