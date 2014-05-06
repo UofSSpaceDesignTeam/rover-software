@@ -13,6 +13,8 @@ class GyroCamera:
 		self.currentPitchAngle = 0.0
 		self.currentYawAngle = 0.0
 
+		self.yawMoveCount = 0
+		
 		print("Starting IMU and servos...")
 		try:
 			self.imu = IMU()
@@ -60,6 +62,10 @@ class GyroCamera:
 		return angle * 0.0133	#yet to be determined coefficient
 	
 	def adjustCameraYawAngle(self, delta):
+	
+		self.yawMoveCount += 1
+		print("Move count is: %d" % self.yawMoveCount)
+		
 		if self.currentYawAngle + delta > 360:
 			self.currentYawAngle = (self.currentYawAngle + delta) % 360
 		elif self.currentYawAngle + delta < 0:
