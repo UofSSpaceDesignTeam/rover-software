@@ -323,7 +323,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					if emergency == False:
 						dist = int(ord(command[3]))
 						for x in range(0,int(dist/5)):
-							wristTwist.setRelative(5)
+							wristTwist.setRelative(int(dist/5))
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
 						temp = int(ord(command[3])) - 127
