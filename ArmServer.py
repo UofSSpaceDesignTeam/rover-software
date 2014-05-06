@@ -326,8 +326,10 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 							dist = -dist
 							for x in range(0,int(dist/5)):
 								wristTwist.setRelative(-int(dist/5))
+								print(int(dist/5))
 						else:
 							for x in range(0,int(dist/5)):
+								print(int(dist/5))
 								wristTwist.setRelative(int(dist/5))
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
@@ -336,8 +338,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 							temp = float(temp*800/127)
 							gripperRight = 2000 - int(temp)
 							gripperLeft = int(temp) + 1200
-							servoDriver.setServo(6,gripperLeft)
-							servoDriver.setServo(7,gripperRight)
+							#servoDriver.setServo(6,gripperLeft)
+							#servoDriver.setServo(7,gripperRight)
 				elif command[2] == "S": # stop all actuators
 					sendSabertooth(address,0, 0)
 					servoDriver.reset()
