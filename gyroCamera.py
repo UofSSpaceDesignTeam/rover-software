@@ -63,8 +63,7 @@ class GyroCamera:
 	
 	def adjustCameraYawAngle(self, delta):
 	
-		self.yawMoveCount += 1
-		print("Move count is: %d" % self.yawMoveCount)
+		self.yawMoveCount += 1	#debugging stuff
 		
 		if self.currentYawAngle + delta > 360:
 			self.currentYawAngle = (self.currentYawAngle + delta) % 360
@@ -144,6 +143,7 @@ class GyroCamera:
 		self.setPitch(dCamPitch)
 		self.setYaw(dCamYaw)
 		
+		print("Move count is: %d" % self.yawMoveCount)
 		# print adjusted angles to verify correctness of operations
 		print("New Pitch / New Yaw: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))
 		print("   ")
