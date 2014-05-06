@@ -193,27 +193,27 @@ def TranslateIO(speed):
 	L2 = readActuator2()
 	L1 = readActuator1()
 
-	temp = (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)
+	temp = float((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta))
 	#to avoid math domain errors
 	temp = max(temp,-1)
 	temp = min(temp,1)
 
 	#angles calculated from linear actuator lengths
-	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
-	temp = (pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)
+	theta1 = float(math.acos(temp) + thetaL + thetaE - math.pi/2)
+	temp = float((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB))
 	temp = max(temp,-1)
 	temp = min(temp,1)
-	theta2 = math.acos(temp) + thetaA  
+	theta2 = float(math.acos(temp) + thetaA)  
 
 	#ratio to keep height constant  
-	Rh = (Lgamma*math.cos(theta1) - Ldelta*math.cos(theta1+theta2)) / (Ldelta*math.cos(theta1+theta2))
+	Rh = float((Lgamma*math.cos(theta1) - Ldelta*math.cos(theta1+theta2)) / (Ldelta*math.cos(theta1+theta2)))
 
         #angular velocities to keep radius velocity constant
 	theta1_dot = float((-speed) / (-Lgamma*math.sin(theta1) + Ldelta*(1+Rh)*math.sin(theta1+theta2)))
-	theta2_dot = Rh*theta1_dot
+	theta2_dot = float(Rh*theta1_dot)
 
-	L1p = (theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
-	L2p = (theta2_dot * LA * LB)/ L2 * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
+	L1p = float((theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2)))))
+	L2p = float((theta2_dot * LA * LB)/ L2 * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2)))))
 
 	print("In translateIO")
 	print("L1: ", L1)
