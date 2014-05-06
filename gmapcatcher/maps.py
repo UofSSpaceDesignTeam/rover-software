@@ -1314,6 +1314,9 @@ class MainWindow(gtk.Window):
             gobject.timeout_add(self.conf.auto_refresh, self.refresh)
 
 
+    def returnmarkers(self):
+	return self.markers
+            
 def main(conf_path):
     # gobject.threads_init()
     gtk.gdk.threads_init()
