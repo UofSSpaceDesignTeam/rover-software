@@ -5,6 +5,8 @@ import math
 import time
 
 
+# CHECK TO SEE IF THE WAIT TIMES FOR THE YAW SERVO ARE ACTUALLY CHANGING!!!!
+
 class GyroCamera:
 
 	def __init__(self, servoObject):
@@ -65,7 +67,7 @@ class GyroCamera:
 	
 		self.yawMoveCount += 1	#debugging stuff
 		
-		newYaw = self.currentYawAngle + 84.699 / delta	#was just self.currentYawAngle += delta before
+		newYaw = self.currentYawAngle + delta	#was just self.currentYawAngle += 84.699 / delta before
 		
 		if newYaw > 360:
 			self.currentYawAngle = (newYaw) % 360
