@@ -118,7 +118,7 @@ def TranslateZ(speed):
 	Rr = (Lgamma*math.sin(theta1) - Ldelta*math.sin(theta1+theta2)) / (Ldelta*math.sin(theta1+theta2))
 
         #angular velocities to keep height velocity constant
-	theta1_dot = speed / (Lgamma*math.cos(theta1) - Ldelta*(Rh + 1)*math.cos(theta1+theta2))
+	theta1_dot = speed / (Lgamma*math.cos(theta1) - Ldelta*(Rr + 1)*math.cos(theta1+theta2))
 	theta2_dot = Rr * theta1_dot
 
         #velocities of actuators to acheive angular velocities
