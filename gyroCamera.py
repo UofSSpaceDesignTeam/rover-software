@@ -110,14 +110,16 @@ class GyroCamera:
 			imuNewRoll = int(self.imu.roll())
 			pTest = imuNewPitch - self.imuOldPitch
 			rTest = imuNewRoll - self.imuOldRoll
-			self.imuOldPitch = imuNewPitch
-			self.imuOldRoll = imuNewRoll
+			#self.imuOldPitch = imuNewPitch
+			#self.imuOldRoll = imuNewRoll
 			#print("New/diff in Pitch: %d %d" % (self.imuNewPitch, pTest))
 			#print("New/diff in Roll: %d %d" % (self.imuNewRoll, rTest))
 			
 			if abs(pTest) > 3 or abs(rTest) > 3:
 				print("Change is in the IMU...")
 				deltaCamPitch = self.calculateCamAdjust( pTest, rTest)
+				self.imuOldPitch = imuNewPitch
+				self.imuOldRoll = imuNewRoll
 			else:
 				deltaCamPitch = 0
 		else:
