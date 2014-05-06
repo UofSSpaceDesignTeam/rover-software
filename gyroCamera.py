@@ -92,12 +92,12 @@ class GyroCamera:
 		if caseTest == 0 or caseTest == 2:
 			yWeight = (self.currentYawAngle % 90) / 90
 			pWeight = 1  - yWeight
-			return -0.5 * (pWeight * dPitchIMU + yWeight * dYawIMU)
+			return -0.1 * (pWeight * dPitchIMU + yWeight * dYawIMU)
 			
 		elif caseTest == 1 or caseTest == 3:
 			pWeight = (self.currentYawAngle % 90) / 90
 			yWeight = 1 - pWeight
-			return -0.5 * (pWeight * dPitchIMU + yWeight * dYawIMU)
+			return -0.1 * (pWeight * dPitchIMU + yWeight * dYawIMU)
 			
 		else:
 			print ("Failed to determine a case!!!")
@@ -113,7 +113,7 @@ class GyroCamera:
 			#print("New/diff in Pitch: %d %d" % (self.imuNewPitch, pTest))
 			#print("New/diff in Roll: %d %d" % (self.imuNewRoll, rTest))
 			
-			if abs(pTest) > 0.5 or abs(rTest) > 0.5:
+			if abs(pTest) > 2 or abs(rTest) > 2:
 				print("Change is in the IMU...")
 				deltaCamPitch = self.calculateCamAdjust( pTest, rTest)
 			else:
