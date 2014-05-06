@@ -11,7 +11,7 @@ class GyroCamera:
 		self.currentPitch = 1300
 		
 		self.currentPitchAngle = 0.0
-		self.currentYawAngle = 90.0
+		self.currentYawAngle = 0.0
 
 		print("Starting IMU and servos...")
 		try:
