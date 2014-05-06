@@ -69,7 +69,7 @@ class GyroCamera:
 		
 		if newYaw > 360:
 			self.currentYawAngle = (newYaw) % 360
-		elif deltaYaw < 0:
+		elif newYaw < 0:
 			self.currentYawAngle = 360 - abs( newYaw )
 		else:
 			self.currentYawAngle = newYaw
