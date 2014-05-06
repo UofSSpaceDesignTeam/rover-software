@@ -114,22 +114,29 @@ def TranslateZ(speed):
 	temp = min(temp,1)
 	theta2 = math.acos(temp) + thetaA
 
-    #ratio to keep radius of extension constant
+        #ratio to keep radius of extension constant
 	Rr = (Lgamma*math.sin(theta1) - Ldelta*math.sin(theta1+theta2)) / (Ldelta*math.sin(theta1+theta2))
 
-    #angular velocities to keep height velocity constant
-	theta1_dot = speed /float (Lgamma*math.cos(theta1) - Ldelta*(Rh + 1)*math.cos(theta1+theta2))
+        #angular velocities to keep height velocity constant
+	theta1_dot = speed / (Lgamma*math.cos(theta1) - Ldelta*(Rh + 1)*math.cos(theta1+theta2))
 	theta2_dot = Rr * theta1_dot
 
-    #velocities of actuators to acheive angular velocities
+        #velocities of actuators to acheive angular velocities
 	L1p = (theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
 	L2p = (theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
+
 	#for debugging/testing
 	print("In translateZ:")
-	print("speed: ",speed)
+	print("L1p: ", L1p)
+	print("L2p: ", L2p)
+	print("theta1: ", theta1)
 	print("theta2: ", theta2)
+	print("Rr: ",Rr)
+	print("theta1_dot: ", theta1_dot)
+	print("theta2_dot: ",theta2_dot)
 	print("L1p; ", L1p)
 	print("L2p: ",L2p)
+	
 	#deadband
 	if abs(speed) <= ArmDeadband:
 		L1p=0;
@@ -199,23 +206,25 @@ def TranslateIO(speed):
 
 	#ratio to keep height constant  
 	Rh = (Lgamma*math.cos(theta1) - Ldelta*math.cos(theta1+theta2)) / (Ldelta*math.cos(theta1+theta2))
-	print("In translateIO")
-	print("Rh: ",Rh)
-	print("speed: ",speed)
-	print("Ldelta: ", Ldelta)
-	print("theta2: ", theta2)
-	print("theta1: ", theta1)
 
-    #angular velocities to keep radius velocity constant
+        #angular velocities to keep radius velocity constant
 	theta1_dot = (-speed) / (-Lgamma*math.sin(theta1) + Ldelta*(1+Rh)*math.sin(theta1+theta2))
 	theta2_dot = Rh*theta1_dot
 
-	print("theta1_dot: ", theta1_dot)
-	print("theta2_dot: ",theta2_dot)
 	L1p = (theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
 	L2p = (theta2_dot * LA * LB)/ L2 * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2))))
+
+	print("In translateIO")
 	print("L1p: ", L1p)
 	print("L2p: ", L2p)
+	print("theta1: ", theta1)
+	print("theta2: ", theta2)
+	print("Rh: ",Rh)
+	print("theta1_dot: ", theta1_dot)
+	print("theta2_dot: ",theta2_dot)
+	print("L1p; ", L1p)
+	print("L2p: ",L2p)
+
 	if L1p<=0:
 		#constrain the range of data sent to sabertooth
 		L1p=-L1p
