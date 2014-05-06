@@ -209,7 +209,7 @@ def TranslateIO(speed):
 	Rh = (Lgamma*math.cos(theta1) - Ldelta*math.cos(theta1+theta2)) / (Ldelta*math.cos(theta1+theta2))
 
         #angular velocities to keep radius velocity constant
-	theta1_dot = (-speed) / (-Lgamma*math.sin(theta1) + Ldelta*(1+Rh)*math.sin(theta1+theta2))
+	theta1_dot = float((-speed) / (-Lgamma*math.sin(theta1) + Ldelta*(1+Rh)*math.sin(theta1+theta2)))
 	theta2_dot = Rh*theta1_dot
 
 	L1p = (theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2))))
