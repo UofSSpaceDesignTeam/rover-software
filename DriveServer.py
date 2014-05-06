@@ -12,7 +12,7 @@ import RPi.GPIO as GPIO # for hardware reset system
 
 drivePort = 3002
 ramping = 35 # 0.7 second
-timeout = 20 # 2 second2
+timeout = 20 # 2 second
 commandLF = 0
 commandLR = 1
 commandRF = 4
@@ -137,18 +137,16 @@ try:
 		(driveSocket, clientAddress) = serverSocket.accept()
 		print("Drive Server connected.")
 		driveSocket.settimeout(1.0)
-		while(True):
-			try:
+		try:
+			while(True):
 				data = driveSocket.recv(256)
 				if(data == ""): # socket closing
 					stopSabertooth()
 					break
 				else:
 					parseCommand(data)
-			except socket.timeout:
-				stopSabertooth()
-				print("Drive Server timeout.")
-				break
+		except socket.timeout:
+			stopSabertooth()
 		print("Drive Server disconnected.")
 	
 except KeyboardInterrupt:
