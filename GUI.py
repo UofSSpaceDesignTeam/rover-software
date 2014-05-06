@@ -404,18 +404,18 @@ def connectClients(fakeArg): # button-based
 	pygame.display.update()
 	drawIndicators()
 	pygame.display.update()
-	#if not indicatorList[0].active:
-	#	cameraRaspi1.connect(0)
+	if not indicatorList[0].active:
+		cameraRaspi1.connect(0)
 	if not indicatorList[1].active:
 		cameraRaspi2.connect(0)
-	#if not indicatorList[2].active:
-	#	cameraRaspi4.connect(0)
-	#if not indicatorList[4].active:
-	#	driveControl.connect(0)
+	if not indicatorList[2].active:
+		cameraRaspi4.connect(0)
+	if not indicatorList[4].active:
+		driveControl.connect(0)
 	if not indicatorList[5].active:
 		armControl.connect(0)
-	#if not indicatorList[3].active:
-	#	gpsClient.connect(0)
+	if not indicatorList[3].active:
+		gpsClient.connect(0)
 	#if not indicatorList[7].active:
 	#	mastControl.connect(0)
 	buttonList[10].selected = False
@@ -443,7 +443,7 @@ else:
 cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
 cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
 cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
-driveControl = DriveClient(IPraspi1, driveClientPort)
+driveControl = DriveClient(IPraspi2, driveClientPort)
 gpsClient = GPSClient(IPraspi1, gpsClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
 mastControl = MastClient(IPraspi4, mastClientPort)

@@ -137,16 +137,16 @@ try:
 		(driveSocket, clientAddress) = serverSocket.accept()
 		print("Drive Server connected.")
 		driveSocket.settimeout(1.0)
-		try:
-			while(True):
+		while(True):
+			try:
 				data = driveSocket.recv(256)
 				if(data == ""): # socket closing
 					stopSabertooth()
 					break
 				else:
 					parseCommand(data)
-		except socket.timeout:
-			stopSabertooth()
+			except socket.timeout:
+				stopSabertooth()
 		print("Drive Server disconnected.")
 	
 except KeyboardInterrupt:
