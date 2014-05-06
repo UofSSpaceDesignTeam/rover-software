@@ -92,12 +92,12 @@ class GyroCamera:
 		if caseTest == 0 or caseTest == 2:
 			yWeight = (self.currentYawAngle % 90) / 90
 			pWeight = 1  - yWeight
-			return -1 * (pWeight * dPitchIMU + yWeight * dYawIMU)
+			return -1 * (-1*pWeight * dPitchIMU + yWeight * dYawIMU)
 			
 		elif caseTest == 1 or caseTest == 3:
 			pWeight = (self.currentYawAngle % 90) / 90
 			yWeight = 1 - pWeight
-			return -1 * (pWeight * dPitchIMU + yWeight * dYawIMU)
+			return -1 * (-1*pWeight * dPitchIMU + yWeight * dYawIMU)
 			
 		else:
 			print ("Failed to determine a case!!!")
