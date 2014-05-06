@@ -65,12 +65,14 @@ class GyroCamera:
 	
 		self.yawMoveCount += 1	#debugging stuff
 		
-		if self.currentYawAngle + delta > 360:
-			self.currentYawAngle = (self.currentYawAngle + delta) % 360
-		elif self.currentYawAngle + delta < 0:
-			self.currentYawAngle = 360 - abs( self.currentYawAngle + delta )
+		newYaw = self.currentYawAngle + 84.699 / delta	#was just self.currentYawAngle += delta before
+		
+		if newYaw > 360:
+			self.currentYawAngle = (newYaw) % 360
+		elif deltaYaw < 0:
+			self.currentYawAngle = 360 - abs( newYaw )
 		else:
-			self.currentYawAngle = self.currentYawAngle + delta
+			self.currentYawAngle = newYaw
 
 	#deltaTheta -> degrees
 	def setYaw(self, deltaTheta):
