@@ -325,10 +325,10 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						if dist < 0:
 							dist = -dist
 							for x in range(0,int(dist/5)):
-								wristTwist.setRelative(-int(dist/5))
+								wristTwist.setRelative(-int(dist/5)+127)
 								print(int(dist/5))
 						else:
-							for x in range(0,int(dist/5)):
+							for x in range(0,int(dist/5)+127):
 								print(int(dist/5))
 								wristTwist.setRelative(int(dist/5))
 				elif command[2] == "G": # open or close gripper
