@@ -404,20 +404,20 @@ def connectClients(fakeArg): # button-based
 	pygame.display.update()
 	drawIndicators()
 	pygame.display.update()
-	if not indicatorList[0].active:
-		cameraRaspi1.connect(0)
+	#if not indicatorList[0].active:
+	#	cameraRaspi1.connect(0)
 	if not indicatorList[1].active:
 		cameraRaspi2.connect(0)
-	if not indicatorList[2].active:
-		cameraRaspi4.connect(0)
-	if not indicatorList[4].active:
-		driveControl.connect(0)
+	#if not indicatorList[2].active:
+	#	cameraRaspi4.connect(0)
+	#if not indicatorList[4].active:
+	#	driveControl.connect(0)
 	if not indicatorList[5].active:
 		armControl.connect(0)
-	if not indicatorList[3].active:
-		gpsClient.connect(0)
-	if not indicatorList[7].active:
-		mastControl.connect(0)
+	#if not indicatorList[3].active:
+	#	gpsClient.connect(0)
+	#if not indicatorList[7].active:
+	#	mastControl.connect(0)
 	buttonList[10].selected = False
 	drawIndicators()
 	drawButtons()
@@ -566,10 +566,6 @@ while True: # main execution loop
 					if wristPan != 127:
 						armControl.panHand(wristPan)
 						time.sleep(0.005)
-					wristTwist = 127 - int(axes[4] * 120)
-					if wristTwist != 127:
-						armControl.twistHand(wristTwist)
-						time.sleep(0.005)
 					wristTilt = 127 - int(axes[3] * 17)
 					if wristTilt != 127:
 						armControl.tiltWrist(wristTilt)
@@ -578,6 +574,10 @@ while True: # main execution loop
 				if indicatorList[5].active: 
 					gripperControl = int(axes[4]*127) + 127
 					armControl.gripper(gripperControl)
+					wristTwist = 127 - int(axes[2] * 127)
+					if wristTwist != 127:
+						armControl.twistHand(wristTwist)
+						time.sleep(0.005)
 					throttle = int(axes[1] * 127) + 127
 					throttle = max(throttle, 0)
 					throttle = min(throttle, 254)
