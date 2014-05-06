@@ -307,7 +307,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						Speed = int(ord(command[3]))
 						if Speed != 127:
 							Speed = float(Speed - 127)/127	#range is now -1 to 1
-							Speed = Speed*20		#adjust as necessary
+							Speed = Speed*50		#adjust as necessary
 							TranslateIO(Speed)
 						
 				elif command[2] == "W": # rotate wrist joint up/down
