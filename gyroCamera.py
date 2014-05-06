@@ -113,7 +113,7 @@ class GyroCamera:
 			#print("New/diff in Pitch: %d %d" % (self.imuNewPitch, pTest))
 			#print("New/diff in Roll: %d %d" % (self.imuNewRoll, rTest))
 			
-			if abs(pTest) > 2 or abs(rTest) > 2:
+			if abs(pTest) > 5 or abs(rTest) > 5:
 				print("Change is in the IMU...")
 				deltaCamPitch = self.calculateCamAdjust( pTest, rTest)
 			else:
