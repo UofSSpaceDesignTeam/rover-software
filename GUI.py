@@ -607,7 +607,7 @@ while True: # main execution loop
 	
 	# update UI state, check events
 	mouse = pygame.mouse.get_pos()
-	Clock.tick(30)
+	Clock.tick(30)	
 	for event in pygame.event.get():
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
