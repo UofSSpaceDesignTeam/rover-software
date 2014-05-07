@@ -19,9 +19,11 @@ armPort = 3003
 ramping = 10
 scaleFactor = 0.55
 address= 128
+L1LowerLimit = 330
+L2LowerLimit = 318
 
-L1 = 300
-L2 = 300
+L1 = 350
+L2 = 350
 
 #arm constants
 Lalpha = 371.29	# Lalpha, Lbeta, LA, LB, Lnu, Lmu are in mm, to the closes mm 
@@ -53,7 +55,6 @@ adc = ADS1x15(0x48)
 
 emergency = False
 
-
 # function definitions
 
 def readActuator1():
@@ -84,8 +85,7 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(checksum)))
 	
 def TranslateZ(speed):
-	#TODO: speed is not in the proper units yet
-
+	
 	#calculates and sends speeds of linear actuators for end effector to move up or down at input speed
 	#angles in radians
 	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaA, Lnu, Lmu are constants
@@ -96,6 +96,7 @@ def TranslateZ(speed):
 	global L1
 	global L2
 	try:
+	#read the actuator's positions
 		L2 = readActuator2()
 		time.sleep(0.01)
 		L1 = readActuator1()
@@ -109,9 +110,12 @@ def TranslateZ(speed):
 	#angles calculated from linear actuator lengths
 	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
 	
+	#to avoid math domain errors
 	temp = float((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB))
 	temp = max(temp,-1)
 	temp = min(temp,1)
+
+	#angles calculate from actuator positions
 	theta2 = math.acos(temp) + thetaA
 
         #ratio to keep radius of extension constant
@@ -150,6 +154,7 @@ def TranslateZ(speed):
 			L1p = L1p + 10
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
+		#send the actuator speeds to the sabertooth
 		sendSabertooth(address,1,L1p)
 	else:
 		#constrain the range of data sent to sabertooth
@@ -158,6 +163,7 @@ def TranslateZ(speed):
 			L1p = L1p + 10
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
+		#send the actuator speeds to the sabertooth
 		sendSabertooth(address,0,L1p)
 	if L2p<=0:
 		#constrain the range of data sent to sabertooth
@@ -166,6 +172,7 @@ def TranslateZ(speed):
 			L2p=L2p+10
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
+		#send the actuator speeds to the sabertooth
 		sendSabertooth(address,5,L2p)
 	else:
 		#constrain the range of data sent to sabertooth
@@ -173,12 +180,8 @@ def TranslateZ(speed):
 			L2p=L2p+10
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
+		#send the actuator speeds to hte sabertooth
 		sendSabertooth(address,4,L2p)
-		#for testing purposes
-	if speed>0:
-		print("Move Up")
-	elif speed<0:
-		print("Move Down")
 	
 def TranslateIO(speed):
 	#calculates and sends speeds of linear actuators for end effector to move back or forth at speed
@@ -201,8 +204,10 @@ def TranslateIO(speed):
 	#angles calculated from linear actuator lengths
 	theta1 = float(math.acos(temp) + thetaL + thetaE - math.pi/2)
 	temp = float((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB))
+	#avoid math domain erros
 	temp = max(temp,-1)
 	temp = min(temp,1)
+
 	theta2 = float(math.acos(temp) + thetaA)  
 
 	#ratio to keep height constant  
@@ -212,6 +217,7 @@ def TranslateIO(speed):
 	theta1_dot = float((-speed) / (-Lgamma*math.sin(theta1) + Ldelta*(1+Rh)*math.sin(theta1+theta2)))
 	theta2_dot = float(Rh*theta1_dot)
 
+	#calculate actuator speeds from the angular velocities 
 	L1p = float((theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2)))))
 	L2p = float((theta2_dot * LA * LB)/ L2 * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2)))))
 
@@ -231,6 +237,7 @@ def TranslateIO(speed):
 		L1p=-L1p
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
+		#send the actuator speeds to the sabertooth
 		sendSabertooth(address,1,L1p)
 	else:
 		#constrain the range of data sent to sabertooth
@@ -248,13 +255,9 @@ def TranslateIO(speed):
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
 		sendSabertooth(address,4,L2p)
-	#for testing purposes
-	if speed<0:
-		print("Move In")
-	elif speed>0:
-		print("Move Out")
 		
 def testSetActuators(actuator1, actuator2):
+	#moves actuators independently
 	actuator1 = (actuator1 - 127) / 127.0  # range is now -1 to 1
 	actuator2 = (actuator2 - 127) / 127.0
 
@@ -262,6 +265,7 @@ def testSetActuators(actuator1, actuator2):
 	leftSpeed = (actuator1) * 127
 	rightSpeed = (actuator2) * 127
 	
+	#constrain the range of data sent to the sabertooth
 	leftSpeed = max(leftSpeed, -127)
 	leftSpeed = min(leftSpeed, 127)
 	rightSpeed = max(rightSpeed, -127)
@@ -274,9 +278,9 @@ def testSetActuators(actuator1, actuator2):
 		sendSabertooth(address, 1, -1 * leftSpeed)
 	
 	if(rightSpeed >= 0):
-		sendSabertooth(address, 4, rightSpeed)
+		sendSabertooth(address, 5, rightSpeed)
 	else:
-		sendSabertooth(address, 5, -1 * rightSpeed)
+		sendSabertooth(address, 4, -1 * rightSpeed)
 	
 def parseCommand(command): # Parses Socket Data back to Axis positions
 	global emergency
@@ -290,15 +294,16 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 							GPIO.output(12,False) # on
 						else:
 							GPIO.output(12,True) # off
-						print(str(basePan.currentPosition))
+						#print(str(basePan.currentPosition))
 				elif command[2] == "L": # translate wrist joint "up/down"
 					if emergency == False:
 						Speed = int(ord(command[3]))
-						if Speed != 127:
+						if Speed != 127:	#if control sticks are off center, send new commands to actuators
 							Speed = float((Speed - 127)/127)	#range is now -1 to 1
 							Speed = Speed*50		#adjust as necessary
 							TranslateIO(Speed)
 						else:
+							#stop actuators if control sticks are centered	
 							sendSabertooth(address,4,0)
 							sendSabertooth(address,5,0)
 							sendSabertooth(address,1,0)
@@ -310,34 +315,75 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 							Speed = float((Speed - 127)/127) #range is now -1 to 1
 							Speed = Speed*50		#adjust as necessary
 							TranslateZ(Speed)
+						else:
+							#stop the actuators if control sticks are centered
+							sendSabertooth(address,4,0)
+							sendSabertooth(address,5,0)
+							sendSabertooth(address,1,0)
+							sendSabertooth(address,0,0)
 						
 				elif command[2] == "W": # rotate wrist joint up/down
 					if emergency == False:
-						print(int(ord(command[3])))
-						wristTilt.setRelative(int(ord(command[3])))
-						print("wristTilt")
+						#calculate the distance that needs to be traversed. 
+						dist =  int(ord(command[3])) - 127
+						if dist < 0:	
+							#can only send positive commands
+							dist = -dist
+							#smooths the motion 
+							for x in range(0,dist/3):	#dividing dist by 3 improves control significantly
+								wristTilt.setRelative(-int(dist/10) + 127)
+						else:
+							#smooths the motion
+							for x in range(0,dist/3):
+								wristTilt.setRelative(int(dist/10) + 127)
+
 				elif command[2] == "P": # pan gripper left/right
 					if emergency == False:	
-						wristPan.setRelative(int(ord(command[3])))
+						#calculate the distance that needs to be traversed
+						dist = int(ord(command[3])) - 127
+						if dist < 0:
+							#can only send positive commands
+							dist = -dist
+							#smooths the motion
+							for x in range(0,dist):
+								wristPan.setRelative(-int(dist/30) + 127)
+						else:
+							#smooths the motion
+							for x in range(0,dist):
+								wristPan.setRelative(int(dist/30) + 127)
 				elif command[2] == "H": # twist gripper cw/ccw
 					if emergency == False:
-						dist = int(ord(command[3]))
+						#calculate the distance that needs to be traversed
+						dist = int(ord(command[3]))-127
 						if dist < 0:
+							#can only send positive commands
 							dist = -dist
+							#smooths the motion
 							for x in range(0,dist):
-								wristTwist.setRelative(-1)
+								wristTwist.setRelative(-int(dist/30) + 127)
 						else:
+							#smooths the motion
 							for x in range(0,dist):
-								wristTwist.setRelative(1)
+								wristTwist.setRelative(int(dist/30) + 127)
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
 						temp = int(ord(command[3])) - 127
-						if temp >= 0:
+						#range of temp is now -127 to 127
+						if temp >= 0:	#negative values correspond to the other trigger so ignore them
 							temp = float(temp*800/127)
+							#range of temp is now 0 to 800
+							#right gripper:	
+							#	open - 2000
+							#	closed - 1200
+							#left gripper:
+							#	open - 1200
+							#	closed - 2000
+							#math for gripper position
 							gripperRight = 2000 - int(temp)
 							gripperLeft = int(temp) + 1200
-							#servoDriver.setServo(6,gripperLeft)
-							#servoDriver.setServo(7,gripperRight)
+							#update gripper position
+							servoDriver.setServo(6,gripperLeft)
+							servoDriver.setServo(7,gripperRight)
 				elif command[2] == "S": # stop all actuators
 					sendSabertooth(address,0, 0)
 					servoDriver.reset()
@@ -346,10 +392,28 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				elif command[2] == "C": # cancel stop
 					emergency = False
 				elif command[2] == "T":	# controls both actuators individually 
+					global Length2
+					global Length1
+					#get speed commands from controller
 					actuator1 = int(ord(command[3]))
 					actuator2 = int(ord(command[4]))
-					print("individual mode")
-					testSetActuators(actuator1, actuator2)
+					#try reading the adc
+					try:
+						Length2 = readActuator2()
+						Length1 = readActuator1()
+					except:
+						pass
+					#physical limits
+					#lower limit for actuator 2
+					if (Length2 <= 318) & (actuator2 < 127):
+						sendSabertooth(address,4,0)
+					#lower limit for actuator 1
+					elif (Length1 <= 330) & (actuator1 < 127):
+						sendSabertooth(address,0,0)
+					else:
+					#move the actuators
+						testSetActuators(actuator1, actuator2)
+
 def stopSockets(): # Stops sockets on error condition
 	try:
 		armSocket.close()
