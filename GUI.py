@@ -562,14 +562,6 @@ while True: # main execution loop
 					#	if button[7]:
 					#		toggle = 0
 					#		time.sleep(0.005)
-					wristPan = int(axes[2] * 80) + 127
-					if wristPan != 127:
-						armControl.panHand(wristPan)
-						time.sleep(0.005)
-					wristTilt = 127 - int(axes[3] * 17)
-					if wristTilt != 127:
-						armControl.tiltWrist(wristTilt)
-						time.sleep(0.005)
 			if buttonList[13].selected: # arm mode 2
 				if indicatorList[5].active: 
 					gripperControl = int(axes[4]*127) + 127
@@ -577,6 +569,14 @@ while True: # main execution loop
 					wristTwist = 127 - int(axes[2] * 127)
 					if wristTwist != 127:
 						armControl.twistHand(wristTwist)
+						time.sleep(0.005)
+					wristPan = int(axes[0] * 80) + 127
+					if wristPan != 127:
+						armControl.panHand(wristPan)
+						time.sleep(0.005)
+					wristTilt = 127 - int(axes[3] * 40)
+					if wristTilt != 127:
+						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
 					throttle = int(axes[1] * 127) + 127
 					throttle = max(throttle, 0)
