@@ -529,7 +529,7 @@ while True: # main execution loop
 			buttons = controller.getButtons()
 			dPad = controller.getDPad()
 			if buttons[0]:
-				setArmMode2(1)
+				setArmMode1(1)
 			elif buttons[1]:
 				setArmMode2(1)
 			elif buttons[2]:
@@ -569,10 +569,8 @@ while True: # main execution loop
 					if buttons[7]:
 						if toggle:
 							toggle = False
-							print("toggle off")
 						else:
 							toggle = True
-							print("toggle on")
 					if toggle == 0: # using translate Z and IO
 						wristMove = int(axes[1]*127) +127
 						armControl.moveWrist(wristMove)
