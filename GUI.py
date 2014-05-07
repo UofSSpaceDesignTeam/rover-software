@@ -473,7 +473,8 @@ controllerSendTimer = 0
 gpsTimer = 0
 lastFix = -1
 
-toggle = 0 # use start button to toggle actuator control
+global toggle 
+toggle = False # use start button to toggle actuator control
 
 controller = Controller(0)
 createBoxes()
@@ -541,16 +542,21 @@ while True: # main execution loop
 					basePan = int(axes[2]*10) + 127
 					armControl.panBase(basePan)
 					time.sleep(0.005) 
-					if (toggle == 0): # using translate Z and IO
+					if buttons[7]:
+						if toggle:
+							toggle = False
+							print("toggle off")
+						else:
+							toggle = True
+							print("toggle on")
+					if toggle == 0: # using translate Z and IO
 						wristMove = int(axes[1]*127) +127
 						armControl.moveWrist(wristMove)
 						wristLift = int(axes[0]*127)+127
 						armControl.liftWrist(wristLift)
 						time.sleep(0.005)
-						if button[7]:
-							toggle = 1
-							time.sleep(0.005)
-					if (toggle == 1): # individual actuators 
+
+					if toggle == 1: # individual actuators 
 						speed1 = int(axes[0] * 127) + 127
 						speed1 = max(speed1, 0)
 						speed1 = min(speed1, 254)
@@ -558,9 +564,7 @@ while True: # main execution loop
 						speed2 = max(speed2, 0)
 						speed2 = min(speed2, 254)
 						armControl.actuators(speed1, speed2)
-						if button[7]:
-							toggle = 0
-							time.sleep(0.005)
+
 			if buttonList[13].selected: # arm mode 2
 				if indicatorList[5].active: 
 					gripperControl = int(axes[4]*127) + 127
