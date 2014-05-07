@@ -377,6 +377,8 @@ def camConnect(cameraNumber): # button-based
 	elif(cameraNumber == 3):
 		buttonList[2].selected = True
 		cameraRaspi4.startCamera()
+	elif(cameraNumber == 0):
+		camDisconnect(1)
 	redrawTimer = pygame.time.get_ticks()
 	drawButtons()
 
@@ -490,6 +492,8 @@ gpsDisplay.draw(screen)
 drawIndicators()
 drawRobot()
 readBaseLocation()
+cameraSelected = 0
+camConnect(0)
 
 if not controller.isConnected:
 	print("Controller is not detected.")
@@ -524,6 +528,26 @@ while True: # main execution loop
 			axes = controller.getAxes()
 			buttons = controller.getButtons()
 			dPad = controller.getDPad()
+			if buttons[0]:
+				setArmMode2(1)
+			elif buttons[1]:
+				setArmMode2(1)
+			elif buttons[2]:
+				setDriveMode2(1)
+			elif buttons[3]:
+				setDriveMode1(1)
+			elif buttons[4]:
+				if cameraSelected == 0:
+					cameraSelected = 1
+				else:
+					cameraSelected = cameraSelected - 1
+				camConnect(cameraSelected)
+			elif buttons[5]:
+				if cameraSelected == 3:
+					cameraSelected = 0
+				else:
+					cameraSelected = cameraSelected + 1
+				camConnect(cameraSelected)
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # connected
 					limit = int(speedScale * 127)
