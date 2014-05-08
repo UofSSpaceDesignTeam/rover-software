@@ -6,14 +6,13 @@
 	# dependency list
 
 import pygame
-import Controller
+from Controller import Controller
 import time
-
 
 	# function definitions
 
 def printAxes():    # print the status of all controller axes
-	axes = Controller.getAxes()
+	axes = controller.getAxes()
 	roundedAxes = [round(i, 2) for i in axes]
 	print("  Lx   Ly   Rx   Ry    T")
 	print(roundedAxes)
@@ -21,14 +20,14 @@ def printAxes():    # print the status of all controller axes
 
 
 def printButtons():	# print the state of all controller buttons
-	buttons = Controller.getButtons()
+	buttons = controller.getButtons()
 	print(" A  B  X  Y  LB RB Bk St Ls Rs")
 	print(buttons)
 	print("\n")
 
 
 def printDPad():	# print the state of the D Pad buttons
-	dPad = Controller.getDPad()
+	dPad = controller.getDPad()
 	print("L/R U/D")
 	print(dPad)
 	print("\n")
@@ -37,11 +36,11 @@ def printDPad():	# print the state of the D Pad buttons
 	# main execution
 	
 pygame.init()
-try:
-	Controller.init()
-except Exception as e:
-	print(e)
-	exit(1)
+controller = Controller(0)
+if not controller.isConnected:
+	print("Controller not detected.")
+	time.sleep(1.5)
+	exit()
 	
 while(True):
 	pygame.event.pump()
