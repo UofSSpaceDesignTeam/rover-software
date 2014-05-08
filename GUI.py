@@ -289,6 +289,7 @@ def setWaypoint(fakeArg):
 
 def savePosition(fakeArg):
 	global roverLocation
+	#Todo change this
 	if roverLocation != None:
 		try:
 			savefile = open("./savedPoints/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".txt", "w")
@@ -538,7 +539,7 @@ while True: # main execution loop
 				setDriveMode1(1)
 			elif buttons[4]:
 				if cameraSelected == 0:
-					cameraSelected = 1
+					cameraSelected = 3
 				else:
 					cameraSelected = cameraSelected - 1
 				camConnect(cameraSelected)
@@ -548,6 +549,8 @@ while True: # main execution loop
 				else:
 					cameraSelected = cameraSelected + 1
 				camConnect(cameraSelected)
+			elif buttons[9]:
+				savePosition(1)
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # connected
 					limit = int(speedScale * 127)
