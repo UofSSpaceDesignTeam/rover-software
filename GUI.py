@@ -602,16 +602,16 @@ while True: # main execution loop
 					if wristPan != 127:
 						armControl.panHand(wristPan)
 						time.sleep(0.005)
-					wristTilt = 127 - int(axes[3] * 40)
+					wristTilt = 127 - int(axes[1] * 40)
 					if wristTilt != 127:
 						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
-					throttle = int(axes[1] * 127) + 127
-					throttle = max(throttle, 0)
-					throttle = min(throttle, 254)
-					steering = int(axes[3] * 127) + 127
-					steering = max(steering, 0)
-					steering = min(steering, 254)
+					#throttle = int(axes[1] * 127) + 127
+					#throttle = max(throttle, 0)
+					#throttle = min(throttle, 254)
+					#steering = int(axes[3] * 127) + 127
+					#steering = max(steering, 0)
+					#steering = min(steering, 254)
 					#armControl.temp_actuator1(throttle, steering)
 			if indicatorList[7].active: # Mast camera control
 				xDpad = int(dPad[1] + 2)
