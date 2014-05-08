@@ -10,11 +10,16 @@ class Servo:
 	def __init__(self, driver, channel, minimum, maximum, default):
 		self.driver = driver
 		self.channel = channel
-		self.minimum = minimum
-		self.maximum = maximum
+		if maximum > minimum:
+			self.minimum = minimum
+			self.maximum = maximum
+		else:
+			self.minimum = maximum
+			self.maximum = minimum
 		self.scale = (maximum - minimum) / 255.0
 		self.default = default
 		self.currentPosition = default
+		self.driver.setServo(self.channel, int(default))
 
 	def setRelative(self, change):
 		self.currentPosition += (change - 127)
