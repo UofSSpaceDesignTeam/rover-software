@@ -300,7 +300,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						Speed = int(ord(command[3]))
 						if Speed != 127:	#if control sticks are off center, send new commands to actuators
 							Speed = float((Speed - 127)/127)	#range is now -1 to 1
-							Speed = Speed*50		#adjust as necessary
+							Speed = Speed*50		#adjust scaling as necessary
 							TranslateIO(Speed)
 						else:
 							#stop actuators if control sticks are centered	
@@ -313,7 +313,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						Speed = int(ord(command[3]))
 						if Speed != 127:
 							Speed = float((Speed - 127)/127) #range is now -1 to 1
-							Speed = Speed*50		#adjust as necessary
+							Speed = Speed*50		#adjust scaling as necessary
 							TranslateZ(Speed)
 						else:
 							#stop the actuators if control sticks are centered
@@ -359,8 +359,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 							#can only send positive commands
 							dist = -dist
 							#smooths the motion
-							for x in range(0,dist):
-								wristTwist.setRelative(-int(dist/30) + 127)
+							for x in range(0,dist/3):
+								wristTwist.setRelative(-int(dist/10) + 127)
 						else:
 							#smooths the motion
 							for x in range(0,dist):
@@ -445,7 +445,6 @@ try:
 	GPIO.setmode(GPIO.BOARD)
 	#GPIO.setup(7, GPIO.OUT)
 	GPIO.setup(12,GPIO.OUT)
-	GPIO.output(12,True)
 except:
 	print("GPIO setup failed!")
 	time.sleep(2)
@@ -461,8 +460,6 @@ try:
 	wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)
 	servoDriver.setServo(6,1200)
 	servoDriver.setServo(7,2000)
-	#disconnect base servo power 
-	GPIO.output(12,True)
 except:
 	print("Servo setup failed!")
 	time.sleep(2)
@@ -485,6 +482,7 @@ try:
 			if(data == ""): # socket closing
 				sendSabertooth(address,0, 0)
 				sendSabertooth(address,5, 0)
+				#todo: disconnect servo power 
 				break
 			else:
 				parseCommand(data)
@@ -493,12 +491,14 @@ except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
+	#todo: disconnect servo power
 	stopSockets()
 	GPIO.cleanup()
 except socket.error as e:
 	print(e.strerror)
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
+	#todo: disconnect servo power
 	stopSockets()
 	GPIO.cleanup()
 	time.sleep(2)
@@ -507,6 +507,7 @@ except socket.error as e:
 except:
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
+	#todo: disconnect servo power
 	stopSockets()
 	GPIO.cleanup()
 	raise
