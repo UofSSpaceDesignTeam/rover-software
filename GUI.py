@@ -93,10 +93,9 @@ def createBoxes():
 	controlBox = Box("Control Modes", (0, 150, 125, 143))
 	actionBox = Box("Rover Actions", (0, 298, 125, 115))
 	uiBox = Box("User Interface", (0, 418, 125, 53))
-	connectionsBox = Box("Connections", (1095, 0, 125, 235))
-	controllerBox = Box("Controller", (1095, 239, 125, 120))
+	connectionsBox = Box("Connections", (1095, 0, 125, 265))
+	controllerBox = Box("Controller", (1095, 269, 125, 120))
 	saveBox = Box("", (615, 650, 120, 50))
-	global settingsBox
 	settingsBox = Box("Rover Settings", (130, 544, 480, 156))
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
@@ -117,7 +116,7 @@ def createIndicators():
 	mastIndicator = Indicator(testClient, mastControl, "Mast System", (1106, 105))
 	driveIndicator = Indicator(testClient, driveControl, "Drive System", (1106, 155))
 	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 130))
-	controllerIndicator = Indicator(checkController, None, "Detected", (1114, 263))
+	controllerIndicator = Indicator(checkController, None, "Detected", (1114, 293))
 	gpsIndicator = Indicator(testClient, gpsClient, "GPS System", (1106, 180))
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
@@ -140,7 +139,7 @@ def createConsoles(): # set up the info boxes
 	gpsDisplay.write("HDOP:")
 	gpsDisplay.write("Course:")
 	gpsDisplay.write("Course Home:")
-	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 265, 88, 88), 5)
+	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 295, 88, 88), 5)
 
 def drawButtons():
 	for i in buttonList:
@@ -433,7 +432,7 @@ def disconnectClients(fakeArg): # button-based
 		gpsClient.stopSockets()
 	if indicatorList[7].active:
 		mastControl.stopSockets()
-	buttonList[10].selected = False
+	buttonList[14].selected = False
 	drawIndicators()
 	drawButtons()
 	pygame.display.update()
@@ -598,11 +597,11 @@ while True: # main execution loop
 				else:
 					stopRover(False)
 					setMastMode(None)
-				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
-				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
-				controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
-				controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
-				controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
+			controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
+			controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
+			controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
+			controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
+			controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
 			controllerDisplay.draw(screen)
 			indicatorList[6].draw(screen)
 		output.draw(screen) # also refresh the message displays
