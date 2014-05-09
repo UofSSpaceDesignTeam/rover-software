@@ -551,28 +551,50 @@ while True: # main execution loop
 					setMastMode(None)
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
-					basePan = int(axes[2]*10) + 127
+					if buttons[4] != 0:
+						basePan = int(buttons[4]*127)
+					else:
+						basePan = int(buttons[5]*127)
 					armControl.panBase(basePan)
 					time.sleep(0.005) 
-					if buttons[7]:
-						if toggle:
-							toggle = False
-						else:
-							toggle = True
-					if toggle == 0: # using translate Z and IO
-						wristMove = int(axes[1]*127) +127
-						armControl.moveWrist(wristMove)
-						wristLift = int(axes[0]*127)+127
-						armControl.liftWrist(wristLift)
+					gripperControl = int(axes[4]*127) + 127
+					armControl.gripper(gripperControl)
+					if buttons[0] != 0:
+						wristTwist = 1
+					elif buttons[1] != 0:
+						wristTwist = 2
+					else:
+						wristTwist = 0
+					if wristTwist != 0:
+						armControl.twistHand(wristTwist)
 						time.sleep(0.005)
-					if toggle == 1: # individual actuators 
-						speed1 = int(axes[0] * 127) + 127
-						speed1 = max(speed1, 0)
-						speed1 = min(speed1, 254)
-						speed2 = int(axes[1] * 127) + 127
-						speed2 = max(speed2, 0)
-						speed2 = min(speed2, 254)
-						armControl.actuators(speed1, speed2)
+					wristPan = int(axes[2] * 80) + 127
+					if wristPan != 127:
+						armControl.panHand(wristPan)
+						time.sleep(0.005)
+					wristTilt = 127 - int(axes[3] * 40)
+					if wristTilt != 127:
+						armControl.tiltWrist(wristTilt)
+						time.sleep(0.005)
+					# if buttons[7]:
+						# if toggle:
+							# toggle = False
+						# else:
+							# toggle = True
+					# if toggle == 0: # using translate Z and IO
+						# wristMove = int(axes[1]*127) +127
+						# armControl.moveWrist(wristMove)
+						# wristLift = int(axes[0]*127)+127
+						# armControl.liftWrist(wristLift)
+						# time.sleep(0.005)
+					# if toggle == 1: # individual actuators 
+					speed1 = int(axes[0] * 127) + 127
+					speed1 = max(speed1, 0)
+					speed1 = min(speed1, 254)
+					speed2 = int(axes[1] * 127) + 127
+					speed2 = max(speed2, 0)
+					speed2 = min(speed2, 254)
+					armControl.actuators(speed1, speed2)
 				else:
 					stopRover(False)
 					setMastMode(None)
