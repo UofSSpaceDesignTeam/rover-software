@@ -305,8 +305,6 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						else:
 							#stop actuators if control sticks are centered	
 							sendSabertooth(address,4,0)
-							sendSabertooth(address,5,0)
-							sendSabertooth(address,1,0)
 							sendSabertooth(address,0,0)
 				elif command[2] == "M": # translate wrist joint "in/out"
 					if emergency == False:
@@ -318,8 +316,6 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						else:
 							#stop the actuators if control sticks are centered
 							sendSabertooth(address,4,0)
-							sendSabertooth(address,5,0)
-							sendSabertooth(address,1,0)
 							sendSabertooth(address,0,0)
 						
 				elif command[2] == "W": # rotate wrist joint up/down
