@@ -8,7 +8,7 @@ class GPSClient: # class for getting position data
 		self.IP = IP
 		self.port = port
 
-	def connect(self, retries):
+	def connect(self):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.settimeout(1.0)
 		try:

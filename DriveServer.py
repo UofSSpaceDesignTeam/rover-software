@@ -1,14 +1,8 @@
-# A script continuously run by the drive control Pi.
-
-# dependency list
-
 import socket
 import time
 import subprocess
 import serial
 import RPi.GPIO as GPIO # for hardware reset system
-
-# global constants	
 
 drivePort = 3002
 ramping = 35 # 0.7 second
@@ -17,8 +11,7 @@ commandLF = 0
 commandLR = 1
 commandRF = 4
 commandRR = 5
-
-# Function Definitions
+address = 129
 
 def sendSabertooth(address, command, data):
 	checksum = (int(address) + int(command) + int(data)) & int(127)
@@ -26,10 +19,6 @@ def sendSabertooth(address, command, data):
 	controller.write(chr(int(command)))
 	controller.write(chr(int(data)))
 	controller.write(chr(checksum))
-	
-def stopSabertooth():
-	sendSabertooth(129, commandRF, 0)
-	sendSabertooth(129, commandLF, 0)
 
 def setMotors(leftSpeed, rightSpeed):
 	if leftSpeed > 127:
@@ -42,13 +31,13 @@ def setMotors(leftSpeed, rightSpeed):
 		rightSpeed = -127
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
-		sendSabertooth(129, commandLF, leftSpeed)
+		sendSabertooth(address, commandLF, leftSpeed)
 	else:
-		sendSabertooth(129, commandLR, -1 * leftSpeed)		
+		sendSabertooth(address, commandLR, -1 * leftSpeed)		
 	if(rightSpeed >= 0):
-		sendSabertooth(129, commandRF, rightSpeed)
+		sendSabertooth(address, commandRF, rightSpeed)
 	else:
-		sendSabertooth(129, commandRR, -1 * rightSpeed)
+		sendSabertooth(address, commandRR, -1 * rightSpeed)
 	
 def parseCommand(command): # parses and executes remote commands
 	if command != None:
@@ -78,7 +67,13 @@ def parseCommand(command): # parses and executes remote commands
 						print("motors stopped.")
 	else: # command == none
 		stopSabertooth()
-					
+
+def stopSabertooth():
+	try:
+		sendSabertooth(address, commandRF, 0)
+		sendSabertooth(address, commandLF, 0)
+	except:
+		pass
 
 def stopSockets():
 	try:
@@ -90,6 +85,15 @@ def stopSockets():
 	except:
 		pass
 
+def quit():
+	stopSabertooth()
+	stopSockets()
+	try:
+		GPIO.output(12, False)
+		GPIO.cleanup()
+	except:
+		pass
+	exit(0)
 
 ### Main Program  ###
 
@@ -112,15 +116,15 @@ try:
 	time.sleep(1.0)
 	GPIO.output(12, True) # turn on motor controllers first time
 	time.sleep(0.5)
-	sendSabertooth(129, 16, ramping)
-	sendSabertooth(129, 14, timeout)
+	sendSabertooth(address, 16, ramping)
+	sendSabertooth(address, 14, timeout)
 	time.sleep(0.5)
 	GPIO.output(12, False) # turn off motor controllers again
 	time.sleep(1.0)
 	GPIO.output(12, True) # turn on motor controllers for realsies
 	time.sleep(0.5)
-	sendSabertooth(129, 16, ramping)
-	sendSabertooth(129, 14, timeout)
+	sendSabertooth(address, 16, ramping)
+	sendSabertooth(address, 14, timeout)
 	time.sleep(0.5)
 except:
 	print("GPIO setup failed!")
@@ -151,14 +155,7 @@ try:
 	
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
-	stopSabertooth()
-	stopSockets()
-	GPIO.output(12, False)
-	GPIO.cleanup()
+	quit()
 except:
-	stopSabertooth()
-	stopSockets()
-	GPIO.output(12, False)
-	GPIO.cleanup()
-	raise
+	quit()
 

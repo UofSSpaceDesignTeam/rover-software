@@ -1,8 +1,3 @@
-# A script continuously run by each Pi with a camera attached.
-# RUN WITH SUDO
-
-	# dependencies
-	
 import subprocess
 import socket
 import time
@@ -55,8 +50,12 @@ def stopSockets():
 	except:
 		pass
 
+def quit():
+	stopCamera()
+	stopSockets()
+	exit(0)
 
-	# main execution
+### Main Program  ###
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
@@ -77,17 +76,7 @@ try:
 	
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
-	stopCamera()
-	stopSockets()
-except socket.error as e:
-	print(e.strerror)
-	stopCamera()
-	stopSockets()
-	time.sleep(5)
-	#subprocess.call("sudo reboot", shell = True)
+	quit()
 except:
-	stopCamera()
-	stopSockets()
-	#subprocess.call("sudo reboot", shell = True)
-	raise
+	quit()
 

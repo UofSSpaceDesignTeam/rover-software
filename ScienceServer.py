@@ -1,7 +1,3 @@
-# A script continuously run by the science pi.
-
-# dependency list
-
 import math
 import socket
 import time
@@ -11,11 +7,7 @@ from ADS1x15 import ADS1x15 # adc
 from Adafruit_I2C import Adafruit_I2C
 import RPi.GPIO as GPIO # for stepper and other stuff
 
-# global constants
-
 sciencePort = 3006
-
-# function definitions
 
 def runExperiment():
 	scienceData = []

@@ -72,6 +72,11 @@ def stopLog():
 	except:
 		pass
 
+def quit():
+	stopGPS()
+	stopLog()
+	stopSockets()
+
 ### Main Program ###
 
 # set up logging
@@ -109,16 +114,7 @@ try:
 	
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
-	stopGPS()
-	stopLog()
-	stopSockets()
-except socket.error as e:
-	print(e.strerror)
-	stopGPS()
-	stopLog()
-	stopSockets()
+	quit()
 except:
-	stopGPS()
-	stopLog()
-	stopSockets()
-	raise
+	quit()
+

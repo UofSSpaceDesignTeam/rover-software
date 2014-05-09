@@ -17,7 +17,7 @@ class ArmClient: # class for arm control
 		self.commandArmResume = "#AC" # cancel emergency stop
 		self.commandActuators = "#AT" # controls both actuators
 	
-	def connect(self, retries):
+	def connect(self):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.settimeout(1.0)
 		try:

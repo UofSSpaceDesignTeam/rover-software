@@ -1,7 +1,3 @@
-# Class to run the servo driver board.
-
-# dependency list
-
 import smbus
 import math
 import time
@@ -20,7 +16,7 @@ class Servo:
 		self.default = default
 		self.currentPosition = default
 		self.driver.setServo(self.channel, int(default))
-
+	
 	def setRelative(self, change):
 		self.currentPosition += (change - 127)
 		self.currentPosition = max(self.currentPosition, self.minimum)
@@ -28,7 +24,7 @@ class Servo:
 		self.driver.setServo(self.channel, int(self.currentPosition))
 		#print("(r)ch" + str(self.channel) + ": " + str(self.currentPosition))
 		print("change: " + str(change-127))
-
+	
 	def setAbsolute(self, position):
 		pulse = position - 127
 		pulse *= self.scale

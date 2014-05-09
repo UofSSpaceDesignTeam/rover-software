@@ -11,7 +11,7 @@ class DriveClient: # class for drive control
 		self.commandRoverStop = "#DS"
 		self.commandGPSData = "#GD"
 	
-	def connect(self, retries):
+	def connect(self):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.settimeout(1.0)
 		try:
