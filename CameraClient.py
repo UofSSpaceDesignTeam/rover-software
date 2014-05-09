@@ -17,43 +17,31 @@ class CameraClient: # class to handle camera feeds
 		self.commandCameraEnd = "#CE"
 		self.commandCameraPicture = "#CP"
 
-	def connect(self, retries):
+	def connect(self):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.socket.settimeout(0.7)
+		self.socket.settimeout(1.0)
 		try:
 			self.socket.connect((self.IP, self.port))
-			return True
 		except socket.error:
 			pass
-		for i in range (0, retries):
-			time.sleep(0.25)
-			try:
-				self.socket.connect((self.IP, self.port))
-				return True
-			except socket.error:
-				pass
-		return False
 	
 	def startCamera(self):
 		try:
 			self.socket.send(self.commandCameraStart)
-			return True
 		except:
-			return False
+			pass
 	
 	def stopCamera(self):
 		try:
 			self.socket.send(self.commandCameraEnd)
-			return True
 		except:
-			return False
+			pass
 
 	def takePicture(self):
 		try:
 			self.socket.send(self.commandCameraPicture)
-			return True
 		except:
-			return False
+			pass
 
 	def test(self):
 		try:

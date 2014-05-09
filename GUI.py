@@ -53,10 +53,11 @@ def createButtons():
 	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", (12, 234, 100, 20), colorLightBlue, colorGreen)
 	armButton = Button(setArmMode, None, "Arm", (12, 264, 100, 20), colorLightBlue, colorGreen)
 	mastButton.selected = True
-	stopButton = Button(stopRover, None, "Stop", (12, 324, 100, 20), colorLightBlue, colorYellow)
+	stopButton = Button(stopRover, True, "Stop", (12, 324, 100, 20), colorLightBlue, colorYellow)
 	pictureButton = Button(takePicture, None, "Take Picture", (12, 354, 100, 20), colorLightBlue, colorYellow)
 	runExperimentButton = Button(runExperiment, None, "Science!", (12, 384, 100, 20), colorLightBlue, colorYellow)
 	connectButton = Button(connectClients, None, "Connect All", (1107, 205, 100, 20), colorLightBlue, colorYellow)
+	disconnectButton = Button(disconnectClients, None, "Disconnect", (1107, 235, 100, 20), colorLightBlue, colorYellow)
 	quitButton = Button(quit, None, "Quit", (12, 443, 100, 20), colorLightBlue, colorYellow)
 	saveButton = Button(savePosition, None, "Save", (625, 660, 100, 30), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
@@ -73,6 +74,7 @@ def createButtons():
 	buttonList.append(quitButton)	# 11
 	buttonList.append(moveButton2)	# 12
 	buttonList.append(mastButton)	# 13
+	buttonList.append(disconnectButton)	# 14
 
 def createSliders():
 	global sliderList
@@ -190,31 +192,34 @@ def readBaseLocation():
 		pass
 
 def setDriveMode1(fakeArg): # fakeArg needed for button activated functions
-	# todo: stop arm movements
-	buttonList[6].selected = False
-	buttonList[12].selected = False
-	buttonList[13].selected = False
-	buttonList[5].selected = True
-	drawButtons()
+	if indicatorList[4].active:
+		stopRover(False);
+		buttonList[6].selected = False
+		buttonList[12].selected = False
+		buttonList[13].selected = False
+		buttonList[5].selected = True
+		drawButtons()
 	
 def setDriveMode2(fakeArg):
-	# todo: stop arm movements
-	buttonList[5].selected = False
-	buttonList[6].selected = False
-	buttonList[13].selected = False
-	buttonList[12].selected = True
-	drawButtons()
+	if indicatorList[4].active:
+		stopRover(False);
+		buttonList[5].selected = False
+		buttonList[6].selected = False
+		buttonList[13].selected = False
+		buttonList[12].selected = True
+		drawButtons()
 	
 def setArmMode(fakeArg):
-	# todo: stop driving
-	buttonList[5].selected = False
-	buttonList[12].selected = False
-	buttonList[13].selected = False
-	buttonList[6].selected = True
-	drawButtons()
+	if indicatorList[5].active:
+		stopRover(False);
+		buttonList[5].selected = False
+		buttonList[12].selected = False
+		buttonList[13].selected = False
+		buttonList[6].selected = True
+		drawButtons()
 	
 def setMastMode(fakeArg):
-	# todo: stop driving
+	stopRover(False)
 	buttonList[5].selected = False
 	buttonList[6].selected = False
 	buttonList[12].selected = False
@@ -231,7 +236,7 @@ def setSteerScale(newValue):
 
 def setSteerTrim(newValue):
 	global steerTrim
-	steerTrim = newValue - 0.5
+	steerTrim = (newValue - 0.5) * 0.4
 
 def checkController(fakeArg):
 	return controller.isConnected
@@ -288,11 +293,12 @@ def savePosition(fakeArg):
 			print("Could not save position information.")
 
 def takePicture(fakeArg):
-	cameraNumber = 0
+	global redrawTimer
+	camera = False
 	for i in range(0, 3):
 		if buttonList[i].selected:
-			cameraNumber = i + 1
-	if cameraNumber == 0:
+			camera = i + 1
+	if not camera:
 		return
 	buttonList[8].selected = True
 	drawButtons()
@@ -300,33 +306,33 @@ def takePicture(fakeArg):
 	pygame.display.update()
 	camDisconnect(None)
 	time.sleep(0.75)
-	if cameraNumber == 1:
+	if camera == 1:
 		cameraRaspi1.takePicture()
 		time.sleep(2.5)
 		camConnect(1)
-	elif cameraNumber == 2:
+	elif camera == 2:
 		cameraRaspi2.takePicture()
 		time.sleep(2.5)
 		camConnect(2)
-	elif cameraNumber == 3:
+	elif camera == 3:
 		cameraRaspi4.takePicture()
 		time.sleep(2.5)
 		camConnect(3)
 	time.sleep(0.75)
 	buttonList[8].selected = False
-	global redrawTimer
 	redrawTimer = pygame.time.get_ticks()
 	drawButtons()
 	pygame.display.update()
 
-def stopRover(fakeArg):	# button-based
+def stopRover(setSlider):	# button-based
 	try:
-		sliderList[0].set(0.0)
-		sliderList[0].draw(screen)
 		driveControl.stopMotors()
 		armControl.stopMotors()
 	except:
 		pass
+	if setSlider:
+		sliderList[0].set(0.0)
+		sliderList[0].draw(screen)
 
 def runExperiment(fakeArg):	# button-based
 	return
@@ -391,19 +397,42 @@ def connectClients(fakeArg): # button-based
 	drawIndicators()
 	pygame.display.update()
 	if not indicatorList[0].active:
-		cameraRaspi1.connect(0)
+		cameraRaspi1.connect()
 	if not indicatorList[1].active:
-		cameraRaspi2.connect(0)
+		cameraRaspi2.connect()
 	if not indicatorList[2].active:
-		cameraRaspi4.connect(0)
+		cameraRaspi4.connect()
 	if not indicatorList[4].active:
-		driveControl.connect(0)
+		driveControl.connect()
 	if not indicatorList[5].active:
-		armControl.connect(0)
+		armControl.connect()
 	if not indicatorList[3].active:
-		gpsClient.connect(0)
-	#if not indicatorList[7].active:
-	#	mastControl.connect(0)
+		gpsClient.connect()
+	if not indicatorList[7].active:
+		mastControl.connect()
+	buttonList[10].selected = False
+	drawIndicators()
+	drawButtons()
+	pygame.display.update()
+	
+def disconnectClients(fakeArg): # button-based
+	buttonList[14].selected = True
+	buttonList[14].draw(screen)
+	pygame.display.update()
+	if indicatorList[1].active:
+		cameraRaspi1.stopSockets()
+	if indicatorList[1].active:
+		cameraRaspi2.stopSockets()
+	if indicatorList[2].active:
+		cameraRaspi4.stopSockets()
+	if indicatorList[4].active:
+		driveControl.stopSockets()
+	if indicatorList[5].active:
+		armControl.stopSockets()
+	if indicatorList[3].active:
+		gpsClient.stopSockets()
+	if indicatorList[7].active:
+		mastControl.stopSockets()
 	buttonList[10].selected = False
 	drawIndicators()
 	drawButtons()
@@ -414,7 +443,7 @@ def quit(fakeArg): # button-based
 	buttonList[11].draw(screen)
 	pygame.display.update()
 	camDisconnect(None)
-	stopRover(None)
+	stopRover(False)
 	pygame.quit()
 	sys.exit(0)
 
@@ -512,14 +541,14 @@ while True: # main execution loop
 					limit = int(speedScale * 127)
 					driveControl.sendOneStickData(-axes[0] * speedScale * steerScale, -axes[1] * speedScale, limit)
 				else:
-					stopRover(1)
-					setMastMode(1)
+					stopRover(False)
+					setMastMode(None)
 			elif buttonList[12].selected: # 2 stick drive mode
 				if indicatorList[4].active: # connected
 					driveControl.sendTwoStickData(-axes[1] * speedScale, -axes[3] * speedScale)
 				else:
-					stopRover(1)
-					setMastMode(1)
+					stopRover(False)
+					setMastMode(None)
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
 					basePan = int(axes[2]*10) + 127
@@ -545,37 +574,8 @@ while True: # main execution loop
 						speed2 = min(speed2, 254)
 						armControl.actuators(speed1, speed2)
 				else:
-
-					stopRover(1)
-					setMastMode(1)
-			if buttonList[13].selected: # arm mode 2
-				if indicatorList[5].active: 
-					gripperControl = int(axes[4]*127) + 127
-					armControl.gripper(gripperControl)
-					wristTwist = 127 - int(axes[0] * 127)
-					if wristTwist != 127:
-						armControl.twistHand(wristTwist)
-						time.sleep(0.005)
-					wristPan = int(axes[2] * 80) + 127
-					if wristPan != 127:
-						armControl.panHand(wristPan)
-						time.sleep(0.005)
-					wristTilt = 127 - int(axes[3] * 40)
-					if wristTilt != 127:
-						armControl.tiltWrist(wristTilt)
-						time.sleep(0.005)
-					#throttle = int(axes[1] * 127) + 127
-					#throttle = max(throttle, 0)
-					#throttle = min(throttle, 254)
-					#steering = int(axes[3] * 127) + 127
-					#steering = max(steering, 0)
-					#steering = min(steering, 254)
-					#armControl.temp_actuator1(throttle, steering)
-			if indicatorList[7].active: # Mast camera control
-				xDpad = int(dPad[1] + 2)
-				yDpad = int(dPad[0] + 2)
-				mastControl.sendData(xDpad,yDpad)
-			if isLinux:
+					stopRover(False)
+					setMastMode(None)
 				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
 				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
 				controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
