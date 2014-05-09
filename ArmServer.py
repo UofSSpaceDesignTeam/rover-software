@@ -289,7 +289,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 			if command[1] == "A":
 				if command[2] == "B": # rotate base
 					if emergency == False:
-						#basePan.setAbsolute(int(ord(command[3])))
+						#basePan.setRelative(some constant) #todo: calibrate
 						if int(ord(command[3])) != 127: # stick not centered
 							GPIO.output(12,False) # on
 						else:
@@ -354,17 +354,16 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				elif command[2] == "H": # twist gripper cw/ccw
 					if emergency == False:
 						#calculate the distance that needs to be traversed
-						dist = int(ord(command[3]))-127
-						if dist < 0:
+						dist = int(ord(command[3]))
+						if dist == 1:
 							#can only send positive commands
-							dist = -dist
 							#smooths the motion
 							for x in range(0,dist/3):
-								wristTwist.setRelative(-int(dist/10) + 127)
+								wristTwist.setRelative(100) #needs calibration
 						else:
 							#smooths the motion
 							for x in range(0,dist):
-								wristTwist.setRelative(int(dist/30) + 127)
+								wristTwist.setRelative(154)	# needs calibration
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
 						temp = int(ord(command[3])) - 127
