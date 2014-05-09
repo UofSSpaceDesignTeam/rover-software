@@ -256,7 +256,7 @@ def TranslateIO(speed):
 		L2p=min(127,L2p)
 		sendSabertooth(address,4,L2p)
 		
-def testSetActuators(actuator1, actuator2):
+def setActuators(actuator1, actuator2):
 	#moves actuators independently
 	actuator1 = (actuator1 - 127) / 127.0  # range is now -1 to 1
 	actuator2 = (actuator2 - 127) / 127.0
@@ -289,11 +289,16 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 			if command[1] == "A":
 				if command[2] == "B": # rotate base
 					if emergency == False:
-						#basePan.setRelative(some constant) #todo: calibrate
-						if int(ord(command[3])) != 127: # stick not centered
-							GPIO.output(12,False) # on
+						speed = 50 	#needs calibrating
+						dir = int(ord(command[3]))
+						if dir == 0:
+							GPIO.output(12,True)	#disconnect servo power
 						else:
-							GPIO.output(12,True) # off
+							GPIO.output(12,False)	#connect servo power
+						if dir == 1:
+							basePan.setRelative(127 - speed)
+						else:
+							basePan.setRelative(127 + speed)  
 						#print(str(basePan.currentPosition))
 				elif command[2] == "L": # translate wrist joint "up/down"
 					if emergency == False:
@@ -349,17 +354,14 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 								wristPan.setRelative(int(dist/30) + 127)
 				elif command[2] == "H": # twist gripper cw/ccw
 					if emergency == False:
-						#calculate the distance that needs to be traversed
-						dist = int(ord(command[3]))
-						if dist == 1:
-							#can only send positive commands
+						dir = int(ord(command[3]))
+						speed = 60	#increase to rotate faster
+						if dir == 1:
 							#smooths the motion
-							for x in range(0,dist/3):
-								wristTwist.setRelative(100) #needs calibration
+							wristTwist.setRelative(127 - speed)
 						else:
 							#smooths the motion
-							for x in range(0,dist):
-								wristTwist.setRelative(154)	# needs calibration
+							wristTwist.setRelative(127 + speed)	
 				elif command[2] == "G": # open or close gripper
 					if emergency == False:
 						temp = int(ord(command[3])) - 127
@@ -381,6 +383,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 							servoDriver.setServo(7,gripperRight)
 				elif command[2] == "S": # stop all actuators
 					sendSabertooth(address,0, 0)
+					sendSabertooth(address,4, 0)
 					servoDriver.reset()
 					print("emergency stop")
 					emergency = True
@@ -390,8 +393,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					global Length2
 					global Length1
 					#get speed commands from controller
-					actuator1 = int(ord(command[3]))
-					actuator2 = int(ord(command[4]))
+					speed1 = int(ord(command[3]))
+					speed2 = int(ord(command[4]))
 					#try reading the adc
 					try:
 						Length2 = readActuator2()
@@ -400,14 +403,14 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						pass
 					#physical limits
 					#lower limit for actuator 2
-					if (Length2 <= 318) & (actuator2 < 127):
+					if (Length2 <= L2LowerLimit) & (speed2 < 127):
 						sendSabertooth(address,4,0)
 					#lower limit for actuator 1
-					elif (Length1 <= 330) & (actuator1 < 127):
+					elif (Length1 <= L1LowerLimit) & (speed1 < 127):
 						sendSabertooth(address,0,0)
 					else:
 					#move the actuators
-						testSetActuators(actuator1, actuator2)
+						setActuators(speed1, speed2)
 
 def stopSockets(): # Stops sockets on error condition
 	try:
