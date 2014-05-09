@@ -1,11 +1,8 @@
-# A library to communicate with the rover's movement system and GPS.
-
 import socket
 import time
 import struct
 	
-class GPSClient: # class for drive control
-
+class GPSClient: # class for getting position data
 	def __init__(self, IP, port):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.IP = IP
@@ -13,30 +10,19 @@ class GPSClient: # class for drive control
 
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.socket.settimeout(0.7)
+		self.socket.settimeout(1.0)
 		try:
 			self.socket.connect((self.IP, self.port))
-			return True
-		except socket.error:
+		except:
 			pass
-		for i in range (0, retries):
-			time.sleep(0.25)
-			try:
-				self.socket.connect((self.IP, self.port))
-				return True
-			except socket.error:
-				pass
-		return False
 
 	def getPosition(self):
 		try:
 			self.socket.settimeout(0.3)
 			packet = self.socket.recv(256)
 			data = struct.unpack("!ffff", packet)
-			#print(str(data))
 			return data
 		except:
-			pass
 			return None
 	
 	def test(self):
@@ -44,6 +30,6 @@ class GPSClient: # class for drive control
 			self.socket.settimeout(0.05)
 			self.socket.send("TST")
 			return True
-		except socket.error:
+		except:
 			return False
 

@@ -19,7 +19,6 @@ def setPitch(yButton):
 				currentPitch = currentPitch + 1
 				servoDriver.setServo(3, currentPitch)
 	
-	
 def setYaw(xButton):
 	if xButton == -1:
 		servoDriver.setServo(1, 1480)
@@ -34,7 +33,7 @@ def parseCommand(command): # parses and executes remote commands
 		if len(command) > 2:
 			if command[0] == "#": # is valid
 				if command[1] == "M":
-					if command[2] == "C": # Camera look
+					if command[2] == "S": # Camera look
 						yButton = int(ord(command[3])) - 2
 						setPitch(yButton)
 						xButton = int(ord(command[4])) - 2

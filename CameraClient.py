@@ -1,12 +1,5 @@
-# A library to communicate with the rover camera systems
-
-# dependency list
-
 import socket
 import time
-import sys
-
-# class definition
 
 class CameraClient: # class to handle camera feeds	
 	def __init__(self, IP, port):
@@ -16,13 +9,13 @@ class CameraClient: # class to handle camera feeds
 		self.commandCameraStart = "#CS"
 		self.commandCameraEnd = "#CE"
 		self.commandCameraPicture = "#CP"
-
+	
 	def connect(self):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.settimeout(1.0)
 		try:
 			self.socket.connect((self.IP, self.port))
-		except socket.error:
+		except:
 			pass
 	
 	def startCamera(self):
@@ -48,6 +41,6 @@ class CameraClient: # class to handle camera feeds
 			self.socket.settimeout(0.05)
 			self.socket.send("TST")
 			return True
-		except socket.error:
+		except:
 			return False
 

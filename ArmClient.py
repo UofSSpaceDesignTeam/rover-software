@@ -1,14 +1,5 @@
-
-# A library to communicate with the rover's arm control system
-# Added by Jordan
-
-# dependency list
-
 import socket
 import time
-import sys
-
-# class definition
 
 class ArmClient: # class for arm control
 	def __init__(self, IP, port):
@@ -24,112 +15,75 @@ class ArmClient: # class for arm control
 		self.commandGripper = "#AG" # open or close gripper
 		self.commandArmStop = "#AS" # stop all actuators
 		self.commandArmResume = "#AC" # cancel emergency stop
-		self.commandActuators = "#AT" # controls actuator 1 directly 
-		
+		self.commandActuators = "#AT" # controls both actuators
 	
 	def connect(self, retries):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.socket.settimeout(0.7)
+		self.socket.settimeout(1.0)
 		try:
 			self.socket.connect((self.IP, self.port))
-			return True
-		except socket.error:
+		except:
 			pass
-		for i in range (0, retries):
-			time.sleep(0.25)
-			try:
-				self.socket.connect((self.IP, self.port))
-				return True
-			except socket.error:
-				pass
-		return False
 	
 	def panBase(self, speed):
 		try:
 			self.socket.send(self.commandPanBase + chr(speed))
-			return True
-		except socket.error as e:
-			sys.stderr.write(e.strerror)
-			return False
+		except:
+			pass
 	
 	def liftWrist(self, speed):
 		try:
 			self.socket.send(self.commandLiftWrist + chr(speed))
-			return True
-		except socket.error as e:
-			sys.stderr.write(e.strerror)
-			return False
-			
+		except:
+			pass
+	
 	def moveWrist(self, speed):
 		try:
 			self.socket.send(self.commandMoveWrist + chr(speed))
-			return True
-		except socket.error as e:
-			sys.stderr.write(e.strerror)
-			return False
+		except:
+			pass
 	
 	def tiltWrist(self, speed):
 		try:
 			self.socket.send(self.commandTiltWrist + chr(speed))
-			return True
-		except socket.error as e:
-			sys.stderr.write(e.strerror)
-			return False
+		except:
+			pass
 	
 	def panHand(self, speed):
 		try:
 			self.socket.send(self.commandPanHand + chr(speed))
-			return True
-		except socket.error as e:
-			sys.stderr.write(e.strerror)
-			return False
+		except:
+			pass
 	
 	def twistHand(self, speed):
 		try:
 			self.socket.send(self.commandTwistHand + chr(speed))
-			return True
-		except socket.error as e:
-			sys.stderr.write(e.strerror)
-			return False
+		except:
+			pass
 	
 	def gripper(self, speed):
 		try:
 			self.socket.send(self.commandGripper + chr(speed))
-			return True
-		except socket.error as e:
-			sys.stderr.write(e.strerror)
-			return False
-
+		except:
+			pass
+	
 	def stopMotors(self):
 		try:
 			self.socket.send(self.commandArmStop)
-		except socket.error:
+		except:
 			pass
-
+	
+	def actuators(self, actuator1, actuator2):
+		try:
+			self.socket.send(self.commandActuators + chr(actuator1) + chr(actuator2))
+		except:
+			pass	
+	
 	def test(self):
 		try:
 			self.socket.settimeout(0.05)
 			self.socket.send("TST")
 			return True
-		except socket.error:
+		except:
 			return False
-
-	# Temporary for testing actuators		
-	def temp_actuator1(self, actuator1, actuator2):
-		try:
-			self.socket.send("#AT" + chr(actuator1) + chr(actuator2))
-			return True
-		except socket.error as e:
-			sys.stderr.write(e.strerror)
-			self.stopMotors()
-			return False
-			
-	def actuators(self, actuator1, actuator2):
-		try:
-			self.socket.send(self.commandActuators + chr(actuator1) + chr(actuator2))
-			return True
-		except socket.error as e:
-			sys.stderr.write(e.strerror)
-			return False		
-	
 
