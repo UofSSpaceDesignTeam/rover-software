@@ -1,8 +1,6 @@
-
 from pygame import joystick
 
 class Controller:
-	
 	def __init__(self, controllerIndex): # connect to xbox controller
 		self.leftJoystickXDeadzone = 0.2
 		self.leftJoystickYDeadzone = 0.2
@@ -18,8 +16,7 @@ class Controller:
 			self.isConnected = True
 		except:
 			pass
-
-
+	
 	def getAxes(self):  # returns a tuple of all axis data (-1.0 to 1.0)
 		if not self.isConnected:
 			return None
@@ -28,7 +25,6 @@ class Controller:
 		rightJoystickX = self.controller.get_axis(4)
 		rightJoystickY = -self.controller.get_axis(3)
 		trigger = -self.controller.get_axis(2)
-		
 		if(leftJoystickX < self.leftJoystickXDeadzone
 		and leftJoystickX > -self.leftJoystickXDeadzone):
 			leftJoystickX = 0
@@ -44,7 +40,6 @@ class Controller:
 		if(trigger < self.triggerDeadzone
 		and trigger > -self.triggerDeadzone):
 			trigger = 0
-		
 		if leftJoystickX > 1.0:
 			leftJoystickX = 1.0
 		if leftJoystickX < -1.0:
@@ -53,7 +48,6 @@ class Controller:
 			leftJoystickY = 1.0
 		if leftJoystickY < -1.0:
 			leftJoystickY = -1.0
-		
 		if rightJoystickX > 1.0:
 			rightJoystickX = 1.0
 		if rightJoystickY > 1.0:
@@ -62,15 +56,12 @@ class Controller:
 			rightJoystickX = -1.0
 		if rightJoystickY < -1.0:
 			rightJoystickY = -1.0
-			
 		if trigger > 1.0:
 			trigger = 1.0
 		if trigger < -1.0:
 			trigger = -1.0
-		
 		return (leftJoystickX, leftJoystickY, rightJoystickX, rightJoystickY, trigger)
-
-
+	
 	def getButtons(self):	# returns the boolean state of all buttons
 		if not self.isConnected:
 			return None
@@ -84,11 +75,9 @@ class Controller:
 		buttonStart = self.controller.get_button(7)
 		buttonLeftJoystick = self.controller.get_button(8)
 		buttonRightJoystick = self.controller.get_button(9)
-		
 		return (buttonA, buttonB, buttonX, buttonY, buttonLB, buttonRB, buttonBack,
 		buttonStart, buttonLeftJoystick, buttonRightJoystick)
-
-
+	
 	def getDPad(self):	# returns the x and y states of the D Pad buttons
 		if not self.isConnected:
 			return None

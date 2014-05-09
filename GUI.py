@@ -1,11 +1,12 @@
 # The main program for controlling the rover from a base station. Requires Python 2.7 and pygame.
 
-# dependency list
-
+import pygame
+import socket
+import os
+import time
+import subprocess
 import sys
 sys.dont_write_bytecode = True # stops .pyc generation in subsequent imports
-	
-import pygame
 from Controller import Controller
 from Button import Button
 from Slider import Slider
@@ -18,11 +19,6 @@ from ArmClient import ArmClient
 from MastClient import MastClient
 from TextOutput import TextOutput
 from RobotPiece import RobotPiece
-import socket
-import os
-import time
-import math
-import subprocess
 
 # global constants
 
@@ -52,33 +48,31 @@ def createButtons():
 	camera3Button = Button(camConnect, (3), "Mast Camera", (12, 85, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton = Button(camDisconnect, (0), "Off", (12, 115, 100, 20), colorLightBlue, colorGreen)
 	cameraStopButton.selected = True
-	moveButton1 = Button(setDriveMode1, None, "1 Stick Drive", (12, 174, 100, 20), colorLightBlue, colorGreen)
-	moveButton1.selected = True
-	armButton1 = Button(setArmMode1, None, "Arm Base", (12, 234, 100, 20), colorLightBlue, colorGreen)
+	mastButton = Button(setMastMode, None, "Mast Only", (12, 174, 100, 20), colorLightBlue, colorGreen)
+	moveButton1 = Button(setDriveMode1, None, "1 Stick Drive", (12, 204, 100, 20), colorLightBlue, colorGreen)
+	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", (12, 234, 100, 20), colorLightBlue, colorGreen)
+	armButton = Button(setArmMode, None, "Arm", (12, 264, 100, 20), colorLightBlue, colorGreen)
+	mastButton.selected = True
 	stopButton = Button(stopRover, None, "Stop", (12, 324, 100, 20), colorLightBlue, colorYellow)
-	pictureButton = Button(takePicture, None, "Take Picture", (12, 384, 100, 20), colorLightBlue, colorYellow)
-	runExperimentButton = Button(runExperiment, None, "Science!", (12, 414, 100, 20), colorLightBlue, colorYellow)
+	pictureButton = Button(takePicture, None, "Take Picture", (12, 354, 100, 20), colorLightBlue, colorYellow)
+	runExperimentButton = Button(runExperiment, None, "Science!", (12, 384, 100, 20), colorLightBlue, colorYellow)
 	connectButton = Button(connectClients, None, "Connect All", (1107, 205, 100, 20), colorLightBlue, colorYellow)
-	quitButton = Button(quit, None, "Quit", (12, 473, 100, 20), colorLightBlue, colorYellow)
-	moveButton2 = Button(setDriveMode2, None, "2 Stick Drive", (12, 204, 100, 20), colorLightBlue, colorGreen)
-	armButton2 = Button(setArmMode2, None, "Arm End", (12, 264, 100, 20), colorLightBlue, colorGreen)
-	waypointButton = Button(setWaypoint, None, "Set Waypoint", (12, 354, 100, 20), colorLightBlue, colorYellow)
+	quitButton = Button(quit, None, "Quit", (12, 443, 100, 20), colorLightBlue, colorYellow)
 	saveButton = Button(savePosition, None, "Save", (625, 660, 100, 30), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
-	buttonList.append(waypointButton) # 3
+	buttonList.append(saveButton)	# 3
 	buttonList.append(cameraStopButton)	# 4
 	buttonList.append(moveButton1)	# 5
-	buttonList.append(armButton1)	# 6
+	buttonList.append(armButton)	# 6
 	buttonList.append(stopButton)	# 7
 	buttonList.append(pictureButton)	# 8
 	buttonList.append(runExperimentButton)	# 9
 	buttonList.append(connectButton)	# 10
 	buttonList.append(quitButton)	# 11
 	buttonList.append(moveButton2)	# 12
-	buttonList.append(armButton2)	# 13
-	buttonList.append(saveButton)	# 14
+	buttonList.append(mastButton)	# 13
 
 def createSliders():
 	global sliderList
@@ -95,8 +89,8 @@ def createBoxes():
 	boxList = []
 	cameraButtonBox = Box("Camera Feeds", (0, 0, 125, 145))
 	controlBox = Box("Control Modes", (0, 150, 125, 143))
-	actionBox = Box("Rover Actions", (0, 298, 125, 145))
-	uiBox = Box("User Interface", (0, 448, 125, 53))
+	actionBox = Box("Rover Actions", (0, 298, 125, 115))
+	uiBox = Box("User Interface", (0, 418, 125, 53))
 	connectionsBox = Box("Connections", (1095, 0, 125, 235))
 	controllerBox = Box("Controller", (1095, 239, 125, 120))
 	saveBox = Box("", (615, 650, 120, 50))
@@ -191,9 +185,7 @@ def readBaseLocation():
 		locationFile = open("location.txt")
 		location = locationFile.read()
 		location = location.split(",")
-		baseLat = float(location[0])
-		baseLon = float(location[1])
-		baseLocation = (baseLat, baseLon)
+		baseLocation = (float(location[0]), float(location[1])) # lat, lon
 	except:
 		pass
 
@@ -213,7 +205,7 @@ def setDriveMode2(fakeArg):
 	buttonList[12].selected = True
 	drawButtons()
 	
-def setArmMode1(fakeArg):
+def setArmMode(fakeArg):
 	# todo: stop driving
 	buttonList[5].selected = False
 	buttonList[12].selected = False
@@ -221,7 +213,7 @@ def setArmMode1(fakeArg):
 	buttonList[6].selected = True
 	drawButtons()
 	
-def setArmMode2(fakeArg):
+def setMastMode(fakeArg):
 	# todo: stop driving
 	buttonList[5].selected = False
 	buttonList[6].selected = False
@@ -245,7 +237,7 @@ def checkController(fakeArg):
 	return controller.isConnected
 
 def updateGPS():
-	global roverLocation, baseLocation, waypointLocation, lastFix
+	global roverLocation, baseLocation, lastFix
 	if indicatorList[3].active:
 		roverLocation = gpsClient.getPosition()
 		if roverLocation != None:
@@ -281,15 +273,7 @@ def updateGPS():
 			gpsDisplay.write("Range to Base: 10k+")
 	gpsDisplay.draw(screen)
 
-def setWaypoint(fakeArg):
-	global roverLocation
-	if indicatorList[4].active and roverLocation != None: # drive client
-		# todo: send to rover through drive client
-		print("Waypoint set to: (" + str(round(roverLocation[0], 5)) + ", " + str(round(roverLocation[1], 5)) + ").")
-
 def savePosition(fakeArg):
-	global roverLocation
-	#Todo change this
 	if roverLocation != None:
 		try:
 			savefile = open("./savedPoints/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".txt", "w")
@@ -302,7 +286,6 @@ def savePosition(fakeArg):
 			print("Position information saved.")
 		except:
 			print("Could not save position information.")
-		
 
 def takePicture(fakeArg):
 	cameraNumber = 0
@@ -468,16 +451,11 @@ speedScale = 0.0
 steerScale = 0.0
 steerTrim = 0.0
 roverLocation = None
-lastLocation = None
 baseLocation = None
-waypointLocation = None
+lastFix = -1
 redrawTimer = 0
 controllerSendTimer = 0
 gpsTimer = 0
-lastFix = -1
-
-global toggle 
-toggle = False # use start button to toggle actuator control
 
 controller = Controller(0)
 createBoxes()
@@ -493,12 +471,10 @@ gpsDisplay.draw(screen)
 drawIndicators()
 drawRobot()
 readBaseLocation()
-cameraSelected = 0
 camConnect(0)
 
 if not controller.isConnected:
 	print("Controller is not detected.")
-	
 if baseLocation == None:
 	print("Could not read base station position from 'location.txt.'")
 else:
@@ -528,43 +504,23 @@ while True: # main execution loop
 		if controller.isConnected:
 			axes = controller.getAxes()
 			buttons = controller.getButtons()
-			dPad = controller.getDPad()
-			if buttons[0]:
-				setArmMode1(1)
-			elif buttons[1]:
-				setArmMode2(1)
-			elif buttons[2]:
-				setDriveMode2(1)
-			elif buttons[3]:
-				setDriveMode1(1)
-			elif buttons[4]:
-				if cameraSelected == 0:
-					cameraSelected = 3
-				else:
-					cameraSelected = cameraSelected - 1
-				camConnect(cameraSelected)
-			elif buttons[5]:
-				if cameraSelected == 3:
-					cameraSelected = 0
-				else:
-					cameraSelected = cameraSelected + 1
-				camConnect(cameraSelected)
-			elif buttons[9]:
-				savePosition(1)
+			if indicatorList[7].active and buttonList[2].active: # Mast camera control
+				dPad = controller.getDPad()
+				mastControl.sendData(127 + dPad[0], 127 + dPad[1])
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # connected
 					limit = int(speedScale * 127)
-					if isLinux:
-						driveControl.sendOneStickData(-axes[0] * speedScale * steerScale, -axes[1] * speedScale, limit)
-					else: # wandows
-						driveControl.sendOneStickData(-axes[0] * speedScale * steerScale, -axes[1] * speedScale, limit)
+					driveControl.sendOneStickData(-axes[0] * speedScale * steerScale, -axes[1] * speedScale, limit)
+				else:
+					stopRover(1)
+					setMastMode(1)
 			elif buttonList[12].selected: # 2 stick drive mode
 				if indicatorList[4].active: # connected
-					if isLinux:
-						driveControl.sendTwoStickData(-axes[1] * speedScale, -axes[3] * speedScale)
-					else:
-						driveControl.sendTwoStickData(-axes[1] * speedScale, -axes[3] * speedScale)
-			elif buttonList[6].selected: # arm mode 1
+					driveControl.sendTwoStickData(-axes[1] * speedScale, -axes[3] * speedScale)
+				else:
+					stopRover(1)
+					setMastMode(1)
+			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
 					basePan = int(axes[2]*10) + 127
 					armControl.panBase(basePan)
@@ -580,7 +536,6 @@ while True: # main execution loop
 						wristLift = int(axes[0]*127)+127
 						armControl.liftWrist(wristLift)
 						time.sleep(0.005)
-
 					if toggle == 1: # individual actuators 
 						speed1 = int(axes[0] * 127) + 127
 						speed1 = max(speed1, 0)
@@ -589,7 +544,10 @@ while True: # main execution loop
 						speed2 = max(speed2, 0)
 						speed2 = min(speed2, 254)
 						armControl.actuators(speed1, speed2)
+				else:
 
+					stopRover(1)
+					setMastMode(1)
 			if buttonList[13].selected: # arm mode 2
 				if indicatorList[5].active: 
 					gripperControl = int(axes[4]*127) + 127
@@ -618,12 +576,6 @@ while True: # main execution loop
 				yDpad = int(dPad[0] + 2)
 				mastControl.sendData(xDpad,yDpad)
 			if isLinux:
-				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
-				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
-				controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
-				controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
-				controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
-			else:
 				controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
 				controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
 				controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
