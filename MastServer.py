@@ -34,19 +34,25 @@ def parseCommand(command): # parses and executes remote commands
 			if command[0] == "#": # is valid
 				if command[1] == "M":
 					if command[2] == "S": # Camera look
-						yButton = int(ord(command[3])) - 2
-						setPitch(yButton)
-						xButton = int(ord(command[4])) - 2
-						setYaw(xButton)
+						panValue = int(ord(command[3]))
+						if panValue > 127:
+							pan.setAbsolute(1520)
+						elif panValue < 127:
+							pan.setAbsolute(1480)
+						else:
+							pan.setAbsolute(1500)
+						tilt.setRelative(int(ord(command[4])))
 					elif command[2] == "S": # Stop
 						stopServos()
-						print("Servos stopped.")
 	else: # command == none
 		stopServos()
 
 def stopServos():
-	servoDriver.setServo(3, 1300)
-	servoDriver.setServo(1, 1500)
+	try:
+		pan.setAbsolute(1500)
+		tilt.setAbsolute(1300)
+	except:
+		pass
 		
 def stopSockets():
 	try:
@@ -58,24 +64,21 @@ def stopSockets():
 	except:
 		pass
 
+def quit():
+	stopServos()
+	stopSockets()
+	exit(0)
 		
-## Start Servos
+### Main Program  ###
+
+# set up servo driver
 try:
 	servoDriver = ServoDriver()
-	#Pitch = Servo(servoDriver, 3, 800, 2300, 1400)
-	#Yaw = Servo(servoDriver, 1, 1050, 1950, 1500)
+	pan = Servo(servoDriver, 1, 1050, 1950, 1500)
+	tilt = Servo(servoDriver, 3, 800, 2300, 1300)
 except:
 	print("Servo setup failed!")
-
-## Test Code
-#while True:
-#	pos = raw_input('Pulse Length Position?')
-#	try:
-#		servoDriver.setServo(3, int(pos))
-#	except:
-#		print("NaN!")		
-		
-## Begin server connection		
+	quit()
 		
 try:
 	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -96,9 +99,6 @@ try:
 	
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
-	stopServos()
-	stopSockets()
+	quit()
 except:
-	stopServos()
-	stopSockets()
-	raise
+	quit()

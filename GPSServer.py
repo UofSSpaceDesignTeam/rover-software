@@ -1,5 +1,3 @@
-# Sends location information periodically to connected clients.
-
 import serial
 import socket
 import time
@@ -35,10 +33,6 @@ def readGPS():
 				longitude *= -1.0
 			hdop = float(values[8])
 			altitude = float(values[9])
-			#print(latitude)
-			#print(longitude)
-			#print(altitude)
-			#print(hdop)
 
 def sendData():
 	global latitude, longitude, altitude, hdop, dataSocket, logfile
@@ -49,7 +43,7 @@ def sendData():
 			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) + "," + str(hdop) + "\n")
 		except:
 			pass
-			
+	
 def stopSockets():
 	try:
 		commandSocket.close()
@@ -76,6 +70,7 @@ def quit():
 	stopGPS()
 	stopLog()
 	stopSockets()
+	exit(0)
 
 ### Main Program ###
 
@@ -92,7 +87,7 @@ try:
 	gps.timeout = 0.2
 except:
 	print("GPS setup failed!")
-	raise
+	quit()
 
 # start socket
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
