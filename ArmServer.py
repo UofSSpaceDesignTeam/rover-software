@@ -292,7 +292,6 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						servoDriver.setServo(8,1596 - speed)
 					else:
 						servoDriver.setServo(8,1596 + speed)  
-					#print(str(basePan.currentPosition))
 				elif command[2] == "L": # translate wrist joint "up/down"				
 					Speed = int(ord(command[3]))
 					if Speed != 127:	#if control sticks are off center, send new commands to actuators
