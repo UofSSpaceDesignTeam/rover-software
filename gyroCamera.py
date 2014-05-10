@@ -117,7 +117,9 @@ class GyroCamera:
 			self.servoDriver.setServo(1, 1500)
 			self.adjustCameraYawAngle(deltaTheta)
 
-
+# calculateCamAdjust( Integer, Integer )
+# -calculates the required pitch adjustment from BOTH rover pitch and yaw changes
+# NOTE: BOTH arguments are in DEGREES
 	def calculateCamAdjust(self, dPitchIMU, dYawIMU):	#arguments and returns are in DEGREES!!!
 
 		caseTest = int(self.currentYawAngle / 90)
@@ -135,7 +137,10 @@ class GyroCamera:
 			print ("Failed to determine a case!!!")
 			return 0
 
-
+# singleAdjust( Boolean, Integer -1,0,or 1, Integer -1,0,or 1 )
+# -overhead function which checks for changes in rover angle and adjusts the
+# camera pitch accordingly (in 3D!)
+# p_dPad and y_dPad allow for user control of the servos themselves
 	def singleAdjust(self, gyroEnable, p_dPad, y_dPad):
 
 		if gyroEnable == True:
@@ -157,7 +162,7 @@ class GyroCamera:
 				deltaCamPitch = 0
 		else:
 			deltaCamPitch = 0
-			
+
 			
 		# both are in DEGREES ( each d-Pad button push corresponds to 5 degrees )
 		dCamPitch = deltaCamPitch + p_dPad * 5
@@ -177,7 +182,11 @@ class GyroCamera:
 		print("   ")
 		
 
-
+# stableDriveMode( Boolean, Integer -1,0,or 1, Integer -1,0,or 1 )
+# -overhead function which checks for changes in rover angle and adjusts the
+# camera pitch accordingly (in 2D ONLY!)...
+# NOTE: Assumes camera to be pointing FORWARD when 'gyroEnable' is True
+# p_dPad and y_dPad allow for user control of the servos themselves
 	def stableDriveMode(self, gyroEnable, p_dPad, y_dPad):
 
 		if gyroEnable == True:
