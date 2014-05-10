@@ -107,18 +107,18 @@ class GyroCamera:
 			#print("Counter-Clockwise")
 			waitTime = self.angle2time(deltaTheta)
 			print waitTime
-			self.servoDriver.setServo(1, 1480)
+			self.servoDriver.setServo(1, 1435)
 			time.sleep(waitTime)
-			self.servoDriver.setServo(1, 1500)
+			self.servoDriver.setServo(1, 1550)
 			#self.adjustCameraYawAngle(deltaTheta)
 			
 		elif deltaTheta < 0:
 			#print("Clockwise")
 			waitTime = self.angle2time(-1*deltaTheta)
 			print waitTime
-			self.servoDriver.setServo(1, 1520)
+			self.servoDriver.setServo(1, 1565)
 			time.sleep(waitTime)
-			self.servoDriver.setServo(1, 1500)
+			self.servoDriver.setServo(1, 1550)
 			#self.adjustCameraYawAngle(deltaTheta)
 
 
