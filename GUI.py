@@ -215,8 +215,10 @@ def setGyro(value):
 	global gyroActive
 	if value:
 		gyroActive = 1
+		print "gyroActive"
 	else:
 		gyroActive = 0
+		print "gyroInactive"
 	buttonList[14].selected = value
 	buttonList[15].selected = not value
 	drawButtons()
