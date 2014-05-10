@@ -551,9 +551,13 @@ while True: # main execution loop
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
 					if buttons[4] != 0:
-						basePan = int(buttons[4]*127)
+						#rotate left (viewed from behind the arm)
+						basePan = 1
+					elif buttons[5] != 0:
+						#rotate right (viewed from behind the arm)
+						basePan = 2
 					else:
-						basePan = int(buttons[5]*127)
+						basePan = 0
 					armControl.panBase(basePan)
 					time.sleep(0.005) 
 					gripperControl = int(axes[4]*127) + 127
