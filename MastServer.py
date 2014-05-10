@@ -25,17 +25,17 @@ def stopServos():
 	try:
 		servoDriver.setServo(3, 1300)
 	except:
-		pass
+		raise
 		
 def stopSockets():
 	try:
 		mastSocket.close()
 	except:
-		pass
+		raise
 	try:
 		serverSocket.close()
 	except:
-		pass
+		raise
 
 def quit():
 	stopServos()
