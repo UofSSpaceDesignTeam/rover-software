@@ -78,7 +78,7 @@ def createSliders():
 	global sliderList
 	sliderList = []
 	speedSlider = Slider(setSpeedScale, "Drive Power", 0.35, (150, 285, 595))
-	steerSlider = Slider(setSteerScale, "Steer Rate", 0.75, (150, 285, 675))
+	steerSlider = Slider(setSteerScale, "Steer Rate", 0.75, (150, 285, 635))
 	sliderList.append(speedSlider) #0
 	sliderList.append(steerSlider) #1
 
@@ -386,19 +386,19 @@ def disconnectClients(fakeArg): # button-based
 	buttonList[14].draw(screen)
 	pygame.display.update()
 	if indicatorList[1].active:
-		cameraRaspi1.stopSockets()
+		cameraRaspi1.socket.close()
 	if indicatorList[1].active:
-		cameraRaspi2.stopSockets()
+		cameraRaspi2.socket.close()
 	if indicatorList[2].active:
-		cameraRaspi4.stopSockets()
+		cameraRaspi4.socket.close()
 	if indicatorList[4].active:
-		driveControl.stopSockets()
+		driveControl.socket.close()
 	if indicatorList[5].active:
-		armControl.stopSockets()
+		armControl.socket.close()
 	if indicatorList[3].active:
-		gpsClient.stopSockets()
+		gpsClient.socket.close()
 	if indicatorList[7].active:
-		mastControl.stopSockets()
+		mastControl.socket.close()
 	buttonList[14].selected = False
 	drawIndicators()
 	drawButtons()
@@ -484,14 +484,15 @@ while True: # main execution loop
 	if pygame.time.get_ticks() - gpsTimer > 2000:
 		gpsTimer = pygame.time.get_ticks()
 		updateGPS()
-		controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
-		controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
-		controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
-		controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
-		controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
-		controllerDisplay.draw(screen)
-		indicatorList[6].draw(screen)
 		output.draw(screen) # also refresh the message displays
+		if controller.isConnected:
+			controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
+			controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
+			controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
+			controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
+			controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
+			controllerDisplay.draw(screen)
+			indicatorList[6].draw(screen)
 	
 	if pygame.time.get_ticks() - controllerSendTimer > 200: # control data send timer
 		controllerSendTimer = pygame.time.get_ticks()
