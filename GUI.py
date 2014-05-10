@@ -58,6 +58,9 @@ def createButtons():
 	disconnectButton = Button(disconnectClients, None, "Disconnect", (1107, 235, 100, 20), colorLightBlue, colorYellow)
 	quitButton = Button(quit, None, "Quit", (12, 443, 100, 20), colorLightBlue, colorYellow)
 	saveButton = Button(savePosition, None, "Save", (625, 660, 100, 30), colorLightBlue, colorYellow)
+	gyroOnButton = Button(setGyro, True, "Stabilizer On", (300, 585, 100, 20), colorLightBlue, colorGreen)
+	gyroOffButton = Button(setGyro, False, "Stabilizer Off", (300, 615, 100, 20), colorLightBlue, colorGreen)
+	gyroOffButton.selected = True
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -73,6 +76,8 @@ def createButtons():
 	buttonList.append(moveButton2)	# 12
 	buttonList.append(mastButton)	# 13
 	buttonList.append(disconnectButton)	# 14
+	buttonList.append(gyroOnButton)	# 15
+	buttonList.append(gyroOffButton)	# 16
 
 def createSliders():
 	global sliderList
@@ -202,6 +207,13 @@ def setMastMode(fakeArg):
 	buttonList[6].selected = False
 	buttonList[12].selected = False
 	buttonList[13].selected = True
+	drawButtons()
+	
+def setGyro(value):
+	global gyroActive
+	gyroActive = value
+	buttonList[15].selected = value
+	buttonList[16].selected = not value
 	drawButtons()
 
 def setSpeedScale(newValue):
@@ -445,6 +457,7 @@ lastFix = -1
 redrawTimer = 0
 controllerSendTimer = 0
 gpsTimer = 0
+gyroActive = False
 
 controller = Controller(0)
 createBoxes()
@@ -501,7 +514,7 @@ while True: # main execution loop
 			buttons = controller.getButtons()
 			if indicatorList[7].active and buttonList[2].active: # Mast camera control
 				dPad = controller.getDPad()
-				mastControl.sendData(127 + dPad[0], 127 + dPad[1])
+				mastControl.sendData(127 + dPad[0], 127 + dPad[1], gyroActive)
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # connected
 					limit = int(speedScale * 127)
