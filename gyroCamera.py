@@ -80,23 +80,23 @@ class GyroCamera:
 	def angle2time(self, angle):
 		return angle * 0.0133	#yet to be determined coefficient (was 0.01607083333)
 
-'''
+
 # adjustCameraYawAngle( Float(or Integer) )
 # -modifies current camera yaw angle by adding the passed change of angle, delta,
 # which is in DEGREES
-	def adjustCameraYawAngle(self, delta):
-	
-		self.yawMoveCount += 1	#debugging stuff
-		
-		newYaw = self.currentYawAngle + delta	#was just self.currentYawAngle += 84.699 / delta before
-		
-		if newYaw > 360:
-			self.currentYawAngle = (newYaw) % 360
-		elif newYaw < 0:
-			self.currentYawAngle = 360 - abs( newYaw )
-		else:
-			self.currentYawAngle = newYaw
-'''
+#	def adjustCameraYawAngle(self, delta):
+#	
+#		self.yawMoveCount += 1	#debugging stuff
+#		
+#		newYaw = self.currentYawAngle + delta	#was just self.currentYawAngle += 84.699 / delta before
+#		
+#		if newYaw > 360:
+#			self.currentYawAngle = (newYaw) % 360
+#		elif newYaw < 0:
+#			self.currentYawAngle = 360 - abs( newYaw )
+#		else:
+#			self.currentYawAngle = newYaw
+
 
 # setYaw( Float(or Integer) )
 # -rotates the yaw servo position according to the passed change
@@ -119,72 +119,71 @@ class GyroCamera:
 			self.servoDriver.setServo(1, 1500)
 			#self.adjustCameraYawAngle(deltaTheta)
 
-'''
+
 # calculateCamAdjust( Integer, Integer )
 # -calculates the required pitch adjustment from BOTH rover pitch and yaw changes
 # NOTE: BOTH arguments are in DEGREES
-	def calculateCamAdjust(self, dPitchIMU, dYawIMU):	#arguments and returns are in DEGREES!!!
+#	def calculateCamAdjust(self, dPitchIMU, dYawIMU):	#arguments and returns are in DEGREES!!!
+#
+#		caseTest = int(self.currentYawAngle / 90)
+#		if caseTest == 0 or caseTest == 2:
+#			yWeight = (self.currentYawAngle % 90) / 90
+#			pWeight = 1  - yWeight
+#			return -1 * (-1*pWeight * dPitchIMU + yWeight * dYawIMU)
+#			
+#		elif caseTest == 1 or caseTest == 3:
+#			pWeight = (self.currentYawAngle % 90) / 90
+#			yWeight = 1 - pWeight
+#			return -1 * (-1*pWeight * dPitchIMU + yWeight * dYawIMU)
+#			
+#		else:
+#			print ("Failed to determine a case!!!")
+#			return 0
 
-		caseTest = int(self.currentYawAngle / 90)
-		if caseTest == 0 or caseTest == 2:
-			yWeight = (self.currentYawAngle % 90) / 90
-			pWeight = 1  - yWeight
-			return -1 * (-1*pWeight * dPitchIMU + yWeight * dYawIMU)
-			
-		elif caseTest == 1 or caseTest == 3:
-			pWeight = (self.currentYawAngle % 90) / 90
-			yWeight = 1 - pWeight
-			return -1 * (-1*pWeight * dPitchIMU + yWeight * dYawIMU)
-			
-		else:
-			print ("Failed to determine a case!!!")
-			return 0
-'''
-'''
 # singleAdjust( Boolean, Integer -1,0,or 1, Integer -1,0,or 1 )
 # -overhead function which checks for changes in rover angle and adjusts the
 # camera pitch accordingly (in 3D!)
 # p_dPad and y_dPad allow for user control of the servos themselves
-	def singleAdjust(self, gyroEnable, p_dPad, y_dPad):
+#	def singleAdjust(self, gyroEnable, p_dPad, y_dPad):
+#
+#		if gyroEnable == True:
+#			imuNewPitch = int(self.imu.pitch())
+#			imuNewRoll = int(self.imu.roll())
+#			pTest = imuNewPitch - self.imuOldPitch
+#			rTest = imuNewRoll - self.imuOldRoll
+#			#self.imuOldPitch = imuNewPitch
+#			#self.imuOldRoll = imuNewRoll
+#			#print("New/diff in Pitch: %d %d" % (self.imuNewPitch, pTest))
+#			#print("New/diff in Roll: %d %d" % (self.imuNewRoll, rTest))
+#			
+#			if abs(pTest) > 3 or abs(rTest) > 3:
+#				print("Change is in the IMU...")
+#				deltaCamPitch = self.calculateCamAdjust( pTest, rTest)
+#				self.imuOldPitch = imuNewPitch
+#				self.imuOldRoll = imuNewRoll
+#			else:
+#				deltaCamPitch = 0
+#		else:
+#			deltaCamPitch = 0
+#
+#			
+#		# both are in DEGREES ( each d-Pad button push corresponds to 5 degrees )
+#		dCamPitch = deltaCamPitch + p_dPad * 5
+#		dCamYaw = y_dPad * -10
+#		
+#		#debugging prints
+#		print("Old Pitch / Yaw Angles: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))
+#		print("Pitch / Yaw Changes   : %d / %d" % (dCamPitch, dCamYaw))
+#		
+#		# call f'ns to adjust physical camera pitch and yaw
+#		self.setPitch(dCamPitch)
+#		self.setYaw(dCamYaw)
+#
+#		print("Move count is: %d" % self.yawMoveCount)
+#		# print adjusted angles to verify correctness of operations
+#		print("New Pitch / New Yaw: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))
+#		print("   ")
 
-		if gyroEnable == True:
-			imuNewPitch = int(self.imu.pitch())
-			imuNewRoll = int(self.imu.roll())
-			pTest = imuNewPitch - self.imuOldPitch
-			rTest = imuNewRoll - self.imuOldRoll
-			#self.imuOldPitch = imuNewPitch
-			#self.imuOldRoll = imuNewRoll
-			#print("New/diff in Pitch: %d %d" % (self.imuNewPitch, pTest))
-			#print("New/diff in Roll: %d %d" % (self.imuNewRoll, rTest))
-			
-			if abs(pTest) > 3 or abs(rTest) > 3:
-				print("Change is in the IMU...")
-				deltaCamPitch = self.calculateCamAdjust( pTest, rTest)
-				self.imuOldPitch = imuNewPitch
-				self.imuOldRoll = imuNewRoll
-			else:
-				deltaCamPitch = 0
-		else:
-			deltaCamPitch = 0
-
-			
-		# both are in DEGREES ( each d-Pad button push corresponds to 5 degrees )
-		dCamPitch = deltaCamPitch + p_dPad * 5
-		dCamYaw = y_dPad * -10
-		
-		#debugging prints
-		print("Old Pitch / Yaw Angles: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))
-		print("Pitch / Yaw Changes   : %d / %d" % (dCamPitch, dCamYaw))
-		
-		# call f'ns to adjust physical camera pitch and yaw
-		self.setPitch(dCamPitch)
-		self.setYaw(dCamYaw)
-
-		print("Move count is: %d" % self.yawMoveCount)
-		# print adjusted angles to verify correctness of operations
-		print("New Pitch / New Yaw: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))
-		print("   ")
-'''
 
 # stableDriveMode( Boolean, Integer -1,0,or 1, Integer -1,0,or 1 )
 # -overhead function which checks for changes in rover angle and adjusts the
