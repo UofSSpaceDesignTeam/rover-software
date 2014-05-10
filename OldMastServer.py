@@ -44,6 +44,12 @@ def stopSockets():
 ## Start Servos
 try:
 	servoDriver = ServoDriver()
+	# Start the gyrocamera with the servoDriver
+	try:
+		gyroCam = GyroCamera(servoDriver)
+	except:
+		print("Gyro-Camera setup failed!")
+		raise
 	#Pitch = Servo(servoDriver, 3, 800, 2300, 1400)
 	#Yaw = Servo(servoDriver, 1, 1050, 1950, 1500)
 except:
