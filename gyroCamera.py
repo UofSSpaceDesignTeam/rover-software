@@ -57,7 +57,7 @@ class GyroCamera:
 	def setPitch(self, deltaPhi):
 
 		if deltaPhi > 0:	#was <
-			print("Higher...")
+			#print("Higher...")
 			trav = self.angle2micros(deltaPhi)
 			if self.currentPitch + trav < 2300:
 				for x in range (0, trav):
@@ -66,7 +66,7 @@ class GyroCamera:
 				#self.adjustCameraPitchAngle(deltaPhi)
 				
 		elif deltaPhi < 0:	#was >
-			print("Lower...")
+			#print("Lower...")
 			trav = self.angle2micros(-1*deltaPhi)
 			if self.currentPitch - trav > 500:
 				for x in range (0, trav):
@@ -104,7 +104,7 @@ class GyroCamera:
 	def setYaw(self, deltaTheta):
 
 		if deltaTheta > 0:
-			print("Counter-Clockwise")
+			#print("Counter-Clockwise")
 			waitTime = self.angle2time(deltaTheta)
 			self.servoDriver.setServo(1, 1480)
 			time.sleep(waitTime)
@@ -112,7 +112,7 @@ class GyroCamera:
 			#self.adjustCameraYawAngle(deltaTheta)
 			
 		elif deltaTheta < 0:
-			print("Clockwise")
+			#print("Clockwise")
 			waitTime = self.angle2time(-1*deltaTheta)
 			self.servoDriver.setServo(1, 1520)
 			time.sleep(waitTime)
@@ -197,7 +197,7 @@ class GyroCamera:
 			pTest = imuNewPitch - self.imuOldPitch
 			
 			if abs(pTest) > 2:
-				print("Change is in the IMU...")
+				#print("Change is in the IMU...")
 				deltaCamPitch = -1 * pTest
 				self.imuOldPitch = imuNewPitch
 			else:
