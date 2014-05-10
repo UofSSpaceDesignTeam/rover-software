@@ -213,7 +213,10 @@ def setMastMode(fakeArg):
 	
 def setGyro(value):
 	global gyroActive
-	gyroActive = value
+	if value:
+		gyroActive = 1
+	else:
+		gyroActive = 0
 	buttonList[14].selected = value
 	buttonList[15].selected = not value
 	drawButtons()
@@ -439,7 +442,7 @@ lastFix = -1
 redrawTimer = 0
 controllerSendTimer = 0
 gpsTimer = 0
-gyroActive = False
+gyroActive = 0
 
 controller = Controller(0)
 createBoxes()
@@ -499,7 +502,7 @@ while True: # main execution loop
 			buttons = controller.getButtons()
 			if indicatorList[7].active and buttonList[2].selected: # Mast camera control
 				dPad = controller.getDPad()
-				mastControl.sendData(127 + dPad[0], 127 + dPad[1], gyroActive)
+				mastControl.sendData(dPad[0], dPad[1], gyroActive)
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # connected
 					limit = int(speedScale * 127)
