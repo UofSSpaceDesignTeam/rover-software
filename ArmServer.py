@@ -389,6 +389,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					except:
 						pass
 					#physical limits
+					if (Length1 <= 350) & (speed1 < 127):
+						speed1 = max(speed1, 65) 
 					#lower limit for actuator 2
 					if (Length2 <= L2LowerLimit) & (speed2 < 127):
 						sendSabertooth(address,4,0)
