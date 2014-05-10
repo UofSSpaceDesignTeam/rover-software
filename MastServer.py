@@ -79,8 +79,8 @@ try:
 					print data
 					parseCommand(data)
 			except socket.timeout:
-				#if stabilize:
-					#correctPitch();
+				if stabilize:
+					pass#correctPitch();
 		print("Mast Server disconnected.")
 	
 except KeyboardInterrupt:
