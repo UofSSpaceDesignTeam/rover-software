@@ -19,7 +19,9 @@ def parseCommand(command): # parses and executes remote commands
 						y_dPad = int(ord(command[3])) - 2	#vertical d-Pad button
 						x_dPad = int(ord(command[4])) - 2	#horizontal d-Pad button
 						gyroEnable = int(ord(command[5]))
-						gyroCam.stableDriveMode(gyroEnable, y_dPad, x_dPad)
+						print gyroEnable
+						print("y_dPad / x_dPad are: %d / %d" % (y_dPad, x_dPad))
+						#gyroCam.stableDriveMode(gyroEnable, y_dPad, x_dPad)
 					elif command[2] == "S": # Stop
 						stopServos()
 						print("Servos stopped.")
