@@ -15,9 +15,9 @@ class MastClient: # class for mast control
 		except:
 			pass
 	
-	def sendData(self, x, y):
+	def sendData(self, x, y, gyroEnable):
 		try:
-			self.socket.send(self.commandMastCamera + chr(x) + chr(y))
+			self.socket.send(self.commandMastCamera + chr(x) + chr(y) + chr(gyroEnable))
 		except socket.error as e:
 			raise # change to pass when working
 	
