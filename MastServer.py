@@ -1,10 +1,9 @@
 from ServoDriver import *
+from IMU import *
 import socket
 import time
 
 mastPort = 3004
-startPitch = 100
-currentPitch = 1300
 
 def setPitch(yButton):
 	global currentPitch
@@ -28,7 +27,6 @@ def setYaw(xButton):
 		servoDriver.setServo(1, 1500)
 
 def parseCommand(command): # parses and executes remote commands
-	global emergency
 	if command != None:
 		if len(command) > 2:
 			if command[0] == "#": # is valid
@@ -88,13 +86,18 @@ try:
 	while(True):
 		(mastSocket, clientAddress) = serverSocket.accept()
 		print("Mast Server connected.")
+		mastSocket.settimeout(0.5)
 		while(True):
-			data = mastSocket.recv(256)
-			if(data == ""): # socket closing
-				stopServos()
-				break
-			else:
-				parseCommand(data)
+			try:
+				data = mastSocket.recv(256)
+				if(data == ""): # socket closing
+					stopServos()
+					break
+				else:
+					parseCommand(data)
+			except socket.timeout:
+				if stabilize:
+					correctPitch();
 		print("Mast Server disconnected.")
 	
 except KeyboardInterrupt:
