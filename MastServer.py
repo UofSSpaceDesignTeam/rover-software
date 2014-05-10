@@ -21,8 +21,7 @@ def parseCommand(command): # parses and executes remote commands
 
 def stopServos():
 	try:
-		pan.setAbsolute(1500)
-		tilt.setAbsolute(1300)
+		servoDriver.setServo(3, 1300)
 	except:
 		pass
 		
