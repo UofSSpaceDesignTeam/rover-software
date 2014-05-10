@@ -21,7 +21,7 @@ from TextOutput import TextOutput
 
 # global constants
 
-IPraspi1 = "192.168.1.103"
+IPraspi1 = "10.64.226.113"
 IPraspi2 = "10.64.226.138"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "10.64.226.59"
@@ -397,7 +397,7 @@ def disconnectClients(fakeArg): # button-based
 	buttonList[14].selected = True
 	buttonList[14].draw(screen)
 	pygame.display.update()
-	if indicatorList[1].active:
+	if indicatorList[0].active:
 		cameraRaspi1.socket.close()
 	if indicatorList[1].active:
 		cameraRaspi2.socket.close()
