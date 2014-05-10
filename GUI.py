@@ -17,6 +17,7 @@ from GPSClient import GPSClient
 from CameraClient import CameraClient
 from ArmClient import ArmClient
 from MastClient import MastClient
+from ScienceClient import ScienceClient
 from TextOutput import TextOutput
 
 # global constants
@@ -31,6 +32,7 @@ armClientPort = 3003
 cameraClientPort = 3000
 gpsClientPort = 3005
 mastClientPort = 3004
+scienceClientPort = 3006
 colorWhite = (255, 255, 255)
 colorGreen = (0, 240, 0)
 colorLightBlue = (100, 100, 250)
@@ -54,8 +56,7 @@ def createButtons():
 	stopButton = Button(stopRover, True, "Stop", (12, 324, 100, 20), colorLightBlue, colorYellow)
 	pictureButton = Button(takePicture, None, "Take Picture", (12, 354, 100, 20), colorLightBlue, colorYellow)
 	runExperimentButton = Button(runExperiment, None, "Science!", (12, 384, 100, 20), colorLightBlue, colorYellow)
-	connectButton = Button(connectClients, None, "Connect All", (1107, 205, 100, 20), colorLightBlue, colorYellow)
-	disconnectButton = Button(disconnectClients, None, "Disconnect", (1107, 235, 100, 20), colorLightBlue, colorYellow)
+	connectButton = Button(connectClients, None, "Connect All", (1107, 235, 100, 20), colorLightBlue, colorYellow)
 	quitButton = Button(quit, None, "Quit", (12, 443, 100, 20), colorLightBlue, colorYellow)
 	saveButton = Button(savePosition, None, "Save", (625, 660, 100, 30), colorLightBlue, colorYellow)
 	gyroOnButton = Button(setGyro, True, "Stabilizer On", (300, 585, 100, 20), colorLightBlue, colorGreen)
@@ -75,9 +76,8 @@ def createButtons():
 	buttonList.append(quitButton)	# 11
 	buttonList.append(moveButton2)	# 12
 	buttonList.append(mastButton)	# 13
-	buttonList.append(disconnectButton)	# 14
-	buttonList.append(gyroOnButton)	# 15
-	buttonList.append(gyroOffButton)	# 16
+	buttonList.append(gyroOnButton)	# 14
+	buttonList.append(gyroOffButton)	# 15
 
 def createSliders():
 	global sliderList
@@ -119,6 +119,7 @@ def createIndicators():
 	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 130))
 	controllerIndicator = Indicator(checkController, None, "Detected", (1114, 293))
 	gpsIndicator = Indicator(testClient, gpsClient, "GPS System", (1106, 180))
+	scienceIndicator = Indicator(testClient, scienceControl, "Science System", (1106, 205))
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
 	indicatorList.append(camera3Indicator) #2
@@ -127,6 +128,7 @@ def createIndicators():
 	indicatorList.append(armIndicator) #5
 	indicatorList.append(controllerIndicator) #6
 	indicatorList.append(mastIndicator) #7
+	indicatorList.append(scienceIndicator) #8
 
 def createConsoles(): # set up the info boxes
 	global output, gpsDisplay, controllerDisplay
@@ -212,8 +214,8 @@ def setMastMode(fakeArg):
 def setGyro(value):
 	global gyroActive
 	gyroActive = value
-	buttonList[15].selected = value
-	buttonList[16].selected = not value
+	buttonList[14].selected = value
+	buttonList[15].selected = not value
 	drawButtons()
 
 def setSpeedScale(newValue):
@@ -388,30 +390,9 @@ def connectClients(fakeArg): # button-based
 		gpsClient.connect()
 	if not indicatorList[7].active:
 		mastControl.connect()
+	if not indicatorList[8].active:
+		scienceControl.connect()
 	buttonList[10].selected = False
-	drawIndicators()
-	drawButtons()
-	pygame.display.update()
-	
-def disconnectClients(fakeArg): # button-based
-	buttonList[14].selected = True
-	buttonList[14].draw(screen)
-	pygame.display.update()
-	if indicatorList[0].active:
-		cameraRaspi1.socket.close()
-	if indicatorList[1].active:
-		cameraRaspi2.socket.close()
-	if indicatorList[2].active:
-		cameraRaspi4.socket.close()
-	if indicatorList[4].active:
-		driveControl.socket.close()
-	if indicatorList[5].active:
-		armControl.socket.close()
-	if indicatorList[3].active:
-		gpsClient.socket.close()
-	if indicatorList[7].active:
-		mastControl.socket.close()
-	buttonList[14].selected = False
 	drawIndicators()
 	drawButtons()
 	pygame.display.update()
@@ -435,6 +416,7 @@ driveControl = DriveClient(IPraspi2, driveClientPort)
 gpsClient = GPSClient(IPraspi1, gpsClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
 mastControl = MastClient(IPraspi4, mastClientPort)
+scienceControl = ScienceClient(IPraspi3, scienceClientPort)
 
 # set up pygame resources
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (20, 20)
@@ -493,6 +475,9 @@ while True: # main execution loop
 		drawButtons()
 		drawSliders()
 		drawIndicators()
+		if controller.isConnected:
+			controllerDisplay.draw(screen)
+			indicatorList[6].draw(screen)
 	
 	if pygame.time.get_ticks() - gpsTimer > 2000:
 		gpsTimer = pygame.time.get_ticks()
