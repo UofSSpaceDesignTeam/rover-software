@@ -10,13 +10,11 @@ def parseCommand(command): # parses and executes remote commands
 		if len(command) > 2:
 			if command[0] == "#": # is valid
 				if command[1] == "M":
-					if command[2] == "S": # Camera look
+					if command[2] == "C": # Camera look
 						y_dPad = int(ord(command[3])) - 2	#vertical d-Pad button
 						x_dPad = int(ord(command[4])) - 2	#horizontal d-Pad button
 						gyroEnable = int(ord(command[5]))
-						#print(gyroEnable)
-						#print("y_dPad / x_dPad is: %d %d" % (y_dPad, x_dPad))
-						#gyroCam.stableDriveMode(True, y_dPad, x_dPad)
+						gyroCam.stableDriveMode(gyroEnable, y_dPad, x_dPad)
 					elif command[2] == "S": # Stop
 						stopServos()
 	else: # command == none
@@ -76,7 +74,6 @@ try:
 					stopServos()
 					break
 				else:
-					print data
 					parseCommand(data)
 			except socket.timeout:
 				if stabilize:
