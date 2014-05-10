@@ -76,6 +76,7 @@ try:
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	quit()
-except:
+except: 
+	raise
 	quit()
 
