@@ -19,7 +19,7 @@ armPort = 3003
 ramping = 10
 scaleFactor = 0.55
 address= 128
-L1LowerLimit = 330
+L1LowerLimit = 320
 L2LowerLimit = 318
 
 L1 = 350
@@ -252,12 +252,12 @@ def TranslateIO(speed):
 		
 def setActuators(actuator1, actuator2):
 	#moves actuators independently
-	actuator1 = (actuator1 - 127) / 127.0  # range is now -1 to 1
-	actuator2 = (actuator2 - 127) / 127.0
+	actuator1 = (actuator1 - 127)   # range is now -127 to 127
+	actuator2 = (actuator2 - 127) 
 
 	# Math for Actuators
-	leftSpeed = (actuator1) * 127
-	rightSpeed = (actuator2) * 127
+	leftSpeed = (actuator1)
+	rightSpeed = (actuator2) 
 	
 	#constrain the range of data sent to the sabertooth
 	leftSpeed = max(leftSpeed, -127)
@@ -320,13 +320,14 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					if dist < 0:	
 						#can only send positive commands
 						dist = -dist
+						increment = int(dist/10) 
 						#smooths the motion 
 						for x in range(0,dist/3):	#dividing dist by 3 improves control significantly
-							wristTilt.setRelative(-int(dist/10) + 127)
+							wristTilt.setRelative(-increment + 127)
 					else:
 						#smooths the motion
 						for x in range(0,dist/3):
-							wristTilt.setRelative(int(dist/10) + 127)
+							wristTilt.setRelative(increment + 127)
 
 				elif command[2] == "P": # pan gripper left/right					
 					#calculate the distance that needs to be traversed
@@ -334,22 +335,25 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					if dist < 0:
 						#can only send positive commands
 						dist = -dist
+						increment = int(dist/30)
 						#smooths the motion
 						for x in range(0,dist):
-							wristPan.setRelative(-int(dist/30) + 127)
+							wristPan.setRelative(-increment + 127)
 					else:
 						#smooths the motion
 						for x in range(0,dist):
-							wristPan.setRelative(int(dist/30) + 127)
+							wristPan.setRelative(increment + 127)
 				elif command[2] == "H": # twist gripper cw/ccw			
 					dir = int(ord(command[3]))
-					speed = 60	#increase to rotate faster
+					speed = 2	#increase to rotate faster
 					if dir == 1:
 						#smooths the motion
-						wristTwist.setRelative(127 - speed)
+						for x in range(0,50):
+							wristTwist.setRelative(127 - speed)
 					else:
 						#smooths the motion
-						wristTwist.setRelative(127 + speed)	
+						for x in range(0,50):
+							wristTwist.setRelative(127 + speed)	
 				elif command[2] == "G": # open or close gripper
 					temp = int(ord(command[3])) - 127
 					#range of temp is now -127 to 127
@@ -389,7 +393,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					except:
 						pass
 					#physical limits
-					if (Length1 <= 350) & (speed1 < 127):
+					if (Length1 <= 340) & (speed1 < 127):
 						speed1 = max(speed1, 65) 
 					#lower limit for actuator 2
 					if (Length2 <= L2LowerLimit) & (speed2 < 127):
