@@ -25,7 +25,7 @@ from TextOutput import TextOutput
 IPraspi1 = "10.64.226.113"
 IPraspi2 = "10.64.226.138"
 IPraspi3 = "192.168.1.105"
-IPraspi4 = "10.64.226.59"
+IPraspi4 = "10.64.226.72"
 # netcat-ed video on port 3001
 driveClientPort = 3002
 armClientPort = 3003
@@ -497,7 +497,7 @@ while True: # main execution loop
 		if controller.isConnected:
 			axes = controller.getAxes()
 			buttons = controller.getButtons()
-			if indicatorList[7].active and buttonList[2].active: # Mast camera control
+			if indicatorList[7].active and buttonList[2].selected: # Mast camera control
 				dPad = controller.getDPad()
 				mastControl.sendData(127 + dPad[0], 127 + dPad[1], gyroActive)
 			if buttonList[5].selected: # 1 stick drive mode
