@@ -47,10 +47,10 @@ def quit():
 
 # set up servo driver
 try:
-	#servoDriver = ServoDriver()
+	servoDriver = ServoDriver()
 	# Start the gyrocamera with the servoDriver
 	try:
-		#gyroCam = GyroCamera(servoDriver)
+		gyroCam = GyroCamera(servoDriver)
 	except:
 		print("Gyro-Camera setup failed!")
 		raise
