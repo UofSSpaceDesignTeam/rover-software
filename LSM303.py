@@ -1,7 +1,7 @@
 from Adafruit_I2C import Adafruit_I2C
+import math
 
-
-class Adafruit_LSM303(Adafruit_I2C):
+class LSM303():
 
     # Minimal constants carried over from Arduino library
     LSM303_ADDRESS_ACCEL = (0x30 >> 1)  # 0011001x
@@ -22,7 +22,7 @@ class Adafruit_LSM303(Adafruit_I2C):
     LSM303_MAGGAIN_4_7 = 0xA0 # +/- 4.7
     LSM303_MAGGAIN_5_6 = 0xC0 # +/- 5.6
     LSM303_MAGGAIN_8_1 = 0xE0 # +/- 8.1
-
+	
 
     def __init__(self, busnum=-1, debug=False, hires=False):
 
@@ -44,7 +44,12 @@ class Adafruit_LSM303(Adafruit_I2C):
   
         # Enable the magnetometer
         self.mag.write8(self.LSM303_REGISTER_MAG_MR_REG_M, 0x00)
-
+		
+		self.magMin = (-32767, -32767, -32767)
+		self.magMax = (+32767, +32767, +32767)
+		self.magAvg = (0, 0, 0)
+		for i in range(0, 3):
+		self.magAvg(i) = (self.magMax(i) + self.magMin(i)) / 2
 
     # Interpret signed 12-bit acceleration component from list
     def accel12(self, list, idx):
@@ -61,24 +66,48 @@ class Adafruit_LSM303(Adafruit_I2C):
 
     def read(self):
         # Read the accelerometer
-        list = self.accel.readList(
-          self.LSM303_REGISTER_ACCEL_OUT_X_L_A | 0x80, 6)
-        res = [( self.accel12(list, 0),
-                 self.accel12(list, 2),
-                 self.accel12(list, 4) )]
+        list = self.accel.readList(self.LSM303_REGISTER_ACCEL_OUT_X_L_A | 0x80, 6)
+        acc = (self.accel12(list, 0), self.accel12(list, 2), self.accel12(list, 4))
 
         # Read the magnetometer
         list = self.mag.readList(self.LSM303_REGISTER_MAG_OUT_X_H_M, 6)
-        res.append(self.mag16(list, 0),
-                    self.mag16(list, 2),
-                    self.mag16(list, 4))
+        mag = (self.mag16(list, 0), self.mag16(list, 2), self.mag16(list, 4))
+		mag(1) -= self.magAvg(1)
+		mag(2) -= self.magAvg(2)
+		mag(3) -= self.magAvg(3)
 		
 		# compute heading
+		return self.heading(acc, mag)
+	
+	def heading(acc, mag):
+		east = crossProduct(mag, acc)
+		east = normalize(east)
+		north = crossProduct(acc, east)
+		north = normalize(north)
+		heading = math.atan2(dotProduct(east, (0, -1, 0)), dotProduct(north, (0, -1, 0))) * 180 / math.pi
+		if heading < 0:
+			heading += 360
+		return heading
+	
+	def crossProduct(a, b):
+		x = a(2) * b(3) - a(3) * b(2)
+		y = a(3) * b(1) - a(1) * b(3)
+		z = a(1) * b(2) - a(2) * b(1)
+		return (x, y, z)
+	
+	def dotProduct(a, b):
+		x = a(1) * b(1)
+		y = a(2) * b(2)
+		z = a(3) * b(3)
+		return (x, y, z)
+	
+	def normalize(a):
+		mag = dotProduct(a, a) ** 0.5
+		x = a(1) / mag
+		y = a(2) / mag
+		z = a(3) / mag
+		return (x, y, z)
 		
-
-        return res
-
-
     def setMagGain(gain=LSM303_MAGGAIN_1_3):
         self.mag.write8( LSM303_REGISTER_MAG_CRB_REG_M, gain)
 
@@ -88,7 +117,7 @@ if __name__ == '__main__':
 
     from time import sleep
 
-    lsm = Adafruit_LSM303()
+    lsm = LSM303()
 
     print '[(Accelerometer X, Y, Z), (Magnetometer X, Y, Z, orientation)]'
     while True:
