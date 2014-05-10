@@ -282,99 +282,92 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 		if command[0] == "#": # is valid
 			if command[1] == "A":
 				if command[2] == "B": # rotate base
-					if emergency == False:
-						speed = 50 	#needs calibrating
-						dir = int(ord(command[3]))
-						if dir == 0:
-							GPIO.output(12,True)	#disconnect servo power
-						else:
-							GPIO.output(12,False)	#connect servo power
-						if dir == 1:
-							basePan.setRelative(127 - speed)
-						else:
-							basePan.setRelative(127 + speed)  
-						#print(str(basePan.currentPosition))
-				elif command[2] == "L": # translate wrist joint "up/down"
-					if emergency == False:
-						Speed = int(ord(command[3]))
-						if Speed != 127:	#if control sticks are off center, send new commands to actuators
-							Speed = float((Speed - 127)/127)	#range is now -1 to 1
-							Speed = Speed*50		#adjust scaling as necessary
-							TranslateIO(Speed)
-						else:
-							#stop actuators if control sticks are centered	
-							sendSabertooth(address,4,0)
-							sendSabertooth(address,0,0)
+					speed = 50 	#needs calibrating
+					dir = int(ord(command[3]))
+					if dir == 0:
+						GPIO.output(12,True)	#disconnect servo power
+					else:
+						GPIO.output(12,False)	#connect servo power
+					if dir == 1:
+						basePan.setRelative(127 - speed)
+					else:
+						basePan.setRelative(127 + speed)  
+					#print(str(basePan.currentPosition))
+				elif command[2] == "L": # translate wrist joint "up/down"				
+					Speed = int(ord(command[3]))
+					if Speed != 127:	#if control sticks are off center, send new commands to actuators
+						Speed = float((Speed - 127)/127)	#range is now -1 to 1
+						Speed = Speed*50		#adjust scaling as necessary
+						TranslateIO(Speed)
+					else:
+						#stop actuators if control sticks are centered	
+						sendSabertooth(address,4,0)
+						sendSabertooth(address,0,0)
 				elif command[2] == "M": # translate wrist joint "in/out"
-					if emergency == False:
-						Speed = int(ord(command[3]))
-						if Speed != 127:
-							Speed = float((Speed - 127)/127) #range is now -1 to 1
-							Speed = Speed*50		#adjust scaling as necessary
-							TranslateZ(Speed)
-						else:
-							#stop the actuators if control sticks are centered
-							sendSabertooth(address,4,0)
-							sendSabertooth(address,0,0)
+					Speed = int(ord(command[3]))
+					if Speed != 127:
+						Speed = float((Speed - 127)/127) #range is now -1 to 1
+						Speed = Speed*50		#adjust scaling as necessary
+						TranslateZ(Speed)
+					else:
+						#stop the actuators if control sticks are centered
+						sendSabertooth(address,4,0)
+						sendSabertooth(address,0,0)
 						
-				elif command[2] == "W": # rotate wrist joint up/down
-					if emergency == False:
-						#calculate the distance that needs to be traversed. 
-						dist =  int(ord(command[3])) - 127
-						if dist < 0:	
-							#can only send positive commands
-							dist = -dist
-							#smooths the motion 
-							for x in range(0,dist/3):	#dividing dist by 3 improves control significantly
-								wristTilt.setRelative(-int(dist/10) + 127)
-						else:
-							#smooths the motion
-							for x in range(0,dist/3):
-								wristTilt.setRelative(int(dist/10) + 127)
+				elif command[2] == "W": # rotate wrist joint up/down				
+					#calculate the distance that needs to be traversed. 
+					dist =  int(ord(command[3])) - 127
+					if dist < 0:	
+						#can only send positive commands
+						dist = -dist
+						#smooths the motion 
+						for x in range(0,dist/3):	#dividing dist by 3 improves control significantly
+							wristTilt.setRelative(-int(dist/10) + 127)
+					else:
+						#smooths the motion
+						for x in range(0,dist/3):
+							wristTilt.setRelative(int(dist/10) + 127)
 
-				elif command[2] == "P": # pan gripper left/right
-					if emergency == False:	
-						#calculate the distance that needs to be traversed
-						dist = int(ord(command[3])) - 127
-						if dist < 0:
-							#can only send positive commands
-							dist = -dist
-							#smooths the motion
-							for x in range(0,dist):
-								wristPan.setRelative(-int(dist/30) + 127)
-						else:
-							#smooths the motion
-							for x in range(0,dist):
-								wristPan.setRelative(int(dist/30) + 127)
-				elif command[2] == "H": # twist gripper cw/ccw
-					if emergency == False:
-						dir = int(ord(command[3]))
-						speed = 60	#increase to rotate faster
-						if dir == 1:
-							#smooths the motion
-							wristTwist.setRelative(127 - speed)
-						else:
-							#smooths the motion
-							wristTwist.setRelative(127 + speed)	
+				elif command[2] == "P": # pan gripper left/right					
+					#calculate the distance that needs to be traversed
+					dist = int(ord(command[3])) - 127
+					if dist < 0:
+						#can only send positive commands
+						dist = -dist
+						#smooths the motion
+						for x in range(0,dist):
+							wristPan.setRelative(-int(dist/30) + 127)
+					else:
+						#smooths the motion
+						for x in range(0,dist):
+							wristPan.setRelative(int(dist/30) + 127)
+				elif command[2] == "H": # twist gripper cw/ccw			
+					dir = int(ord(command[3]))
+					speed = 60	#increase to rotate faster
+					if dir == 1:
+						#smooths the motion
+						wristTwist.setRelative(127 - speed)
+					else:
+						#smooths the motion
+						wristTwist.setRelative(127 + speed)	
 				elif command[2] == "G": # open or close gripper
-					if emergency == False:
-						temp = int(ord(command[3])) - 127
-						#range of temp is now -127 to 127
-						if temp >= 0:	#negative values correspond to the other trigger so ignore them
-							temp = float(temp*800/127)
-							#range of temp is now 0 to 800
-							#right gripper:	
-							#	open - 2000
-							#	closed - 1200
-							#left gripper:
-							#	open - 1200
-							#	closed - 2000
-							#math for gripper position
-							gripperRight = 2000 - int(temp)
-							gripperLeft = int(temp) + 1200
-							#update gripper position
-							servoDriver.setServo(6,gripperLeft)
-							servoDriver.setServo(7,gripperRight)
+					temp = int(ord(command[3])) - 127
+					#range of temp is now -127 to 127
+					if temp >= 0:	#negative values correspond to the other trigger so ignore them
+						temp = float(temp*800/127)
+						#range of temp is now 0 to 800
+						#right gripper:	
+						#	open - 2000
+						#	closed - 1200
+						#left gripper:
+						#	open - 1200
+						#	closed - 2000
+						#math for gripper position
+						gripperRight = 2000 - int(temp)
+						gripperLeft = int(temp) + 1200
+						#update gripper position
+						servoDriver.setServo(6,gripperLeft)
+						servoDriver.setServo(7,gripperRight)
 				elif command[2] == "S": # stop all actuators
 					sendSabertooth(address,0, 0)
 					sendSabertooth(address,4, 0)
@@ -382,7 +375,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					print("emergency stop")
 					emergency = True
 				elif command[2] == "C": # cancel stop
-					emergency = False
+					
 				elif command[2] == "T":	# controls both actuators individually 
 					global Length2
 					global Length1
