@@ -65,7 +65,11 @@ try:
 		(commandSocket, clientAddress) = serverSocket.accept()
 		print("Camera Server connected.")
 		while(True):
-			data = commandSocket.recv(256)
+			try:
+				data = commandSocket.recv(256)
+			except socket.error:
+				stopCamera()
+				break
 			if(data == ""): # socket closing
 				stopCamera()
 				break
