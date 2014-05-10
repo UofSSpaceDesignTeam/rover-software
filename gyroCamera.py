@@ -22,24 +22,24 @@ class GyroCamera:
 	def __init__(self, servoObject):
 		self.currentPitch = 1300
 		
-		self.currentPitchAngle = 0.0
-		self.currentYawAngle = 0.0
+#		self.currentPitchAngle = 0.0
+#		self.currentYawAngle = 0.0
 
-		self.yawMoveCount = 0
+#		self.yawMoveCount = 0
 		
-		print("Starting IMU and servos...")
+#		print("Starting IMU and servos...")
 		try:
 			self.imu = IMU()
 		except:
 			print("IMU setup failed!")
 		self.imuOldPitch = int(self.imu.pitch())
-		self.imuOldRoll = int(self.imu.roll())
+#		self.imuOldRoll = int(self.imu.roll())
 		#print("Starting pitch is: %d" % self.imuOldPitch)
 		#print("Starting roll is : %d" % self.imuOldRoll)
 		self.servoDriver = servoObject
 		self.servoDriver.setServo(3, self.currentPitch)
-		time.sleep(0.25)	#wait for the camera to set
-		print("Setup complete")
+#		time.sleep(0.25)	#wait for the camera to set
+#		print("Setup complete")
 
 
 # angle2micros( Float(or Integer) )
@@ -48,8 +48,8 @@ class GyroCamera:
 	def angle2micros(self, angle):
 		return int( 10 * angle )	#was 11.1 us/degrees
 	
-	def adjustCameraPitchAngle(self, delta):
-		self.currentPitchAngle = self.currentPitchAngle + delta
+#	def adjustCameraPitchAngle(self, delta):
+#		self.currentPitchAngle = self.currentPitchAngle + delta
 
 # setPitch( Float(or Integer) )
 # -changes the pitch servo position according to the passed change
@@ -63,7 +63,7 @@ class GyroCamera:
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch + 1
 					self.servoDriver.setServo(3, self.currentPitch)
-				self.adjustCameraPitchAngle(deltaPhi)
+				#self.adjustCameraPitchAngle(deltaPhi)
 				
 		elif deltaPhi < 0:	#was >
 			print("Lower...")
@@ -72,7 +72,7 @@ class GyroCamera:
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch - 1
 					self.servoDriver.setServo(3, self.currentPitch)
-				self.adjustCameraPitchAngle(deltaPhi)
+				#self.adjustCameraPitchAngle(deltaPhi)
 
 # angle2time( Float(or Integer) )
 # -converts passed angle (degrees) to cts. servo rotation time (seconds)
@@ -80,6 +80,7 @@ class GyroCamera:
 	def angle2time(self, angle):
 		return angle * 0.0133	#yet to be determined coefficient (was 0.01607083333)
 
+'''
 # adjustCameraYawAngle( Float(or Integer) )
 # -modifies current camera yaw angle by adding the passed change of angle, delta,
 # which is in DEGREES
@@ -95,6 +96,7 @@ class GyroCamera:
 			self.currentYawAngle = 360 - abs( newYaw )
 		else:
 			self.currentYawAngle = newYaw
+'''
 
 # setYaw( Float(or Integer) )
 # -rotates the yaw servo position according to the passed change
@@ -107,7 +109,7 @@ class GyroCamera:
 			self.servoDriver.setServo(1, 1480)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
-			self.adjustCameraYawAngle(deltaTheta)
+			#self.adjustCameraYawAngle(deltaTheta)
 			
 		elif deltaTheta < 0:
 			print("Clockwise")
@@ -115,8 +117,9 @@ class GyroCamera:
 			self.servoDriver.setServo(1, 1520)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1500)
-			self.adjustCameraYawAngle(deltaTheta)
+			#self.adjustCameraYawAngle(deltaTheta)
 
+'''
 # calculateCamAdjust( Integer, Integer )
 # -calculates the required pitch adjustment from BOTH rover pitch and yaw changes
 # NOTE: BOTH arguments are in DEGREES
@@ -136,7 +139,8 @@ class GyroCamera:
 		else:
 			print ("Failed to determine a case!!!")
 			return 0
-
+'''
+'''
 # singleAdjust( Boolean, Integer -1,0,or 1, Integer -1,0,or 1 )
 # -overhead function which checks for changes in rover angle and adjusts the
 # camera pitch accordingly (in 3D!)
@@ -180,7 +184,7 @@ class GyroCamera:
 		# print adjusted angles to verify correctness of operations
 		print("New Pitch / New Yaw: %d / %d" % (self.currentPitchAngle, self.currentYawAngle))
 		print("   ")
-		
+'''
 
 # stableDriveMode( Boolean, Integer -1,0,or 1, Integer -1,0,or 1 )
 # -overhead function which checks for changes in rover angle and adjusts the

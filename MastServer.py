@@ -1,30 +1,9 @@
 from ServoDriver import *
-from IMU import *
+from gyroCamera import *
 import socket
 import time
 
 mastPort = 3004
-
-def setPitch(yButton):
-	global currentPitch
-	if yButton == -1:
-		if currentPitch > 800:
-			for x in range (0, 50):
-				currentPitch = currentPitch - 1
-				servoDriver.setServo(3, currentPitch)
-	elif yButton == 1:
-		if currentPitch < 2300:
-			for x in range (0, 50):
-				currentPitch = currentPitch + 1
-				servoDriver.setServo(3, currentPitch)
-	
-def setYaw(xButton):
-	if xButton == -1:
-		servoDriver.setServo(1, 1480)
-	elif xButton == 1:
-		servoDriver.setServo(1, 1520)
-	else: # Zero or some invalid value got through...	
-		servoDriver.setServo(1, 1500)
 
 def parseCommand(command): # parses and executes remote commands
 	if command != None:
@@ -32,14 +11,9 @@ def parseCommand(command): # parses and executes remote commands
 			if command[0] == "#": # is valid
 				if command[1] == "M":
 					if command[2] == "S": # Camera look
-						panValue = int(ord(command[3]))
-						if panValue > 127:
-							pan.setAbsolute(1520)
-						elif panValue < 127:
-							pan.setAbsolute(1480)
-						else:
-							pan.setAbsolute(1500)
-						tilt.setRelative(int(ord(command[4])))
+						y_dPad = int(ord(command[3])) - 2	#vertical d-Pad button
+						x_dPad = int(ord(command[4])) - 2	#horizontal d-Pad button
+						gyroCam.stableDriveMode(True, y_dPad, x_dPad)
 					elif command[2] == "S": # Stop
 						stopServos()
 	else: # command == none
@@ -72,8 +46,14 @@ def quit():
 # set up servo driver
 try:
 	servoDriver = ServoDriver()
-	pan = Servo(servoDriver, 1, 1050, 1950, 1500)
-	tilt = Servo(servoDriver, 3, 800, 2300, 1300)
+	# Start the gyrocamera with the servoDriver
+	try:
+		gyroCam = GyroCamera(servoDriver)
+	except:
+		print("Gyro-Camera setup failed!")
+		raise
+	#Pitch = Servo(servoDriver, 3, 800, 2300, 1400)
+	#Yaw = Servo(servoDriver, 1, 1050, 1950, 1500)
 except:
 	print("Servo setup failed!")
 	quit()
