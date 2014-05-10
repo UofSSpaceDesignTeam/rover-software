@@ -16,8 +16,8 @@ def parseCommand(command): # parses and executes remote commands
 						#setPitch(yButton)
 						#xButton = int(ord(command[4])) - 2
 						#setYaw(xButton)
-						y_dPad = int(ord(command[3])) - 2	#vertical d-Pad button
-						x_dPad = int(ord(command[4])) - 2	#horizontal d-Pad button
+						x_dPad = int(ord(command[3])) - 2	#vertical d-Pad button
+						y_dPad = int(ord(command[4])) - 2	#horizontal d-Pad button
 						gyroEnable = int(ord(command[5]))
 						print gyroEnable
 						print("y_dPad / x_dPad are: %d / %d" % (y_dPad, x_dPad))
