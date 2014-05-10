@@ -289,9 +289,9 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					else:
 						GPIO.output(12,False)	#connect servo power
 					if dir == 1:
-						basePan.setRelative(127 - speed)
+						servoDriver.setServo(8,1596 - speed)
 					else:
-						basePan.setRelative(127 + speed)  
+						servoDriver.setServo(8,1596 + speed)  
 					#print(str(basePan.currentPosition))
 				elif command[2] == "L": # translate wrist joint "up/down"				
 					Speed = int(ord(command[3]))
