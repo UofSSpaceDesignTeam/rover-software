@@ -4,7 +4,7 @@ from Adafruit_I2C import Adafruit_I2C
 class Adafruit_LSM303(Adafruit_I2C):
 
     # Minimal constants carried over from Arduino library
-    LSM303_ADDRESS_ACCEL = (0x32 >> 1)  # 0011001x
+    LSM303_ADDRESS_ACCEL = (0x30 >> 1)  # 0011001x
     LSM303_ADDRESS_MAG   = (0x3C >> 1)  # 0011110x
                                              # Default    Type
     LSM303_REGISTER_ACCEL_CTRL_REG1_A = 0x20 # 00000111   rw
@@ -69,10 +69,9 @@ class Adafruit_LSM303(Adafruit_I2C):
 
         # Read the magnetometer
         list = self.mag.readList(self.LSM303_REGISTER_MAG_OUT_X_H_M, 6)
-        res.append((self.mag16(list, 0),
+        res.append(self.mag16(list, 0),
                     self.mag16(list, 2),
-                    self.mag16(list, 4),
-                    0.0 ))
+                    self.mag16(list, 4))
 		
 		# compute heading
 		
