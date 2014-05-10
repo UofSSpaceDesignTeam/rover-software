@@ -1,32 +1,9 @@
 from ServoDriver import *
+from gyroCamera import *
 import socket
 import time
 
 mastPort = 3004
-startPitch = 100
-currentPitch = 1300
-
-def setPitch(yButton):
-	global currentPitch
-	if yButton == -1:
-		if currentPitch > 800:
-			for x in range (0, 50):
-				currentPitch = currentPitch - 1
-				servoDriver.setServo(3, currentPitch)
-	elif yButton == 1:
-		if currentPitch < 2300:
-			for x in range (0, 50):
-				currentPitch = currentPitch + 1
-				servoDriver.setServo(3, currentPitch)
-	
-	
-def setYaw(xButton):
-	if xButton == -1:
-		servoDriver.setServo(1, 1480)
-	elif xButton == 1:
-		servoDriver.setServo(1, 1520)
-	else: # Zero or some invalid value got through...	
-		servoDriver.setServo(1, 1500)
 
 def parseCommand(command): # parses and executes remote commands
 	global emergency
@@ -35,10 +12,14 @@ def parseCommand(command): # parses and executes remote commands
 			if command[0] == "#": # is valid
 				if command[1] == "M":
 					if command[2] == "C": # Camera look
-						yButton = int(ord(command[3])) - 2
-						setPitch(yButton)
-						xButton = int(ord(command[4])) - 2
-						setYaw(xButton)
+						#yButton = int(ord(command[3])) - 2
+						#setPitch(yButton)
+						#xButton = int(ord(command[4])) - 2
+						#setYaw(xButton)
+						y_dPad = int(ord(command[3])) - 2	#vertical d-Pad button
+						x_dPad = int(ord(command[4])) - 2	#horizontal d-Pad button
+						gyroEnable = int(ord(command[5]))
+						gyroCam.stableDriveMode(gyroEnable, y_dPad, x_dPad)
 					elif command[2] == "S": # Stop
 						stopServos()
 						print("Servos stopped.")
@@ -47,7 +28,7 @@ def parseCommand(command): # parses and executes remote commands
 
 def stopServos():
 	servoDriver.setServo(3, 1300)
-	servoDriver.setServo(1, 1500)
+	#servoDriver.setServo(1, 1500)
 		
 def stopSockets():
 	try:
