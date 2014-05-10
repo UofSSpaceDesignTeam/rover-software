@@ -17,12 +17,10 @@ hdop = None
 def readGPS():
 	global gps, latitude, longitude, altitude, hdop
 	rawData = gps.read(gps.inWaiting())
-	#print(rawData)
 	dataStart = rawData.find("GGA")
 	if dataStart != -1:	# found start of valid sentence
 		dataEnd = min(dataStart + 70, len(rawData) - dataStart - 2)
 		data = rawData[dataStart:dataEnd]
-		#print(data)
 		values = data.split(",")
 		if len(values) > 9:
 			latitude = float(values[2][:2]) + float(values[2][2:]) / 60.0
@@ -100,8 +98,8 @@ try:
 		print("GPS Server connected.")
 		while(True):
 			time.sleep(2.0)
-			readGPS()
 			try:
+				readGPS()
 				sendData()
 			except:
 				break	

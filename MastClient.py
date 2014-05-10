@@ -1,5 +1,4 @@
 import socket
-import time
 
 class MastClient: # class for mast control
 	def __init__(self, IP, port):

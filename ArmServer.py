@@ -49,12 +49,6 @@ Actuator1FullOutRaw = 4749
 Actuator2FullInRaw = 1890
 Actuator2FullOutRaw = 3081
 
-adc = ADS1x15(0x48)
-
-# global variables
-
-emergency = False
-
 # function definitions
 
 def readActuator1():
@@ -424,6 +418,12 @@ def stopSockets(): # Stops sockets on error condition
 
 
 ### Main Program  ###
+
+# set up ADC
+try:
+	adc = ADS1x15(0x48)
+except:
+	quit()
 
 # set up Sabertooth
 try:

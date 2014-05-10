@@ -1,8 +1,6 @@
-	
 import pygame
 	
 class Slider:
-
 	def __init__(self, function, label, default, (xMin, xMax, yPos)):
 		self.function = function
 		self.label = label

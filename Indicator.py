@@ -1,9 +1,4 @@
-# A class for indicator lights in the GUI.
-
-	# dependency list
-	
 import pygame
-import sys
 
 	# class definition
 	

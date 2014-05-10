@@ -18,7 +18,6 @@ from CameraClient import CameraClient
 from ArmClient import ArmClient
 from MastClient import MastClient
 from TextOutput import TextOutput
-from RobotPiece import RobotPiece
 
 # global constants
 
@@ -34,7 +33,6 @@ gpsClientPort = 3005
 mastClientPort = 3004
 colorWhite = (255, 255, 255)
 colorGreen = (0, 240, 0)
-colorBlue = (0, 0, 240)
 colorLightBlue = (100, 100, 250)
 colorYellow = (250, 250, 0)
 
@@ -80,11 +78,9 @@ def createSliders():
 	global sliderList
 	sliderList = []
 	speedSlider = Slider(setSpeedScale, "Drive Power", 0.35, (150, 285, 595))
-	trimSlider = Slider(setSteerTrim, "Steering Trim", 0.5, (150, 285, 635))
 	steerSlider = Slider(setSteerScale, "Steer Rate", 0.75, (150, 285, 675))
 	sliderList.append(speedSlider) #0
-	sliderList.append(trimSlider) #1
-	sliderList.append(steerSlider) #2
+	sliderList.append(steerSlider) #1
 
 def createBoxes():
 	global boxList
@@ -162,23 +158,6 @@ def drawIndicators():
 			if not indicatorList[i].active:
 				camDisconnect(None)
 				drawButtons()
-	
-def createRobot():
-	global robotPieceList
-	robotPieceList = []
-	chassis = RobotPiece(pygame.image.load('./graphics/chassis.png'), None, (1100,540))
-	arm = RobotPiece(pygame.image.load('./graphics/arm.png'),pygame.image.load('./graphics/redArm.png'),(1145,515))
-	wheels = RobotPiece(pygame.image.load('./graphics/twheelarray.png'),None,(1100,540))
-	wheels.active = True
-	arm.active = False
-	chassis.active = True
-	robotPieceList.append(chassis)
-	robotPieceList.append(wheels)
-	robotPieceList.append(arm)
-
-def drawRobot():
-	for piece in robotPieceList:
-		piece.draw(screen)
 
 def readBaseLocation():
 	global baseLocation
@@ -233,10 +212,6 @@ def setSteerScale(newValue):
 	global steerScale
 	steerScale = newValue
 
-def setSteerTrim(newValue):
-	global steerTrim
-	steerTrim = (newValue - 0.5) * 0.4
-
 def checkController(fakeArg):
 	return controller.isConnected
 
@@ -285,7 +260,7 @@ def savePosition(fakeArg):
 			savefile.write("Latitude: " + str(roverLocation[0]) + " degrees\n")
 			savefile.write("Longitude: " + str(roverLocation[1]) + " degrees\n")
 			savefile.write("Altitude: " + str(roverLocation[2]) + " m ASL\n")
-			savefile.write("Circular Error Probable (50%): " + str(roverLocation[3]) + " m")
+			savefile.write("HDOP: " + str(roverLocation[3]))
 			savefile.close()
 			print("Position information saved.")
 		except:
@@ -293,11 +268,11 @@ def savePosition(fakeArg):
 
 def takePicture(fakeArg):
 	global redrawTimer
-	camera = False
+	camera = 0
 	for i in range(0, 3):
 		if buttonList[i].selected:
 			camera = i + 1
-	if not camera:
+	if camera == 0:
 		return
 	buttonList[8].selected = True
 	drawButtons()
@@ -350,12 +325,8 @@ def camConnect(cameraNumber): # button-based
 	drawButtons()
 	screen.blit(cameraSplash, (130, 0))
 	pygame.display.update()
-	if isLinux:
-		command = ("nc -l -p 3001 | mplayer -really-quiet -xy 0.5 -nosound -hardframedrop -noautosub -fps 40 -ontop -noborder -geometry 150:48 -demuxer h264es -nocache -")
-		subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
-	else: # windows
-		command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
-		subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
+	command = "cam.bat" # EXTERNAL FILE. Needs to be kept up to date.
+	subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
 	time.sleep(0.5)
 	if(cameraNumber == 1):
 		buttonList[0].selected = True
@@ -381,12 +352,8 @@ def camDisconnect(fakeArg): # button-based
 	for cameraButton in buttonList[0:3]:
 		cameraButton.selected = False
 	buttonList[4].selected = True
-	if isLinux: # linux machine
-		command = "sudo killall nc; sudo killall mplayer"
-		subprocess.Popen(str(command), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None)
-	else: #windows
-		command = "camStop.bat" # EXTERNAL FILE. Needs to be kept up to date.
-		subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
+	command = "camStop.bat" # EXTERNAL FILE. Needs to be kept up to date.
+	subprocess.Popen(str(command), shell=True, stdin=None, stdout=None, stderr=None)
 	drawButtons()
 
 def connectClients(fakeArg): # button-based
@@ -448,11 +415,6 @@ def quit(fakeArg): # button-based
 
 # program execution starts here
 
-if(os.name == "posix"): # linux machine
-	isLinux = True
-else:
-	isLinux = False
-
 # create communication clients
 cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
 cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
@@ -477,7 +439,6 @@ screen.blit(background, (130, 0))
 # initialize everything
 speedScale = 0.0
 steerScale = 0.0
-steerTrim = 0.0
 roverLocation = None
 baseLocation = None
 lastFix = -1
@@ -490,14 +451,12 @@ createBoxes()
 createButtons()
 createSliders()
 createIndicators()
-createRobot()
 createConsoles()
 drawBoxes()
 drawButtons()
 drawSliders()
 gpsDisplay.draw(screen)
 drawIndicators()
-drawRobot()
 readBaseLocation()
 camConnect(0)
 
@@ -520,12 +479,19 @@ while True: # main execution loop
 		drawBoxes()
 		drawButtons()
 		drawSliders()
-		drawRobot()
 		drawIndicators()
 	
 	if pygame.time.get_ticks() - gpsTimer > 2000:
 		gpsTimer = pygame.time.get_ticks()
 		updateGPS()
+		controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
+		controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
+		controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
+		controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
+		controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
+		controllerDisplay.draw(screen)
+		indicatorList[6].draw(screen)
+		output.draw(screen) # also refresh the message displays
 	
 	if pygame.time.get_ticks() - controllerSendTimer > 200: # control data send timer
 		controllerSendTimer = pygame.time.get_ticks()
@@ -559,7 +525,7 @@ while True: # main execution loop
 					else:
 						basePan = 0
 					armControl.panBase(basePan)
-					time.sleep(0.005) 
+					time.sleep(0.005)
 					gripperControl = int(axes[4]*127) + 127
 					armControl.gripper(gripperControl)
 					if buttons[0] != 0:
@@ -601,14 +567,6 @@ while True: # main execution loop
 				else:
 					stopRover(False)
 					setMastMode(None)
-			controllerDisplay.write("Left X: " + str(round(axes[0], 2)))
-			controllerDisplay.write("Left Y: " + str(round(axes[1], 2)))
-			controllerDisplay.write("Right X: " + str(round(axes[2], 2)))
-			controllerDisplay.write("Right Y: " + str(round(axes[3], 2)))
-			controllerDisplay.write("Trigger: " + str(round(axes[4], 2)))
-			controllerDisplay.draw(screen)
-			indicatorList[6].draw(screen)
-		output.draw(screen) # also refresh the message displays
 	
 	# update UI state, check events
 	mouse = pygame.mouse.get_pos()

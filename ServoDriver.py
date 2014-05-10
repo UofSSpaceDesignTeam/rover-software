@@ -12,7 +12,6 @@ class Servo:
 		else:
 			self.minimum = maximum
 			self.maximum = minimum
-		self.scale = (maximum - minimum) / 255.0
 		self.default = default
 		self.currentPosition = default
 		self.driver.setServo(self.channel, int(default))
@@ -24,16 +23,6 @@ class Servo:
 		self.driver.setServo(self.channel, int(self.currentPosition))
 		#print("(r)ch" + str(self.channel) + ": " + str(self.currentPosition))
 		print("change: " + str(change-127))
-	
-	def setAbsolute(self, position):
-		pulse = position - 127
-		pulse *= self.scale
-		pulse += self.default
-		pulse = max(pulse, self.minimum)
-		pulse = min(pulse, self.maximum)
-		self.driver.setServo(self.channel, int(pulse))
-		#print("(a)ch" + str(self.channel) + ": " + str(self.currentPosition))
-	
 
 class ServoDriver:
 	# communication constants

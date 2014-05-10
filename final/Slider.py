@@ -15,7 +15,7 @@ class Slider:
 		self.labelYPosition = self.yPos - 23
 		self.obj = None
 		self.dragging = False
-	
+
 	def draw(self, screen): # redraw the button with centered label
 		if self.dragging:
 			self.drag()
@@ -27,7 +27,7 @@ class Slider:
 	def set(self, value):
 		self.xPos = value * (self.xMax - self.xMin) + self.xMin
 		self.function(value)
-	
+
 	def drag(self):	# activate the button
 		self.xPos = pygame.mouse.get_pos()[0]
 		if self.xPos > self.xMax:
