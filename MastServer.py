@@ -14,8 +14,9 @@ def parseCommand(command): # parses and executes remote commands
 						y_dPad = int(ord(command[3])) - 2	#vertical d-Pad button
 						x_dPad = int(ord(command[4])) - 2	#horizontal d-Pad button
 						gyroEnable = int(ord(command[5]))
-						print(gyroEnable)
-						gyroCam.stableDriveMode(True, y_dPad, x_dPad)
+						#print(gyroEnable)
+						#print("y_dPad / x_dPad is: %d %d" % (y_dPad, x_dPad))
+						#gyroCam.stableDriveMode(True, y_dPad, x_dPad)
 					elif command[2] == "S": # Stop
 						stopServos()
 	else: # command == none
@@ -46,10 +47,10 @@ def quit():
 
 # set up servo driver
 try:
-	servoDriver = ServoDriver()
+	#servoDriver = ServoDriver()
 	# Start the gyrocamera with the servoDriver
 	try:
-		gyroCam = GyroCamera(servoDriver)
+		#gyroCam = GyroCamera(servoDriver)
 	except:
 		print("Gyro-Camera setup failed!")
 		raise
@@ -75,10 +76,11 @@ try:
 					stopServos()
 					break
 				else:
+					print data
 					parseCommand(data)
 			except socket.timeout:
-				if stabilize:
-					correctPitch();
+				#if stabilize:
+					#correctPitch();
 		print("Mast Server disconnected.")
 	
 except KeyboardInterrupt:
