@@ -282,7 +282,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 		if command[0] == "#": # is valid
 			if command[1] == "A":
 				if command[2] == "B": # rotate base
-					speed = 50 	#needs calibrating
+					speed = 100 	#needs calibrating
 					dir = int(ord(command[3]))
 					if dir == 0:
 						GPIO.output(12,True)	#disconnect servo power
