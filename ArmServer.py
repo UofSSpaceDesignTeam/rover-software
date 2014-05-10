@@ -318,7 +318,6 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					#calculate the distance that needs to be traversed. 
 					dist =  int(ord(command[3])) - 127
 					if dist < 0:	
-						#can only send positive commands
 						dist = -dist
 						increment = int(dist/10) 
 						#smooths the motion 
@@ -333,7 +332,6 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					#calculate the distance that needs to be traversed
 					dist = int(ord(command[3])) - 127
 					if dist < 0:
-						#can only send positive commands
 						dist = -dist
 						increment = int(dist/30)
 						#smooths the motion
@@ -442,6 +440,7 @@ try:
 	GPIO.setmode(GPIO.BOARD)
 	#GPIO.setup(7, GPIO.OUT)
 	GPIO.setup(12,GPIO.OUT)
+	GPIO.output(12,True)	# disconnect base servo power
 except:
 	print("GPIO setup failed!")
 	time.sleep(2)
