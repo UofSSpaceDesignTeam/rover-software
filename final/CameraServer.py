@@ -59,13 +59,18 @@ def quit():
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
 	serverSocket.bind(("", commandPort))
+	serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	serverSocket.listen(0)
 	print("Camera Server listening on port " + str(commandPort))
 	while(True):
 		(commandSocket, clientAddress) = serverSocket.accept()
 		print("Camera Server connected.")
 		while(True):
-			data = commandSocket.recv(256)
+			try:
+				data = commandSocket.recv(256)
+			except socket.error:
+				stopCamera()
+				break
 			if(data == ""): # socket closing
 				stopCamera()
 				break
@@ -76,6 +81,7 @@ try:
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	quit()
-except:
+except: 
+	raise
 	quit()
 
