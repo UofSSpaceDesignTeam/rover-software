@@ -99,10 +99,10 @@ class LSM303():
 		x = a[0] * b[0]
 		y = a[1] * b[1]
 		z = a[2] * b[2]
-		return (x, y, z)
+		return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 	
 	def normalize(self, a):
-		mag = dotProduct(a, a) ** 0.5
+		mag = self.dotProduct(a, a) ** 0.5
 		x = a[0] / mag
 		y = a[1] / mag
 		z = a[2] / mag
