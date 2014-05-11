@@ -57,9 +57,9 @@ try:
 except:
 	print("Servo setup failed!")
 	quit()
-		
+	
+serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	
 try:
-	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	serverSocket.bind(("", mastPort))
 	serverSocket.listen(0)
 	print("Mast Server listening on port " + str(mastPort))
