@@ -76,11 +76,11 @@ class LSM303():
 		# calibration
 		for i in range(0, 3):
 			if(mag[i] < self.magMin[i]):
-				magMin[i] = mag[i]
+				self.magMin[i] = mag[i]
 			if(mag[i] > self.magMax):
-				magMax[i] = mag[i]
-			print("max " + str(i) + " = " + str(magMax[i]))
-			print("min " + str(i) + " = " + str(magMin[i]))
+				self.magMax[i] = mag[i]
+			print("max " + str(i) + " = " + str(self.magMax[i]))
+			print("min " + str(i) + " = " + str(self.magMin[i]))
 		# mag[0] -= self.magAvg[0]
 		# mag[1] -= self.magAvg[1]
 		# mag[2] -= self.magAvg[2]
