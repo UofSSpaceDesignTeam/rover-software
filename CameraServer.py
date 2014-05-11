@@ -59,6 +59,7 @@ def quit():
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
 	serverSocket.bind(("", commandPort))
+	serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	serverSocket.listen(0)
 	print("Camera Server listening on port " + str(commandPort))
 	while(True):

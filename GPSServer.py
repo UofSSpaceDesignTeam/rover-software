@@ -101,6 +101,7 @@ except:
 
 # start socket
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 try:
 	serverSocket.bind(("", GPSPort))
 	serverSocket.listen(0)

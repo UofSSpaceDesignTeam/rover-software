@@ -60,6 +60,7 @@ except:
 	
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	
 try:
+	serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	serverSocket.bind(("", mastPort))
 	serverSocket.listen(0)
 	print("Mast Server listening on port " + str(mastPort))
