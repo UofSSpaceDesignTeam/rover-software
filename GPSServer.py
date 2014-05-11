@@ -43,7 +43,6 @@ def sendData():
 	if latitude != None and longitude != None and altitude != None and hdop != None:
 		dataSocket.send(struct.pack("!fffff", latitude, longitude, altitude, hdop, course))
 		try:
-			global logfile
 			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) + "," + str(hdop) + "\n")
 		except:
 			pass
@@ -80,9 +79,10 @@ def quit():
 
 # set up logging
 try:
-	logfile = open("/home/pi/gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log", "w")
+	logfile = open("/home/pi/gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log", "w+")
 except:
 	print("GPS logging failed.")
+	raise
 
 # set up serial connection
 try:
@@ -123,4 +123,5 @@ except KeyboardInterrupt:
 	quit()
 except:
 	quit()
+	raise
 

@@ -215,10 +215,8 @@ def setGyro(value):
 	global gyroActive
 	if value:
 		gyroActive = 1
-		print "gyroActive"
 	else:
 		gyroActive = 0
-		print "gyroInactive"
 	buttonList[14].selected = value
 	buttonList[15].selected = not value
 	drawButtons()
@@ -419,7 +417,7 @@ cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
 cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
 cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
 driveControl = DriveClient(IPraspi2, driveClientPort)
-gpsClient = GPSClient(IPraspi1, gpsClientPort)
+gpsClient = GPSClient(IPraspi4, gpsClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
 mastControl = MastClient(IPraspi4, mastClientPort)
 scienceControl = ScienceClient(IPraspi3, scienceClientPort)
