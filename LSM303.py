@@ -68,11 +68,9 @@ class LSM303():
 		# Read the accelerometer
 		list = self.accel.readList(self.LSM303_REGISTER_ACCEL_OUT_X_L_A | 0x80, 6)
 		acc = (self.accel12(list, 0), self.accel12(list, 2), self.accel12(list, 4))
-
 		# Read the magnetometer
 		list = self.mag.readList(self.LSM303_REGISTER_MAG_OUT_X_H_M, 6)
 		mag = [self.mag16(list, 0), self.mag16(list, 2), self.mag16(list, 4)]
-		
 		# calibration
 		# for i in range(0, 3):
 			# if(mag[i] < self.magMin[i]):
@@ -82,7 +80,6 @@ class LSM303():
 		mag[0] -= self.magAvg[0]
 		mag[1] -= self.magAvg[1]
 		mag[2] -= self.magAvg[2]
-		
 		# compute heading
 		return self.heading(acc, mag)
 	
@@ -119,17 +116,16 @@ class LSM303():
 		self.mag.write8( LSM303_REGISTER_MAG_CRB_REG_M, gain)
 
 
-# Simple example prints accel/mag data once per second:
-if __name__ == '__main__':
+# calibration routine
+	# from time import sleep
 
-	from time import sleep
+	# lsm = LSM303()
+	# try:
+		# while True:
+			# lsm.read()
+	# except KeyboardInterrupt:
+		# for i in range(0, 3):
+			# print("max " + str(i) + " = " + str(lsm.magMax[i]))
+			# print("min " + str(i) + " = " + str(lsm.magMin[i]))
+		# raise
 
-	lsm = LSM303()
-	try:
-		while True:
-			lsm.read()
-	except KeyboardInterrupt:
-		for i in range(0, 3):
-			print("max " + str(i) + " = " + str(lsm.magMax[i]))
-			print("min " + str(i) + " = " + str(lsm.magMin[i]))
-		raise
