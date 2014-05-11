@@ -130,6 +130,6 @@ if __name__ == '__main__':
 			lsm.read()
 	except KeyboardInterrupt:
 		for i in range(0, 3):
-			print("max " + str(i) + " = " + str(self.magMax[i]))
-			print("min " + str(i) + " = " + str(self.magMin[i]))
+			print("max " + str(i) + " = " + str(lsm.magMax[i]))
+			print("min " + str(i) + " = " + str(lsm.magMin[i]))
 		raise
