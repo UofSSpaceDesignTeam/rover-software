@@ -79,29 +79,29 @@ class LSM303():
 		# compute heading
 		return self.heading(acc, mag)
 	
-	def heading(acc, mag):
-		east = crossProduct(mag, acc)
-		east = normalize(east)
-		north = crossProduct(acc, east)
-		north = normalize(north)
-		heading = math.atan2(dotProduct(east, (0, -1, 0)), dotProduct(north, (0, -1, 0))) * 180 / math.pi
+	def heading(self, acc, mag):
+		east = self.crossProduct(mag, acc)
+		east = self.normalize(east)
+		north = self.crossProduct(acc, east)
+		north = self.normalize(north)
+		heading = math.atan2(self.dotProduct(east, (0, -1, 0)), self.dotProduct(north, (0, -1, 0))) * 180 / math.pi
 		if heading < 0:
 			heading += 360
 		return heading
 	
-	def crossProduct(a, b):
+	def crossProduct(self, a, b):
 		x = a[1] * b[2] - a[2] * b[1]
 		y = a[2] * b[0] - a[0] * b[2]
 		z = a[0] * b[1] - a[1] * b[0]
 		return (x, y, z)
 	
-	def dotProduct(a, b):
+	def dotProduct(self, a, b):
 		x = a[0] * b[0]
 		y = a[1] * b[1]
 		z = a[2] * b[2]
 		return (x, y, z)
 	
-	def normalize(a):
+	def normalize(self, a):
 		mag = dotProduct(a, a) ** 0.5
 		x = a[0] / mag
 		y = a[1] / mag
