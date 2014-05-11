@@ -49,7 +49,7 @@ class LSM303():
 		self.magMax = (+32767, +32767, +32767)
 		self.magAvg = (0, 0, 0)
 		for i in range(0, 3):
-			self.magAvg(i) = (self.magMax(i) + self.magMin(i)) / 2
+			self.magAvg[i] = (self.magMax[i] + self.magMin[i]) / 2
 
 	# Interpret signed 12-bit acceleration component from list
 	def accel12(self, list, idx):
@@ -72,9 +72,9 @@ class LSM303():
 		# Read the magnetometer
 		list = self.mag.readList(self.LSM303_REGISTER_MAG_OUT_X_H_M, 6)
 		mag = (self.mag16(list, 0), self.mag16(list, 2), self.mag16(list, 4))
-		mag(1) -= self.magAvg(1)
-		mag(2) -= self.magAvg(2)
-		mag(3) -= self.magAvg(3)
+		mag[1] -= self.magAvg[1]
+		mag[2] -= self.magAvg[2]
+		mag[3] -= self.magAvg[3]
 		
 		# compute heading
 		return self.heading(acc, mag)
@@ -90,22 +90,22 @@ class LSM303():
 		return heading
 	
 	def crossProduct(a, b):
-		x = a(2) * b(3) - a(3) * b(2)
-		y = a(3) * b(1) - a(1) * b(3)
-		z = a(1) * b(2) - a(2) * b(1)
+		x = a[2] * b[3] - a[3] * b[2]
+		y = a[3] * b[1] - a[1] * b[3]
+		z = a[1] * b[2] - a[2] * b[1]
 		return (x, y, z)
 	
 	def dotProduct(a, b):
-		x = a(1) * b(1)
-		y = a(2) * b(2)
-		z = a(3) * b(3)
+		x = a[1] * b[1]
+		y = a[2] * b[2]
+		z = a[3] * b[3]
 		return (x, y, z)
 	
 	def normalize(a):
 		mag = dotProduct(a, a) ** 0.5
-		x = a(1) / mag
-		y = a(2) / mag
-		z = a(3) / mag
+		x = a[1] / mag
+		y = a[2] / mag
+		z = a[3] / mag
 		return (x, y, z)
 		
 	def setMagGain(gain=LSM303_MAGGAIN_1_3):
