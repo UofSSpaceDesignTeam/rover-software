@@ -75,14 +75,6 @@ try:
 except:
 	print("Servo setup failed!")
 
-## Test Code
-#while True:
-#	pos = raw_input('Pulse Length Position?')
-#	try:
-#		servoDriver.setServo(3, int(pos))
-#	except:
-#		print("NaN!")		
-		
 ## Begin server connection		
 		
 try:

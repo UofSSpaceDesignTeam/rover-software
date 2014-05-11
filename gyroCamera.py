@@ -58,7 +58,7 @@ class GyroCamera:
 			#self.adjustCameraYawAngle(deltaTheta)
 			
 	def stableDriveMode(self, gyroEnable, p_dPad, y_dPad):
-
+		print gyroEnable
 		if gyroEnable == True:
 			imuNewPitch = int(self.imu.pitch())
 			pTest = imuNewPitch - self.imuOldPitch
