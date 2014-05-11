@@ -79,8 +79,6 @@ class LSM303():
 				self.magMin[i] = mag[i]
 			if(mag[i] > self.magMax):
 				self.magMax[i] = mag[i]
-			print("max " + str(i) + " = " + str(self.magMax[i]))
-			print("min " + str(i) + " = " + str(self.magMin[i]))
 		# mag[0] -= self.magAvg[0]
 		# mag[1] -= self.magAvg[1]
 		# mag[2] -= self.magAvg[2]
@@ -127,7 +125,11 @@ if __name__ == '__main__':
 	from time import sleep
 
 	lsm = LSM303()
-	
-	while True:
-		lsm.read()
-		sleep(1) # Output is fun to watch if this is commented out
+	try:
+		while True:
+			lsm.read()
+	except KeyboardInterrupt:
+		for i in range(0, 3):
+			print("max " + str(i) + " = " + str(self.magMax[i]))
+			print("min " + str(i) + " = " + str(self.magMin[i]))
+		raise
