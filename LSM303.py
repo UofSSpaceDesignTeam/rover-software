@@ -45,8 +45,8 @@ class LSM303():
 		# Enable the magnetometer
 		self.mag.write8(self.LSM303_REGISTER_MAG_MR_REG_M, 0x00)
 		
-		self.magMin = [0, 0, 0]
-		self.magMax = [0, 0, 0]
+		self.magMin = [32767, 32767, 32767]
+		self.magMax = [-32767, -32767, -32767]
 		self.magAvg = [0, 0, 0]
 		for i in range(0, 3):
 			self.magAvg[i] = (self.magMax[i] + self.magMin[i]) / 2
