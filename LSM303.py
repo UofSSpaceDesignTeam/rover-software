@@ -77,7 +77,7 @@ class LSM303():
 		for i in range(0, 3):
 			if(mag[i] < self.magMin[i]):
 				self.magMin[i] = mag[i]
-			if(mag[i] > self.magMax):
+			if(mag[i] > self.magMax[i]):
 				self.magMax[i] = mag[i]
 		# mag[0] -= self.magAvg[0]
 		# mag[1] -= self.magAvg[1]
