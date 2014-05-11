@@ -45,8 +45,8 @@ class LSM303():
 		# Enable the magnetometer
 		self.mag.write8(self.LSM303_REGISTER_MAG_MR_REG_M, 0x00)
 		
-		self.magMin = (-32767, -32767, -32767)
-		self.magMax = (+32767, +32767, +32767)
+		self.magMin = [-32767, -32767, -32767]
+		self.magMax = [+32767, +32767, +32767]
 		self.magAvg = [0, 0, 0]
 		for i in range(0, 3):
 			self.magAvg[i] = (self.magMax[i] + self.magMin[i]) / 2
@@ -72,12 +72,21 @@ class LSM303():
 		# Read the magnetometer
 		list = self.mag.readList(self.LSM303_REGISTER_MAG_OUT_X_H_M, 6)
 		mag = [self.mag16(list, 0), self.mag16(list, 2), self.mag16(list, 4)]
-		mag[0] -= self.magAvg[0]
-		mag[1] -= self.magAvg[1]
-		mag[2] -= self.magAvg[2]
+		
+		# calibration
+		for i in range(0, 3):
+			if(mag[i] < self.magMin[i])
+				magMin[i] = mag[i]
+			if(mag[i] > self.magMax
+				magMax[i] = mag[i]
+			print("max " + str(i) + " = " + str(magMax[i]))
+			print("min " + str(i) + " = " + str(magMin[i]))
+		# mag[0] -= self.magAvg[0]
+		# mag[1] -= self.magAvg[1]
+		# mag[2] -= self.magAvg[2]
 		
 		# compute heading
-		return self.heading(acc, mag)
+		#return self.heading(acc, mag)
 	
 	def heading(self, acc, mag):
 		east = self.crossProduct(mag, acc)
@@ -118,8 +127,7 @@ if __name__ == '__main__':
 	from time import sleep
 
 	lsm = LSM303()
-
-	print '[(Accelerometer X, Y, Z), (Magnetometer X, Y, Z, orientation)]'
+	
 	while True:
-		print lsm.read()
+		lsm.read()
 		sleep(1) # Output is fun to watch if this is commented out
