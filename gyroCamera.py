@@ -5,14 +5,14 @@ import time
 
 class GyroCamera:
 	def __init__(self, servoObject):
-	try:
-			self.imu = IMU()
-	except:
-		print("IMU setup failed!")
-	self.currentPitch = 1300
-	self.imuOldPitch = int(self.imu.pitch())
-	self.servoDriver = servoObject
-	self.servoDriver.setServo(3, self.currentPitch)
+		try:
+				self.imu = IMU()
+		except:
+			print("IMU setup failed!")
+		self.currentPitch = 1300
+		self.imuOldPitch = int(self.imu.pitch())
+		self.servoDriver = servoObject
+		self.servoDriver.setServo(3, self.currentPitch)
 	
 	def angle2micros(self, angle):
 		return int( 10 * angle )
