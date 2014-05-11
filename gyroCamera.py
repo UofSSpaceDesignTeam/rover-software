@@ -1,4 +1,3 @@
-#include needed stuff here... like
 from MPU6050 import IMU
 from ServoDriver import *
 import math
@@ -11,8 +10,8 @@ import time
 # In addition to the IMU, the function arguments
 # yButton and xButton allow for external user control
 # Also, there are two different ways of implementing this class:
-#   -singleAdjust: full 3D camera pitch stabalization (not currently working)
-#   -stableDriveMode: 2D stabalization (working but assumes camera is
+#   -singleAdjust: full 3D camera pitch stabilization (not currently working)
+#   -stableDriveMode: 2D stabilization (working but assumes camera is
 #		facing forward ONLY)
 
 class GyroCamera:
@@ -107,7 +106,7 @@ class GyroCamera:
 			#print("Counter-Clockwise")
 			waitTime = self.angle2time(deltaTheta)
 			print waitTime
-			self.servoDriver.setServo(1, 1435)
+			self.servoDriver.setServo(1, 1535)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1550)
 			#self.adjustCameraYawAngle(deltaTheta)
