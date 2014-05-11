@@ -3,7 +3,7 @@ import math
 import time
 
 class Servo:
-	def __init__(self, driver, channel, minimum, maximum, default):
+	def __init__(self, driver, channel, minimum, maximum, default, debug=False):
 		self.driver = driver
 		self.channel = channel
 		if maximum > minimum:
@@ -21,8 +21,15 @@ class Servo:
 		self.currentPosition = max(self.currentPosition, self.minimum)
 		self.currentPosition = min(self.currentPosition, self.maximum)
 		self.driver.setServo(self.channel, int(self.currentPosition))
-		#print("(r)ch" + str(self.channel) + ": " + str(self.currentPosition))
-		print("change: " + str(change-127))
+		if debug:
+			print("current position: " + str(currentPosition))
+	
+	def setMicroseconds(self, micros):
+		self.currentPosition = max(micros, self.minimum)
+		self.currentPosition = min(self.currentPosition, self.maximum)
+		self.driver.setServo(self.channel, int(self.currentPosition))
+		if debug:
+			print("current position: " + str(currentPosition))
 
 class ServoDriver:
 	# communication constants

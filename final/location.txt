@@ -1,0 +1,2 @@
+52.132642,-106.627730,
+This file is used to set the base station location used by the GUI.
