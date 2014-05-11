@@ -2,6 +2,7 @@ import serial
 import socket
 import time
 import struct
+from LSM303 import LSM303
 
 GPSPort = 3005
 header = "#GD" #GPS Data
@@ -13,9 +14,14 @@ latitude = None
 longitude = None
 altitude = None
 hdop = None
+course = -999
 
 def readGPS():
-	global gps, latitude, longitude, altitude, hdop
+	global gps, latitude, longitude, altitude, hdop, course
+	try:
+		course = compass.read()
+	except:
+		pass
 	rawData = gps.read(gps.inWaiting())
 	dataStart = rawData.find("GGA")
 	if dataStart != -1:	# found start of valid sentence
@@ -33,9 +39,9 @@ def readGPS():
 			altitude = float(values[9])
 
 def sendData():
-	global latitude, longitude, altitude, hdop, dataSocket, logfile
+	global latitude, longitude, altitude, hdop, course, dataSocket, logfile
 	if latitude != None and longitude != None and altitude != None and hdop != None:
-		dataSocket.send(struct.pack("!ffff", latitude, longitude, altitude, hdop))
+		dataSocket.send(struct.pack("!fffff", latitude, longitude, altitude, hdop, course))
 		try:
 			global logfile
 			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) + "," + str(hdop) + "\n")
@@ -86,6 +92,12 @@ try:
 except:
 	print("GPS setup failed!")
 	quit()
+
+# set up compass
+try:
+	compass = LSM303()
+except:
+	print("compass setup failed!")
 
 # start socket
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

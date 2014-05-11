@@ -19,7 +19,7 @@ class GPSClient: # class for getting position data
 		try:
 			self.socket.settimeout(0.3)
 			packet = self.socket.recv(256)
-			data = struct.unpack("!ffff", packet)
+			data = struct.unpack("!fffff", packet)
 			return data
 		except:
 			return None

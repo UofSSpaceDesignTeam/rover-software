@@ -118,7 +118,7 @@ def createIndicators():
 	driveIndicator = Indicator(testClient, driveControl, "Drive System", (1106, 155))
 	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 130))
 	controllerIndicator = Indicator(checkController, None, "Detected", (1114, 293))
-	gpsIndicator = Indicator(testClient, gpsClient, "GPS System", (1106, 180))
+	gpsIndicator = Indicator(testClient, gpsClient, "Nav System", (1106, 180))
 	scienceIndicator = Indicator(testClient, scienceControl, "Science System", (1106, 205))
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
@@ -134,14 +134,14 @@ def createConsoles(): # set up the info boxes
 	global output, gpsDisplay, controllerDisplay
 	output = TextOutput("Messages", 17, colorWhite, (740, 544, 350, 156), 11)
 	sys.stdout = output
-	gpsDisplay = TextOutput("GPS", 17, colorWhite, (615, 544, 120, 107), 7)
+	gpsDisplay = TextOutput("Navigation", 17, colorWhite, (615, 544, 120, 107), 7)
 	gpsDisplay.write("Fix Age:")
 	gpsDisplay.write("Lat:")
 	gpsDisplay.write("Lon:")
 	gpsDisplay.write("Alt:")
 	gpsDisplay.write("HDOP:")
 	gpsDisplay.write("Course:")
-	gpsDisplay.write("Course Home:")
+	gpsDisplay.write("Range to Base:")
 	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 295, 88, 88), 5)
 
 def drawButtons():
@@ -257,8 +257,8 @@ def updateGPS():
 		gpsDisplay.write("Lon: " + str(round(roverLocation[1], 5)))
 		gpsDisplay.write("Alt: " + str(int(round(roverLocation[2]))))
 		gpsDisplay.write("HDOP: " + str(round(roverLocation[3], 1)))
-	if True: # todo: add compass
-		gpsDisplay.write("Course:")
+	if course > -1:
+		gpsDisplay.write("Course: " + str(round(roverLocation[4]))
 	else:
 		gpsDisplay.write("Course:")
 	if baseLocation == None or roverLocation == None:
