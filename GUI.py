@@ -252,15 +252,16 @@ def updateGPS():
 		gpsDisplay.write("Lon:")
 		gpsDisplay.write("Alt:")
 		gpsDisplay.write("HDOP:")
+		gpsDisplay.write("Course:")
 	else:
 		gpsDisplay.write("Lat: " + str(round(roverLocation[0], 5)))
 		gpsDisplay.write("Lon: " + str(round(roverLocation[1], 5)))
 		gpsDisplay.write("Alt: " + str(int(round(roverLocation[2]))))
 		gpsDisplay.write("HDOP: " + str(round(roverLocation[3], 1)))
-	if course > -1:
-		gpsDisplay.write("Course: " + str(round(roverLocation[4]))
-	else:
-		gpsDisplay.write("Course:")
+		if roverLocation[4] > -1:
+			gpsDisplay.write("Course: " + str(round(roverLocation[4])))
+		else:
+			gpsDisplay.write("Course:")
 	if baseLocation == None or roverLocation == None:
 		gpsDisplay.write("Range to Base:")
 	else:
