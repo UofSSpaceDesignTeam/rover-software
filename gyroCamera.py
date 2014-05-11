@@ -31,7 +31,7 @@ class GyroCamera:
 				
 		elif deltaPhi < 0:
 			trav = self.angle2micros(-1*deltaPhi)
-			if self.currentPitch - trav > 500:
+			if self.currentPitch - trav > 780:
 				for x in range (0, trav):
 					self.currentPitch = self.currentPitch - 1
 					self.servoDriver.setServo(3, self.currentPitch)
