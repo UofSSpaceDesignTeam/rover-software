@@ -96,42 +96,47 @@ def TranslateZ(speed):
 		L1 = readActuator1()
 	except:
 		pass
-	temp = float((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta))
-	#to avoid math domain errors
-	temp = max(temp,-1)
-	temp = min(temp,1)
 
-	#angles calculated from linear actuator lengths
-	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
+        C1 = 1.0
+        C2 = 1.0
+        
+        L1p = C1*speed
+        L1p = C2*speed
+
+	#commented out
 	
-	#to avoid math domain errors
-	temp = float((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB))
-	temp = max(temp,-1)
-	temp = min(temp,1)
-
-	#angles calculate from actuator positions
-	theta2 = math.acos(temp) + thetaA
-
-        #ratio to keep radius of extension constant
-	Rr = float((Lgamma*math.sin(theta1) - Ldelta*math.sin(theta1+theta2)) / (Ldelta*math.sin(theta1+theta2)))
-
-        #angular velocities to keep height velocity constant
-	theta1_dot = float(speed / (Lgamma*math.cos(theta1) - Ldelta*(Rr + 1)*math.cos(theta1+theta2)))
-	theta2_dot = float(Rr * theta1_dot)
-
-        #velocities of actuators to acheive angular velocities
-	L1p = float((theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2)))))
-	L2p = float((theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2)))))
+##	temp = float((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta))
+##	#to avoid math domain errors
+##	temp = max(temp,-1)
+##	temp = min(temp,1)
+##
+##	#angles calculated from linear actuator lengths
+##	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
+##	
+##	#to avoid math domain errors
+##	temp = float((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB))
+##	temp = max(temp,-1)
+##	temp = min(temp,1)
+##
+##	#angles calculate from actuator positions
+##	theta2 = math.acos(temp) + thetaA
+##
+##        #ratio to keep radius of extension constant
+##	Rr = float((Lgamma*math.sin(theta1) - Ldelta*math.sin(theta1+theta2)) / (Ldelta*math.sin(theta1+theta2)))
+##
+##        #angular velocities to keep height velocity constant
+##	theta1_dot = float(speed / (Lgamma*math.cos(theta1) - Ldelta*(Rr + 1)*math.cos(theta1+theta2)))
+##	theta2_dot = float(Rr * theta1_dot)
+##
+##        #velocities of actuators to acheive angular velocities
+##	L1p = float((theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2)))))
+##	L2p = float((theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2)))))
 
 	#for debugging/testing
 	print("In translateZ:")
+	print("Speed: ", speed)
 	print("L1: ", L1)
 	print("L2: ", L2)
-	print("theta1: ", theta1)
-	print("theta2: ", theta2)
-	print("Rr: ",Rr)
-	print("theta1_dot: ", theta1_dot)
-	print("theta2_dot: ",theta2_dot)
 	print("L1p; ", L1p)
 	print("L2p: ",L2p)
 	
@@ -153,8 +158,8 @@ def TranslateZ(speed):
 	else:
 		#constrain the range of data sent to sabertooth
 		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
-		if abs(speed) < 0.2:
-			L1p = L1p + 10
+##		if abs(speed) < 0.2:
+##			L1p = L1p + 10
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
 		#send the actuator speeds to the sabertooth
@@ -162,16 +167,16 @@ def TranslateZ(speed):
 	if L2p<=0:
 		#constrain the range of data sent to sabertooth
 		L2p=-L2p
-		if abs(speed) < 0.2:
-			L2p=L2p+10
+##		if abs(speed) < 0.2:
+##			L2p=L2p+10
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
 		#send the actuator speeds to the sabertooth
 		sendSabertooth(address,5,L2p)
 	else:
 		#constrain the range of data sent to sabertooth
-		if abs(speed)< 0.2:
-			L2p=L2p+10
+##		if abs(speed)< 0.2:
+##			L2p=L2p+10
 		L2p=max(0,L2p)
 		L2p=min(127,L2p)
 		#send the actuator speeds to hte sabertooth
@@ -190,39 +195,41 @@ def TranslateIO(speed):
 	L2 = readActuator2()
 	L1 = readActuator1()
 
-	temp = float((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta))
-	#to avoid math domain errors
-	temp = max(temp,-1)
-	temp = min(temp,1)
+	C1 = 1.0
+        C2 = 1.0
+        
+        L1p = C1*speed
+        L1p = C2*speed
 
-	#angles calculated from linear actuator lengths
-	theta1 = float(math.acos(temp) + thetaL + thetaE - math.pi/2)
-	temp = float((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB))
-	#avoid math domain erros
-	temp = max(temp,-1)
-	temp = min(temp,1)
-
-	theta2 = float(math.acos(temp) + thetaA)  
-
-	#ratio to keep height constant  
-	Rh = float((Lgamma*math.cos(theta1) - Ldelta*math.cos(theta1+theta2)) / (Ldelta*math.cos(theta1+theta2)))
-
-        #angular velocities to keep radius velocity constant
-	theta1_dot = float((-speed) / (-Lgamma*math.sin(theta1) + Ldelta*(1+Rh)*math.sin(theta1+theta2)))
-	theta2_dot = float(Rh*theta1_dot)
-
-	#calculate actuator speeds from the angular velocities 
-	L1p = float((theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2)))))
-	L2p = float((theta2_dot * LA * LB)/ L2 * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2)))))
+##	temp = float((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta))
+##	#to avoid math domain errors
+##	temp = max(temp,-1)
+##	temp = min(temp,1)
+##
+##	#angles calculated from linear actuator lengths
+##	theta1 = float(math.acos(temp) + thetaL + thetaE - math.pi/2)
+##	temp = float((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB))
+##	#avoid math domain erros
+##	temp = max(temp,-1)
+##	temp = min(temp,1)
+##
+##	theta2 = float(math.acos(temp) + thetaA)  
+##
+##	#ratio to keep height constant  
+##	Rh = float((Lgamma*math.cos(theta1) - Ldelta*math.cos(theta1+theta2)) / (Ldelta*math.cos(theta1+theta2)))
+##
+##        #angular velocities to keep radius velocity constant
+##	theta1_dot = float((-speed) / (-Lgamma*math.sin(theta1) + Ldelta*(1+Rh)*math.sin(theta1+theta2)))
+##	theta2_dot = float(Rh*theta1_dot)
+##
+##	#calculate actuator speeds from the angular velocities 
+##	L1p = float((theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2)))))
+##	L2p = float((theta2_dot * LA * LB)/ L2 * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2)))))
 
 	print("In translateIO")
+	print("Speed: ", speed)
 	print("L1: ", L1)
 	print("L2: ", L2)
-	print("theta1: ", theta1)
-	print("theta2: ", theta2)
-	print("Rh: ",Rh)
-	print("theta1_dot: ", theta1_dot)
-	print("theta2_dot: ",theta2_dot)
 	print("L1p; ", L1p)
 	print("L2p: ",L2p)
 
