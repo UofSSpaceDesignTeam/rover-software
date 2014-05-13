@@ -22,7 +22,7 @@ from TextOutput import TextOutput
 
 # global constants
 
-IPraspi1 = "10.64.226.113"
+IPraspi1 = "192.168.1.103"
 IPraspi2 = "10.64.226.138"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "10.64.226.72"
