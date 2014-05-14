@@ -325,28 +325,33 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					dist =  int(ord(command[3])) - 127
 					if dist < 0:	
 						dist = -dist
-						increment = int(dist/10) 
 						#smooths the motion 
 						for x in range(0,dist/3):	#dividing dist by 3 improves control significantly
-							wristTilt.setRelative(-increment + 127)
+							wristTilt.setRelative(-int(dist/20) + 127)
 					else:
 						#smooths the motion
 						for x in range(0,dist/3):
-							wristTilt.setRelative(increment + 127)
+							wristTilt.setRelative(int(dist/20) + 127)
 
 				elif command[2] == "P": # pan gripper left/right					
 					#calculate the distance that needs to be traversed
 					dist = int(ord(command[3])) - 127
+					speed = 2
 					if dist < 0:
 						dist = -dist
-						increment = int(dist/30)
+						if dist > 60:
+							dist = 60
 						#smooths the motion
-						for x in range(0,dist):
-							wristPan.setRelative(-increment + 127)
+						for x in range(0,dist/3):
+							#wristPan.setRelative(127- dist/30)
+							wristPan.setRelative(-speed + 127)
 					else:
 						#smooths the motion
-						for x in range(0,dist):
-							wristPan.setRelative(increment + 127)
+						if dist > 60:
+							dist = 60
+						for x in range(0,dist/3):
+							#wristPan.setRelative(127 + dist/30)
+							wristPan.setRelative(speed + 127)
 				elif command[2] == "H": # twist gripper cw/ccw			
 					dir = int(ord(command[3]))
 					speed = 2	#increase to rotate faster
@@ -383,7 +388,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					print("emergency stop")
 					emergency = True
 				elif command[2] == "C": # cancel stop
-					
+					pass
 				elif command[2] == "T":	# controls both actuators individually 
 					global Length2
 					global Length1
@@ -426,6 +431,7 @@ def stopSockets(): # Stops sockets on error condition
 try:
 	adc = ADS1x15(0x48)
 except:
+	print("adc setup failed")
 	quit()
 
 # set up Sabertooth
@@ -508,6 +514,7 @@ except socket.error as e:
 	raise
 	#subprocess.call("sudo reboot", shell = True)
 except:
+	print("error")
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
 	#todo: disconnect servo power
