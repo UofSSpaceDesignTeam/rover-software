@@ -101,9 +101,9 @@ def TranslateZ(speed):
         C2 = 1.0
         
         L1p = C1*speed
-        L1p = C2*speed
+        L2p = C2*speed
 
-	#commented out
+	#commented out for now
 	
 ##	temp = float((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta))
 ##	#to avoid math domain errors
@@ -199,7 +199,7 @@ def TranslateIO(speed):
         C2 = 1.0
         
         L1p = C1*speed
-        L1p = C2*speed
+        L2p = C2*speed
 
 ##	temp = float((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta))
 ##	#to avoid math domain errors
