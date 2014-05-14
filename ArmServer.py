@@ -196,10 +196,10 @@ def TranslateIO(speed):
 	L1 = readActuator1()
 
 	C1 = -1.0
-        C2 = -1.0
+	C2 = -1.0
         
-        L1p = C1*speed
-        L2p = C2*speed
+	L1p = C1*speed
+	L2p = C2*speed
 
 ##	temp = float((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta))
 ##	#to avoid math domain errors
