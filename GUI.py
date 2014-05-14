@@ -554,8 +554,11 @@ while True: # main execution loop
 					if buttons[7]:
 						if toggle:
 							toggle = False
+							print("Arm Indv. Cont.")
 						else:
 							toggle = True
+							print("Arm Math Cont.")
+                                                
 					if toggle: # using translate Z and IO
 						wristMove = int(axes[1]*127) +127
 						armControl.moveWrist(wristMove)
