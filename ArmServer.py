@@ -98,7 +98,7 @@ def TranslateZ(speed):
 		pass
 
         C1 = 1.0
-        C2 = 1.0
+        C2 = -1.0
         
         L1p = C1*speed
         L2p = C2*speed
@@ -195,8 +195,8 @@ def TranslateIO(speed):
 	L2 = readActuator2()
 	L1 = readActuator1()
 
-	C1 = 1.0
-        C2 = 1.0
+	C1 = -1.0
+        C2 = -1.0
         
         L1p = C1*speed
         L2p = C2*speed
