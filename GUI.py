@@ -554,15 +554,15 @@ while True: # main execution loop
 					if buttons[7]:
 						if toggle:
 							toggle = False
-							print("Arm Indv. Cont.")
+							print("Arm Base Indv. Control")
 						else:
 							toggle = True
-							print("Arm Math Cont.")
+							print("Arm Base Cyln. Control")
                                                 
 					if toggle: # using translate Z and IO
-						wristMove = int(axes[1]*127) +127
+						wristMove = int(axes[1]*127) + 127
 						armControl.moveWrist(wristMove)
-						wristLift = int(axes[0]*127)+127
+						wristLift = int(axes[0]*127) + 127
 						armControl.liftWrist(wristLift)
 						time.sleep(0.005)
 					if toggle == False: # individual actuators 
