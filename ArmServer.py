@@ -98,7 +98,7 @@ def TranslateZ(speed):
 		pass
 
         C1 = 1.0
-        C2 = -1.0
+        C2 = -(1.0 + 0.01*pow((L1 - 300),2)
         
         L1p = C1*speed
         L2p = C2*speed
@@ -192,8 +192,13 @@ def TranslateIO(speed):
 	#L1p and L2p are speeds of the linear actuators
 	global L1
 	global L2
-	L2 = readActuator2()
-	L1 = readActuator1()
+	try:
+	#read the actuator's positions
+		L2 = readActuator2()
+		time.sleep(0.01)
+		L1 = readActuator1()
+	except:
+		pass
 
 	C1 = -1.0
 	C2 = -1.0
