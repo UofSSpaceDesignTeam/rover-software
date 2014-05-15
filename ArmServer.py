@@ -98,7 +98,7 @@ def TranslateZ(speed):
 		pass
 
         C1 = 1.0
-        C2 = -(1.0 + 0.01*pow((L1 - 300),2)
+        C2 = -1.0 - 0.01*pow((L1 - 300),2)
         
         L1p = C1*speed
         L2p = C2*speed
