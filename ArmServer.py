@@ -95,10 +95,10 @@ def TranslateZ(speed):
 		time.sleep(0.01)
 		L1 = readActuator1()
 	except:
-		pass
+		print("Lost connection to ADC")
 
 	C1 = 1.0
-	C2 = -1.0 - 0.001*pow((L1 - 300),2)
+	C2 = -(1.0 + 0.0007*pow((L1 - 400),2))
 	
 	L1p = C1*speed
 	L2p = C2*speed
@@ -140,17 +140,10 @@ def TranslateZ(speed):
 	print("L1p; ", L1p)
 	print("L2p: ",L2p)
 	
-	#deadband
-	if abs(speed) <= ArmDeadband:
-		L1p=0;
-		L2p=0;
 	#send the values to the actuators
 	if L1p<=0:
 		#constrain the range of data sent to sabertooth
 		L1p=-L1p
-		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
-		if abs(speed) < 0.2:
-			L1p = L1p + 10
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
 		#send the actuator speeds to the sabertooth
@@ -198,9 +191,9 @@ def TranslateIO(speed):
 		time.sleep(0.01)
 		L1 = readActuator1()
 	except:
-		pass
+		print("Lost Connection to ADC")
 
-	C1 = -1.0
+	C1 = -1.25
 	C2 = -1.0
         
 	L1p = C1*speed
@@ -297,21 +290,23 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					speed = 100 	#needs calibrating
 					dir = int(ord(command[3]))
 					if dir == 0:
-						GPIO.output(12,True)	#disconnect servo power
+						GPIO.output(12,False)	#disconnect servo power
 					else:
-						GPIO.output(12,False)	#connect servo power
+						GPIO.output(12,True)	#connect servo power
 					if dir == 1:
-						servoDriver.setServo(8,1596 - speed)
+						servoDriver.setServo(8,1695 - speed)
+					elif dir ==2:
+						servoDriver.setServo(8,1695 + speed)
 					else:
-						servoDriver.setServo(8,1596 + speed)  
+						servoDriver.setServo(8,1695)  
 				elif command[2] == "L": # translate wrist joint "in/out"	
 					Speed = int(ord(command[3]))
 					print(Speed)
 					if Speed != 127:	#if control sticks are off center, send new commands to actuators
-						Speed = float((Speed - 127)/127)	#range is now -1 to 1
+						Speed = float(Speed - 127)/127	#range is now -1 to 1
+						print("Speed: " + str(Speed))
 						Speed = Speed*50		#adjust scaling as necessary
 						TranslateIO(Speed)
-						print("in/out", Speed)
 					else:
 						#stop actuators if control sticks are centered	
 						sendSabertooth(address,4,0)
@@ -319,7 +314,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				elif command[2] == "M": # translate wrist joint "up/down"
 					Speed = int(ord(command[3]))
 					if Speed != 127:
-						Speed = float((Speed - 127)/127) #range is now -1 to 1
+						Speed = float(Speed - 127)/127 #range is now -1 to 1
+						print("speed: " + str(Speed))
 						Speed = Speed*50		#adjust scaling as necessary
 						TranslateZ(Speed)
 					else:
@@ -459,7 +455,7 @@ try:
 	GPIO.setmode(GPIO.BOARD)
 	#GPIO.setup(7, GPIO.OUT)
 	GPIO.setup(12,GPIO.OUT)
-	GPIO.output(12,True)	# disconnect base servo power
+	GPIO.output(12,False)	# disconnect base servo power
 except:
 	print("GPIO setup failed!")
 	time.sleep(2)
@@ -469,7 +465,7 @@ except:
 # set up servo driver
 try:
 	servoDriver = ServoDriver()
-	basePan = Servo(servoDriver, 8, 1000, 2200, 1596)
+	basePan = Servo(servoDriver, 8, 1000, 2200, 1695)
 	wristPan = Servo(servoDriver, 11, 830, 2350, 1600)
 	wristTilt = Servo(servoDriver, 10, 1000, 1700, 1370)
 	wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)

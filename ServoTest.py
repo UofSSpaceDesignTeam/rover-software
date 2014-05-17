@@ -9,7 +9,7 @@ while True:
 	#pos2 = raw_input('Pulse Length Position?')
 	
 	try:
-		servoDriver.setServo(4,int(pos1))
+		servoDriver.setServo(8,int(pos1))
 		#servoDriver.setServo(7,int(pos2))
 	except:
 		print("NaN!")
