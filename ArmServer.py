@@ -269,6 +269,8 @@ def setActuators(actuator1, actuator2):
 	leftSpeed = min(leftSpeed, 127)
 	rightSpeed = max(rightSpeed, -127)
 	rightSpeed = min(rightSpeed, 127)
+	print ("left speed", leftSpeed)
+	print ("right speed", rightSpeed)
 	
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
@@ -396,9 +398,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					global Length1
 					#get speed commands from controller
 					speed1 = int(ord(command[3]))
-					print(speed1)
 					speed2 = int(ord(command[4]))
-					print (speed2)
 					#try reading the adc
 					try:
 						Length2 = readActuator2()
