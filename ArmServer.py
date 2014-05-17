@@ -257,6 +257,20 @@ def TranslateIO(speed):
 		
 def setActuators(actuator1, actuator2):
 	#moves actuators independently
+	
+	global L1
+	global L2
+	try:
+	#read the actuator's positions
+		L2 = readActuator2()
+		time.sleep(0.01)
+		L1 = readActuator1()
+	except:
+		print("Lost connection to ADC")
+		
+	print ("L1", L1)
+	print ("L2", L2) 
+	
 	actuator1 = (actuator1 - 127)   # range is now -127 to 127
 	actuator2 = (actuator2 - 127) 
 
