@@ -192,6 +192,7 @@ def TranslateIO(speed):
 	#L1p and L2p are speeds of the linear actuators
 	global L1
 	global L2
+	print("in/out")
 	try:
 	#read the actuator's positions
 		L2 = readActuator2()
@@ -316,6 +317,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						sendSabertooth(address,0,0)
 				elif command[2] == "M": # translate wrist joint "in/out"
 					Speed = int(ord(command[3]))
+					print("in/out")
 					if Speed != 127:
 						Speed = float((Speed - 127)/127) #range is now -1 to 1
 						Speed = Speed*50		#adjust scaling as necessary
