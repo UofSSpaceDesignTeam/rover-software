@@ -310,7 +310,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						#stop the actuators if control sticks are centered
 						sendSabertooth(address,4,0)
 						sendSabertooth(address,0,0)
-				elif command[2] == "L": # translate wrist joint up/down
+				elif command[2] == "L": # translate wrist joint in/out
 					Speed = int(ord(command[3]))
 					if Speed != 127:
 						Speed = float(Speed - 127)/127 #range is now -1 to 1
@@ -346,7 +346,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						#smooths the motion
 						for x in range(0,dist/3):
 							#wristPan.setRelative(127- dist/30)
-							wristPan.setRelative(-speed + 127)
+							wristPan.setRelative(-speed + 127) 
 					else:
 						#smooths the motion
 						if dist > 60:
@@ -396,7 +396,9 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					global Length1
 					#get speed commands from controller
 					speed1 = int(ord(command[3]))
+					print(speed1)
 					speed2 = int(ord(command[4]))
+					print (speed2)
 					#try reading the adc
 					try:
 						Length2 = readActuator2()
