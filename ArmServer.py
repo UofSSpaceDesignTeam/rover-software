@@ -306,7 +306,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						Speed = float(Speed - 127)/127	#range is now -1 to 1
 						print("Speed: " + str(Speed))
 						Speed = Speed*50		#adjust scaling as necessary
-						TranslateZ(Speed)
+						TranslateIO(Speed)
 					else:
 						#stop actuators if control sticks are centered	
 						sendSabertooth(address,4,0)
@@ -317,7 +317,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						Speed = float(Speed - 127)/127 #range is now -1 to 1
 						print("speed: " + str(Speed))
 						Speed = Speed*50		#adjust scaling as necessary
-						TranslateIO(Speed)
+						TranslateZ(Speed)
 					else:
 						#stop the actuators if control sticks are centered
 						sendSabertooth(address,4,0)

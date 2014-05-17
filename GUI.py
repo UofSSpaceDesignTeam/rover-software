@@ -560,9 +560,9 @@ while True: # main execution loop
 							print("Arm Base Cyln. Control")
 						
 					if toggle: # using translate Z and IO
-						wristMove = int(axes[0]*127) + 127
+						wristMove = int(axes[1]*127) + 127
 						armControl.moveWrist(wristMove) 
-						wristLift = int(axes[1]*127) + 127
+						wristLift = int(axes[0]*127) + 127
 						armControl.liftWrist(wristLift) 
 						time.sleep(0.005)
 					if toggle == False: # individual actuators 
