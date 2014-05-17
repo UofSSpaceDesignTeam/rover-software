@@ -192,7 +192,6 @@ def TranslateIO(speed):
 	#L1p and L2p are speeds of the linear actuators
 	global L1
 	global L2
-	print("in/out")
 	try:
 	#read the actuator's positions
 		L2 = readActuator2()
@@ -305,19 +304,19 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						servoDriver.setServo(8,1596 - speed)
 					else:
 						servoDriver.setServo(8,1596 + speed)  
-				elif command[2] == "L": # translate wrist joint "up/down"				
+				elif command[2] == "L": # translate wrist joint "in/out"				
 					Speed = int(ord(command[3]))
 					if Speed != 127:	#if control sticks are off center, send new commands to actuators
 						Speed = float((Speed - 127)/127)	#range is now -1 to 1
 						Speed = Speed*50		#adjust scaling as necessary
 						TranslateIO(Speed)
+						print("in/out", Speed)
 					else:
 						#stop actuators if control sticks are centered	
 						sendSabertooth(address,4,0)
 						sendSabertooth(address,0,0)
-				elif command[2] == "M": # translate wrist joint "in/out"
+				elif command[2] == "M": # translate wrist joint "up/down"
 					Speed = int(ord(command[3]))
-					print("in/out")
 					if Speed != 127:
 						Speed = float((Speed - 127)/127) #range is now -1 to 1
 						Speed = Speed*50		#adjust scaling as necessary
