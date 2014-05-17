@@ -269,9 +269,12 @@ def setActuators(actuator1, actuator2):
 	leftSpeed = min(leftSpeed, 127)
 	rightSpeed = max(rightSpeed, -127)
 	rightSpeed = min(rightSpeed, 127)
-	print ("left speed", leftSpeed)
-	print ("right speed", rightSpeed)
 	
+	if leftSpeed != 0:
+		print ("left speed ", leftSpeed)
+	if rightSpeed != 0:
+		print ("right speed ", rightSpeed)
+		
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
 		sendSabertooth(address, 0, leftSpeed)
