@@ -4,7 +4,6 @@ import socket
 import time
 
 mastPort = 3004
-global gyroEnable
 gyroEnable = 0
 
 def parseCommand(command): # parses and executes remote commands
@@ -79,10 +78,7 @@ try:
 				else:
 					parseCommand(data)
 			except socket.timeout:
-				if gyroEnable == 1:
-					correctPitch()
-				else:
-					pass
+				time.sleep(0.25)
 		print("Mast Server disconnected.")
 	
 except KeyboardInterrupt:

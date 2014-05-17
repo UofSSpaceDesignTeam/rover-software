@@ -10,7 +10,7 @@ class GyroCamera:
 		except:
 			print("IMU setup failed!")
 		self.currentPitch = 1300
-		self.imuOldPitch = int(self.imu.pitch())
+		self.imuOldRoll = int(self.imu.roll())
 		self.servoDriver = servoObject
 		self.servoDriver.setServo(3, self.currentPitch)
 	
@@ -42,7 +42,7 @@ class GyroCamera:
 		if deltaTheta > 0:
 			#print("Counter-Clockwise")
 			waitTime = self.angle2time(deltaTheta)
-			print waitTime
+			#print waitTime
 			self.servoDriver.setServo(1, 1535)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1550)
@@ -51,7 +51,7 @@ class GyroCamera:
 		elif deltaTheta < 0:
 			#print("Clockwise")
 			waitTime = self.angle2time(-1*deltaTheta)
-			print waitTime
+			#print waitTime
 			self.servoDriver.setServo(1, 1565)
 			time.sleep(waitTime)
 			self.servoDriver.setServo(1, 1550)
@@ -59,15 +59,16 @@ class GyroCamera:
 			
 	def stableDriveMode(self, gyroEnable, p_dPad, y_dPad):
 		if gyroEnable == 1:
-			imuNewPitch = int(self.imu.pitch())
-			pTest = imuNewPitch - self.imuOldPitch
+			imuNewRoll = int(self.imu.roll())
+			pTest = imuNewRoll - self.imuOldRoll
 			
 			if abs(pTest) > 2:
 				#print("Change is in the IMU...")
-				deltaCamPitch = -1 * pTest
-				self.imuOldPitch = imuNewPitch
+				deltaCamPitch =  pTest
 			else:
 				deltaCamPitch = 0
+
+			self.imuOldRoll = imuNewRoll
 				
 			# both are in DEGREES ( each d-Pad button push corresponds to 5 degrees )
 			dCamPitch = deltaCamPitch + p_dPad * 5
