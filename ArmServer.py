@@ -268,8 +268,6 @@ def setActuators(actuator1, actuator2):
 	except:
 		print("Lost connection to ADC")
 		
-	print ("L1", L1)
-	print ("L2", L2) 
 	
 	actuator1 = (actuator1 - 127)   # range is now -127 to 127
 	actuator2 = (actuator2 - 127) 
@@ -286,8 +284,12 @@ def setActuators(actuator1, actuator2):
 	
 	if leftSpeed != 0:
 		print ("left speed ", leftSpeed)
+		print ("L1", L1)
+		print ("L2", L2) 
 	if rightSpeed != 0:
 		print ("right speed ", rightSpeed)
+		print ("L1", L1)
+		print ("L2", L2) 
 		
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
