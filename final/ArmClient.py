@@ -13,9 +13,11 @@ class ArmClient: # class for arm control
 		self.commandPanHand = "#AP" # move gripper left/right
 		self.commandTwistHand = "#AH" # twist gripper cw/ccw
 		self.commandGripper = "#AG" # open or close gripper
-		self.commandArmStop = "#AS" # stop all actuators
-		self.commandArmResume = "#AC" # cancel emergency stop
+		self.commandArmStop = "#AS?" # stop all actuators
+		self.commandArmResume = "#AC?" # cancel emergency stop
 		self.commandActuators = "#AT" # controls both actuators
+		self.commandArmOn = "#AR?"	#connects arm power
+		self.commandArmOff = "#AH?"	#disconnects arm power
 	
 	def connect(self):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -78,7 +80,16 @@ class ArmClient: # class for arm control
 			self.socket.send(self.commandActuators + chr(actuator1) + chr(actuator2))
 		except:
 			pass	
-	
+	def ConnectArmPower(self):
+		try:
+			self.socket.send(self.commandArmOn)
+		except:
+			pass
+	def DisconnectArmPower(self):
+		try: 
+			self.socket.send(self.commandArmOff)
+		except:
+				pass
 	def test(self):
 		try:
 			self.socket.settimeout(0.05)
