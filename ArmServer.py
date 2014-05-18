@@ -317,9 +317,11 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					sendSabertooth(address,0, 0)
 					sendSabertooth(address,4, 0)
 					GPIO.output(12,True)
+					print("Arm Off")
 					servoDriver.reset()
 				elif command[2] == "R":
 					GPIO.output(12,False)
+					print("Arm On")
 				elif command[2] == "C": # cancel stop
 					pass
 				elif command[2] == "T":	# controls both actuators individually 
