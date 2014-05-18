@@ -97,8 +97,8 @@ def TranslateZ(speed):
 	except:
 		print("Lost connection to ADC")
 
-	C1 = 1.0
-	C2 = -(1.0 + 0.0005*pow((L1 - 400),2) + 0.008*(400-L2))
+	C1 = 2.0
+	C2 = -0.035*(L1 - L2)
 	
 	L1p = C1*speed
 	L2p = C2*speed
@@ -193,8 +193,8 @@ def TranslateIO(speed):
 	except:
 		print("Lost Connection to ADC")
 
-	C1 = -1.25
-	C2 = -1.0
+	C1 = 1.0
+	C2 = -(1.0 + 0.0005*pow((L1 - 400), 2) - 0.02*L2)
         
 	L1p = C1*speed
 	L2p = C2*speed
