@@ -62,6 +62,9 @@ def createButtons():
 	gyroOnButton = Button(setGyro, True, "Stabilizer On", (300, 585, 100, 20), colorLightBlue, colorGreen)
 	gyroOffButton = Button(setGyro, False, "Stabilizer Off", (300, 615, 100, 20), colorLightBlue, colorGreen)
 	gyroOffButton.selected = True
+	ArmPowerOnButton = Button(ArmOn, None, "Arm Power On", (410, 585, 100, 20), colorLightBlue, colorGreen)
+	ArmPowerOffButton = Button(ArmOff, None, "Arm Power Off", (410, 615, 100, 20), colorLightBlue, colorGreen)
+	ArmPowerOffButton.selected = True
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -78,6 +81,8 @@ def createButtons():
 	buttonList.append(mastButton)	# 13
 	buttonList.append(gyroOnButton)	# 14
 	buttonList.append(gyroOffButton)	# 15
+	buttonList.append(ArmPowerOnButton)	 #16
+	buttonList.append(ArmPowerOffButton)	#17
 
 def createSliders():
 	global sliderList
@@ -410,6 +415,15 @@ def quit(fakeArg): # button-based
 	pygame.quit()
 	sys.exit(0)
 
+def ArmOn(fakeArg):
+	buttonList[16].selected = True
+	buttonList[17].selected = False
+	armControl.ConnectArmPower()
+
+def ArmOff(fakeArg):
+	buttonList[16].selected = False
+	buttonList[17].selected = True
+	armControl.DisconnectArmPower()
 # program execution starts here
 
 # create communication clients
@@ -460,6 +474,7 @@ readBaseLocation()
 camConnect(0)
 
 global toggle
+
 toggle = False
 
 if not controller.isConnected:

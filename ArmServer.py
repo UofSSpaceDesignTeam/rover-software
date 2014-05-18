@@ -223,16 +223,14 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 		if command[0] == "#": # is valid
 			if command[1] == "A":
 				if command[2] == "B": # rotate base
-					speed = 100 	#needs calibrating
 					dir = int(ord(command[3]))
+					baseSpeed = 100
 					if dir == 0:
-						GPIO.output(12,True)	#disconnect servo power
+						servoDriver.setServo(8,1596)
+					elif dir == 1:
+						servoDriver.setServo(8,1596 - baseSpeed)
 					else:
-						GPIO.output(12,False)	#connect servo power
-					if dir == 1:
-						servoDriver.setServo(8,1596 - speed)
-					else:
-						servoDriver.setServo(8,1596 + speed)  
+						servoDriver.setServo(8,1596 + baseSpeed)  
 				elif command[2] == "L": # translate wrist joint "in/out"				
 					Speed = int(ord(command[3]))
 					if Speed != 127:	#if control sticks are off center, send new commands to actuators
@@ -315,12 +313,13 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						#update gripper position
 						servoDriver.setServo(6,gripperLeft)
 						servoDriver.setServo(7,gripperRight)
-				elif command[2] == "S": # stop all actuators
+				elif command[2] == "H": 
 					sendSabertooth(address,0, 0)
 					sendSabertooth(address,4, 0)
+					GPIO.output(12,True)
 					servoDriver.reset()
-					print("emergency stop")
-					emergency = True
+				elif command[2] == "R":
+					GPIO.output(12,False)
 				elif command[2] == "C": # cancel stop
 					pass
 				elif command[2] == "T":	# controls both actuators individually 
@@ -386,7 +385,7 @@ try:
 	GPIO.setmode(GPIO.BOARD)
 	#GPIO.setup(7, GPIO.OUT)
 	GPIO.setup(12,GPIO.OUT)
-	GPIO.output(12,True)	# disconnect base servo power
+	GPIO.output(12,True)	# disconnect ArmPower
 except:
 	print("GPIO setup failed!")
 	time.sleep(2)
