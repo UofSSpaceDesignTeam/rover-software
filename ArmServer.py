@@ -25,18 +25,6 @@ L2LowerLimit = 318
 L1 = 350
 L2 = 350
 
-#arm constants
-Lalpha = 371.29	# Lalpha, Lbeta, LA, LB, Lnu, Lmu are in mm, to the closes mm 
-Lbeta = 104.88
-Lnu = 56.83 	
-Lmu = 369.37
-LA = 121.12
-LB = 363
-thetaL = 0.2145 # in radians
-thetaE = 0.8111
-thetaA = 1.073
-Ldelta = 108.16
-Lgamma = 407.4 
 ArmDeadband = 0
 
 #actuator parameters
@@ -81,12 +69,8 @@ def sendSabertooth(address, command, speed):
 def TranslateZ(speed):
 	
 	#calculates and sends speeds of linear actuators for end effector to move up or down at input speed
-	#angles in radians
-	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaA, Lnu, Lmu are constants
-	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
-	#theta1 is arm angle of elevation, theta2 is elbow angle
-	#Rh is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
 	#L1p and L2p are speeds of the linear actuators
+
 	global L1
 	global L2
 	try:
@@ -95,55 +79,34 @@ def TranslateZ(speed):
 		time.sleep(0.01)
 		L1 = readActuator1()
 	except:
-		print("Lost connection to ADC")
+		print("Cannot read ADC")
 
-	C1 = 2.0
-	C2 = -0.035*(L1 - L2)
+        # approximate constants
+        C1 = 2.0
+        C2 = -0.035*(L1 - L2)
+        
+        L1p = C1*speed
+        L2p = C2*speed
 	
-	L1p = C1*speed
-	L2p = C2*speed
-
-	#commented out for now
+##	#for debugging/testing
+##	print("In translateZ:")
+##	print("Speed: ", speed)
+##	print("L1: ", L1)
+##	print("L2: ", L2)
+##	print("L1p; ", L1p)
+##	print("L2p: ",L2p)
 	
-##	temp = float((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta))
-##	#to avoid math domain errors
-##	temp = max(temp,-1)
-##	temp = min(temp,1)
-##
-##	#angles calculated from linear actuator lengths
-##	theta1 = math.acos(temp) + thetaL + thetaE - math.pi/2
-##	
-##	#to avoid math domain errors
-##	temp = float((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB))
-##	temp = max(temp,-1)
-##	temp = min(temp,1)
-##
-##	#angles calculate from actuator positions
-##	theta2 = math.acos(temp) + thetaA
-##
-##        #ratio to keep radius of extension constant
-##	Rr = float((Lgamma*math.sin(theta1) - Ldelta*math.sin(theta1+theta2)) / (Ldelta*math.sin(theta1+theta2)))
-##
-##        #angular velocities to keep height velocity constant
-##	theta1_dot = float(speed / (Lgamma*math.cos(theta1) - Ldelta*(Rr + 1)*math.cos(theta1+theta2)))
-##	theta2_dot = float(Rr * theta1_dot)
-##
-##        #velocities of actuators to acheive angular velocities
-##	L1p = float((theta1_dot * Lalpha * Lbeta)/(L1) * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2)))))
-##	L2p = float((theta2_dot * LA * LB)/(L2) * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2)))))
-
-	#for debugging/testing
-	print("In translateZ:")
-	print("Speed: ", speed)
-	print("L1: ", L1)
-	print("L2: ", L2)
-	print("L1p; ", L1p)
-	print("L2p: ",L2p)
-	
+	#deadband
+	if abs(speed) <= ArmDeadband:
+		L1p=0;
+		L2p=0;
 	#send the values to the actuators
 	if L1p<=0:
 		#constrain the range of data sent to sabertooth
 		L1p=-L1p
+		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
+		if abs(speed) < 0.2:
+			L1p = L1p + 10
 		L1p=max(0,L1p)
 		L1p=min(127,L1p)
 		#send the actuator speeds to the sabertooth
@@ -176,13 +139,9 @@ def TranslateZ(speed):
 		sendSabertooth(address,4,L2p)
 	
 def TranslateIO(speed):
-	#calculates and sends speeds of linear actuators for end effector to move back or forth at speed
-	#angles in radians
-	#Lalpha, Lbeta, thetaL, thetaE, LA, LB, thetaA, Lnu, Lmu are constants
-	#L1 and L2 are actuator lengths, theta1 and theta2 are angular positions of L1 and L2 respectively
-	#theta1 is arm angle of elevation, theta2 is elbow angle
-	#Rr is the ratio theta1_dot/theta2_dot, theta1_dot and theta2_dot are derivatives of theta1 and theta2 
+	#calculates and sends speeds of linear actuators for end effector to move back or forth at speed 
 	#L1p and L2p are speeds of the linear actuators
+        
 	global L1
 	global L2
 	try:
@@ -191,45 +150,22 @@ def TranslateIO(speed):
 		time.sleep(0.01)
 		L1 = readActuator1()
 	except:
-		print("Lost Connection to ADC")
+		print("Cannot read ADC")
 
+        # approximate constants
 	C1 = 1.0
-	C2 = -(1.0 + 0.0005*pow((L1 - 400), 2) - 0.02*L2)
-        
+	C2 = -(1.0 + 0.0005*pow((L1 - 400),2) - 0.02*L2)
+	
 	L1p = C1*speed
 	L2p = C2*speed
 
-##	temp = float((pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta))
-##	#to avoid math domain errors
-##	temp = max(temp,-1)
-##	temp = min(temp,1)
-##
-##	#angles calculated from linear actuator lengths
-##	theta1 = float(math.acos(temp) + thetaL + thetaE - math.pi/2)
-##	temp = float((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB))
-##	#avoid math domain erros
-##	temp = max(temp,-1)
-##	temp = min(temp,1)
-##
-##	theta2 = float(math.acos(temp) + thetaA)  
-##
-##	#ratio to keep height constant  
-##	Rh = float((Lgamma*math.cos(theta1) - Ldelta*math.cos(theta1+theta2)) / (Ldelta*math.cos(theta1+theta2)))
-##
-##        #angular velocities to keep radius velocity constant
-##	theta1_dot = float((-speed) / (-Lgamma*math.sin(theta1) + Ldelta*(1+Rh)*math.sin(theta1+theta2)))
-##	theta2_dot = float(Rh*theta1_dot)
-##
-##	#calculate actuator speeds from the angular velocities 
-##	L1p = float((theta1_dot * Lalpha * Lbeta) / L1 * math.sqrt( abs((1 - pow( ( (pow(Lalpha,2) + pow(Lbeta,2) - pow(L1,2)) / (2 * Lalpha * Lbeta)),2)))))
-##	L2p = float((theta2_dot * LA * LB)/ L2 * math.sqrt( abs((1 - pow( ((pow(LA,2) + pow(LB,2) - pow(L2,2)) / (2 * LA * LB)),2)))))
-
-	print("In translateIO")
-	print("Speed: ", speed)
-	print("L1: ", L1)
-	print("L2: ", L2)
-	print("L1p; ", L1p)
-	print("L2p: ",L2p)
+        # for debugging
+##	print("In translateIO")
+##	print("Speed: ", speed)
+##	print("L1: ", L1)
+##	print("L2: ", L2)
+##	print("L1p; ", L1p)
+##	print("L2p: ",L2p)
 
 	if L1p<=0:
 		#constrain the range of data sent to sabertooth
@@ -257,18 +193,6 @@ def TranslateIO(speed):
 		
 def setActuators(actuator1, actuator2):
 	#moves actuators independently
-	
-	global L1
-	global L2
-	try:
-	#read the actuator's positions
-		L2 = readActuator2()
-		time.sleep(0.01)
-		L1 = readActuator1()
-	except:
-		print("Lost connection to ADC")
-		
-	
 	actuator1 = (actuator1 - 127)   # range is now -127 to 127
 	actuator2 = (actuator2 - 127) 
 
@@ -282,15 +206,6 @@ def setActuators(actuator1, actuator2):
 	rightSpeed = max(rightSpeed, -127)
 	rightSpeed = min(rightSpeed, 127)
 	
-	if leftSpeed != 0:
-		print ("left speed ", leftSpeed)
-		print ("L1", L1)
-		print ("L2", L2) 
-	if rightSpeed != 0:
-		print ("right speed ", rightSpeed)
-		print ("L1", L1)
-		print ("L2", L2) 
-		
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
 		sendSabertooth(address, 0, leftSpeed)
@@ -311,33 +226,29 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					speed = 100 	#needs calibrating
 					dir = int(ord(command[3]))
 					if dir == 0:
-						GPIO.output(12,False)	#disconnect servo power
+						GPIO.output(12,True)	#disconnect servo power
 					else:
-						GPIO.output(12,True)	#connect servo power
+						GPIO.output(12,False)	#connect servo power
 					if dir == 1:
-						servoDriver.setServo(8,1695 - speed)
-					elif dir ==2:
-						servoDriver.setServo(8,1695 + speed)
+						servoDriver.setServo(8,1596 - speed)
 					else:
-						servoDriver.setServo(8,1695)  
-				elif command[2] == "M": # translate wrist joint up/down
+						servoDriver.setServo(8,1596 + speed)  
+				elif command[2] == "L": # translate wrist joint "in/out"				
 					Speed = int(ord(command[3]))
-					if Speed != 127:
-						Speed = float(Speed - 127)/127 #range is now -1 to 1
+					if Speed != 127:	#if control sticks are off center, send new commands to actuators
+						Speed = float((Speed - 127)/127)	#range is now -1 to 1
 						Speed = Speed*50		#adjust scaling as necessary
-						print("speed: " + str(Speed))
-						TranslateZ(Speed)
+						TranslateIO(Speed)
 					else:
-						#stop the actuators if control sticks are centered
+						#stop actuators if control sticks are centered	
 						sendSabertooth(address,4,0)
 						sendSabertooth(address,0,0)
-				elif command[2] == "L": # translate wrist joint in/out
+				elif command[2] == "M": # translate wrist joint "up/down"
 					Speed = int(ord(command[3]))
 					if Speed != 127:
-						Speed = float(Speed - 127)/127 #range is now -1 to 1
+						Speed = float((Speed - 127)/127) #range is now -1 to 1
 						Speed = Speed*50		#adjust scaling as necessary
-						print("speed: " + str(Speed))
-						TranslateIO(Speed)
+						TranslateZ(Speed)
 					else:
 						#stop the actuators if control sticks are centered
 						sendSabertooth(address,4,0)
@@ -367,7 +278,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						#smooths the motion
 						for x in range(0,dist/3):
 							#wristPan.setRelative(127- dist/30)
-							wristPan.setRelative(-speed + 127) 
+							wristPan.setRelative(-speed + 127)
 					else:
 						#smooths the motion
 						if dist > 60:
@@ -475,7 +386,7 @@ try:
 	GPIO.setmode(GPIO.BOARD)
 	#GPIO.setup(7, GPIO.OUT)
 	GPIO.setup(12,GPIO.OUT)
-	GPIO.output(12,False)	# disconnect base servo power
+	GPIO.output(12,True)	# disconnect base servo power
 except:
 	print("GPIO setup failed!")
 	time.sleep(2)
@@ -485,7 +396,7 @@ except:
 # set up servo driver
 try:
 	servoDriver = ServoDriver()
-	basePan = Servo(servoDriver, 8, 1000, 2200, 1695)
+	basePan = Servo(servoDriver, 8, 1000, 2200, 1596)
 	wristPan = Servo(servoDriver, 11, 830, 2350, 1600)
 	wristTilt = Servo(servoDriver, 10, 1000, 1700, 1370)
 	wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)
