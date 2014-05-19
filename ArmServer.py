@@ -314,15 +314,15 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						#update gripper position
 						servoDriver.setServo(6,gripperLeft)
 						servoDriver.setServo(7,gripperRight)
-				#elif command[2] == "K":  
-				#	sendSabertooth(address,0, 0)
-				#	sendSabertooth(address,4, 0)
-				#	GPIO.output(12,True)
-				#	print("Arm Off")
-				#	servoDriver.reset()
-				#elif command[2] == "R":
-				#	GPIO.output(12,False)
-				#	print("Arm On")
+				elif command[2] == "K":  # turns off the arm 
+					sendSabertooth(address,0, 0)
+					sendSabertooth(address,4, 0)
+					GPIO.output(12,True)
+					print("Arm Off")
+					servoDriver.reset()
+				elif command[2] == "R":  # turns on the arm 
+					GPIO.output(12,False)
+					print("Arm On")
 				#elif command[2] == "C": # cancel stop 
 				#	pass
 				elif command[2] == "T":	# controls both actuators individually 
