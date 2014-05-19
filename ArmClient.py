@@ -17,7 +17,7 @@ class ArmClient: # class for arm control
 		self.commandArmResume = "#AC?" # cancel emergency stop
 		self.commandActuators = "#AT" # controls both actuators
 		self.commandArmOn = "#AR?"	#connects arm power
-		self.commandArmOff = "#AH?"	#disconnects arm power
+		self.commandArmOff = "#AK?"	#disconnects arm power
 	
 	def connect(self):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
