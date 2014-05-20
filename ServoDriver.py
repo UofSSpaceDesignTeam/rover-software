@@ -57,7 +57,7 @@ class ServoDriver:
 		oldmode = self.i2c.read(self.__MODE1);
 		newmode = (oldmode & 0x7F) | 0x10
 		self.i2c.write(self.__MODE1, newmode)
-		self.i2c.write(self.__PRESCALE, 120) # decrease for higher frequency
+		self.i2c.write(self.__PRESCALE, 100) # decrease for higher frequency
 		self.i2c.write(self.__MODE1, oldmode)
 		time.sleep(0.005)
 		self.i2c.write(self.__MODE1, oldmode | 0x80)
@@ -65,7 +65,7 @@ class ServoDriver:
 	def setServo(self, channel, pulse):
 		if(channel >= 0 and channel <= 15):
 			#print("ch" + str(channel) + ": " + str(pulse))
-			tick = int(pulse / 4.8828)
+			tick = int(pulse / 4.069)
 			self.i2c.write(self.__LED0_ON_L+4*channel, 0x00)
 			self.i2c.write(self.__LED0_ON_H+4*channel, 0x00)
 			self.i2c.write(self.__LED0_OFF_L+4*channel, tick & 0xFF)
