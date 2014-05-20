@@ -5,20 +5,24 @@ import time
 drivePort = 3002
 
 def setSpeed(leftSpeed, rightSpeed):#4-6 left side 9-11 right side
-	if leftSpeed > 2000:
-		leftSpeed = 2000
-	if leftSpeed < 1000:
-		leftSpeed = 1000
-	if rightSpeed > 2000:
-		rightSpeed = 2000
-	if rightSpeed < 1000:
-		rightSpeed = 1000
-	servoDriver,setServo(4,leftSpeed)
-	servoDriver,setServo(5,leftSpeed)
-	servoDriver,setServo(6,leftSpeed)
-	servoDriver,setServo(9, rightSpeed)
-	servoDriver,setServo(10, rightSpeed)
-	servoDriver,setServo(11, rightSpeed)
+	leftSpeed = int((leftSpeed*4.6)) + 1570
+	rightSpeed = int((rightSpeed*4.6)) + 1570
+	if leftSpeed > 2200:
+		leftSpeed = 2200
+	if leftSpeed < 900:
+		leftSpeed = 900
+	if rightSpeed > 2200:
+		rightSpeed = 2200
+	if rightSpeed < 900:
+		rightSpeed = 900
+	print leftSpeed
+	print rightSpeed
+	servoDriver.setServo(4,leftSpeed)
+	servoDriver.setServo(5,leftSpeed)
+	servoDriver.setServo(6,leftSpeed)
+	servoDriver.setServo(9, rightSpeed)
+	servoDriver.setServo(10, rightSpeed)
+	servoDriver.setServo(11, rightSpeed)
 
 def parseCommand(command): # parses and executes remote commands
 	if command != None:
@@ -37,25 +41,24 @@ def parseCommand(command): # parses and executes remote commands
 							scaleFactor = 1
 						leftSpeed *= scaleFactor
 						rightSpeed *= scaleFactor
-						setMotors(leftSpeed, rightSpeed)
+						setSpeed(leftSpeed, rightSpeed)
 					elif command[2] == "2" and len(command) > 4: # two stick drive
 						leftSpeed = int(ord(command[3])) - 127
 						rightSpeed = int(ord(command[4])) - 127
-						setMotors(leftSpeed, rightSpeed)
-						watchdog = pygame.time.get_ticks()
+						setSpeed(leftSpeed, rightSpeed)
 					elif command[2] == "S": # Stop
-							stopServos()
+						stopServos()
 						print("motors stopped.")
 	else: # command == none
 		stopServos()
 		
 def stopServos():
-	servoDriver,setServo(4, 1570)
-	servoDriver,setServo(5, 1570)
-	servoDriver,setServo(6, 1570)
-	servoDriver,setServo(9, 1570)
-	servoDriver,setServo(10,1570)
-	servoDriver,setServo(11,1570)
+	servoDriver.setServo(4, 1570)
+	servoDriver.setServo(5, 1570)
+	servoDriver.setServo(6, 1570)
+	servoDriver.setServo(9, 1570)
+	servoDriver.setServo(10,1570)
+	servoDriver.setServo(11,1570)
 	
 def stopSockets():
 	try:
@@ -106,4 +109,5 @@ except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	quit()
 except:
+	raise
 	quit()
