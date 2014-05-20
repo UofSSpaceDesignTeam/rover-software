@@ -10,12 +10,12 @@ def setSpeed(leftSpeed, rightSpeed):
 		rightSpeed = 127
 	if rightSpeed < -127:
 		rightSpeed = -127
-	servoDriver,setServo(1,leftSpeed)
-	servoDriver,setServo(2, rightSpeed)
+	servoDriver,setServo(4,leftSpeed)
+	servoDriver,setServo(5, rightSpeed)
 	
 def stopServos():
-	servoDriver.setServo(1, 0)
-	servoDriver.setServo(2, 0)
+	servoDriver.setServo(4, 0)
+	servoDriver.setServo(5, 0)
 	
 def quit():
 	stopServos()
