@@ -4,7 +4,7 @@ import time
 
 drivePort = 3002
 
-def setSpeed(leftSpeed, rightSpeed):
+def setSpeed(leftSpeed, rightSpeed):#4-6 left side 9-11 right side
 	if leftSpeed > 2000:
 		leftSpeed = 2000
 	if leftSpeed < 1000:
@@ -14,7 +14,11 @@ def setSpeed(leftSpeed, rightSpeed):
 	if rightSpeed < 1000:
 		rightSpeed = 1000
 	servoDriver,setServo(4,leftSpeed)
-	servoDriver,setServo(5, rightSpeed)
+	servoDriver,setServo(5,leftSpeed)
+	servoDriver,setServo(6,leftSpeed)
+	servoDriver,setServo(9, rightSpeed)
+	servoDriver,setServo(10, rightSpeed)
+	servoDriver,setServo(11, rightSpeed)
 
 def parseCommand(command): # parses and executes remote commands
 	if command != None:
@@ -46,8 +50,12 @@ def parseCommand(command): # parses and executes remote commands
 		stopServos()
 		
 def stopServos():
-	servoDriver.setServo(4, 1570)
-	servoDriver.setServo(5, 1570)
+	servoDriver,setServo(4, 1570)
+	servoDriver,setServo(5, 1570)
+	servoDriver,setServo(6, 1570)
+	servoDriver,setServo(9, 1570)
+	servoDriver,setServo(10,1570)
+	servoDriver,setServo(11,1570)
 	
 def stopSockets():
 	try:
