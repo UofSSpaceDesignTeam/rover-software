@@ -109,5 +109,4 @@ except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	quit()
 except:
-	raise
 	quit()
