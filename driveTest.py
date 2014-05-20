@@ -10,8 +10,8 @@ def setSpeed(leftSpeed, rightSpeed):
 		rightSpeed = 127
 	if rightSpeed < -127:
 		rightSpeed = -127
-	servoDriver,setServo(4,leftSpeed)
-	servoDriver,setServo(5, rightSpeed)
+	servoDriver.setServo(4,leftSpeed)
+	servoDriver.setServo(5, rightSpeed)
 	
 def stopServos():
 	servoDriver.setServo(4, 0)
@@ -21,10 +21,12 @@ def quit():
 	stopServos()
 	exit(0)
 	
+global servoDriver
 try:
 	servoDriver = ServoDriver()
 except:
 	print("Servo setup failed!")
+	raise
 	
 try:
 	setSpeed(0,127)
@@ -43,6 +45,6 @@ except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	quit()
 except:
+	raise
 	quit()
-	
 	
