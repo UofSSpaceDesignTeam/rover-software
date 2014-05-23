@@ -23,9 +23,9 @@ from TextOutput import TextOutput
 # global constants
 
 IPraspi1 = "192.168.1.103"
-IPraspi2 = "10.64.226.138"
+IPraspi2 = "192.168.1.104"
 IPraspi3 = "192.168.1.105"
-IPraspi4 = "10.64.226.72"
+IPraspi4 = "192.168.1.106"
 # netcat-ed video on port 3001
 driveClientPort = 3002
 armClientPort = 3003
@@ -430,8 +430,8 @@ def ArmOff(fakeArg):
 cameraRaspi1 = CameraClient(IPraspi1, cameraClientPort)
 cameraRaspi2 = CameraClient(IPraspi2, cameraClientPort)
 cameraRaspi4 = CameraClient(IPraspi4, cameraClientPort)
-driveControl = DriveClient(IPraspi2, driveClientPort)
-gpsClient = GPSClient(IPraspi4, gpsClientPort)
+driveControl = DriveClient(IPraspi1, driveClientPort)
+gpsClient = GPSClient(IPraspi1, gpsClientPort)
 armControl = ArmClient(IPraspi2, armClientPort)
 mastControl = MastClient(IPraspi4, mastClientPort)
 scienceControl = ScienceClient(IPraspi3, scienceClientPort)

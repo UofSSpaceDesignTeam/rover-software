@@ -3,20 +3,21 @@ import socket
 import time
 
 drivePort = 3002
+stopValue = 1710
 
 def setSpeed(leftSpeed, rightSpeed):#4-6 left side 9-11 right side
-	leftSpeed = int((leftSpeed*4.6)) + 1570
-	rightSpeed = int((rightSpeed*4.6)) + 1570
+	leftSpeed = int((leftSpeed*4.6)) + stopValue
+	rightSpeed = int((rightSpeed*4.6)) + stopValue
 	if leftSpeed > 2200:
 		leftSpeed = 2200
-	if leftSpeed < 900:
-		leftSpeed = 900
+	if leftSpeed < 1200:
+		leftSpeed = 1200
 	if rightSpeed > 2200:
 		rightSpeed = 2200
-	if rightSpeed < 900:
-		rightSpeed = 900
-	print leftSpeed
-	print rightSpeed
+	if rightSpeed < 1200:
+		rightSpeed = 1200
+	#print leftSpeed
+	#print rightSpeed
 	servoDriver.setServo(4,leftSpeed)
 	servoDriver.setServo(5,leftSpeed)
 	servoDriver.setServo(6,leftSpeed)
@@ -43,7 +44,7 @@ def parseCommand(command): # parses and executes remote commands
 						rightSpeed *= scaleFactor
 						setSpeed(leftSpeed, rightSpeed)
 					elif command[2] == "2" and len(command) > 4: # two stick drive
-						leftSpeed = int(ord(command[3])) - 127
+						leftSpeed = -(int(ord(command[3])) - 127)
 						rightSpeed = int(ord(command[4])) - 127
 						setSpeed(leftSpeed, rightSpeed)
 					elif command[2] == "S": # Stop
@@ -53,12 +54,12 @@ def parseCommand(command): # parses and executes remote commands
 		stopServos()
 		
 def stopServos():
-	servoDriver.setServo(4, 1570)
-	servoDriver.setServo(5, 1570)
-	servoDriver.setServo(6, 1570)
-	servoDriver.setServo(9, 1570)
-	servoDriver.setServo(10,1570)
-	servoDriver.setServo(11,1570)
+	servoDriver.setServo(4, stopValue)
+	servoDriver.setServo(5, stopValue)
+	servoDriver.setServo(6, stopValue)
+	servoDriver.setServo(9, stopValue)
+	servoDriver.setServo(10,stopValue)
+	servoDriver.setServo(11,stopValue)
 	
 def stopSockets():
 	try:
@@ -81,6 +82,7 @@ try:
 	servoDriver = ServoDriver()
 except:
 	print("Servo setup failed!")
+	raise
 	
 # begin server connection
 try:
