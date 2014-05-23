@@ -124,7 +124,7 @@ def createIndicators():
 	armIndicator = Indicator(testClient, armControl, "Arm System", (1106, 130))
 	controllerIndicator = Indicator(checkController, None, "Detected", (1114, 293))
 	gpsIndicator = Indicator(testClient, gpsClient, "Nav System", (1106, 180))
-	scienceIndicator = Indicator(testClient, scienceControl, "Science System", (1106, 205))
+	scienceIndicator = Indicator(testClient, scienceControl, "Experiment", (1106, 205))
 	indicatorList.append(camera1Indicator) #0
 	indicatorList.append(camera2Indicator) #1
 	indicatorList.append(camera3Indicator) #2

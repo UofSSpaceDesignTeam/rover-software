@@ -34,7 +34,7 @@ def parseCommand(command): # parses and executes remote commands
 						xChar = int(ord(command[3]))
 						yChar = int(ord(command[4]))
 						limit = int(ord(command[5]))
-						leftSpeed = yChar + xChar - 254
+						leftSpeed = -(yChar + xChar - 254)
 						rightSpeed = yChar - xChar
 						if max(abs(leftSpeed), abs(rightSpeed)) > limit:
 							scaleFactor = float(limit) / max(abs(leftSpeed), abs(rightSpeed))
