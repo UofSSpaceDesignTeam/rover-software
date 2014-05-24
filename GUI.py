@@ -409,12 +409,16 @@ def ArmOn(fakeArg):
 		buttonList[15].selected = False
 		drawButtons()
 		armControl.ConnectArmPower()
+		time.sleep(0.005)
 
 def ArmOff(fakeArg):
-	buttonList[14].selected = False
-	buttonList[15].selected = True
-	drawButtons()
-	armControl.DisconnectArmPower()
+	if indicatorList[5].active:
+		buttonList[14].selected = False
+		buttonList[15].selected = True
+		drawButtons()
+		armControl.DisconnectArmPower()
+		time.sleep(0.005)
+		
 # program execution starts here
 
 # create communication clients
