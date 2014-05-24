@@ -26,11 +26,11 @@ def runExperiment():
 	
 	# "shake" servo to get more soil in 
 	for i in range(0,shakenum):
-		servoDriver.setservo(4, experpos + shakeammount)
+		servoDriver.setServo(4, experpos + shakeammount)
 		time.sleep(0.1)
-		servoDriver.setservo(4, experpos - 2*shakeammount)
+		servoDriver.setServo(4, experpos - 2*shakeammount)
 		time.sleep(0.1)
-		servoDriver.setservo(4, experpos + 2*shakeammount)
+		servoDriver.setServo(4, experpos + 2*shakeammount)
 		time.sleep(0.2)
 	time.sleep(1)
 	
