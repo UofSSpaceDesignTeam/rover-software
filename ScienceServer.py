@@ -12,7 +12,7 @@ def runExperiment():
 	samppos = 2100 # position to drop soil into sample chamber
 	shakenum = 10 # number of times to "shake" servo before moving on
 	shakeammount = 50
-	command = "raspistill -q 75 -t 60000 -t1 2000 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg"
+	command = "raspistill -q 75 -t 60000 -tl 2000 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg"
 	print("we are sciencing")
 	#setup servo
 	servoDriver = ServoDriver()
