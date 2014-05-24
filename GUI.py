@@ -59,9 +59,6 @@ def createButtons():
 	connectButton = Button(connectClients, None, "Connect All", (1107, 235, 100, 20), colorLightBlue, colorYellow)
 	quitButton = Button(quit, None, "Quit", (12, 443, 100, 20), colorLightBlue, colorYellow)
 	saveButton = Button(savePosition, None, "Save", (625, 660, 100, 30), colorLightBlue, colorYellow)
-	gyroOnButton = Button(setGyro, True, "Stabilizer On", (300, 585, 100, 20), colorLightBlue, colorGreen)
-	gyroOffButton = Button(setGyro, False, "Stabilizer Off", (300, 615, 100, 20), colorLightBlue, colorGreen)
-	gyroOffButton.selected = True
 	ArmPowerOnButton = Button(ArmOn, None, "Arm Power On", (410, 585, 100, 20), colorLightBlue, colorGreen)
 	ArmPowerOffButton = Button(ArmOff, None, "Arm Power Off", (410, 615, 100, 20), colorLightBlue, colorGreen)
 	ArmPowerOffButton.selected = True
@@ -79,10 +76,8 @@ def createButtons():
 	buttonList.append(quitButton)	# 11
 	buttonList.append(moveButton2)	# 12
 	buttonList.append(mastButton)	# 13
-	buttonList.append(gyroOnButton)	# 14
-	buttonList.append(gyroOffButton)	# 15
-	buttonList.append(ArmPowerOnButton)	 #16
-	buttonList.append(ArmPowerOffButton)	#17
+	buttonList.append(ArmPowerOnButton)	 #14
+	buttonList.append(ArmPowerOffButton)	#15
 
 def createSliders():
 	global sliderList
@@ -214,16 +209,6 @@ def setMastMode(fakeArg):
 	buttonList[6].selected = False
 	buttonList[12].selected = False
 	buttonList[13].selected = True
-	drawButtons()
-	
-def setGyro(value):
-	global gyroActive
-	if value:
-		gyroActive = 1
-	else:
-		gyroActive = 0
-	buttonList[14].selected = value
-	buttonList[15].selected = not value
 	drawButtons()
 
 def setSpeedScale(newValue):
@@ -416,13 +401,15 @@ def quit(fakeArg): # button-based
 	sys.exit(0)
 
 def ArmOn(fakeArg):
-	buttonList[16].selected = True
-	buttonList[17].selected = False
+	buttonList[14].selected = True
+	buttonList[15].selected = False
+	drawButtons()
 	armControl.ConnectArmPower()
 
 def ArmOff(fakeArg):
-	buttonList[16].selected = False
-	buttonList[17].selected = True
+	buttonList[14].selected = False
+	buttonList[15].selected = True
+	drawButtons()
 	armControl.DisconnectArmPower()
 # program execution starts here
 
@@ -457,7 +444,6 @@ lastFix = -1
 redrawTimer = 0
 controllerSendTimer = 0
 gpsTimer = 0
-gyroActive = 0
 
 controller = Controller(0)
 createBoxes()
@@ -521,7 +507,7 @@ while True: # main execution loop
 			buttons = controller.getButtons()
 			if indicatorList[7].active and buttonList[2].selected: # Mast camera control
 				dPad = controller.getDPad()
-				mastControl.sendData(dPad[0], dPad[1], gyroActive)
+				mastControl.sendData(dPad[0], dPad[1])
 			if buttonList[5].selected: # 1 stick drive mode
 				if indicatorList[4].active: # connected
 					limit = int(speedScale * 127)
@@ -566,28 +552,14 @@ while True: # main execution loop
 					if wristTilt != 127:
 						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
-					if buttons[7]:
-						if toggle:
-							toggle = False
-							print("Arm Base Indv. Control")
-						else:
-							toggle = True
-							print("Arm Base Cyln. Control")
-						
-					if toggle: # using translate Z and IO
-						wristLift = int(axes[2]*127) + 127
-						armControl.liftWrist(wristLift)
-						time.sleep(0.5)
-						wristMove = int(axes[1]*127) + 127
-						armControl.moveWrist(wristMove)
-					if toggle == False: # individual actuators 
-						speed1 = int(axes[0] * 127) + 127
-						speed1 = max(speed1, 0)
-						speed1 = min(speed1, 254)
-						speed2 = int(axes[1] * 127) + 127
-						speed2 = max(speed2, 0)
-						speed2 = min(speed2, 254)
-						armControl.actuators(speed1, speed2)
+					# actuators
+					speed1 = int(axes[0] * 127) + 127
+					speed1 = max(speed1, 0)
+					speed1 = min(speed1, 254)
+					speed2 = int(axes[1] * 127) + 127
+					speed2 = max(speed2, 0)
+					speed2 = min(speed2, 254)
+					armControl.actuators(speed1, speed2)
 				else:
 					stopRover(False)
 					setMastMode(None)

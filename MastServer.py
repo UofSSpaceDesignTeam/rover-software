@@ -1,13 +1,10 @@
 from ServoDriver import *
-from gyroCamera import *
 import socket
 import time
 
 mastPort = 3004
-gyroEnable = 0
 
 def parseCommand(command): # parses and executes remote commands
-	global gyroEnable
 	if command != None:
 		if len(command) > 2:
 			if command[0] == "#": # is valid
@@ -15,8 +12,6 @@ def parseCommand(command): # parses and executes remote commands
 					if command[2] == "C": # Camera look
 						x_dPad = int(ord(command[3])) - 2	#vertical d-Pad button
 						y_dPad = int(ord(command[4])) - 2	#horizontal d-Pad button
-						gyroEnable = int(ord(command[5]))
-						gyroCam.stableDriveMode(gyroEnable, y_dPad, x_dPad)
 					elif command[2] == "S": # Stop
 						stopServos()
 	else: # command == none
@@ -32,11 +27,11 @@ def stopSockets():
 	try:
 		mastSocket.close()
 	except:
-		raise
+		pass
 	try:
 		serverSocket.close()
 	except:
-		raise
+		pass
 
 def quit():
 	stopServos()
@@ -48,13 +43,6 @@ def quit():
 # set up servo driver
 try:
 	servoDriver = ServoDriver()
-	# Start the gyrocamera with the servoDriver
-	try:
-		gyroCam = GyroCamera(servoDriver)
-	except:
-		print("Gyro-Camera setup failed!")
-	#Pitch = Servo(servoDriver, 3, 800, 2300, 1400)
-	#Yaw = Servo(servoDriver, 1, 1050, 1950, 1500)
 except:
 	print("Servo setup failed!")
 	quit()

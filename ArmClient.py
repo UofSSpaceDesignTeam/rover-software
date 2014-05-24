@@ -13,8 +13,6 @@ class ArmClient: # class for arm control
 		self.commandPanHand = "#AP" # move gripper left/right
 		self.commandTwistHand = "#AH" # twist gripper cw/ccw
 		self.commandGripper = "#AG" # open or close gripper
-		self.commandArmStop = "#AS?" # stop all actuators
-		self.commandArmResume = "#AC?" # cancel emergency stop
 		self.commandActuators = "#AT" # controls both actuators
 		self.commandArmOn = "#AR?"	#connects arm power
 		self.commandArmOff = "#AK?"	#disconnects arm power

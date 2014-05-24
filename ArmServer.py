@@ -1,8 +1,5 @@
 # A script continuously run by the arm control pi.
 
-# dependency list
-
-
 import math
 import socket
 import time
@@ -21,11 +18,6 @@ scaleFactor = 0.55
 address= 128
 L1LowerLimit = 320
 L2LowerLimit = 318
-
-L1 = 350
-L2 = 350
-
-ArmDeadband = 0
 
 #actuator parameters
 ActuatorFullIn = 292.354	#lengths again in mm
@@ -66,132 +58,7 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(command)))
 	controller.write(chr(int(speed)))
 	controller.write(chr(int(checksum)))
-	
-def TranslateZ(speed):
-	
-	#calculates and sends speeds of linear actuators for end effector to move up or down at input speed
-	#L1p and L2p are speeds of the linear actuators
 
-	global L1
-	global L2
-	try:
-	#read the actuator's positions
-		L2 = readActuator2()
-		time.sleep(0.01)
-		L1 = readActuator1()
-	except:
-		print("Cannot read ADC")
-
-        # approximate constants
-        C1 = 2.0
-        C2 = -0.035*(L1 - L2)
-        
-        L1p = C1*speed
-        L2p = C2*speed
-	
-##	#for debugging/testing
-##	print("In translateZ:")
-##	print("Speed: ", speed)
-##	print("L1: ", L1)
-##	print("L2: ", L2)
-##	print("L1p; ", L1p)
-##	print("L2p: ",L2p)
-	
-	#deadband
-	if abs(speed) <= ArmDeadband:
-		L1p=0;
-		L2p=0;
-	#send the values to the actuators
-	if L1p<=0:
-		#constrain the range of data sent to sabertooth
-		L1p=-L1p
-		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
-		if abs(speed) < 0.2:
-			L1p = L1p + 10
-		L1p=max(0,L1p)
-		L1p=min(127,L1p)
-		#send the actuator speeds to the sabertooth
-		sendSabertooth(address,1,L1p)
-	else:
-		#constrain the range of data sent to sabertooth
-		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary
-##		if abs(speed) < 0.2:
-##			L1p = L1p + 10
-		L1p=max(0,L1p)
-		L1p=min(127,L1p)
-		#send the actuator speeds to the sabertooth
-		sendSabertooth(address,0,L1p)
-	if L2p<=0:
-		#constrain the range of data sent to sabertooth
-		L2p=-L2p
-##		if abs(speed) < 0.2:
-##			L2p=L2p+10
-		L2p=max(0,L2p)
-		L2p=min(127,L2p)
-		#send the actuator speeds to the sabertooth
-		sendSabertooth(address,5,L2p)
-	else:
-		#constrain the range of data sent to sabertooth
-##		if abs(speed)< 0.2:
-##			L2p=L2p+10
-		L2p=max(0,L2p)
-		L2p=min(127,L2p)
-		#send the actuator speeds to hte sabertooth
-		sendSabertooth(address,4,L2p)
-	
-def TranslateIO(speed):
-	#calculates and sends speeds of linear actuators for end effector to move back or forth at speed 
-	#L1p and L2p are speeds of the linear actuators
-        
-	global L1
-	global L2
-	try:
-	#read the actuator's positions
-		L2 = readActuator2()
-		time.sleep(0.01)
-		L1 = readActuator1()
-	except:
-		print("Cannot read ADC")
-
-        # approximate constants
-	C1 = 1.0
-	C2 = -(1.0 + 0.0005*pow((L1 - 400),2) - 0.02*L2)
-	
-	L1p = C1*speed
-	L2p = C2*speed
-
-        # for debugging
-##	print("In translateIO")
-##	print("Speed: ", speed)
-##	print("L1: ", L1)
-##	print("L2: ", L2)
-##	print("L1p; ", L1p)
-##	print("L2p: ",L2p)
-
-	if L1p<=0:
-		#constrain the range of data sent to sabertooth
-		L1p=-L1p
-		L1p=max(0,L1p)
-		L1p=min(127,L1p)
-		#send the actuator speeds to the sabertooth
-		sendSabertooth(address,1,L1p)
-	else:
-		#constrain the range of data sent to sabertooth
-		L1p=max(0,L1p)
-		L1p=min(127,L1p)
-		sendSabertooth(address,0,L1p)
-	if L2p<=0:
-		#constrain the range of data sent to sabertooth
-		L2p=-L2p
-		L2p=max(0,L2p)
-		L2p=min(127,L2p)
-		sendSabertooth(address,5,L2p)
-	else:
-		#constrain the range of data sent to sabertooth
-		L2p=max(0,L2p)
-		L2p=min(127,L2p)
-		sendSabertooth(address,4,L2p)
-		
 def setActuators(actuator1, actuator2):
 	#moves actuators independently
 	actuator1 = (actuator1 - 127)   # range is now -127 to 127
@@ -231,28 +98,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					elif dir == 1:
 						servoDriver.setServo(4,1596 - baseSpeed)
 					else:
-						servoDriver.setServo(4,1596 + baseSpeed)  
-				elif command[2] == "L": # translate wrist joint "in/out"				
-					Speed = int(ord(command[3]))
-					if Speed != 127:	#if control sticks are off center, send new commands to actuators
-						Speed = float((Speed - 127)/127)	#range is now -1 to 1
-						Speed = Speed*50		#adjust scaling as necessary
-						TranslateIO(Speed)
-					else:
-						#stop actuators if control sticks are centered	
-						sendSabertooth(address,4,0)
-						sendSabertooth(address,0,0)
-				elif command[2] == "M": # translate wrist joint "up/down"
-					Speed = int(ord(command[3]))
-					if Speed != 127:
-						Speed = float((Speed - 127)/127) #range is now -1 to 1
-						Speed = Speed*50		#adjust scaling as necessary
-						TranslateZ(Speed)
-					else:
-						#stop the actuators if control sticks are centered
-						sendSabertooth(address,4,0)
-						sendSabertooth(address,0,0)
-						
+						servoDriver.setServo(4,1596 + baseSpeed)
+				
 				elif command[2] == "W": # rotate wrist joint up/down				
 					#calculate the distance that needs to be traversed. 
 					dist =  int(ord(command[3])) - 127
@@ -265,7 +112,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						#smooths the motion
 						for x in range(0,dist/3):
 							wristTilt.setRelative(int(dist/20) + 127)
-
+							
 				elif command[2] == "P": # pan gripper left/right					
 					#calculate the distance that needs to be traversed
 					dist = int(ord(command[3])) - 127
@@ -285,6 +132,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						for x in range(0,dist/3):
 							#wristPan.setRelative(127 + dist/30)
 							wristPan.setRelative(speed + 127)
+				
 				elif command[2] == "H": # twist gripper cw/ccw			
 					dir = int(ord(command[3]))
 					speed = 2	#increase to rotate faster
@@ -295,7 +143,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					else:
 						#smooths the motion
 						for x in range(0,50):
-							wristTwist.setRelative(127 + speed)	
+							wristTwist.setRelative(127 + speed)
+							
 				elif command[2] == "G": # open or close gripper
 					temp = int(ord(command[3])) - 127
 					#range of temp is now -127 to 127
@@ -314,17 +163,18 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						#update gripper position
 						servoDriver.setServo(6,gripperLeft)
 						servoDriver.setServo(7,gripperRight)
+						
 				elif command[2] == "K":  # turns off the arm 
 					sendSabertooth(address,0, 0)
 					sendSabertooth(address,4, 0)
 					GPIO.output(12,True)
 					print("Arm Off")
 					servoDriver.reset()
+					
 				elif command[2] == "R":  # turns on the arm 
 					GPIO.output(12,False)
 					print("Arm On")
-				#elif command[2] == "C": # cancel stop 
-				#	pass
+
 				elif command[2] == "T":	# controls both actuators individually 
 					global Length2
 					global Length1
@@ -337,6 +187,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						Length1 = readActuator1()
 					except:
 						pass
+					
 					#physical limits
 					if (Length1 <= 340) & (speed1 < 127):
 						speed1 = max(speed1, 65) 
@@ -364,51 +215,27 @@ def stopSockets(): # Stops sockets on error condition
 ### Main Program  ###
 
 # set up ADC
-try:
-	adc = ADS1x15(0x48)
-except:
-	print("adc setup failed")
-	quit()
+adc = ADS1x15(0x48)
 
 # set up Sabertooth
-try:
-	controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
-	controller.baudrate = 9600
-	controller.timeout = 0.2
-	sendSabertooth(address, 16, ramping)
-
-except:
-	print("motor controller setup failed!")
-	time.sleep(2)
-	raise
-	#subprocess.call("sudo reboot", shell = True)
+controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
+controller.baudrate = 9600
+controller.timeout = 0.2
+sendSabertooth(address, 16, ramping)
 
 # set up GPIOs
-try:
-	GPIO.setmode(GPIO.BOARD)
-	#GPIO.setup(7, GPIO.OUT)
-	GPIO.setup(12,GPIO.OUT)
-	GPIO.output(12,True)	# disconnect ArmPower
-except:
-	print("GPIO setup failed!")
-	time.sleep(2)
-	raise
-	#subprocess.call("sudo reboot", shell = True)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(12,GPIO.OUT)
+GPIO.output(12,True)	# disconnect ArmPower
 
 # set up servo driver
-try:
-	servoDriver = ServoDriver()
-	basePan = Servo(servoDriver, 4, 1000, 2200, 1596)
-	wristPan = Servo(servoDriver, 11, 830, 2350, 1600)
-	wristTilt = Servo(servoDriver, 10, 1000, 1700, 1370)
-	wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)
-	servoDriver.setServo(6,1200)
-	servoDriver.setServo(7,2000)
-except:
-	print("Servo setup failed!")
-	time.sleep(2)
-	raise
-	#subprocess.call("sudo reboot", shell = True)
+servoDriver = ServoDriver()
+basePan = Servo(servoDriver, 4, 1000, 2200, 1596)
+wristPan = Servo(servoDriver, 11, 830, 2350, 1600)
+wristTilt = Servo(servoDriver, 10, 1000, 1700, 1370)
+wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)
+servoDriver.setServo(6,1200)
+servoDriver.setServo(7,2000)
 	
 # begin server connection
 try:
@@ -426,7 +253,7 @@ try:
 			data = armSocket.recv(256)
 			if(data == ""): # socket closing
 				sendSabertooth(address,0, 0)
-				sendSabertooth(address,5, 0) 
+				sendSabertooth(address,5, 0)
 				break
 			else:
 				parseCommand(data)
@@ -435,21 +262,29 @@ except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
+	GPIO.output(12,True)
+	print("Arm Off")
+	servoDriver.reset()
 	stopSockets()
 	GPIO.cleanup()
+	raise
 except socket.error as e:
 	print(e.strerror)
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
+	GPIO.output(12,True)
+	print("Arm Off")
+	servoDriver.reset()
 	stopSockets()
 	GPIO.cleanup()
-	time.sleep(2)
 	raise
-	#subprocess.call("sudo reboot", shell = True)
 except:
 	print("error")
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
+	GPIO.output(12,True)
+	print("Arm Off")
+	servoDriver.reset()
 	stopSockets()
 	GPIO.cleanup()
 	raise
