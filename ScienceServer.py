@@ -10,9 +10,9 @@ sciencePort = 3006
 def runExperiment():
 	experpos = 1700 # position to drop soil into experiment chamber
 	samppos = 2100 # position to drop soil into sample chamber
-	shakenum = 6 # number of times to "shake" servo before moving on
+	shakenum = 10 # number of times to "shake" servo before moving on
 	shakeammount = 50
-	command = "raspistill -q 75 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg"
+	command = "raspistill -q 75 -t 60000 -t1 2000 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg"
 	print("we are sciencing")
 	#setup servo
 	servoDriver = ServoDriver()
@@ -33,11 +33,6 @@ def runExperiment():
 		servoDriver.setServo(4, experpos + 2*shakeammount)
 		time.sleep(0.2)
 	time.sleep(1)
-	
-	#take picture every 2 seconds for a minute
-	for n in range(0,29):
-		subprocess.call(command, shell = True)
-		time.sleep(2)
 
 	print("Sciencing has been completed")
 	# #move to position to drop soil into sample chamber
