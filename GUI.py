@@ -59,8 +59,8 @@ def createButtons():
 	connectButton = Button(connectClients, None, "Connect All", (1107, 235, 100, 20), colorLightBlue, colorYellow)
 	quitButton = Button(quit, None, "Quit", (12, 443, 100, 20), colorLightBlue, colorYellow)
 	saveButton = Button(savePosition, None, "Save", (625, 660, 100, 30), colorLightBlue, colorYellow)
-	ArmPowerOnButton = Button(ArmOn, None, "Arm Power On", (410, 585, 100, 20), colorLightBlue, colorGreen)
-	ArmPowerOffButton = Button(ArmOff, None, "Arm Power Off", (410, 615, 100, 20), colorLightBlue, colorGreen)
+	ArmPowerOnButton = Button(ArmOn, None, "Arm Power On", (310, 585, 100, 20), colorLightBlue, colorGreen)
+	ArmPowerOffButton = Button(ArmOff, None, "Arm Power Off", (310, 615, 100, 20), colorLightBlue, colorGreen)
 	ArmPowerOffButton.selected = True
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
@@ -97,7 +97,7 @@ def createBoxes():
 	connectionsBox = Box("Connections", (1095, 0, 125, 265))
 	controllerBox = Box("Controller", (1095, 269, 125, 120))
 	saveBox = Box("", (615, 650, 120, 50))
-	settingsBox = Box("Rover Settings", (130, 544, 480, 156))
+	settingsBox = Box("Rover Settings", (130, 544, 295, 156))
 	boxList.append(cameraButtonBox)
 	boxList.append(controlBox)
 	boxList.append(actionBox)
@@ -309,7 +309,7 @@ def takePicture(fakeArg):
 def stopRover(setSlider):	# button-based
 	try:
 		driveControl.stopMotors()
-		armControl.stopMotors()
+		armOff()
 	except:
 		pass
 	if setSlider:
@@ -404,10 +404,11 @@ def quit(fakeArg): # button-based
 	sys.exit(0)
 
 def ArmOn(fakeArg):
-	buttonList[14].selected = True
-	buttonList[15].selected = False
-	drawButtons()
-	armControl.ConnectArmPower()
+	if indicatorList[5].active:
+		buttonList[14].selected = True
+		buttonList[15].selected = False
+		drawButtons()
+		armControl.ConnectArmPower()
 
 def ArmOff(fakeArg):
 	buttonList[14].selected = False

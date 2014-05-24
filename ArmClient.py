@@ -67,27 +67,24 @@ class ArmClient: # class for arm control
 		except:
 			pass
 	
-	def stopMotors(self):
-		try:
-			self.socket.send(self.commandArmStop)
-		except:
-			pass
-	
 	def actuators(self, actuator1, actuator2):
 		try:
 			self.socket.send(self.commandActuators + chr(actuator1) + chr(actuator2))
 		except:
-			pass	
+			pass
+	
 	def ConnectArmPower(self):
 		try:
 			self.socket.send(self.commandArmOn)
 		except:
 			pass
+	
 	def DisconnectArmPower(self):
 		try: 
 			self.socket.send(self.commandArmOff)
 		except:
-				pass
+			pass
+	
 	def test(self):
 		try:
 			self.socket.settimeout(0.05)

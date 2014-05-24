@@ -15,7 +15,7 @@ import RPi.GPIO as GPIO # for hardware reset system
 armPort = 3003
 ramping = 10
 scaleFactor = 0.55
-address= 128
+address = 128
 L1LowerLimit = 320
 L2LowerLimit = 318
 

@@ -3,6 +3,7 @@ import socket
 import time
 
 mastPort = 3004
+currentPitch = 1300
 
 def parseCommand(command): # parses and executes remote commands
 	if command != None:
@@ -12,16 +13,31 @@ def parseCommand(command): # parses and executes remote commands
 					if command[2] == "C": # Camera look
 						x_dPad = int(ord(command[3])) - 2	#vertical d-Pad button
 						y_dPad = int(ord(command[4])) - 2	#horizontal d-Pad button
+						moveServos(x_dPad, y_dPad)
 					elif command[2] == "S": # Stop
 						stopServos()
 	else: # command == none
 		stopServos()
 
+def moveServos(yaw, pitch):
+	currentPitch += 4 * pitch;
+	if currentPitch > 2300:
+		currentPitch = 2300
+	if currentPitch < 780:
+		currentPitch = 780
+	servoDriver.setServo(3, currentPitch)
+	if yaw > 0:
+		servoDriver.setServo(1, 1565)
+	if yaw < 0:
+		servoDriver.setServo(1, 1535)
+	time.sleep(0.1)
+	stopServos()
+
 def stopServos():
 	try:
-		servoDriver.setServo(3, 1300)
+		servoDriver.setServo(3, 1550)
 	except:
-		raise
+		pass
 		
 def stopSockets():
 	try:
@@ -36,7 +52,6 @@ def stopSockets():
 def quit():
 	stopServos()
 	stopSockets()
-	exit(0)
 		
 ### Main Program  ###
 
@@ -73,5 +88,5 @@ except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	quit()
 except:
-	raise
 	quit()
+	raise
