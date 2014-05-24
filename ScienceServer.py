@@ -16,8 +16,6 @@ def runExperiment():
 	print("we are sciencing")
 	#setup servo
 	servoDriver = ServoDriver()
-	#take picture
-	subprocess.call(command, shell = True)
 	#move to position to drop soil into experiment chamber
 	servoDriver.setServo(4,experpos)
 	
