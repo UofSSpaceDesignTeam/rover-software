@@ -73,7 +73,6 @@ def quit():
 	stopGPS()
 	stopLog()
 	stopSockets()
-	exit(0)
 
 ### Main Program ###
 
@@ -121,6 +120,7 @@ try:
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	quit()
+	exit(0)
 except:
 	quit()
 	raise

@@ -20,12 +20,12 @@ def parseCommand(command): # parses and executes remote commands
 		stopServos()
 
 def moveServos(yaw, pitch):
-	currentPitch += 4 * pitch;
+	currentPitch += 50 * pitch
 	if currentPitch > 2300:
 		currentPitch = 2300
 	if currentPitch < 780:
 		currentPitch = 780
-	servoDriver.setServo(3, currentPitch)
+	servoDriver.setServo(3, int(currentPitch))
 	if yaw > 0:
 		servoDriver.setServo(1, 1565)
 	if yaw < 0:
@@ -56,12 +56,9 @@ def quit():
 ### Main Program  ###
 
 # set up servo driver
-try:
-	servoDriver = ServoDriver()
-except:
-	print("Servo setup failed!")
-	quit()
-	
+servoDriver = ServoDriver()
+servoDriver.setServo(1, 1550)
+servoDriver.setServo(3, int(currentPitch))
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	
 try:
 	serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

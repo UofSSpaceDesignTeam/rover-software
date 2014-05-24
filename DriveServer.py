@@ -74,15 +74,9 @@ def stopSockets():
 def quit():
 	stopServos()
 	stopSockets()
-	exit(0)
 	
-##Start Servos
-
-try:
-	servoDriver = ServoDriver()
-except:
-	print("Servo setup failed!")
-	raise
+#Start Servos
+servoDriver = ServoDriver()
 	
 # begin server connection
 try:
@@ -110,5 +104,7 @@ try:
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	quit()
+	exit(0)
 except:
 	quit()
+	raise
