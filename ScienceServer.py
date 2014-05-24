@@ -3,35 +3,54 @@ import socket
 import time
 import subprocess
 from ServoDriver import *
-from ADS1x15 import ADS1x15 # adc
-from Adafruit_I2C import Adafruit_I2C
-import RPi.GPIO as GPIO # for stepper and other stuff
 
 sciencePort = 3006
 
+# do SCIENCE!
 def runExperiment():
-	scienceData = []
-	calibrateStepper()
-	for i in range(1440)
-		scienceData.append(readVoltage)
-		rotateStepper(1)
+	experpos = 1700 # position to drop soil into experiment chamber
+	samppos = 2100 # position to drop soil into sample chamber
+	shakenum = 6 # number of times to "shake" servo before moving on
+	shakeammount = 50
+	command = "raspistill -q 75 /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg"
+	
+	#setup servo
+	servoDriver = ServoDriver()
+	#take picture
+	subprocess.call(command, shell = True)
+	#move to position to drop soil into experiment chamber
+	servoDriver.setServo(4,experpos)
+	
+	time.sleep(0.5)
+	
+	
+	# "shake" servo to get more soil in 
+	for i in range(0,shakenum)
+		servoDriver.setservo(4, experpos + shakeammount)
+		time.sleep(0.1)
+		servoDriver.setservo(4, experpos - 2*shakeammount)
+		time.sleep(0.1)
+		servoDriver.setservo(4, experpos + 2*shakeammount)
 		time.sleep(0.2)
+	time.sleep(1)
+	
+	#take picture every 2 seconds for a minute
+	for i in range(0,29)
+		subprocess.call(command, shell = True)
+		time.sleep(2)
 
-def readVoltage(): # reads adc and returns voltage in volts
-	voltage = adc.readADCSingleEnded(1)
-	voltage = voltage * 3.3 / 4096.0
-	return voltage
+	# #move to position to drop soil into sample chamber
+	# servoDriver.setServo(4,samppos)
+	
+	# # "shake" servo to get more soil in 
+	# for i in range(0,shakenum)
+		# servoDriver.setservo(4, samppos + shakeammount)
+		# time.sleep(0.1)
+		# servoDriver.setservo(4, samppos - 2*shakeammount)
+		# time.sleep(0.1)
+		# servoDriver.setservo(4, samppos + 2*shakeammount)
+		# time.sleep(0.1)
 
-def rotateStepper(amount): # +ve is cw
-	if amount > 0:
-		GPIO.output(11, False)
-	else:
-		GPIO.output(11, True)
-	for i in range(0, amount):
-		GPIO.output(12, True)
-		time.sleep(0.1)
-		GPIO.output(12, False)
-		time.sleep(0.1)
 	
 def parseCommand(command):
 	if command == "#RE":
@@ -57,15 +76,15 @@ except:
 	print("science logging failed!")
 
 # set up GPIOs
-try:
-	GPIO.setwarnings(False)
-	GPIO.setmode(GPIO.BOARD)
-	GPIO.setup(11, GPIO.OUT) # stepper direction
-	GPIO.setup(13, GPIO.OUT) # stepper step
-except:
-	print("GPIO setup failed!")
-	raise
-	#subprocess.call("sudo reboot", shell = True)
+# try:
+	# GPIO.setwarnings(False)
+	# GPIO.setmode(GPIO.BOARD)
+	# GPIO.setup(11, GPIO.OUT) # stepper direction
+	# GPIO.setup(13, GPIO.OUT) # stepper step
+# except:
+	# print("GPIO setup failed!")
+	# raise
+	# #subprocess.call("sudo reboot", shell = True)
 	
 # begin server connection
 try:
@@ -88,8 +107,8 @@ try:
 except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	stopSockets()
-	GPIO.cleanup()
+	#GPIO.cleanup()
 except:
 	stopSockets()
-	GPIO.cleanup()
+	#GPIO.cleanup()
 	raise
