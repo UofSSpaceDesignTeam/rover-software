@@ -16,6 +16,8 @@ def runExperiment():
 	print("we are sciencing")
 	#setup servo
 	servoDriver = ServoDriver()
+	#turn on light
+	servoDriver.setServo(5,32767)
 	#move to position to drop soil into experiment chamber
 	servoDriver.setServo(4,experpos)
 	
@@ -32,7 +34,7 @@ def runExperiment():
 		time.sleep(0.1)
 	#take picture
 	subprocess.call(command, shell = True)
-
+	servoDriver.setServo(5,0)
 	print("Sciencing has been completed")
 	# #move to position to drop soil into sample chamber
 	# servoDriver.setServo(4,samppos)
