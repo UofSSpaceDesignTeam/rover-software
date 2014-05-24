@@ -12,7 +12,7 @@ def runExperiment():
 	samppos = 2100 # position to drop soil into sample chamber
 	shakenum = 6 # number of times to "shake" servo before moving on
 	shakeammount = 50
-	command = "raspistill -q 75 /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg"
+	command = "raspistill -q 75 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg"
 	
 	#setup servo
 	servoDriver = ServoDriver()
@@ -25,7 +25,7 @@ def runExperiment():
 	
 	
 	# "shake" servo to get more soil in 
-	for i in range(0,shakenum)
+	for i in range(0,shakenum):
 		servoDriver.setservo(4, experpos + shakeammount)
 		time.sleep(0.1)
 		servoDriver.setservo(4, experpos - 2*shakeammount)
@@ -35,7 +35,7 @@ def runExperiment():
 	time.sleep(1)
 	
 	#take picture every 2 seconds for a minute
-	for i in range(0,29)
+	for n in range(0,29):
 		subprocess.call(command, shell = True)
 		time.sleep(2)
 
