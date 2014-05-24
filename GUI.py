@@ -22,7 +22,7 @@ from TextOutput import TextOutput
 
 # global constants
 
-IPraspi1 = "192.168.1.103"
+IPraspi1 = "10.64.226.128"
 IPraspi2 = "192.168.1.104"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "192.168.1.106"
@@ -317,7 +317,10 @@ def stopRover(setSlider):	# button-based
 		sliderList[0].draw(screen)
 
 def runExperiment(fakeArg):	# button-based
-	return
+	if buttonList[8].selected:
+		scienceControl.runExperiment()
+	else:
+		return
 
 def testClient(client): # button-based
 	return client.test()
