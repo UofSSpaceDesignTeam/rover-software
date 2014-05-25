@@ -3,6 +3,7 @@ import socket
 import time
 import subprocess
 from ServoDriver import *
+import RPi.GPIO as GPIO # for hardware reset system
 
 sciencePort = 3006
 
@@ -19,7 +20,7 @@ def runExperiment():
 	servoDriver = ServoDriver()
 	#move to position to drop soil into experiment chamber
 	servoDriver.setServo(4,experpos)
-	servoDriver.setServo(5,10)	
+	GPIO.output(23,True)
 	time.sleep(0.5)
 	
 	
@@ -33,9 +34,8 @@ def runExperiment():
 		time.sleep(0.1)
 	#take picture
 	subprocess.call(command, shell = True)
-
+	GPIO.output(23,False)
 	print("Sciencing has been completed")
-	servoDriver.setServo(5,0)
 	# #move to position to drop soil into sample chamber
 	# servoDriver.setServo(4,samppos)
 	
@@ -90,6 +90,12 @@ try:
 	serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	serverSocket.bind(("", sciencePort))
 	serverSocket.listen(0)
+	
+	#set up gpio
+	GPIO.setwarnings(False)
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setup(23,GPIO.OUT)
+	GPIO.output(23,False)	# have light set to off
 	print("Science Server listening on port " + str(sciencePort))
 	# main execution loop
 	while(True):
