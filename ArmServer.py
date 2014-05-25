@@ -225,8 +225,8 @@ sendSabertooth(address, 16, ramping)
 
 # set up GPIOs
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(12,GPIO.OUT)
-GPIO.output(12,True)	# disconnect ArmPower
+GPIO.setup(16,GPIO.OUT)
+GPIO.output(16,True)	# disconnect ArmPower
 
 # set up servo driver
 servoDriver = ServoDriver()
@@ -262,7 +262,7 @@ except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
-	GPIO.output(12,True)
+	GPIO.output(16,True)
 	print("Arm Off")
 	servoDriver.reset()
 	stopSockets()
@@ -272,7 +272,7 @@ except socket.error as e:
 	print(e.strerror)
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
-	GPIO.output(12,True)
+	GPIO.output(16,True)
 	print("Arm Off")
 	servoDriver.reset()
 	stopSockets()
@@ -282,7 +282,7 @@ except:
 	print("error")
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
-	GPIO.output(12,True)
+	GPIO.output(16,True)
 	print("Arm Off")
 	servoDriver.reset()
 	stopSockets()

@@ -20,7 +20,7 @@ def runExperiment():
 	servoDriver = ServoDriver()
 	#move to position to drop soil into experiment chamber
 	servoDriver.setServo(4,experpos)
-	GPIO.output(23,True)
+	GPIO.output(16,True)
 	time.sleep(0.5)
 	
 	
@@ -34,7 +34,7 @@ def runExperiment():
 		time.sleep(0.1)
 	#take picture
 	subprocess.call(command, shell = True)
-	GPIO.output(23,False)
+	GPIO.output(16,False)
 	print("Sciencing has been completed")
 	# #move to position to drop soil into sample chamber
 	# servoDriver.setServo(4,samppos)
@@ -94,8 +94,8 @@ try:
 	#set up gpio
 	GPIO.setwarnings(False)
 	GPIO.setmode(GPIO.BOARD)
-	GPIO.setup(23,GPIO.OUT)
-	GPIO.output(23,False)	# have light set to off
+	GPIO.setup(16,GPIO.OUT)
+	GPIO.output(16,False)	# have light set to off
 	print("Science Server listening on port " + str(sciencePort))
 	# main execution loop
 	while(True):
