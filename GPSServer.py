@@ -81,7 +81,7 @@ try:
 	logfile = open("/home/pi/gpsLogs/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".log", "w+")
 except:
 	print("GPS logging failed.")
-	raise
+	pass
 
 # set up serial connection
 try:
@@ -111,10 +111,12 @@ try:
 		while(True):
 			time.sleep(2.0)
 			try:
+				print "reading..."
 				readGPS()
+				print "read"
 				sendData()
 			except:
-				break	
+				raise	
 		print("GPS Server disconnected.")
 	
 except KeyboardInterrupt:

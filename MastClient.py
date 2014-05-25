@@ -18,8 +18,8 @@ class MastClient: # class for mast control
 	def sendData(self, x, y):
 		try:
 			self.socket.send(self.commandMastCamera + chr(x + 2) + chr(y + 2))
-			print x
-			print y
+			#print x
+			#print y
 		except socket.error as e:
 			pass # change to pass when working
 	
