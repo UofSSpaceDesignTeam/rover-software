@@ -22,7 +22,7 @@ from TextOutput import TextOutput
 
 # global constants
 
-IPraspi1 = "10.64.226.128"
+IPraspi1 = "192.168.1.103"
 IPraspi2 = "192.168.1.104"
 IPraspi3 = "192.168.1.105"
 IPraspi4 = "192.168.1.106"
@@ -513,7 +513,7 @@ while True: # main execution loop
 		if controller.isConnected:
 			axes = controller.getAxes()
 			buttons = controller.getButtons()
-			if indicatorList[7].active and buttonList[2].selected: # Mast camera control
+			if indicatorList[7].active: # Mast camera control
 				dPad = controller.getDPad()
 				mastControl.sendData(dPad[0], dPad[1])
 			if buttonList[5].selected: # 1 stick drive mode

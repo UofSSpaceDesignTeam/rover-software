@@ -20,6 +20,9 @@ def parseCommand(command): # parses and executes remote commands
 		stopServos()
 
 def moveServos(yaw, pitch):
+	global currentPitch
+	#print str(yaw)
+	#print str(pitch)
 	currentPitch += 50 * pitch
 	if currentPitch > 2300:
 		currentPitch = 2300
@@ -35,7 +38,7 @@ def moveServos(yaw, pitch):
 
 def stopServos():
 	try:
-		servoDriver.setServo(3, 1550)
+		servoDriver.setServo(1, 1550)
 	except:
 		pass
 		
