@@ -94,11 +94,11 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					dir = int(ord(command[3]))
 					baseSpeed = 100
 					if dir == 0:
-						servoDriver.setServo(4,1596)
+						servoDriver.setServo(4,1696)
 					elif dir == 1:
-						servoDriver.setServo(4,1596 - baseSpeed)
+						servoDriver.setServo(4,1696 - baseSpeed)
 					else:
-						servoDriver.setServo(4,1596 + baseSpeed)
+						servoDriver.setServo(4,1696 + baseSpeed)
 				
 				elif command[2] == "W": # rotate wrist joint up/down				
 					#calculate the distance that needs to be traversed. 
@@ -135,6 +135,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				
 				elif command[2] == "H": # twist gripper cw/ccw			
 					dir = int(ord(command[3]))
+					print("twist gripper" + str(dir))
 					speed = 2	#increase to rotate faster
 					if dir == 1:
 						#smooths the motion
@@ -161,18 +162,18 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						gripperRight = 2000 - int(temp)
 						gripperLeft = int(temp) + 1200
 						#update gripper position
-						servoDriver.setServo(6,gripperLeft)
-						servoDriver.setServo(7,gripperRight)
+						servoDriver.setServo(5,gripperLeft)
+						servoDriver.setServo(6,gripperRight)
 						
 				elif command[2] == "K":  # turns off the arm 
 					sendSabertooth(address,0, 0)
 					sendSabertooth(address,4, 0)
-					GPIO.output(16,True)
+					GPIO.output(16, False)
 					print("Arm Off")
 					servoDriver.reset()
 					
 				elif command[2] == "R":  # turns on the arm 
-					GPIO.output(16,False)
+					GPIO.output(16, True)
 					print("Arm On")
 
 				elif command[2] == "T":	# controls both actuators individually 
@@ -226,16 +227,16 @@ sendSabertooth(address, 16, ramping)
 # set up GPIOs
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(16,GPIO.OUT)
-GPIO.output(16,True)	# disconnect ArmPower
+GPIO.output(16, False)	# disconnect ArmPower
 
 # set up servo driver
 servoDriver = ServoDriver()
 basePan = Servo(servoDriver, 4, 1000, 2200, 1596)
-wristPan = Servo(servoDriver, 11, 830, 2350, 1600)
-wristTilt = Servo(servoDriver, 10, 1000, 1700, 1370)
-wristTwist = Servo(servoDriver, 9, 830, 2350, 1600)
-servoDriver.setServo(6,1200)
-servoDriver.setServo(7,2000)
+wristPan = Servo(servoDriver, 9, 830, 2350, 1600)
+wristTilt = Servo(servoDriver, 8, 1000, 1700, 1370)
+wristTwist = Servo(servoDriver, 7, 830, 2350, 1600)
+servoDriver.setServo(5,1200)
+servoDriver.setServo(6,2000)
 	
 # begin server connection
 try:

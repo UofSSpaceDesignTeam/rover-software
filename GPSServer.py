@@ -1,51 +1,18 @@
-import serial
 import socket
 import time
-import struct
 from LSM303 import LSM303
 
-GPSPort = 3005
-header = "#GD" #GPS Data
-lastSendTime = 0.0
-gps = None
-logfile = None
+# SET THIS
+lat = 12.34
+lon = 12.34
 
-latitude = None
-longitude = None
-altitude = None
-hdop = None
+lastSendTime = 0.0
 course = -999
 
-def readGPS():
-	global gps, latitude, longitude, altitude, hdop, course
-	try:
-		course = compass.read()
-	except:
-		pass
-	rawData = gps.read(gps.inWaiting())
-	dataStart = rawData.find("GGA")
-	if dataStart != -1:	# found start of valid sentence
-		dataEnd = min(dataStart + 70, len(rawData) - dataStart - 2)
-		data = rawData[dataStart:dataEnd]
-		values = data.split(",")
-		if len(values) > 9:
-			latitude = float(values[2][:2]) + float(values[2][2:]) / 60.0
-			if values[3] == "S":
-				latitude *= -1.0
-			longitude = float(values[4][:3]) + float(values[4][3:]) / 60.0
-			if values[5] == "W":
-				longitude *= -1.0
-			hdop = float(values[8])
-			altitude = float(values[9])
-
-def sendData():
-	global latitude, longitude, altitude, hdop, course, dataSocket, logfile
-	if latitude != None and longitude != None and altitude != None and hdop != None:
-		dataSocket.send(struct.pack("!fffff", latitude, longitude, altitude, hdop, course))
-		try:
-			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) + "," + str(hdop) + "\n")
-		except:
-			pass
+def getHeading():
+	global course
+	course = compass.read()
+	print(course)
 	
 def stopSockets():
 	try:

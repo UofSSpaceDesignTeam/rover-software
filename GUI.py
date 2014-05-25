@@ -412,12 +412,11 @@ def ArmOn(fakeArg):
 		time.sleep(0.005)
 
 def ArmOff(fakeArg):
-	if indicatorList[5].active:
-		buttonList[14].selected = False
-		buttonList[15].selected = True
-		drawButtons()
-		armControl.DisconnectArmPower()
-		time.sleep(0.005)
+	buttonList[14].selected = False
+	buttonList[15].selected = True
+	drawButtons()
+	armControl.DisconnectArmPower()
+	time.sleep(0.005)
 		
 # program execution starts here
 
@@ -551,14 +550,17 @@ while True: # main execution loop
 						wristTwist = 0
 					if wristTwist != 0:
 						armControl.twistHand(wristTwist)
+						print("wrist twist: " + str(wristTwist))
 						time.sleep(0.005)
 					wristPan = int(axes[2] * 80) + 127
 					if wristPan != 127:
 						armControl.panHand(wristPan)
+						print("wrist Pan")
 						time.sleep(0.005)
 					wristTilt = 127 - int(axes[3] * 40)
 					if wristTilt != 127:
 						armControl.tiltWrist(wristTilt)
+						print("wrist tilt")
 						time.sleep(0.005)
 					# actuators
 					speed1 = int(axes[0] * 127) + 127
