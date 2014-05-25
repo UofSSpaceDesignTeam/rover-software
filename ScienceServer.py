@@ -12,15 +12,14 @@ def runExperiment():
 	samppos = 2100 # position to drop soil into sample chamber
 	shakenum = 10 # number of times to "shake" servo before moving on
 	shakeammount = 50
-	command = "raspistill -q 75 -t 60000 -tl 2000 -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg"
+#	command = "raspistill -o /home/pi/pictures/" + time.strftime("%m%d%H%M%S", time.localtime()) + ".jpg -tl 2000 -t 60000"
+	command = "raspistill -o /home/pi/pictures/myimage_%d.jpg -tl 2000 -t 60000"
 	print("we are sciencing")
 	#setup servo
 	servoDriver = ServoDriver()
-	#turn on light
-	servoDriver.setServo(5,32767)
 	#move to position to drop soil into experiment chamber
 	servoDriver.setServo(4,experpos)
-	
+	servoDriver.setServo(5,10)	
 	time.sleep(0.5)
 	
 	
@@ -34,8 +33,9 @@ def runExperiment():
 		time.sleep(0.1)
 	#take picture
 	subprocess.call(command, shell = True)
-	servoDriver.setServo(5,0)
+
 	print("Sciencing has been completed")
+	servoDriver.setServo(5,0)
 	# #move to position to drop soil into sample chamber
 	# servoDriver.setServo(4,samppos)
 	
@@ -50,7 +50,7 @@ def runExperiment():
 
 	
 def parseCommand(command):
-	print(command)
+#	print(command)
 	if command == "#RE":
 		runExperiment()
 
