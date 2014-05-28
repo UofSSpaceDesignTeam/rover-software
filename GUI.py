@@ -571,14 +571,27 @@ while True: # main execution loop
 						armControl.tiltWrist(wristTilt)
 						time.sleep(0.005)
 						#print("wrist tilt")
-					# actuators
-					speed1 = int(axes[0] * 127) + 127
-					speed1 = max(speed1, 0)
-					speed1 = min(speed1, 254)
-					speed2 = int(axes[1] * 127) + 127
-					speed2 = max(speed2, 0)
-					speed2 = min(speed2, 254)
-					armControl.actuators(speed1, speed2)
+					if buttons[7]:
+						if toggle:
+							toggle = False
+							print("Arm Base Indv. Control")
+						else:
+							toggle = True 
+							print("Arm Base Mixed Mode")
+					if toggle: #using translate Z and IO
+						wristLift = int(axes[2]*127) + 127
+						armControl.liftWrist(wristLift)
+						time.sleep(0.5)
+						wristMove = int(axes[1]*127) + 127
+						armControl.moveWrist(wristMove)
+					if not toggle: #individual control
+						speed1 = int(axes[0] * 127) + 127
+						speed1 = max(speed1, 0)
+						speed1 = min(speed1, 254)
+						speed2 = int(axes[1] * 127) + 127
+						speed2 = max(speed2, 0)
+						speed2 = min(speed2, 254)
+						armControl.actuators(speed1, speed2)
 				else:
 					stopRover(False)
 					setMastMode(None)

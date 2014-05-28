@@ -351,10 +351,10 @@ GPIO.output(16, False)	# disconnect ArmPower
 
 # set up servo driver
 servoDriver = ServoDriver()
-basePan = Servo(servoDriver, 4, 1000, 2200, 1696, debug = True)
-wristPan = Servo(servoDriver, 9, 830, 2350, 1600, debug = True)
-wristTilt = Servo(servoDriver, 8, 1000, 1700, 1370, debug = True)
-wristTwist = Servo(servoDriver, 7, 830, 2350, 1600, debug = True)
+basePan = Servo(servoDriver, 4, 1000, 2200, 1696)
+wristPan = Servo(servoDriver, 9, 830, 2350, 1600)
+wristTilt = Servo(servoDriver, 8, 1000, 1700, 1370)
+wristTwist = Servo(servoDriver, 7, 830, 2350, 1600)
 servoDriver.setServo(5,1200)
 servoDriver.setServo(6,2000)
 	
