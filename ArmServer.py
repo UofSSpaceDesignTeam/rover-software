@@ -1,9 +1,7 @@
 # A script continuously run by the arm control pi.
 
-import math
 import socket
 import time
-import subprocess
 import serial
 from ServoDriver import *
 from ADS1x15 import ADS1x15
@@ -31,8 +29,6 @@ Actuator2FullOutRaw = 3081
 
 L1 = 350		
 L2 = 350
-			
-ArmDeadband = 0
 
 # function definitions
 
@@ -81,12 +77,8 @@ def TranslateZ(speed):
 	C2 = -0.035*(L1 - L2)		
 			
 	L1p = C1*speed		
-	L2p = C2*speed			
-				
-	#deadband		
-	if abs(speed) <= ArmDeadband:		
-		L1p=0;		
-		L2p=0;		
+	L2p = C2*speed
+	
 	#send the values to the actuators		
 	if L1p<=0:		
 	    #constrain the range of data sent to sabertooth		
@@ -263,7 +255,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				
 				elif command[2] == "H": # twist gripper cw/ccw			
 					dir = int(ord(command[3]))
-					print("twist gripper" + str(dir))
+					#print("twist gripper" + str(dir))
 					speed = 2	#increase to rotate faster
 					if dir == 1:
 						#smooths the motion

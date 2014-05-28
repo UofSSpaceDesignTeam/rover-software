@@ -7,6 +7,7 @@ class ArmClient: # class for arm control
 		self.IP = IP
 		self.port = port
 		self.commandPanBase = "#AB" # spin base left / right
+		self.commandPanBaseFast = "#AF" # spin base left / right
 		self.commandLiftWrist = "#AL" # translate wrist joint up/down
 		self.commandMoveWrist = "#AM" # translate wrist joint in/out
 		self.commandTiltWrist = "#AW" # rotate wrist joint up/down
@@ -28,6 +29,12 @@ class ArmClient: # class for arm control
 	def panBase(self, speed):
 		try:
 			self.socket.send(self.commandPanBase + chr(speed))
+		except:
+			pass
+	
+	def panBaseFast(self, speed):
+		try:
+			self.socket.send(self.commandPanBaseFast + chr(speed))
 		except:
 			pass
 	
