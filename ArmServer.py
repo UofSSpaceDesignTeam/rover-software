@@ -29,6 +29,11 @@ Actuator1FullOutRaw = 4749
 Actuator2FullInRaw = 1890
 Actuator2FullOutRaw = 3081
 
+L1 = 350		
+L2 = 350
+			
+ArmDeadband = 0
+
 # function definitions
 
 def readActuator1():
@@ -58,7 +63,109 @@ def sendSabertooth(address, command, speed):
 	controller.write(chr(int(command)))
 	controller.write(chr(int(speed)))
 	controller.write(chr(int(checksum)))
-
+	
+def TranslateZ(speed):				
+	#calculates and sends speeds of linear actuators for end effector to move up or down at input speed		
+	#L1p and L2p are speeds of the linear actuators			
+	global L1		
+	global L2		
+	try:		
+	#read the actuator's positions		
+		L2 = readActuator2()		
+		time.sleep(0.01)		
+		L1 = readActuator1()		
+	except:		
+		print("Cannot read ADC")		
+	    # approximate constants		
+		C1 = 2.0		
+	    C2 = -0.035*(L1 - L2)		
+			
+	    L1p = C1*speed		
+	    L2p = C2*speed			
+				
+	#deadband		
+	if abs(speed) <= ArmDeadband:		
+		L1p=0;		
+		L2p=0;		
+	#send the values to the actuators		
+	if L1p<=0:		
+	    #constrain the range of data sent to sabertooth		
+		L1p=-L1p		
+		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary		
+		if abs(speed) < 0.2:		
+			L1p = L1p + 10		
+			L1p=max(0,L1p)		
+			L1p=min(127,L1p)		
+			#send the actuator speeds to the sabertooth		
+			sendSabertooth(address,1,L1p)		
+	else:		
+		#constrain the range of data sent to sabertooth		
+		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary		
+		##if abs(speed) < 0.2:		
+		##L1p = L1p + 10		
+		L1p=max(0,L1p)		
+		L1p=min(127,L1p)		
+		#send the actuator speeds to the sabertooth		
+		sendSabertooth(address,0,L1p)		
+	if L2p<=0:		
+		#constrain the range of data sent to sabertooth		
+		L2p=-L2p					
+		L2p=max(0,L2p)		
+		L2p=min(127,L2p)		
+		#send the actuator speeds to the sabertooth		
+		sendSabertooth(address,5,L2p)		
+	else:		
+		#constrain the range of data sent to sabertooth				
+		L2p=max(0,L2p)		
+		L2p=min(127,L2p)		
+		#send the actuator speeds to the sabertooth		
+		sendSabertooth(address,4,L2p)		
+			
+def TranslateIO(speed):		
+	#calculates and sends speeds of linear actuators for end effector to move back or forth at speed		
+	#L1p and L2p are speeds of the linear actuators		
+			
+	global L1		
+	global L2		
+	try:		
+	#read the actuator's positions		
+		L2 = readActuator2()		
+		time.sleep(0.01)		
+		L1 = readActuator1()		
+	except:		
+		print("Cannot read ADC")		
+			
+        # approximate constants		
+	C1 = 1.0		
+	C2 = -(1.0 + 0.0005*pow((L1 - 400),2) - 0.02*L2)		
+		
+	L1p = C1*speed		
+	L2p = C2*speed				
+			
+	if L1p<=0:		
+		#constrain the range of data sent to sabertooth		
+		L1p=-L1p		
+		L1p=max(0,L1p)		
+		L1p=min(127,L1p)		
+		#send the actuator speeds to the sabertooth		
+		sendSabertooth(address,1,L1p)		
+	else:		
+		#constrain the range of data sent to sabertooth		
+		L1p=max(0,L1p)		
+		L1p=min(127,L1p)		
+		sendSabertooth(address,0,L1p)		
+	if L2p<=0:		
+		#constrain the range of data sent to sabertooth		
+		L2p=-L2p		
+		L2p=max(0,L2p)		
+		L2p=min(127,L2p)		
+		sendSabertooth(address,5,L2p)		
+	else:		
+		#constrain the range of data sent to sabertooth		
+		L2p=max(0,L2p)		
+		L2p=min(127,L2p)		
+		sendSabertooth(address,4,L2p)		
+	
 def setActuators(actuator1, actuator2):
 	#moves actuators independently
 	actuator1 = (actuator1 - 127)   # range is now -127 to 127
@@ -98,6 +205,28 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						servoDriver.setServo(4,1696 - baseSpeed)
 					else:
 						servoDriver.setServo(4,1696 + baseSpeed)
+						
+				elif command[2] == "L": # translate wrist joint "in/out"		
+					Speed = int(ord(command[3]))		
+					if Speed != 127:	#if control sticks are off center, send new commands to actuators		
+					Speed = float((Speed - 127)/127)	#range is now -1 to 1		
+					Speed = Speed*50		#adjust scaling as necessary		
+					TranslateIO(Speed)		
+					else:		
+						#stop actuators if control sticks are centered		
+						sendSabertooth(address,4,0)		
+						sendSabertooth(address,0,0)	
+	
+				elif command[2] == "M": # translate wrist joint "up/down"		
+					Speed = int(ord(command[3]))		
+					if Speed != 127:		
+						Speed = float((Speed - 127)/127) #range is now -1 to 1		
+						Speed = Speed*50		#adjust scaling as necessary		
+						TranslateZ(Speed)		
+					else:		
+						#stop the actuators if control sticks are centered		
+						sendSabertooth(address,4,0)		
+						sendSabertooth(address,0,0)
 				
 				elif command[2] == "W": # rotate wrist joint up/down				
 					#calculate the distance that needs to be traversed. 
