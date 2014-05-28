@@ -33,6 +33,7 @@ def runExperiment():
 		servoDriver.setServo(4, experpos + 2*shakeammount)
 		time.sleep(0.1)
 	#take picture
+	servoDriver.setServo(4,samppos)
 	subprocess.call(command, shell = True)
 	GPIO.output(16,False)
 	print("Sciencing has been completed")

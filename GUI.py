@@ -542,6 +542,7 @@ while True: # main execution loop
 					time.sleep(0.005)
 					gripperControl = int(axes[4]*127) + 127
 					armControl.gripper(gripperControl)
+					time.sleep(0.005)
 					if buttons[0] != 0:
 						wristTwist = 1
 					elif buttons[1] != 0:
@@ -550,18 +551,18 @@ while True: # main execution loop
 						wristTwist = 0
 					if wristTwist != 0:
 						armControl.twistHand(wristTwist)
-						print("wrist twist: " + str(wristTwist))
 						time.sleep(0.005)
+						print("wrist twist: " + str(wristTwist))
 					wristPan = int(axes[2] * 80) + 127
 					if wristPan != 127:
 						armControl.panHand(wristPan)
-						print("wrist Pan")
 						time.sleep(0.005)
+						print("wrist Pan")
 					wristTilt = 127 - int(axes[3] * 40)
 					if wristTilt != 127:
 						armControl.tiltWrist(wristTilt)
-						print("wrist tilt")
 						time.sleep(0.005)
+						print("wrist tilt")
 					# actuators
 					speed1 = int(axes[0] * 127) + 127
 					speed1 = max(speed1, 0)
