@@ -545,7 +545,7 @@ while True: # main execution loop
 						basePan = 0
 					if buttons[0]:
 						armControl.panBaseFast(basePan)
-					else
+					else:
 						armControl.panBase(basePan)
 					time.sleep(0.005)
 					gripperControl = int(axes[4]*127) + 127
