@@ -20,6 +20,7 @@ from MastClient import MastClient
 from ScienceClient import ScienceClient
 from TextOutput import TextOutput
 
+
 # global constants
 
 IPraspi1 = "192.168.1.103"
@@ -595,6 +596,7 @@ while True: # main execution loop
 				else:
 					stopRover(False)
 					setMastMode(None)
+	
 	
 	# update UI state, check events
 	mouse = pygame.mouse.get_pos()
