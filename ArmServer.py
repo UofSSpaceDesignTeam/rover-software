@@ -76,12 +76,12 @@ def TranslateZ(speed):
 		L1 = readActuator1()		
 	except:		
 		print("Cannot read ADC")		
-	    # approximate constants		
-		C1 = 2.0		
-	    C2 = -0.035*(L1 - L2)		
+	# approximate constants		
+	C1 = 2.0		
+	C2 = -0.035*(L1 - L2)		
 			
-	    L1p = C1*speed		
-	    L2p = C2*speed			
+	L1p = C1*speed		
+	L2p = C2*speed			
 				
 	#deadband		
 	if abs(speed) <= ArmDeadband:		
@@ -94,10 +94,10 @@ def TranslateZ(speed):
 		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary		
 		if abs(speed) < 0.2:		
 			L1p = L1p + 10		
-			L1p=max(0,L1p)		
-			L1p=min(127,L1p)		
-			#send the actuator speeds to the sabertooth		
-			sendSabertooth(address,1,L1p)		
+		L1p=max(0,L1p)		
+		L1p=min(127,L1p)		
+		#send the actuator speeds to the sabertooth		
+		sendSabertooth(address,1,L1p)		
 	else:		
 		#constrain the range of data sent to sabertooth		
 		#actuator 1 gets stuck at low speeds, here is a simple correction. tweak values as necessary		
@@ -209,9 +209,9 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				elif command[2] == "L": # translate wrist joint "in/out"		
 					Speed = int(ord(command[3]))		
 					if Speed != 127:	#if control sticks are off center, send new commands to actuators		
-					Speed = float((Speed - 127)/127)	#range is now -1 to 1		
-					Speed = Speed*50		#adjust scaling as necessary		
-					TranslateIO(Speed)		
+						Speed = float((Speed - 127)/127)	#range is now -1 to 1		
+						Speed = Speed*50		#adjust scaling as necessary		
+						TranslateIO(Speed)		
 					else:		
 						#stop actuators if control sticks are centered		
 						sendSabertooth(address,4,0)		
