@@ -5,7 +5,7 @@ servoDriver = ServoDriver()
 
 ## Test Code
 while True:
-	pos1 = raw_input('Pulse Length Position?')
+	pos1 = raw_input('Pulse Length Position: ')
 	#pos2 = raw_input('Pulse Length Position?')
 	
 	try:

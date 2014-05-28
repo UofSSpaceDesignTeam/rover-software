@@ -20,7 +20,7 @@ if [ -e /etc/network/interfaces.old ]
 fi
 
 echo "Which Pi is this?"
-select daem in "Drive" "Arm" "Experiment" "Mast"; do
+select daem in "Drive" "Arm" "Experiment" "Mast" "Base; do
     case $daem in
         Drive )
 	  echo "Raspi1 Selected: 192.168.1.103"
@@ -41,6 +41,11 @@ select daem in "Drive" "Arm" "Experiment" "Mast"; do
 	  echo "Raspi4 Selected: 192.168.1.106"
 	  name=raspi4
 	  address=192.168.1.106
+	  break;;
+	Base )
+	  echo "basepi Selected: 192.168.1.110"
+	  name=basepi
+	  address=192.168.1.110
 	  break;;
     esac
 done
