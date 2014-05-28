@@ -14,8 +14,8 @@ class ArmClient: # class for arm control
 		self.commandTwistHand = "#AH" # twist gripper cw/ccw
 		self.commandGripper = "#AG" # open or close gripper
 		self.commandActuators = "#AT" # controls both actuators
-		self.commandArmOn = "#AR?"	#connects arm power
-		self.commandArmOff = "#AK?"	#disconnects arm power
+		self.commandArmOn = "#ARX"	#connects arm power
+		self.commandArmOff = "#AKX"	#disconnects arm power
 	
 	def connect(self):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,60 +26,70 @@ class ArmClient: # class for arm control
 			pass
 	
 	def panBase(self, speed):
+		time.sleep(0.005)
 		try:
 			self.socket.send(self.commandPanBase + chr(speed))
 		except:
 			pass
 	
 	def liftWrist(self, speed):
+		time.sleep(0.005)
 		try:
 			self.socket.send(self.commandLiftWrist + chr(speed))
 		except:
 			pass
 	
 	def moveWrist(self, speed):
+		time.sleep(0.005)
 		try:
 			self.socket.send(self.commandMoveWrist + chr(speed))
 		except:
 			pass
 	
 	def tiltWrist(self, speed):
+		time.sleep(0.005)
 		try:
 			self.socket.send(self.commandTiltWrist + chr(speed))
 		except:
 			pass
 	
 	def panHand(self, speed):
+		time.sleep(0.005)
 		try:
 			self.socket.send(self.commandPanHand + chr(speed))
 		except:
 			pass
 	
 	def twistHand(self, speed):
+		time.sleep(0.005)
 		try:
 			self.socket.send(self.commandTwistHand + chr(speed))
 		except:
 			pass
 	
 	def gripper(self, speed):
+		time.sleep(0.005)
 		try:
 			self.socket.send(self.commandGripper + chr(speed))
 		except:
 			pass
 	
 	def actuators(self, actuator1, actuator2):
+		time.sleep(0.005)
 		try:
 			self.socket.send(self.commandActuators + chr(actuator1) + chr(actuator2))
 		except:
 			pass
 	
 	def ConnectArmPower(self):
+		time.sleep(0.005)
 		try:
 			self.socket.send(self.commandArmOn)
 		except:
 			pass
 	
 	def DisconnectArmPower(self):
+		time.sleep(0.005)
 		try: 
 			self.socket.send(self.commandArmOff)
 		except:
