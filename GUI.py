@@ -392,18 +392,11 @@ def quit(fakeArg): # button-based
 
 def ArmOn(fakeArg):
 	if indicatorList[5].active:
-		buttonList[14].selected = True
-		buttonList[15].selected = False
-		drawButtons()
 		armControl.ConnectArmPower()
 		time.sleep(0.005)
-	time.sleep(0.005)
-	print("Arm On")
+		print("Arm On")
 
 def ArmOff(fakeArg):
-	buttonList[14].selected = False
-	buttonList[15].selected = True
-	drawButtons()
 	armControl.DisconnectArmPower()
 	time.sleep(0.005)
 		

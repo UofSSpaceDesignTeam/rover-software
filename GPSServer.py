@@ -50,7 +50,7 @@ def sendData():
 	
 def stopSockets():
 	try:
-		commandSocket.close()
+		dataSocket.close()
 	except:
 		pass
 	try:
@@ -115,7 +115,7 @@ try:
 				readGPS()
 				sendData()
 			except:
-				raise	
+				break	
 		print("GPS Server disconnected.")
 	
 except KeyboardInterrupt:
