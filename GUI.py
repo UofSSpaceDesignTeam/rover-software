@@ -61,7 +61,6 @@ def createButtons():
 	saveButton = Button(savePosition, None, "Save", (625, 660, 100, 30), colorLightBlue, colorYellow)
 	ArmPowerOnButton = Button(ArmOn, None, "Arm Power On", (310, 585, 100, 20), colorLightBlue, colorGreen)
 	ArmPowerOffButton = Button(ArmOff, None, "Arm Power Off", (310, 615, 100, 20), colorLightBlue, colorGreen)
-	ArmPowerOffButton.selected = True
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -134,8 +133,7 @@ def createConsoles(): # set up the info boxes
 	global output, gpsDisplay, controllerDisplay
 	output = TextOutput("Messages", 17, colorWhite, (740, 544, 350, 156), 11)
 	sys.stdout = output
-	gpsDisplay = TextOutput("Navigation", 17, colorWhite, (615, 544, 120, 107), 7)
-	gpsDisplay.write("Fix Age:")
+	gpsDisplay = TextOutput("Navigation", 17, colorWhite, (615, 544, 120, 107), 6)
 	gpsDisplay.write("Lat:")
 	gpsDisplay.write("Lon:")
 	gpsDisplay.write("Alt:")
@@ -223,25 +221,14 @@ def checkController(fakeArg):
 	return controller.isConnected
 
 def updateGPS():
-	global roverLocation, baseLocation, lastFix
+	global roverLocation, baseLocation
 	if indicatorList[3].active:
 		roverLocation = gpsClient.getPosition()
+		#print(str(roverLocation[0]))
 		if roverLocation != None:
 			if int(roverLocation[0]) == 0 and int(roverLocation[1]) == 0: # no fix
 				roverLocation = None
-		if roverLocation != None:
-			lastFix = pygame.time.get_ticks()
-	if lastFix == -1:
-		gpsDisplay.write("Fix Age:")
-	else:
-		gpsDisplay.write("Fix Age: " + str((pygame.time.get_ticks() - lastFix) / 1000))
-	if roverLocation == None:
-		gpsDisplay.write("Lat:")
-		gpsDisplay.write("Lon:")
-		gpsDisplay.write("Alt:")
-		gpsDisplay.write("HDOP:")
-		gpsDisplay.write("Course:")
-	else:
+	if roverLocation != None:
 		gpsDisplay.write("Lat: " + str(round(roverLocation[0], 5)))
 		gpsDisplay.write("Lon: " + str(round(roverLocation[1], 5)))
 		gpsDisplay.write("Alt: " + str(int(round(roverLocation[2]))))
@@ -452,7 +439,6 @@ speedScale = 0.0
 steerScale = 0.0
 roverLocation = None
 baseLocation = None
-lastFix = -1
 redrawTimer = 0
 controllerSendTimer = 0
 gpsTimer = 0
@@ -470,10 +456,6 @@ gpsDisplay.draw(screen)
 drawIndicators()
 readBaseLocation()
 camConnect(0)
-
-global toggle
-
-toggle = False
 
 if not controller.isConnected:
 	print("Controller is not detected.")
@@ -535,39 +517,40 @@ while True: # main execution loop
 					setMastMode(None)
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
-					if buttons[4] != 0:
-						#rotate left (viewed from behind the arm)
-						basePan = 1
-					elif buttons[5] != 0:
-						#rotate right (viewed from behind the arm)
-						basePan = 2
+					if buttons[0]:
+						if buttons[4]:
+							armControl.panBase(27)
+						elif buttons[5]:
+							armControl.panBase(227)
+						else:
+							armControl.panBase(127)
 					else:
-						basePan = 0
-					armControl.panBase(basePan)
-					time.sleep(0.005)
+						if buttons[4]:
+							armControl.panBase(107)
+						elif buttons[5]:
+							armControl.panBase(147)
+						else:
+							armControl.panBase(127)
+					time.sleep(0.01)
+					
 					gripperControl = int(axes[4]*127) + 127
 					armControl.gripper(gripperControl)
-					time.sleep(0.005)
-					if buttons[0] != 0:
-						wristTwist = 1
-					elif buttons[1] != 0:
-						wristTwist = 2
-					else:
-						wristTwist = 0
-					if wristTwist != 0:
-						armControl.twistHand(wristTwist)
-						time.sleep(0.005)
-						print("wrist twist: " + str(wristTwist))
-					wristPan = int(axes[2] * 80) + 127
-					if wristPan != 127:
-						armControl.panHand(wristPan)
-						time.sleep(0.005)
-						print("wrist Pan")
+					time.sleep(0.01)
+					
+					if buttons[2]:
+						armControl.twistHand(87)
+					elif buttons[1]:
+						armControl.twistHand(167)
+					time.sleep(0.01)
+					
+					wristPan = int(axes[2] * 40) + 127
+					armControl.panHand(wristPan)
+					time.sleep(0.01)
+					
 					wristTilt = 127 - int(axes[3] * 40)
-					if wristTilt != 127:
-						armControl.tiltWrist(wristTilt)
-						time.sleep(0.005)
-						print("wrist tilt")
+					armControl.tiltWrist(wristTilt)
+					time.sleep(0.01)
+					
 					# actuators
 					speed1 = int(axes[0] * 127) + 127
 					speed1 = max(speed1, 0)
@@ -576,6 +559,7 @@ while True: # main execution loop
 					speed2 = max(speed2, 0)
 					speed2 = min(speed2, 254)
 					armControl.actuators(speed1, speed2)
+					time.sleep(0.01)
 				else:
 					stopRover(False)
 					setMastMode(None)

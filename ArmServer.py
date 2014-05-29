@@ -1,9 +1,7 @@
 # A script continuously run by the arm control pi.
 
-import math
 import socket
 import time
-import subprocess
 import serial
 from ServoDriver import *
 from ADS1x15 import ADS1x15
@@ -90,61 +88,18 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 		if command[0] == "#": # is valid
 			if command[1] == "A":
 				if command[2] == "B": # rotate base
-					dir = int(ord(command[3]))
-					baseSpeed = 100
-					if dir == 0:
-						servoDriver.setServo(4,1696)
-					elif dir == 1:
-						servoDriver.setServo(4,1696 - baseSpeed)
-					else:
-						servoDriver.setServo(4,1696 + baseSpeed)
+					servoDriver.setServo(4,1696 + int(ord(command[3])) - 127)
 				
 				elif command[2] == "W": # rotate wrist joint up/down				
-					#calculate the distance that needs to be traversed. 
-					dist =  int(ord(command[3])) - 127
-					if dist < 0:	
-						dist = -dist
-						#smooths the motion 
-						for x in range(0,dist/3):	#dividing dist by 3 improves control significantly
-							wristTilt.setRelative(-int(dist/20) + 127)
-					else:
-						#smooths the motion
-						for x in range(0,dist/3):
-							wristTilt.setRelative(int(dist/20) + 127)
-							
+					wristTilt.setRelative(int(ord(command[3])))
+				
 				elif command[2] == "P": # pan gripper left/right					
-					#calculate the distance that needs to be traversed
-					dist = int(ord(command[3])) - 127
-					speed = 2
-					if dist < 0:
-						dist = -dist
-						if dist > 60:
-							dist = 60
-						#smooths the motion
-						for x in range(0,dist/3):
-							#wristPan.setRelative(127- dist/30)
-							wristPan.setRelative(-speed + 127)
-					else:
-						#smooths the motion
-						if dist > 60:
-							dist = 60
-						for x in range(0,dist/3):
-							#wristPan.setRelative(127 + dist/30)
-							wristPan.setRelative(speed + 127)
+					wristPan.setRelative(int(ord(command[3])))
 				
 				elif command[2] == "H": # twist gripper cw/ccw			
-					dir = int(ord(command[3]))
-					print("twist gripper" + str(dir))
-					speed = 2	#increase to rotate faster
-					if dir == 1:
-						#smooths the motion
-						for x in range(0,50):
-							wristTwist.setRelative(127 - speed)
-					else:
-						#smooths the motion
-						for x in range(0,50):
-							wristTwist.setRelative(127 + speed)
-							
+					wristTwist.setRelative(int(ord(command[3])))
+					print str(int(ord(command[3])))
+				
 				elif command[2] == "G": # open or close gripper
 					temp = int(ord(command[3])) - 127
 					#range of temp is now -127 to 127
@@ -170,11 +125,11 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					GPIO.output(16, False)
 					print("Arm Off")
 					servoDriver.reset()
-					
+				
 				elif command[2] == "R":  # turns on the arm 
 					GPIO.output(16, True)
 					print("Arm On")
-
+				
 				elif command[2] == "T":	# controls both actuators individually 
 					global Length2
 					global Length1
@@ -230,10 +185,9 @@ GPIO.output(16, False)	# disconnect ArmPower
 
 # set up servo driver
 servoDriver = ServoDriver()
-basePan = Servo(servoDriver, 4, 1000, 2200, 1696, debug = True)
-wristPan = Servo(servoDriver, 9, 830, 2350, 1600, debug = True)
-wristTilt = Servo(servoDriver, 8, 1000, 1700, 1370, debug = True)
-wristTwist = Servo(servoDriver, 7, 830, 2350, 1600, debug = True)
+wristPan = Servo(servoDriver, 9, 830, 2350, 1600)
+wristTilt = Servo(servoDriver, 8, 1000, 1700, 1370)
+wristTwist = Servo(servoDriver, 7, 830, 2350, 1600)
 servoDriver.setServo(5,1200)
 servoDriver.setServo(6,2000)
 	
@@ -262,7 +216,7 @@ except KeyboardInterrupt:
 	print("\nmanual shutdown...")
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
-	GPIO.output(16,True)
+	GPIO.output(16,False)
 	print("Arm Off")
 	servoDriver.reset()
 	stopSockets()
@@ -272,7 +226,7 @@ except socket.error as e:
 	print(e.strerror)
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
-	GPIO.output(16,True)
+	GPIO.output(16,False)
 	print("Arm Off")
 	servoDriver.reset()
 	stopSockets()
@@ -282,7 +236,7 @@ except:
 	print("error")
 	sendSabertooth(address,0, 0)
 	sendSabertooth(address,5, 0)
-	GPIO.output(16,True)
+	GPIO.output(16,False)
 	print("Arm Off")
 	servoDriver.reset()
 	stopSockets()
