@@ -22,3 +22,4 @@ while True:
 		servoDriver.setServo(4, currentYaw)
 	elif input == "c":
 		print "Antenna bearing is " + str(round((compass.read() + 180) % 360))
+	
