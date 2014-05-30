@@ -27,6 +27,8 @@ Actuator1FullOutRaw = 4749
 Actuator2FullInRaw = 1890
 Actuator2FullOutRaw = 3081
 
+gotPacket = False
+
 # function definitions
 
 def readActuator1():
@@ -52,6 +54,9 @@ def readActuator2():
 def sendSabertooth(address, command, speed):
 	# sends commands to the sabertooth 
 	checksum = int(address) + int(command) + int(speed) & 127
+	#packet = ((chr(int(address))) + (chr(int(command))) + (chr(int(speed))) + (chr(int(checksum))))
+	#print packet
+	#controller.write(packet)
 	controller.write(chr(int(address)))
 	controller.write(chr(int(command)))
 	controller.write(chr(int(speed)))
@@ -59,19 +64,16 @@ def sendSabertooth(address, command, speed):
 
 def setActuators(actuator1, actuator2):
 	#moves actuators independently
-	actuator1 = (actuator1 - 127)   # range is now -127 to 127
-	actuator2 = (actuator2 - 127) 
-
-	# Math for Actuators
-	leftSpeed = (actuator1)
-	rightSpeed = (actuator2) 
+	leftSpeed = (actuator1 - 127)   # range is now -127 to 127
+	rightSpeed = (actuator2 - 127) 
 	
 	#constrain the range of data sent to the sabertooth
 	leftSpeed = max(leftSpeed, -127)
 	leftSpeed = min(leftSpeed, 127)
 	rightSpeed = max(rightSpeed, -127)
 	rightSpeed = min(rightSpeed, 127)
-	
+	#print str(leftSpeed)
+	#print str(rightSpeed)
 	# send forward / reverse commands to controllers
 	if(leftSpeed >= 0):
 		sendSabertooth(address, 0, leftSpeed)
@@ -84,10 +86,17 @@ def setActuators(actuator1, actuator2):
 		sendSabertooth(address, 4, -1 * rightSpeed)
 	
 def parseCommand(command): # Parses Socket Data back to Axis positions
+	global gotPacket
+	gotPacket = False
 	if len(command) > 3:
 		if command[0] == "#": # is valid
 			if command[1] == "A":
-				if command[2] == "B": # rotate base
+				if command[2] == "T":	# controls both actuators individually 
+					speed1 = int(ord(command[3]))
+					speed2 = int(ord(command[4]))
+					setActuators(speed1, speed2)
+					gotPacket = True
+				elif command[2] == "B": # rotate base
 					servoDriver.setServo(4,1696 + int(ord(command[3])) - 127)
 				
 				elif command[2] == "W": # rotate wrist joint up/down				
@@ -98,9 +107,10 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				
 				elif command[2] == "H": # twist gripper cw/ccw			
 					wristTwist.setRelative(int(ord(command[3])))
-					print str(int(ord(command[3])))
 				
 				elif command[2] == "G": # open or close gripper
+					#sendSabertooth(address,0, 0)
+					#sendSabertooth(address,5, 0)
 					temp = int(ord(command[3])) - 127
 					#range of temp is now -127 to 127
 					if temp >= 0:	#negative values correspond to the other trigger so ignore them
@@ -116,8 +126,9 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						gripperRight = 2000 - int(temp)
 						gripperLeft = int(temp) + 1200
 						#update gripper position
-						servoDriver.setServo(5,gripperLeft)
-						servoDriver.setServo(6,gripperRight)
+						#if not gotPacket:
+						#	sendSabertooth(address,0, 0)
+						#	sendSabertooth(address,5, 0)
 						
 				elif command[2] == "K":  # turns off the arm 
 					sendSabertooth(address,0, 0)
@@ -128,33 +139,9 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 				
 				elif command[2] == "R":  # turns on the arm 
 					GPIO.output(16, True)
+					sendSabertooth(address,0, 0)
+					sendSabertooth(address,5, 0)
 					print("Arm On")
-				
-				elif command[2] == "T":	# controls both actuators individually 
-					global Length2
-					global Length1
-					#get speed commands from controller
-					speed1 = int(ord(command[3]))
-					speed2 = int(ord(command[4]))
-					#try reading the adc
-					try:
-						Length2 = readActuator2()
-						Length1 = readActuator1()
-					except:
-						pass
-					
-					#physical limits
-					if (Length1 <= 340) & (speed1 < 127):
-						speed1 = max(speed1, 65) 
-					#lower limit for actuator 2
-					if (Length2 <= L2LowerLimit) & (speed2 < 127):
-						sendSabertooth(address,4,0)
-					#lower limit for actuator 1
-					elif (Length1 <= L1LowerLimit) & (speed1 < 127):
-						sendSabertooth(address,0,0)
-					else:
-					#move the actuators
-						setActuators(speed1, speed2)
 
 def stopSockets(): # Stops sockets on error condition
 	try:
@@ -170,7 +157,7 @@ def stopSockets(): # Stops sockets on error condition
 ### Main Program  ###
 
 # set up ADC
-adc = ADS1x15(0x48)
+#adc = ADS1x15(0x48)
 
 # set up Sabertooth
 controller = serial.Serial("/dev/ttyAMA0", bytesize = 8, parity = 'N', stopbits = 1)
@@ -185,6 +172,7 @@ GPIO.output(16, False)	# disconnect ArmPower
 
 # set up servo driver
 servoDriver = ServoDriver()
+servoDriver.setServo(4,1696)
 wristPan = Servo(servoDriver, 9, 830, 2350, 1600)
 wristTilt = Servo(servoDriver, 8, 1000, 1700, 1370)
 wristTwist = Servo(servoDriver, 7, 830, 2350, 1600)

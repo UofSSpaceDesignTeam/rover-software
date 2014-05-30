@@ -295,6 +295,7 @@ def takePicture(fakeArg):
 
 def stopRover(setSlider):	# button-based
 	try:
+		print "rover stopped"
 		driveControl.stopMotors()
 		armOff()
 	except:
@@ -398,8 +399,6 @@ def ArmOn(fakeArg):
 
 def ArmOff(fakeArg):
 	armControl.DisconnectArmPower()
-	time.sleep(0.005)
-		
 	time.sleep(0.005)
 	print("Arm Off")
 	
@@ -510,6 +509,12 @@ while True: # main execution loop
 					setMastMode(None)
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
+					if buttons[2]:
+						armControl.twistHand(167)
+						time.sleep(0.005)
+					elif buttons[1]:
+						armControl.twistHand(87)
+						time.sleep(0.005)
 					if buttons[0]:
 						if buttons[4]:
 							armControl.panBase(27)
@@ -524,25 +529,19 @@ while True: # main execution loop
 							armControl.panBase(147)
 						else:
 							armControl.panBase(127)
-					time.sleep(0.01)
+					time.sleep(0.005)
 					
 					gripperControl = int(axes[4]*127) + 127
 					armControl.gripper(gripperControl)
-					time.sleep(0.01)
-					
-					if buttons[2]:
-						armControl.twistHand(87)
-					elif buttons[1]:
-						armControl.twistHand(167)
-					time.sleep(0.01)
+					time.sleep(0.005)
 					
 					wristPan = int(axes[2] * 40) + 127
 					armControl.panHand(wristPan)
-					time.sleep(0.01)
+					time.sleep(0.005)
 					
 					wristTilt = 127 - int(axes[3] * 40)
 					armControl.tiltWrist(wristTilt)
-					time.sleep(0.01)
+					time.sleep(0.005)
 					
 					# actuators
 					speed1 = int(axes[0] * 127) + 127
@@ -552,7 +551,7 @@ while True: # main execution loop
 					speed2 = max(speed2, 0)
 					speed2 = min(speed2, 254)
 					armControl.actuators(speed1, speed2)
-					time.sleep(0.01)
+					time.sleep(0.005)
 				else:
 					stopRover(False)
 					setMastMode(None)
