@@ -129,8 +129,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						gripperRight = 2000 - int(temp)
 						gripperLeft = int(temp) + 1200
 						#update gripper position
-						servoDriver.setServo(4, gripperLeft)
-						servoDriver.setServo(5, gripperRight)
+						servoDriver.setServo(5, gripperLeft)
+						servoDriver.setServo(6, gripperRight)
 						
 				elif command[2] == "K":  # turns off the arm 
 					sendSabertooth(address,0, 0)

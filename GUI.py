@@ -388,6 +388,7 @@ def quit(fakeArg): # button-based
 	pygame.display.update()
 	camDisconnect(None)
 	stopRover(False)
+	ArmOff(None)
 	pygame.quit()
 	sys.exit(0)
 
@@ -509,6 +510,15 @@ while True: # main execution loop
 					setMastMode(None)
 			elif buttonList[6].selected: # arm mode
 				if indicatorList[5].active:
+					# actuators
+					speed1 = int(axes[0] * 127) + 127
+					speed1 = max(speed1, 0)
+					speed1 = min(speed1, 254)
+					speed2 = int(axes[1] * 127) + 127
+					speed2 = max(speed2, 0)
+					speed2 = min(speed2, 254)
+					armControl.actuators(speed1, speed2)
+					time.sleep(0.005)
 					if buttons[2]:
 						armControl.twistHand(167)
 						time.sleep(0.005)
@@ -541,16 +551,6 @@ while True: # main execution loop
 					
 					wristTilt = 127 - int(axes[3] * 40)
 					armControl.tiltWrist(wristTilt)
-					time.sleep(0.005)
-					
-					# actuators
-					speed1 = int(axes[0] * 127) + 127
-					speed1 = max(speed1, 0)
-					speed1 = min(speed1, 254)
-					speed2 = int(axes[1] * 127) + 127
-					speed2 = max(speed2, 0)
-					speed2 = min(speed2, 254)
-					armControl.actuators(speed1, speed2)
 					time.sleep(0.005)
 				else:
 					stopRover(False)
