@@ -133,14 +133,8 @@ def createConsoles(): # set up the info boxes
 	global output, gpsDisplay, controllerDisplay
 	output = TextOutput("Messages", 17, colorWhite, (740, 544, 350, 156), 11)
 	sys.stdout = output
-	gpsDisplay = TextOutput("Navigation", 17, colorWhite, (615, 544, 120, 107), 6)
-	gpsDisplay.write("Lat:")
-	gpsDisplay.write("Lon:")
-	gpsDisplay.write("Alt:")
-	gpsDisplay.write("HDOP:")
-	gpsDisplay.write("Course:")
-	gpsDisplay.write("Range to Base:")
 	controllerDisplay = TextOutput("", 17, colorWhite, (1112, 295, 88, 88), 5)
+	gpsDisplay = TextOutput("Nav", 17, colorWhite, (615, 544, 120, 108), 7)
 
 def drawButtons():
 	for i in buttonList:
@@ -224,27 +218,17 @@ def updateGPS():
 	global roverLocation, baseLocation
 	if indicatorList[3].active:
 		roverLocation = gpsClient.getPosition()
-		#print(str(roverLocation[0]))
 		if roverLocation != None:
 			if int(roverLocation[0]) == 0 and int(roverLocation[1]) == 0: # no fix
 				roverLocation = None
 	if roverLocation != None:
-		gpsDisplay.write("Lat: " + str(round(roverLocation[0], 5)))
-		gpsDisplay.write("Lon: " + str(round(roverLocation[1], 5)))
-		gpsDisplay.write("Alt: " + str(int(round(roverLocation[2]))))
-		gpsDisplay.write("HDOP: " + str(round(roverLocation[3], 1)))
-		if roverLocation[4] > -1:
-			gpsDisplay.write("Course: " + str(round(roverLocation[4])))
-		else:
-			gpsDisplay.write("Course:")
-	if baseLocation == None or roverLocation == None:
-		gpsDisplay.write("Range to Base:")
-	else:
-		distance = int(((((roverLocation[0] - baseLocation[0])*111000)**2) + (((roverLocation[1] - baseLocation[1])*85000) ** 2)) ** 0.5)
-		if distance < 10000:
-			gpsDisplay.write("Range to Base: " + str(distance))
-		else:
-			gpsDisplay.write("Range to Base: 10k+")
+		gpsDisplay.write("Lat: " + str(int(roverLocation[0])) + "* " + str(round(roverLocation[1], 3)) + "\'")
+		gpsDisplay.write("Lon: " + str(int(roverLocation[2])) + "* " + str(round(roverLocation[3], 3)) + "\'")
+		gpsDisplay.write("")
+		gpsDisplay.write("Lat: " + str(round(roverLocation[0] + roverLocation[1] / 60.0, 5)))
+		gpsDisplay.write("Lon: " + str(round(roverLocation[2] + roverLocation[3] / 60.0, 5)))
+		gpsDisplay.write("Alt: " + str(int(round(roverLocation[4]))))
+		gpsDisplay.write("HDOP: " + str(round(roverLocation[5], 2)))
 	gpsDisplay.draw(screen)
 
 def savePosition(fakeArg):

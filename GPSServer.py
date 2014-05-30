@@ -2,7 +2,6 @@ import serial
 import socket
 import time
 import struct
-from LSM303 import LSM303
 
 GPSPort = 3005
 header = "#GD" #GPS Data
@@ -12,39 +11,33 @@ logfile = None
 
 latitude = None
 longitude = None
+latmin = None
+lonmin = None
 altitude = None
 hdop = None
-course = -999
 
 def readGPS():
-	global gps, latitude, longitude, altitude, hdop, course
-	try:
-		course = compass.read()
-	except:
-		pass
+	global gps, latitude, latmin, longitude, lonmin, altitude, hdop
 	rawData = gps.read(gps.inWaiting())
-	#print str(rawData)
 	dataStart = rawData.find("GGA")
 	if dataStart != -1:	# found start of valid sentence
 		dataEnd = min(dataStart + 70, len(rawData) - dataStart - 2)
 		data = rawData[dataStart:dataEnd]
 		values = data.split(",")
 		if len(values) > 9:
-			latitude = float(values[2][:2]) + float(values[2][2:]) / 60.0
-			if values[3] == "S":
-				latitude *= -1.0
-			longitude = float(values[4][:3]) + float(values[4][3:]) / 60.0
-			if values[5] == "W":
-				longitude *= -1.0
+			latitude = float(values[2][:2])
+			latmin = float(values[2][2:])
+			longitude = float(values[4][:3])
+			lonmin = float(values[4][3:])
 			hdop = float(values[8])
 			altitude = float(values[9])
 
 def sendData():
-	global latitude, longitude, altitude, hdop, course, dataSocket, logfile
+	global latitude, longitude, latmin, lonmin, altitude, hdop, dataSocket, logfile#, course
 	if latitude != None and longitude != None and altitude != None and hdop != None:
-		dataSocket.send(struct.pack("!fffff", latitude, longitude, altitude, hdop, course))
+		dataSocket.send(struct.pack("!ffffff", latitude, latmin, longitude, lonmin, altitude, hdop))
 		try:
-			logfile.write(str(latitude) + "," + str(longitude) + "," + str(altitude) + "," + str(hdop) + "\n")
+			logfile.write(str(latitude) + " " + str(latmin) + "," + str(longitude) + " " + str(lonmin) + "," + str(altitude) + "," + str(hdop) + "\n")
 		except:
 			pass
 	
@@ -92,12 +85,6 @@ try:
 except:
 	print("GPS setup failed!")
 	quit()
-
-# set up compass
-try:
-	compass = LSM303()
-except:
-	print("compass setup failed!")
 
 # start socket
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
