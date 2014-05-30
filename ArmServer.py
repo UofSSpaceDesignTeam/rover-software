@@ -96,7 +96,10 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					speed2 = int(ord(command[4]))
 					setActuators(speed1, speed2)
 					gotPacket = True
-				elif command[2] == "B": # rotate base
+				if not gotPacket:
+					sendSabertooth(address,0, 0)
+					sendSabertooth(address,5, 0)
+				if command[2] == "B": # rotate base
 					servoDriver.setServo(4,1696 + int(ord(command[3])) - 127)
 				
 				elif command[2] == "W": # rotate wrist joint up/down				
@@ -126,9 +129,8 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 						gripperRight = 2000 - int(temp)
 						gripperLeft = int(temp) + 1200
 						#update gripper position
-						#if not gotPacket:
-						#	sendSabertooth(address,0, 0)
-						#	sendSabertooth(address,5, 0)
+						servoDriver.setServo(4, gripperLeft)
+						servoDriver.setServo(5, gripperRight)
 						
 				elif command[2] == "K":  # turns off the arm 
 					sendSabertooth(address,0, 0)
