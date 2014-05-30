@@ -23,7 +23,7 @@ def readGPS():
 	except:
 		pass
 	rawData = gps.read(gps.inWaiting())
-	print str(rawData)
+	#print str(rawData)
 	dataStart = rawData.find("GGA")
 	if dataStart != -1:	# found start of valid sentence
 		dataEnd = min(dataStart + 70, len(rawData) - dataStart - 2)
