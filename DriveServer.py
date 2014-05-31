@@ -50,6 +50,13 @@ def parseCommand(command): # parses and executes remote commands
 					elif command[2] == "S": # Stop
 						stopServos()
 						print("motors stopped.")
+					elif command[2] == "D": # Dig
+						print("digging...")
+						stopServos()
+						servoDriver.setServo(4 , 2200)
+						time.sleep(1.0)
+						stopServos()
+						print "done"
 	else: # command == none
 		stopServos()
 		

@@ -54,13 +54,14 @@ def createButtons():
 	armButton = Button(setArmMode, None, "Arm", (12, 264, 100, 20), colorLightBlue, colorGreen)
 	mastButton.selected = True
 	stopButton = Button(stopRover, True, "Stop", (12, 324, 100, 20), colorLightBlue, colorYellow)
-	pictureButton = Button(takePicture, None, "Take Picture", (12, 354, 100, 20), colorLightBlue, colorYellow)
-	runExperimentButton = Button(runExperiment, None, "Science!", (12, 384, 100, 20), colorLightBlue, colorYellow)
+	pictureButton = Button(takePicture, None, "Take Picture", (12, 384, 100, 20), colorLightBlue, colorYellow)
+	runExperimentButton = Button(runExperiment, None, "Science!", (12, 414, 100, 20), colorLightBlue, colorYellow)
 	connectButton = Button(connectClients, None, "Connect All", (1107, 235, 100, 20), colorLightBlue, colorYellow)
-	quitButton = Button(quit, None, "Quit", (12, 443, 100, 20), colorLightBlue, colorYellow)
+	quitButton = Button(quit, None, "Quit", (12, 473, 100, 20), colorLightBlue, colorYellow)
 	saveButton = Button(savePosition, None, "Save", (625, 660, 100, 30), colorLightBlue, colorYellow)
 	ArmPowerOnButton = Button(ArmOn, None, "Arm Power On", (310, 585, 100, 20), colorLightBlue, colorGreen)
 	ArmPowerOffButton = Button(ArmOff, None, "Arm Power Off", (310, 615, 100, 20), colorLightBlue, colorGreen)
+	digButton = Button(dig, None, "Dig", (12, 354, 100, 20), colorLightBlue, colorYellow)
 	buttonList.append(camera1Button)	# 0
 	buttonList.append(camera2Button)	# 1
 	buttonList.append(camera3Button)	# 2
@@ -77,6 +78,7 @@ def createButtons():
 	buttonList.append(mastButton)	# 13
 	buttonList.append(ArmPowerOnButton)	 #14
 	buttonList.append(ArmPowerOffButton)	#15
+	buttonList.append(digButton)	# 16
 
 def createSliders():
 	global sliderList
@@ -91,8 +93,8 @@ def createBoxes():
 	boxList = []
 	cameraButtonBox = Box("Camera Feeds", (0, 0, 125, 145))
 	controlBox = Box("Control Modes", (0, 150, 125, 143))
-	actionBox = Box("Rover Actions", (0, 298, 125, 115))
-	uiBox = Box("User Interface", (0, 418, 125, 53))
+	actionBox = Box("Rover Actions", (0, 298, 125, 145))
+	uiBox = Box("User Interface", (0, 448, 125, 53))
 	connectionsBox = Box("Connections", (1095, 0, 125, 265))
 	controllerBox = Box("Controller", (1095, 269, 125, 120))
 	saveBox = Box("", (615, 650, 120, 50))
@@ -276,6 +278,18 @@ def takePicture(fakeArg):
 	redrawTimer = pygame.time.get_ticks()
 	drawButtons()
 	pygame.display.update()
+	
+def dig(fakeArg):
+	if indicatorList[4].active:
+		print "digging..."
+		driveControl.dig()
+		buttonList[16].selected = True
+		buttonList[16].draw()
+		pygame.display.update()
+		time.sleep(1.0)
+		print("done")
+		buttonList[16].selected = False
+		buttonList[16].draw()
 
 def stopRover(setSlider):	# button-based
 	try:
@@ -378,13 +392,15 @@ def quit(fakeArg): # button-based
 
 def ArmOn(fakeArg):
 	if indicatorList[5].active:
-		armControl.ConnectArmPower()
-		time.sleep(0.005)
+		for i in range(0,5):
+			armControl.ConnectArmPower()
+			time.sleep(0.01)
 		print("Arm On")
 
 def ArmOff(fakeArg):
-	armControl.DisconnectArmPower()
-	time.sleep(0.005)
+	for i in range(0,5):
+			armControl.DisconnectArmPower()
+			time.sleep(0.01)
 	print("Arm Off")
 	
 # program execution starts here
@@ -419,6 +435,7 @@ baseLocation = None
 redrawTimer = 0
 controllerSendTimer = 0
 gpsTimer = 0
+armTimer = 0
 
 controller = Controller(0)
 createBoxes()
@@ -458,7 +475,7 @@ while True: # main execution loop
 			controllerDisplay.draw(screen)
 			indicatorList[6].draw(screen)
 	
-	if pygame.time.get_ticks() - gpsTimer > 2000:
+	if pygame.time.get_ticks() - gpsTimer > 2010:
 		gpsTimer = pygame.time.get_ticks()
 		updateGPS()
 		output.draw(screen) # also refresh the message displays
@@ -471,8 +488,8 @@ while True: # main execution loop
 			controllerDisplay.draw(screen)
 			indicatorList[6].draw(screen)
 	
-	if pygame.time.get_ticks() - controllerSendTimer > 200: # control data send timer
-		controllerSendTimer = pygame.time.get_ticks()
+	if pygame.time.get_ticks() - armTimer > 250: # control data send timer
+		armTimer = pygame.time.get_ticks()
 		if controller.isConnected:
 			axes = controller.getAxes()
 			buttons = controller.getButtons()
@@ -493,52 +510,65 @@ while True: # main execution loop
 					stopRover(False)
 					setMastMode(None)
 			elif buttonList[6].selected: # arm mode
-				if indicatorList[5].active:
-					# actuators
-					speed1 = int(axes[0] * 127) + 127
-					speed1 = max(speed1, 0)
-					speed1 = min(speed1, 254)
-					speed2 = int(axes[1] * 127) + 127
-					speed2 = max(speed2, 0)
-					speed2 = min(speed2, 254)
+				# actuators
+				speed1 = int(axes[0] * 127) + 127
+				speed1 = max(speed1, 0)
+				speed1 = min(speed1, 254)
+				speed2 = int(axes[1] * 127) + 127
+				speed2 = max(speed2, 0)
+				speed2 = min(speed2, 254)
+				gripperControl = int(axes[4]*127) + 127
+				wristPan = int(axes[2] * 40) + 127
+				if buttons[0]:
+					wristTilt = 127 - int(axes[3] * 45)
+				else:
+					wristTilt = 127 - int(axes[3] * 20)
+				for i in range(0, 4):
 					armControl.actuators(speed1, speed2)
-					time.sleep(0.005)
-					if buttons[2]:
-						armControl.twistHand(167)
-						time.sleep(0.005)
-					elif buttons[1]:
-						armControl.twistHand(87)
-						time.sleep(0.005)
+					time.sleep(0.01)
+					if buttons[0]:
+						if buttons[2]:
+							armControl.twistHand(187)
+							time.sleep(0.01)
+						elif buttons[1]:
+							armControl.twistHand(47)
+							time.sleep(0.01)
+					else:
+						if buttons[2]:
+							armControl.twistHand(167)
+							time.sleep(0.01)
+						elif buttons[1]:
+							armControl.twistHand(87)
+							time.sleep(0.01)
 					if buttons[0]:
 						if buttons[4]:
 							armControl.panBase(27)
+							time.sleep(0.01)
 						elif buttons[5]:
 							armControl.panBase(227)
+							time.sleep(0.01)
 						else:
 							armControl.panBase(127)
+							time.sleep(0.01)
 					else:
 						if buttons[4]:
 							armControl.panBase(107)
+							time.sleep(0.01)
 						elif buttons[5]:
 							armControl.panBase(147)
+							time.sleep(0.01)
 						else:
 							armControl.panBase(127)
-					time.sleep(0.005)
-					
-					gripperControl = int(axes[4]*127) + 127
+							time.sleep(0.01)
 					armControl.gripper(gripperControl)
-					time.sleep(0.005)
-					
-					wristPan = int(axes[2] * 40) + 127
+					time.sleep(0.01)
 					armControl.panHand(wristPan)
-					time.sleep(0.005)
-					
-					wristTilt = 127 - int(axes[3] * 40)
+					time.sleep(0.01)
 					armControl.tiltWrist(wristTilt)
-					time.sleep(0.005)
-				else:
-					stopRover(False)
-					setMastMode(None)
+					time.sleep(0.01)
+			else:
+				stopRover(False)
+				setMastMode(None)			
 	
 	# update UI state, check events
 	mouse = pygame.mouse.get_pos()

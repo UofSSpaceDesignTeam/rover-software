@@ -10,7 +10,7 @@ videoPort = 3001
 	# functions
 
 def startCamera():
-	command = "raspivid -b 500000 -n -ex fixedfps -fps 20 -t 0 -rot 180 -o - | nc " + clientAddress[0] + " " + str(videoPort)
+	command = "raspivid -b 500000 -n -ex fixedfps -fps 8 -t 0 -rot 180 -o - | nc " + clientAddress[0] + " " + str(videoPort)
 	#print(command)
 	subprocess.Popen(command, shell = True, stderr = open("/dev/null", "w"))
 

@@ -9,6 +9,7 @@ class DriveClient: # class for drive control
 		self.commandOneStickData = "#D1"
 		self.commandTwoStickData = "#D2"
 		self.commandRoverStop = "#DS"
+		self.commandRoverDig = "#DD"
 	
 	def connect(self):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -37,6 +38,12 @@ class DriveClient: # class for drive control
 	def stopMotors(self):
 		try:
 			self.socket.send(self.commandRoverStop)
+		except:
+			pass
+	
+	def dig(self):
+		try:
+			self.socket.send(self.commandRoverDig)
 		except:
 			pass
 	
