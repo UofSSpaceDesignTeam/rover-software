@@ -25,7 +25,8 @@ class DriveClient: # class for drive control
 		try:
 			self.socket.send(self.commandOneStickData + chr(xInt) + chr(yInt) + chr(limit))
 		except:
-			self.stopMotors()
+			raise
+			#self.stopMotors()
 	
 	def sendTwoStickData(self, leftAxis, rightAxis):
 		leftInt = int(leftAxis * 127) + 127
@@ -33,7 +34,8 @@ class DriveClient: # class for drive control
 		try:
 			self.socket.send(self.commandTwoStickData + chr(leftInt) + chr(rightInt))
 		except:
-			self.stopMotors()
+			raise
+			#self.stopMotors()
 	
 	def stopMotors(self):
 		try:

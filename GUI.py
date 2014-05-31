@@ -284,12 +284,12 @@ def dig(fakeArg):
 		print "digging..."
 		driveControl.dig()
 		buttonList[16].selected = True
-		buttonList[16].draw()
+		buttonList[16].draw(screen)
 		pygame.display.update()
-		time.sleep(1.0)
+		time.sleep(2.0)
 		print("done")
 		buttonList[16].selected = False
-		buttonList[16].draw()
+		buttonList[16].draw(screen)
 
 def stopRover(setSlider):	# button-based
 	try:
@@ -303,10 +303,8 @@ def stopRover(setSlider):	# button-based
 		sliderList[0].draw(screen)
 
 def runExperiment(fakeArg):	# button-based
-	if buttonList[8].selected:
+	if indicatorList[8].active:
 		scienceControl.runExperiment()
-	else:
-		return
 
 def testClient(client): # button-based
 	return client.test()
@@ -565,10 +563,7 @@ while True: # main execution loop
 					armControl.panHand(wristPan)
 					time.sleep(0.01)
 					armControl.tiltWrist(wristTilt)
-					time.sleep(0.01)
-			else:
-				stopRover(False)
-				setMastMode(None)			
+					time.sleep(0.01)		
 	
 	# update UI state, check events
 	mouse = pygame.mouse.get_pos()
