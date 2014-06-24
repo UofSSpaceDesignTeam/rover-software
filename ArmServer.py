@@ -27,8 +27,6 @@ Actuator1FullOutRaw = 4749
 Actuator2FullInRaw = 1890
 Actuator2FullOutRaw = 3081
 
-gotPacket = False
-
 # function definitions
 
 def readActuator1():
@@ -86,8 +84,6 @@ def setActuators(actuator1, actuator2):
 		sendSabertooth(address, 4, -1 * rightSpeed)
 	
 def parseCommand(command): # Parses Socket Data back to Axis positions
-	global gotPacket
-	gotPacket = False
 	if len(command) > 3:
 		if command[0] == "#": # is valid
 			if command[1] == "A":
@@ -95,10 +91,7 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					speed1 = int(ord(command[3]))
 					speed2 = int(ord(command[4]))
 					setActuators(speed1, speed2)
-					gotPacket = True
-				if not gotPacket:
-					sendSabertooth(address,0, 0)
-					sendSabertooth(address,5, 0)
+				
 				if command[2] == "B": # rotate base
 					servoDriver.setServo(4,1696 + int(ord(command[3])) - 127)
 				
@@ -112,8 +105,6 @@ def parseCommand(command): # Parses Socket Data back to Axis positions
 					wristTwist.setRelative(int(ord(command[3])))
 				
 				elif command[2] == "G": # open or close gripper
-					#sendSabertooth(address,0, 0)
-					#sendSabertooth(address,5, 0)
 					temp = int(ord(command[3])) - 127
 					#range of temp is now -127 to 127
 					if temp >= 0:	#negative values correspond to the other trigger so ignore them

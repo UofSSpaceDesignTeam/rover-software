@@ -57,7 +57,7 @@ def parseCommand(command): # parses and executes remote commands
 						time.sleep(0.8)
 						servoDriver.setServo(4, stopValue)
 						time.sleep(0.2)
-						servoDriver.setServo(4, 800)
+						servoDriver.setServo(4, 1200)
 						time.sleep(0.8)
 						stopServos()
 						print "done"
