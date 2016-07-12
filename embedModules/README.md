@@ -13,15 +13,13 @@ I'm not sure this will help however, as during debugging,
 the duty cycle manager was setting the motors correctly, but the arm didn't move.
 There may be a flag somewhere that was not set/reset properly or something.
 
-Drill
+Drill, StorageBin, ExampleCAN and others using Teensy CAN bus
 -----
-Was working in the lab, but failed at competition. Likely a fried Teensy. :frowning:
+This is for a Teensy 3.1/3.2 using a Microchip CAN transceiver as well as the FlexCAN library (https://github.com/teachop/FlexCAN_Library). They simply are notified of all messages and send messages at the beginning and end of the main loop.
 
-
-StorageBin
-----------
-Not tested in Utah, but should work.
+These were working in the lab, but failed at competition. Likely a fried Teensy. :frowning:
+The rover network archetecture was not well suited to the high speeds required by the motors. Improvements are needed there.
 
 Science sensors
 ---------------
-Doesn't work properly. (If someone else can elaborate, that would be cool...)
+We never had time to really make these work. Potential benchtop code is here in the sensors folder.
