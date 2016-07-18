@@ -18,17 +18,16 @@ import multiprocessing
 
 # Check for hardware and load required modules
 if(os.name == "nt"): # Windows test
-	modulesList = ["Drive", "CanExample", "Navigation", "Drill"]
+	modulesList = []
 
 elif(os.uname()[4] != "armv6l"): # Regular Linux/OSX test
 	from signal import signal, SIGPIPE, SIG_DFL
 	signal(SIGPIPE,SIG_DFL)
-	modulesList = ["WebServer", "Arm"]
+	modulesList = []
 
 else: # Rover! :D
 	print "Detected Rover hardware! Full config mode\n"
-	modulesList = ["JsonServer", "WebServer", "CanServer", "Example", "Drill", "CanExample"]
-	#modulesList = ["JsonServer", "CanServer","WebServer","Arm"]
+	modulesList = []
 	from signal import signal, SIGPIPE, SIG_DFL
 	signal(SIGPIPE,SIG_DFL)
 
@@ -38,15 +37,8 @@ print modulesList
 from StateManager import StateManager
 if "JsonServer" in modulesList: from roverprocess.JsonServer import JsonServer
 if "Example" in modulesList: from roverprocess.ExampleProcess import ExampleProcess
-if "I2CExample" in modulesList: from roverprocess.I2cExampleProcess import I2cExampleProcess
 if "WebServer" in modulesList: from roverprocess.WebServer import WebServer
 if "CanServer" in modulesList: from roverprocess.CanServer import CanServer
-if "CanExample" in modulesList: from roverprocess.CanExampleProcess import CanExampleProcess
-if "Camera" in modulesList: from roverprocess.CameraProcess import CameraProcess
-if "Drive" in modulesList: from roverprocess.DriveProcess import DriveProcess
-if "Arm" in modulesList: from roverprocess.ArmProcess import ArmProcess
-if "Drill" in modulesList: from roverprocess.DrillProcess import DrillProcess
-if "Navigation" in modulesList: from roverprocess.Navprocess import NavProcess
 
 # system configuration
 localPort = 34567
@@ -76,45 +68,6 @@ if __name__ == "__main__":
 	# modules
 	if "Example" in modulesList:
 		process = ExampleProcess(
-			downlink = system.getDownlink(), uplink = system.getUplink())
-		subDelegate(process)
-
-	if "CanExample" in modulesList:
-		process = CanExampleProcess(
-			downlink = system.getDownlink(), uplink = system.getUplink())
-		subDelegate(process)
-
-	if "I2CExample" in modulesList:
-		process = I2cExampleProcess(
-			downlink = system.getDownlink(), uplink = system.getUplink(),
-			sem = i2cSem)
-		subDelegate(process)
-
-	if "Arm" in modulesList:
-		process = ArmProcess(
-			downlink = system.getDownlink(), uplink = system.getUplink(),
-			sem = i2cSem)
-		subDelegate(process)
-
-	if "Camera" in modulesList:
-		process = CameraProcess(
-			downlink = system.getDownlink(), uplink = system.getUplink())
-		subDelegate(process)
-
-	if "Navigation" in modulesList:
-		process = NavProcess(
-			downlink = system.getDownlink(), uplink = system.getUplink())
-		subDelegate(process)
-
-	if "Drill" in modulesList:
-		process = DrillProcess(
-			downlink = system.getDownlink(), uplink = system.getUplink())
-		subDelegate(process)
-
-
-
-	if "Drive" in modulesList:
-		process = DriveProcess(
 			downlink = system.getDownlink(), uplink = system.getUplink())
 		subDelegate(process)
 
