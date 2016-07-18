@@ -1,3 +1,16 @@
+# Copyright 2016 University of Saskatchewan Space Design Team Licensed under the
+# Educational Community License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may
+# obtain a copy of the License at
+#
+# https://opensource.org/licenses/ecl2.php
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an "AS IS"
+# BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+# or implied. See the License for the specific language governing
+# permissions and limitations under the License.
+
 from RoverProcess import RoverProcess
 
 import time
@@ -14,7 +27,7 @@ class JsonServer(RoverProcess):
 			self.listener = listener
 			self.uplink = uplink
 			self.parent = parent
-		
+
 		def run(self):
 			while True:
 				jsonData, address = self.listener.recvfrom(4096)
@@ -23,7 +36,7 @@ class JsonServer(RoverProcess):
 					self.uplink.put(data)
 					with self.parent.addressSem:
 						self.parent.address = address[0]
-		
+
 		# Thanks, Mark Amery of stackoverflow!
 		def byteify(self, input):
 			if isinstance(input, dict):
@@ -36,7 +49,7 @@ class JsonServer(RoverProcess):
 				return input.encode('utf-8')
 			else:
 				return input
-	
+
 	def setup(self, args):
 		self.localPort = args["local"]
 		self.remotePort = args["remote"]
@@ -53,8 +66,8 @@ class JsonServer(RoverProcess):
 		receiver.daemon = True
 		receiver.start()
 		self.load = False
-		
-	
+
+
 	def loop(self):
 		if self.data:
 			with self.dataSem:
@@ -67,15 +80,14 @@ class JsonServer(RoverProcess):
 						jsonData, (self.address, self.remotePort))
 		self.setShared("heartbeat", "running")
 		time.sleep(self.sendPeriod)
-	
+
 	def messageTrigger(self, message):
 		# Prevent threads from triggering before server has started
 		while self.load: time.sleep(0.001)
 		RoverProcess.messageTrigger(self, message)
 		with self.dataSem:
 			self.data.update(message)
-	
+
 	def cleanup(self):
 		RoverProcess.cleanup(self)
 		self.listener.close()
-
