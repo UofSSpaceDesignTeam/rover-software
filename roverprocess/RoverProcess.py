@@ -23,7 +23,7 @@ class RoverProcess(Process):
 			self._stateSem = sem
 			self._parent = parent
 			self.quit = False
-			self.daemon = True
+			self.daemon = False
 
 		def run(self):
 			while not self.quit:
