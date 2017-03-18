@@ -42,7 +42,7 @@ class RoverProcess(Process):
 			self.downlink = downlink
 			self._parent = parent
 			self.quit = False
-			self.daemon = True
+			self.daemon = False
 
 		def run(self):
 			""" Run in a new thread. Loops until system shutdown.
